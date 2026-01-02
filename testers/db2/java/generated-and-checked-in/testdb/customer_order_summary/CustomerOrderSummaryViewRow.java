@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.math.BigDecimal;
 
 /** View: CUSTOMER_ORDER_SUMMARY */
@@ -16,7 +17,8 @@ public record CustomerOrderSummaryViewRow(
     @JsonProperty("CUSTOMER_ID") Integer customerId,
     @JsonProperty("NAME") String name,
     @JsonProperty("ORDER_COUNT") Integer orderCount,
-    @JsonProperty("TOTAL_SPENT") BigDecimal totalSpent) {
+    @JsonProperty("TOTAL_SPENT") BigDecimal totalSpent)
+    implements Tuple4<Integer, String, Integer, BigDecimal> {
   public CustomerOrderSummaryViewRow withCustomerId(Integer customerId) {
     return new CustomerOrderSummaryViewRow(customerId, name, orderCount, totalSpent);
   }
@@ -45,5 +47,29 @@ public record CustomerOrderSummaryViewRow(
           Db2Types.decimal,
           CustomerOrderSummaryViewRow::new,
           row -> new Object[] {row.customerId(), row.name(), row.orderCount(), row.totalSpent()});
+  ;
+
+  @Override
+  public Integer _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public Integer _3() {
+    return orderCount;
+  }
+  ;
+
+  @Override
+  public BigDecimal _4() {
+    return totalSpent;
+  }
   ;
 }

@@ -7,6 +7,8 @@ package testdb.payment_methods
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple7
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -30,7 +32,7 @@ case class PaymentMethodsRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("processor_config") processorConfig: Option[String],
+  @JsonProperty("processor_config") processorConfig: Option[Json],
   /** 
    * Default: 1
    */
@@ -39,11 +41,11 @@ case class PaymentMethodsRow(
    * Default: 0
    */
   @JsonProperty("sort_order") sortOrder: Byte
-) {
+) extends Tuple7[PaymentMethodsId, String, String, String, Option[Json], Boolean, Byte] {
   def id: PaymentMethodsId = methodId
 
   def toUnsavedRow(
-    processorConfig: Defaulted[Option[String]] = Defaulted.Provided(this.processorConfig),
+    processorConfig: Defaulted[Option[Json]] = Defaulted.Provided(this.processorConfig),
     isActive: Defaulted[Boolean] = Defaulted.Provided(this.isActive),
     sortOrder: Defaulted[Byte] = Defaulted.Provided(this.sortOrder)
   ): PaymentMethodsRowUnsaved = {
@@ -56,8 +58,22 @@ case class PaymentMethodsRow(
       sortOrder
     )
   }
+
+  override def `_1`: PaymentMethodsId = methodId
+
+  override def `_2`: String = code
+
+  override def `_3`: String = name
+
+  override def `_4`: String = methodType
+
+  override def `_5`: Option[Json] = processorConfig
+
+  override def `_6`: Boolean = isActive
+
+  override def `_7`: Byte = sortOrder
 }
 
 object PaymentMethodsRow {
-  val `_rowParser`: RowParser[PaymentMethodsRow] = RowParsers.of(PaymentMethodsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, MariaTypes.longtext.nullable, ScalaDbTypes.MariaTypes.bool, ScalaDbTypes.MariaTypes.tinyint)(PaymentMethodsRow.apply)(row => Array[Any](row.methodId, row.code, row.name, row.methodType, row.processorConfig, row.isActive, row.sortOrder))
+  val `_rowParser`: RowParser[PaymentMethodsRow] = RowParsers.of(PaymentMethodsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, MariaTypes.json.nullable, ScalaDbTypes.MariaTypes.bool, ScalaDbTypes.MariaTypes.tinyint)(PaymentMethodsRow.apply)(row => Array[Any](row.methodId, row.code, row.name, row.methodType, row.processorConfig, row.isActive, row.sortOrder))
 }

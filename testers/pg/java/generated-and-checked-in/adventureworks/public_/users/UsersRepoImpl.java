@@ -26,32 +26,29 @@ import java.util.Optional;
 public class UsersRepoImpl implements UsersRepo {
   @Override
   public DeleteBuilder<UsersFields, UsersRow> delete() {
-    return DeleteBuilder.of("\"public\".\"users\"", UsersFields.structure(), Dialect.POSTGRESQL);
+    return DeleteBuilder.of("\"public\".\"users\"", UsersFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(UsersId userId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"public\".\"users\" where \"user_id\" = "),
-                Fragment.encode(UsersId.pgType, userId),
+                Fragment.encode(UsersId.dbType, userId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(UsersId[] userIds, Connection c) {
     return interpolate(
             Fragment.lit("delete\nfrom \"public\".\"users\"\nwhere \"user_id\" = ANY("),
-            Fragment.encode(UsersId.pgTypeArray, userIds),
+            Fragment.encode(UsersId.dbTypeArray, userIds),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UsersRow insert(UsersRow unsaved, Connection c) {
@@ -60,7 +57,7 @@ public class UsersRepoImpl implements UsersRepo {
                 "insert into \"public\".\"users\"(\"user_id\", \"name\", \"last_name\", \"email\","
                     + " \"password\", \"created_at\", \"verified_on\")\n"
                     + "values ("),
-            Fragment.encode(UsersId.pgType, unsaved.userId()),
+            Fragment.encode(UsersId.dbType, unsaved.userId()),
             Fragment.lit("::uuid, "),
             Fragment.encode(PgTypes.text, unsaved.name()),
             Fragment.lit(", "),
@@ -80,7 +77,6 @@ public class UsersRepoImpl implements UsersRepo {
         .updateReturning(UsersRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UsersRow insert(UsersRowUnsaved unsaved, Connection c) {
@@ -90,7 +86,7 @@ public class UsersRepoImpl implements UsersRepo {
     ;
     columns.add(Fragment.lit("\"user_id\""));
     values.add(
-        interpolate(Fragment.encode(UsersId.pgType, unsaved.userId()), Fragment.lit("::uuid")));
+        interpolate(Fragment.encode(UsersId.dbType, unsaved.userId()), Fragment.lit("::uuid")));
     columns.add(Fragment.lit("\"name\""));
     values.add(interpolate(Fragment.encode(PgTypes.text, unsaved.name()), Fragment.lit("")));
     columns.add(Fragment.lit("\"last_name\""));
@@ -130,7 +126,6 @@ public class UsersRepoImpl implements UsersRepo {
     ;
     return q.updateReturning(UsersRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<UsersRow> unsaved, Integer batchSize, Connection c) {
@@ -142,7 +137,6 @@ public class UsersRepoImpl implements UsersRepo {
         c,
         UsersRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -156,14 +150,12 @@ public class UsersRepoImpl implements UsersRepo {
         c,
         UsersRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<UsersFields, UsersRow> select() {
     return SelectBuilder.of(
-        "\"public\".\"users\"", UsersFields.structure(), UsersRow._rowParser, Dialect.POSTGRESQL);
+        "\"public\".\"users\"", UsersFields.structure, UsersRow._rowParser, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<UsersRow> selectAll(Connection c) {
@@ -175,7 +167,6 @@ public class UsersRepoImpl implements UsersRepo {
         .query(UsersRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<UsersRow> selectById(UsersId userId, Connection c) {
@@ -185,12 +176,11 @@ public class UsersRepoImpl implements UsersRepo {
                     + " \"created_at\", \"verified_on\"\n"
                     + "from \"public\".\"users\"\n"
                     + "where \"user_id\" = "),
-            Fragment.encode(UsersId.pgType, userId),
+            Fragment.encode(UsersId.dbType, userId),
             Fragment.lit(""))
         .query(UsersRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<UsersRow> selectByIds(UsersId[] userIds, Connection c) {
@@ -200,12 +190,11 @@ public class UsersRepoImpl implements UsersRepo {
                     + " \"created_at\", \"verified_on\"\n"
                     + "from \"public\".\"users\"\n"
                     + "where \"user_id\" = ANY("),
-            Fragment.encode(UsersId.pgTypeArray, userIds),
+            Fragment.encode(UsersId.dbTypeArray, userIds),
             Fragment.lit(")"))
         .query(UsersRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<UsersId, UsersRow> selectByIdsTracked(UsersId[] userIds, Connection c) {
@@ -213,7 +202,6 @@ public class UsersRepoImpl implements UsersRepo {
     selectByIds(userIds, c).forEach(row -> ret.put(row.userId(), row));
     return ret;
   }
-  ;
 
   @Override
   public Optional<UsersRow> selectByUniqueEmail(Unknown email, Connection c) {
@@ -228,14 +216,12 @@ public class UsersRepoImpl implements UsersRepo {
         .query(UsersRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<UsersFields, UsersRow> update() {
     return UpdateBuilder.of(
-        "\"public\".\"users\"", UsersFields.structure(), UsersRow._rowParser, Dialect.POSTGRESQL);
+        "\"public\".\"users\"", UsersFields.structure, UsersRow._rowParser, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(UsersRow row, Connection c) {
@@ -255,13 +241,12 @@ public class UsersRepoImpl implements UsersRepo {
                 Fragment.lit("::timestamptz,\n\"verified_on\" = "),
                 Fragment.encode(PgTypes.timestamptz.opt(), row.verifiedOn()),
                 Fragment.lit("::timestamptz\nwhere \"user_id\" = "),
-                Fragment.encode(UsersId.pgType, userId),
+                Fragment.encode(UsersId.dbType, userId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public UsersRow upsert(UsersRow unsaved, Connection c) {
@@ -270,7 +255,7 @@ public class UsersRepoImpl implements UsersRepo {
                 "insert into \"public\".\"users\"(\"user_id\", \"name\", \"last_name\", \"email\","
                     + " \"password\", \"created_at\", \"verified_on\")\n"
                     + "values ("),
-            Fragment.encode(UsersId.pgType, unsaved.userId()),
+            Fragment.encode(UsersId.dbType, unsaved.userId()),
             Fragment.lit("::uuid, "),
             Fragment.encode(PgTypes.text, unsaved.name()),
             Fragment.lit(", "),
@@ -298,7 +283,6 @@ public class UsersRepoImpl implements UsersRepo {
         .updateReturning(UsersRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<UsersRow> upsertBatch(Iterator<UsersRow> unsaved, Connection c) {
@@ -320,7 +304,6 @@ public class UsersRepoImpl implements UsersRepo {
         .updateManyReturning(UsersRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -355,5 +338,4 @@ public class UsersRepoImpl implements UsersRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

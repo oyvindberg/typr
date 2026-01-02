@@ -7,6 +7,7 @@ package testdb.order_items
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -23,13 +24,23 @@ data class OrderItemsRow(
   @JsonProperty("PRODUCT_NAME") val productName: String,
   @JsonProperty("QUANTITY") val quantity: Int,
   @JsonProperty("UNIT_PRICE") val unitPrice: BigDecimal
-) {
+) : Tuple5<OrdersId, Int, String, Int, BigDecimal> {
+  override fun _1(): OrdersId = orderId
+
+  override fun _2(): Int = itemNumber
+
+  override fun _3(): String = productName
+
+  override fun _4(): Int = quantity
+
+  override fun _5(): BigDecimal = unitPrice
+
   fun compositeId(): OrderItemsId = OrderItemsId(orderId, itemNumber)
 
   fun id(): OrderItemsId = this.compositeId()
 
   companion object {
-    val _rowParser: RowParser<OrderItemsRow> = RowParsers.of(OrdersId.pgType, KotlinDbTypes.Db2Types.integer, Db2Types.varchar, KotlinDbTypes.Db2Types.integer, KotlinDbTypes.Db2Types.decimal, { t0, t1, t2, t3, t4 -> OrderItemsRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.orderId, row.itemNumber, row.productName, row.quantity, row.unitPrice) })
+    val _rowParser: RowParser<OrderItemsRow> = RowParsers.of(OrdersId.dbType, KotlinDbTypes.Db2Types.integer, Db2Types.varchar, KotlinDbTypes.Db2Types.integer, KotlinDbTypes.Db2Types.decimal, { t0, t1, t2, t3, t4 -> OrderItemsRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.orderId, row.itemNumber, row.productName, row.quantity, row.unitPrice) })
 
     fun apply(
       compositeId: OrderItemsId,

@@ -7,6 +7,7 @@ package testdb.inventory
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple11
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -64,7 +65,29 @@ data class InventoryRow(
     * Default: current_timestamp(6)
     */
   @JsonProperty("updated_at") val updatedAt: LocalDateTime
-) {
+) : Tuple11<InventoryId, ProductsId, WarehousesId, Int, Int, Int, Int, Int, String?, LocalDateTime?, LocalDateTime> {
+  override fun _1(): InventoryId = inventoryId
+
+  override fun _10(): LocalDateTime? = lastCountedAt
+
+  override fun _11(): LocalDateTime = updatedAt
+
+  override fun _2(): ProductsId = productId
+
+  override fun _3(): WarehousesId = warehouseId
+
+  override fun _4(): Int = quantityOnHand
+
+  override fun _5(): Int = quantityReserved
+
+  override fun _6(): Int = quantityOnOrder
+
+  override fun _7(): Int = reorderPoint
+
+  override fun _8(): Int = reorderQuantity
+
+  override fun _9(): String? = binLocation
+
   fun id(): InventoryId = inventoryId
 
   fun toUnsavedRow(
@@ -79,6 +102,6 @@ data class InventoryRow(
   ): InventoryRowUnsaved = InventoryRowUnsaved(productId, warehouseId, quantityOnHand, quantityReserved, quantityOnOrder, reorderPoint, reorderQuantity, binLocation, lastCountedAt, updatedAt)
 
   companion object {
-    val _rowParser: RowParser<InventoryRow> = RowParsers.of(InventoryId.pgType, ProductsId.pgType, WarehousesId.pgType, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, MariaTypes.varchar.nullable(), MariaTypes.datetime.nullable(), MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> InventoryRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) }, { row -> arrayOf<Any?>(row.inventoryId, row.productId, row.warehouseId, row.quantityOnHand, row.quantityReserved, row.quantityOnOrder, row.reorderPoint, row.reorderQuantity, row.binLocation, row.lastCountedAt, row.updatedAt) })
+    val _rowParser: RowParser<InventoryRow> = RowParsers.of(InventoryId.dbType, ProductsId.dbType, WarehousesId.dbType, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, MariaTypes.varchar.nullable(), MariaTypes.datetime.nullable(), MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> InventoryRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) }, { row -> arrayOf<Any?>(row.inventoryId, row.productId, row.warehouseId, row.quantityOnHand, row.quantityReserved, row.quantityOnOrder, row.reorderPoint, row.reorderQuantity, row.binLocation, row.lastCountedAt, row.updatedAt) })
   }
 }

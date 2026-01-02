@@ -7,6 +7,8 @@ package testdb.db2testnull
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple24
+import dev.typr.foundations.data.Xml
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -41,8 +43,56 @@ data class Db2testnullRow(
   @JsonProperty("TIMESTAMP_COL") val timestampCol: LocalDateTime?,
   @JsonProperty("TIMESTAMP6_COL") val timestamp6Col: LocalDateTime?,
   @JsonProperty("TIMESTAMP12_COL") val timestamp12Col: LocalDateTime?,
-  @JsonProperty("XML_COL") val xmlCol: /* XML */ String?
-) {
+  @JsonProperty("XML_COL") val xmlCol: Xml?
+) : Tuple24<Short?, Int?, Long?, BigDecimal?, BigDecimal?, BigDecimal?, BigDecimal?, Float?, Double?, Boolean?, String?, String?, String?, String?, String?, ByteArray?, ByteArray?, ByteArray?, LocalDate?, LocalTime?, LocalDateTime?, LocalDateTime?, LocalDateTime?, Xml?> {
+  override fun _1(): Short? = smallintCol
+
+  override fun _10(): Boolean? = boolCol
+
+  override fun _11(): String? = charCol
+
+  override fun _12(): String? = varcharCol
+
+  override fun _13(): String? = clobCol
+
+  override fun _14(): String? = graphicCol
+
+  override fun _15(): String? = vargraphicCol
+
+  override fun _16(): ByteArray? = binaryCol
+
+  override fun _17(): ByteArray? = varbinaryCol
+
+  override fun _18(): ByteArray? = blobCol
+
+  override fun _19(): LocalDate? = dateCol
+
+  override fun _2(): Int? = intCol
+
+  override fun _20(): LocalTime? = timeCol
+
+  override fun _21(): LocalDateTime? = timestampCol
+
+  override fun _22(): LocalDateTime? = timestamp6Col
+
+  override fun _23(): LocalDateTime? = timestamp12Col
+
+  override fun _24(): Xml? = xmlCol
+
+  override fun _3(): Long? = bigintCol
+
+  override fun _4(): BigDecimal? = decimalCol
+
+  override fun _5(): BigDecimal? = numericCol
+
+  override fun _6(): BigDecimal? = decfloat16Col
+
+  override fun _7(): BigDecimal? = decfloat34Col
+
+  override fun _8(): Float? = realCol
+
+  override fun _9(): Double? = doubleCol
+
   companion object {
     val _rowParser: RowParser<Db2testnullRow> = RowParsers.of(KotlinDbTypes.Db2Types.smallint.nullable(), KotlinDbTypes.Db2Types.integer.nullable(), KotlinDbTypes.Db2Types.bigint.nullable(), KotlinDbTypes.Db2Types.decimal.nullable(), KotlinDbTypes.Db2Types.decimal.nullable(), KotlinDbTypes.Db2Types.decfloat.nullable(), KotlinDbTypes.Db2Types.decfloat.nullable(), KotlinDbTypes.Db2Types.real.nullable(), KotlinDbTypes.Db2Types.double_.nullable(), KotlinDbTypes.Db2Types.boolean_.nullable(), Db2Types.char_.nullable(), Db2Types.varchar.nullable(), Db2Types.clob.nullable(), Db2Types.graphic.nullable(), Db2Types.vargraphic.nullable(), Db2Types.binary.nullable(), Db2Types.varbinary.nullable(), Db2Types.blob.nullable(), Db2Types.date.nullable(), Db2Types.time.nullable(), Db2Types.timestamp.nullable(), Db2Types.timestamp.nullable(), Db2Types.timestamp.nullable(), Db2Types.xml.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23 -> Db2testnullRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23) }, { row -> arrayOf<Any?>(row.smallintCol, row.intCol, row.bigintCol, row.decimalCol, row.numericCol, row.decfloat16Col, row.decfloat34Col, row.realCol, row.doubleCol, row.boolCol, row.charCol, row.varcharCol, row.clobCol, row.graphicCol, row.vargraphicCol, row.binaryCol, row.varbinaryCol, row.blobCol, row.dateCol, row.timeCol, row.timestampCol, row.timestamp6Col, row.timestamp12Col, row.xmlCol) })
   }

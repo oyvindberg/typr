@@ -7,6 +7,7 @@ package oracledb.departments
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -20,7 +21,15 @@ data class DepartmentsRow(
   @JsonProperty("DEPT_REGION") val deptRegion: String,
   @JsonProperty("DEPT_NAME") val deptName: String,
   @JsonProperty("BUDGET") val budget: MoneyT?
-) {
+) : Tuple4<String, String, String, MoneyT?> {
+  override fun _1(): String = deptCode
+
+  override fun _2(): String = deptRegion
+
+  override fun _3(): String = deptName
+
+  override fun _4(): MoneyT? = budget
+
   fun compositeId(): DepartmentsId = DepartmentsId(deptCode, deptRegion)
 
   fun id(): DepartmentsId = this.compositeId()

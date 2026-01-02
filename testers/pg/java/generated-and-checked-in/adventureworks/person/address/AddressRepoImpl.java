@@ -26,33 +26,29 @@ import java.util.Optional;
 public class AddressRepoImpl implements AddressRepo {
   @Override
   public DeleteBuilder<AddressFields, AddressRow> delete() {
-    return DeleteBuilder.of(
-        "\"person\".\"address\"", AddressFields.structure(), Dialect.POSTGRESQL);
+    return DeleteBuilder.of("\"person\".\"address\"", AddressFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(AddressId addressid, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"person\".\"address\" where \"addressid\" = "),
-                Fragment.encode(AddressId.pgType, addressid),
+                Fragment.encode(AddressId.dbType, addressid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(AddressId[] addressids, Connection c) {
     return interpolate(
             Fragment.lit("delete\nfrom \"person\".\"address\"\nwhere \"addressid\" = ANY("),
-            Fragment.encode(AddressId.pgTypeArray, addressids),
+            Fragment.encode(AddressId.dbTypeArray, addressids),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public AddressRow insert(AddressRow unsaved, Connection c) {
@@ -62,7 +58,7 @@ public class AddressRepoImpl implements AddressRepo {
                     + " \"addressline2\", \"city\", \"stateprovinceid\", \"postalcode\","
                     + " \"spatiallocation\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(AddressId.pgType, unsaved.addressid()),
+            Fragment.encode(AddressId.dbType, unsaved.addressid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.text, unsaved.addressline1()),
             Fragment.lit(", "),
@@ -70,7 +66,7 @@ public class AddressRepoImpl implements AddressRepo {
             Fragment.lit(", "),
             Fragment.encode(PgTypes.text, unsaved.city()),
             Fragment.lit(", "),
-            Fragment.encode(StateprovinceId.pgType, unsaved.stateprovinceid()),
+            Fragment.encode(StateprovinceId.dbType, unsaved.stateprovinceid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.text, unsaved.postalcode()),
             Fragment.lit(", "),
@@ -87,7 +83,6 @@ public class AddressRepoImpl implements AddressRepo {
         .updateReturning(AddressRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public AddressRow insert(AddressRowUnsaved unsaved, Connection c) {
@@ -106,7 +101,7 @@ public class AddressRepoImpl implements AddressRepo {
     columns.add(Fragment.lit("\"stateprovinceid\""));
     values.add(
         interpolate(
-            Fragment.encode(StateprovinceId.pgType, unsaved.stateprovinceid()),
+            Fragment.encode(StateprovinceId.dbType, unsaved.stateprovinceid()),
             Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"postalcode\""));
     values.add(interpolate(Fragment.encode(PgTypes.text, unsaved.postalcode()), Fragment.lit("")));
@@ -122,7 +117,7 @@ public class AddressRepoImpl implements AddressRepo {
             value -> {
               columns.add(Fragment.lit("\"addressid\""));
               values.add(
-                  interpolate(Fragment.encode(AddressId.pgType, value), Fragment.lit("::int4")));
+                  interpolate(Fragment.encode(AddressId.dbType, value), Fragment.lit("::int4")));
             });
     ;
     unsaved
@@ -159,7 +154,6 @@ public class AddressRepoImpl implements AddressRepo {
     ;
     return q.updateReturning(AddressRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<AddressRow> unsaved, Integer batchSize, Connection c) {
@@ -172,7 +166,6 @@ public class AddressRepoImpl implements AddressRepo {
         c,
         AddressRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -187,17 +180,15 @@ public class AddressRepoImpl implements AddressRepo {
         c,
         AddressRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<AddressFields, AddressRow> select() {
     return SelectBuilder.of(
         "\"person\".\"address\"",
-        AddressFields.structure(),
+        AddressFields.structure,
         AddressRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<AddressRow> selectAll(Connection c) {
@@ -210,7 +201,6 @@ public class AddressRepoImpl implements AddressRepo {
         .query(AddressRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<AddressRow> selectById(AddressId addressid, Connection c) {
@@ -221,12 +211,11 @@ public class AddressRepoImpl implements AddressRepo {
                     + " \"modifieddate\"\n"
                     + "from \"person\".\"address\"\n"
                     + "where \"addressid\" = "),
-            Fragment.encode(AddressId.pgType, addressid),
+            Fragment.encode(AddressId.dbType, addressid),
             Fragment.lit(""))
         .query(AddressRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<AddressRow> selectByIds(AddressId[] addressids, Connection c) {
@@ -237,12 +226,11 @@ public class AddressRepoImpl implements AddressRepo {
                     + " \"modifieddate\"\n"
                     + "from \"person\".\"address\"\n"
                     + "where \"addressid\" = ANY("),
-            Fragment.encode(AddressId.pgTypeArray, addressids),
+            Fragment.encode(AddressId.dbTypeArray, addressids),
             Fragment.lit(")"))
         .query(AddressRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<AddressId, AddressRow> selectByIdsTracked(AddressId[] addressids, Connection c) {
@@ -250,17 +238,15 @@ public class AddressRepoImpl implements AddressRepo {
     selectByIds(addressids, c).forEach(row -> ret.put(row.addressid(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<AddressFields, AddressRow> update() {
     return UpdateBuilder.of(
         "\"person\".\"address\"",
-        AddressFields.structure(),
+        AddressFields.structure,
         AddressRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(AddressRow row, Connection c) {
@@ -274,7 +260,7 @@ public class AddressRepoImpl implements AddressRepo {
                 Fragment.lit(",\n\"city\" = "),
                 Fragment.encode(PgTypes.text, row.city()),
                 Fragment.lit(",\n\"stateprovinceid\" = "),
-                Fragment.encode(StateprovinceId.pgType, row.stateprovinceid()),
+                Fragment.encode(StateprovinceId.dbType, row.stateprovinceid()),
                 Fragment.lit("::int4,\n\"postalcode\" = "),
                 Fragment.encode(PgTypes.text, row.postalcode()),
                 Fragment.lit(",\n\"spatiallocation\" = "),
@@ -284,13 +270,12 @@ public class AddressRepoImpl implements AddressRepo {
                 Fragment.lit("::uuid,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"addressid\" = "),
-                Fragment.encode(AddressId.pgType, addressid),
+                Fragment.encode(AddressId.dbType, addressid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public AddressRow upsert(AddressRow unsaved, Connection c) {
@@ -300,7 +285,7 @@ public class AddressRepoImpl implements AddressRepo {
                     + " \"addressline2\", \"city\", \"stateprovinceid\", \"postalcode\","
                     + " \"spatiallocation\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(AddressId.pgType, unsaved.addressid()),
+            Fragment.encode(AddressId.dbType, unsaved.addressid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.text, unsaved.addressline1()),
             Fragment.lit(", "),
@@ -308,7 +293,7 @@ public class AddressRepoImpl implements AddressRepo {
             Fragment.lit(", "),
             Fragment.encode(PgTypes.text, unsaved.city()),
             Fragment.lit(", "),
-            Fragment.encode(StateprovinceId.pgType, unsaved.stateprovinceid()),
+            Fragment.encode(StateprovinceId.dbType, unsaved.stateprovinceid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.text, unsaved.postalcode()),
             Fragment.lit(", "),
@@ -335,7 +320,6 @@ public class AddressRepoImpl implements AddressRepo {
         .updateReturning(AddressRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<AddressRow> upsertBatch(Iterator<AddressRow> unsaved, Connection c) {
@@ -361,7 +345,6 @@ public class AddressRepoImpl implements AddressRepo {
         .updateManyReturning(AddressRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -400,5 +383,4 @@ public class AddressRepoImpl implements AddressRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

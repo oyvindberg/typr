@@ -7,6 +7,7 @@ package oracledb.departments
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 
@@ -14,7 +15,11 @@ import dev.typr.foundations.kotlin.RowParsers
 data class DepartmentsId(
   @JsonProperty("DEPT_CODE") val deptCode: String,
   @JsonProperty("DEPT_REGION") val deptRegion: String
-) {
+) : Tuple2<String, String> {
+  override fun _1(): String = deptCode
+
+  override fun _2(): String = deptRegion
+
   companion object {
     val _rowParser: RowParser<DepartmentsId> = RowParsers.of(OracleTypes.varchar2, OracleTypes.varchar2, { t0, t1 -> DepartmentsId(t0, t1) }, { row -> arrayOf<Any?>(row.deptCode, row.deptRegion) })
   }

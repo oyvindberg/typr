@@ -15,146 +15,143 @@ import adventureworks.sales.salesterritory.SalesterritoryId
 import adventureworks.sales.salesterritory.SalesterritoryRow
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.ForeignKey
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
+import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr8
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
 
-trait StateprovinceFields extends FieldsExpr0[StateprovinceRow] {
-  def stateprovinceid: IdField[StateprovinceId, StateprovinceRow]
+class StateprovinceFields(val `_path`: java.util.List[Path]) extends TupleExpr8[StateprovinceId, String, CountryregionId, Flag, Name, SalesterritoryId, UUID, LocalDateTime] with RelationStructure[StateprovinceFields, StateprovinceRow]  with FieldsBase[StateprovinceRow] {
+  def stateprovinceid: IdField[StateprovinceId, StateprovinceRow] = {
+    new IdField[StateprovinceId, StateprovinceRow](
+      _path,
+      "stateprovinceid",
+      _.stateprovinceid,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(stateprovinceid = value),
+      StateprovinceId.dbType
+    )
+  }
 
-  def stateprovincecode: Field[String, StateprovinceRow]
+  def stateprovincecode: Field[String, StateprovinceRow] = {
+    new Field[String, StateprovinceRow](
+      _path,
+      "stateprovincecode",
+      _.stateprovincecode,
+      Optional.empty(),
+      Optional.of("bpchar"),
+      (row, value) => row.copy(stateprovincecode = value),
+      PgTypes.bpchar
+    )
+  }
 
-  def countryregioncode: Field[CountryregionId, StateprovinceRow]
+  def countryregioncode: Field[CountryregionId, StateprovinceRow] = {
+    new Field[CountryregionId, StateprovinceRow](
+      _path,
+      "countryregioncode",
+      _.countryregioncode,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(countryregioncode = value),
+      CountryregionId.dbType
+    )
+  }
 
-  def isonlystateprovinceflag: Field[Flag, StateprovinceRow]
+  def isonlystateprovinceflag: Field[Flag, StateprovinceRow] = {
+    new Field[Flag, StateprovinceRow](
+      _path,
+      "isonlystateprovinceflag",
+      _.isonlystateprovinceflag,
+      Optional.empty(),
+      Optional.of("bool"),
+      (row, value) => row.copy(isonlystateprovinceflag = value),
+      Flag.dbType
+    )
+  }
 
-  def name: Field[Name, StateprovinceRow]
+  def name: Field[Name, StateprovinceRow] = {
+    new Field[Name, StateprovinceRow](
+      _path,
+      "name",
+      _.name,
+      Optional.empty(),
+      Optional.of("varchar"),
+      (row, value) => row.copy(name = value),
+      Name.dbType
+    )
+  }
 
-  def territoryid: Field[SalesterritoryId, StateprovinceRow]
+  def territoryid: Field[SalesterritoryId, StateprovinceRow] = {
+    new Field[SalesterritoryId, StateprovinceRow](
+      _path,
+      "territoryid",
+      _.territoryid,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(territoryid = value),
+      SalesterritoryId.dbType
+    )
+  }
 
-  def rowguid: Field[UUID, StateprovinceRow]
+  def rowguid: Field[UUID, StateprovinceRow] = {
+    new Field[UUID, StateprovinceRow](
+      _path,
+      "rowguid",
+      _.rowguid,
+      Optional.empty(),
+      Optional.of("uuid"),
+      (row, value) => row.copy(rowguid = value),
+      PgTypes.uuid
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, StateprovinceRow]
+  def modifieddate: Field[LocalDateTime, StateprovinceRow] = {
+    new Field[LocalDateTime, StateprovinceRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      Optional.empty(),
+      Optional.of("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
   def fkCountryregion: ForeignKey[CountryregionFields, CountryregionRow] = ForeignKey.of[CountryregionFields, CountryregionRow]("person.FK_StateProvince_CountryRegion_CountryRegionCode").withColumnPair[CountryregionId](countryregioncode, _.countryregioncode)
 
   def fkSalesSalesterritory: ForeignKey[SalesterritoryFields, SalesterritoryRow] = ForeignKey.of[SalesterritoryFields, SalesterritoryRow]("person.FK_StateProvince_SalesTerritory_TerritoryID").withColumnPair[SalesterritoryId](territoryid, _.territoryid)
 
-  override def columns: java.util.List[FieldLike[?, StateprovinceRow]]
+  override def columns: java.util.List[FieldLike[?, StateprovinceRow]] = java.util.List.of(this.stateprovinceid, this.stateprovincecode, this.countryregioncode, this.isonlystateprovinceflag, this.name, this.territoryid, this.rowguid, this.modifieddate)
 
   override def rowParser: RowParser[StateprovinceRow] = StateprovinceRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[StateprovinceFields, StateprovinceRow] = new StateprovinceFields(`_path`)
+
+  override def `_1`: SqlExpr[StateprovinceId] = stateprovinceid
+
+  override def `_2`: SqlExpr[String] = stateprovincecode
+
+  override def `_3`: SqlExpr[CountryregionId] = countryregioncode
+
+  override def `_4`: SqlExpr[Flag] = isonlystateprovinceflag
+
+  override def `_5`: SqlExpr[Name] = name
+
+  override def `_6`: SqlExpr[SalesterritoryId] = territoryid
+
+  override def `_7`: SqlExpr[UUID] = rowguid
+
+  override def `_8`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object StateprovinceFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends StateprovinceFields with RelationStructure[StateprovinceFields, StateprovinceRow] {
-
-    override def stateprovinceid: IdField[StateprovinceId, StateprovinceRow] = {
-      new IdField[StateprovinceId, StateprovinceRow](
-        _path,
-        "stateprovinceid",
-        _.stateprovinceid,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(stateprovinceid = value),
-        StateprovinceId.pgType
-      )
-    }
-
-    override def stateprovincecode: Field[String, StateprovinceRow] = {
-      new Field[String, StateprovinceRow](
-        _path,
-        "stateprovincecode",
-        _.stateprovincecode,
-        Optional.empty(),
-        Optional.of("bpchar"),
-        (row, value) => row.copy(stateprovincecode = value),
-        PgTypes.bpchar
-      )
-    }
-
-    override def countryregioncode: Field[CountryregionId, StateprovinceRow] = {
-      new Field[CountryregionId, StateprovinceRow](
-        _path,
-        "countryregioncode",
-        _.countryregioncode,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(countryregioncode = value),
-        CountryregionId.pgType
-      )
-    }
-
-    override def isonlystateprovinceflag: Field[Flag, StateprovinceRow] = {
-      new Field[Flag, StateprovinceRow](
-        _path,
-        "isonlystateprovinceflag",
-        _.isonlystateprovinceflag,
-        Optional.empty(),
-        Optional.of("bool"),
-        (row, value) => row.copy(isonlystateprovinceflag = value),
-        Flag.pgType
-      )
-    }
-
-    override def name: Field[Name, StateprovinceRow] = {
-      new Field[Name, StateprovinceRow](
-        _path,
-        "name",
-        _.name,
-        Optional.empty(),
-        Optional.of("varchar"),
-        (row, value) => row.copy(name = value),
-        Name.pgType
-      )
-    }
-
-    override def territoryid: Field[SalesterritoryId, StateprovinceRow] = {
-      new Field[SalesterritoryId, StateprovinceRow](
-        _path,
-        "territoryid",
-        _.territoryid,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(territoryid = value),
-        SalesterritoryId.pgType
-      )
-    }
-
-    override def rowguid: Field[UUID, StateprovinceRow] = {
-      new Field[UUID, StateprovinceRow](
-        _path,
-        "rowguid",
-        _.rowguid,
-        Optional.empty(),
-        Optional.of("uuid"),
-        (row, value) => row.copy(rowguid = value),
-        PgTypes.uuid
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, StateprovinceRow] = {
-      new Field[LocalDateTime, StateprovinceRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        Optional.empty(),
-        Optional.of("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, StateprovinceRow]] = java.util.List.of(this.stateprovinceid, this.stateprovincecode, this.countryregioncode, this.isonlystateprovinceflag, this.name, this.territoryid, this.rowguid, this.modifieddate)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[StateprovinceFields, StateprovinceRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: StateprovinceFields = new StateprovinceFields(java.util.Collections.emptyList())
 }

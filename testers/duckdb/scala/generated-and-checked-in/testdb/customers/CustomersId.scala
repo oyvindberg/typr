@@ -17,7 +17,7 @@ case class CustomersId(@JsonValue value: Int) extends scala.AnyVal
 object CustomersId {
   given bijection: Bijection[CustomersId, Int] = Bijection.apply[CustomersId, Int](_.value)(CustomersId.apply)
 
-  given duckDbType: DuckDbType[CustomersId] = ScalaDbTypes.DuckDbTypes.integer.bimap(CustomersId.apply, _.value)
+  given dbTypeArray: DuckDbType[Array[CustomersId]] = DuckDbTypes.integerArray.bimap(xs => xs.map(CustomersId.apply), xs => xs.map(_.value))
 
-  given pgTypeArray: DuckDbType[Array[CustomersId]] = DuckDbTypes.integerArray.bimap(xs => xs.map(CustomersId.apply), xs => xs.map(_.value))
+  given duckDbType: DuckDbType[CustomersId] = ScalaDbTypes.DuckDbTypes.integer.bimap(CustomersId.apply, _.value)
 }

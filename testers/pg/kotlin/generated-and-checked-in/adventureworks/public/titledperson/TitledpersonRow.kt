@@ -10,6 +10,7 @@ import adventureworks.public.title_domain.TitleDomainId
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple3
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 
@@ -20,9 +21,15 @@ data class TitledpersonRow(
   /** Points to [adventureworks.public.title.TitleRow.code] */
   val title: TitleId,
   val name: String
-) {
+) : Tuple3<TitleDomainId, TitleId, String> {
+  override fun _1(): TitleDomainId = titleShort
+
+  override fun _2(): TitleId = title
+
+  override fun _3(): String = name
+
   companion object {
-    val _rowParser: RowParser<TitledpersonRow> = RowParsers.of(TitleDomainId.pgType, TitleId.pgType, PgTypes.text, { t0, t1, t2 -> TitledpersonRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.titleShort, row.title, row.name) })
+    val _rowParser: RowParser<TitledpersonRow> = RowParsers.of(TitleDomainId.dbType, TitleId.dbType, PgTypes.text, { t0, t1, t2 -> TitledpersonRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.titleShort, row.title, row.name) })
 
     val pgText: PgText<TitledpersonRow> =
       PgText.from(_rowParser.underlying)

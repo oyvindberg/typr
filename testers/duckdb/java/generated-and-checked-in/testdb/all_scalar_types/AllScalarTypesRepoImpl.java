@@ -24,10 +24,8 @@ import testdb.Mood;
 public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
   @Override
   public DeleteBuilder<AllScalarTypesFields, AllScalarTypesRow> delete() {
-    return DeleteBuilder.of(
-        "\"all_scalar_types\"", AllScalarTypesFields.structure(), Dialect.DUCKDB);
+    return DeleteBuilder.of("\"all_scalar_types\"", AllScalarTypesFields.structure, Dialect.DUCKDB);
   }
-  ;
 
   @Override
   public Boolean deleteById(AllScalarTypesId id, Connection c) {
@@ -39,18 +37,16 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(AllScalarTypesId[] ids, Connection c) {
     return interpolate(
             Fragment.lit("delete\nfrom \"all_scalar_types\"\nwhere \"id\" = ANY("),
-            Fragment.encode(AllScalarTypesId.pgTypeArray, ids),
+            Fragment.encode(AllScalarTypesId.dbTypeArray, ids),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public AllScalarTypesRow insert(AllScalarTypesRow unsaved, Connection c) {
@@ -76,11 +72,11 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
             Fragment.lit(", "),
             Fragment.encode(DuckDbTypes.hugeint.opt(), unsaved.colHugeint()),
             Fragment.lit(", "),
-            Fragment.encode(DuckDbTypes.smallint.opt(), unsaved.colUtinyint()),
+            Fragment.encode(DuckDbTypes.utinyint.opt(), unsaved.colUtinyint()),
             Fragment.lit(", "),
-            Fragment.encode(DuckDbTypes.integer.opt(), unsaved.colUsmallint()),
+            Fragment.encode(DuckDbTypes.usmallint.opt(), unsaved.colUsmallint()),
             Fragment.lit(", "),
-            Fragment.encode(DuckDbTypes.bigint.opt(), unsaved.colUinteger()),
+            Fragment.encode(DuckDbTypes.uinteger.opt(), unsaved.colUinteger()),
             Fragment.lit(", "),
             Fragment.encode(DuckDbTypes.ubigint.opt(), unsaved.colUbigint()),
             Fragment.lit(", "),
@@ -127,17 +123,15 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .updateReturning(AllScalarTypesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<AllScalarTypesFields, AllScalarTypesRow> select() {
     return SelectBuilder.of(
         "\"all_scalar_types\"",
-        AllScalarTypesFields.structure(),
+        AllScalarTypesFields.structure,
         AllScalarTypesRow._rowParser,
         Dialect.DUCKDB);
   }
-  ;
 
   @Override
   public List<AllScalarTypesRow> selectAll(Connection c) {
@@ -153,7 +147,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .query(AllScalarTypesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<AllScalarTypesRow> selectById(AllScalarTypesId id, Connection c) {
@@ -172,7 +165,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .query(AllScalarTypesRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<AllScalarTypesRow> selectByIds(AllScalarTypesId[] ids, Connection c) {
@@ -186,12 +178,11 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
                     + " \"col_uuid\", \"col_json\", \"col_mood\", \"col_not_null\"\n"
                     + "from \"all_scalar_types\"\n"
                     + "where \"id\" = ANY("),
-            Fragment.encode(AllScalarTypesId.pgTypeArray, ids),
+            Fragment.encode(AllScalarTypesId.dbTypeArray, ids),
             Fragment.lit(")"))
         .query(AllScalarTypesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<AllScalarTypesId, AllScalarTypesRow> selectByIdsTracked(
@@ -201,17 +192,15 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
     selectByIds(ids, c).forEach(row -> ret.put(row.id(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<AllScalarTypesFields, AllScalarTypesRow> update() {
     return UpdateBuilder.of(
         "\"all_scalar_types\"",
-        AllScalarTypesFields.structure(),
+        AllScalarTypesFields.structure,
         AllScalarTypesRow._rowParser,
         Dialect.DUCKDB);
   }
-  ;
 
   @Override
   public Boolean update(AllScalarTypesRow row, Connection c) {
@@ -229,11 +218,11 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
                 Fragment.lit(",\n\"col_hugeint\" = "),
                 Fragment.encode(DuckDbTypes.hugeint.opt(), row.colHugeint()),
                 Fragment.lit(",\n\"col_utinyint\" = "),
-                Fragment.encode(DuckDbTypes.smallint.opt(), row.colUtinyint()),
+                Fragment.encode(DuckDbTypes.utinyint.opt(), row.colUtinyint()),
                 Fragment.lit(",\n\"col_usmallint\" = "),
-                Fragment.encode(DuckDbTypes.integer.opt(), row.colUsmallint()),
+                Fragment.encode(DuckDbTypes.usmallint.opt(), row.colUsmallint()),
                 Fragment.lit(",\n\"col_uinteger\" = "),
-                Fragment.encode(DuckDbTypes.bigint.opt(), row.colUinteger()),
+                Fragment.encode(DuckDbTypes.uinteger.opt(), row.colUinteger()),
                 Fragment.lit(",\n\"col_ubigint\" = "),
                 Fragment.encode(DuckDbTypes.ubigint.opt(), row.colUbigint()),
                 Fragment.lit(",\n\"col_float\" = "),
@@ -275,7 +264,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public AllScalarTypesRow upsert(AllScalarTypesRow unsaved, Connection c) {
@@ -301,11 +289,11 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
             Fragment.lit(", "),
             Fragment.encode(DuckDbTypes.hugeint.opt(), unsaved.colHugeint()),
             Fragment.lit(", "),
-            Fragment.encode(DuckDbTypes.smallint.opt(), unsaved.colUtinyint()),
+            Fragment.encode(DuckDbTypes.utinyint.opt(), unsaved.colUtinyint()),
             Fragment.lit(", "),
-            Fragment.encode(DuckDbTypes.integer.opt(), unsaved.colUsmallint()),
+            Fragment.encode(DuckDbTypes.usmallint.opt(), unsaved.colUsmallint()),
             Fragment.lit(", "),
-            Fragment.encode(DuckDbTypes.bigint.opt(), unsaved.colUinteger()),
+            Fragment.encode(DuckDbTypes.uinteger.opt(), unsaved.colUinteger()),
             Fragment.lit(", "),
             Fragment.encode(DuckDbTypes.ubigint.opt(), unsaved.colUbigint()),
             Fragment.lit(", "),
@@ -379,7 +367,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .updateReturning(AllScalarTypesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<AllScalarTypesRow> upsertBatch(Iterator<AllScalarTypesRow> unsaved, Connection c) {
@@ -431,5 +418,4 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .updateReturningEach(AllScalarTypesRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

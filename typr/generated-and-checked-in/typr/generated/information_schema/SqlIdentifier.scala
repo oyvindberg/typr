@@ -21,29 +21,29 @@ import typr.generated.Text
 case class SqlIdentifier(value: String)
 
 object SqlIdentifier {
-  implicit lazy val arrayColumn: Column[Array[SqlIdentifier]] = Column.columnToArray(column, implicitly)
+  given arrayColumn: Column[Array[SqlIdentifier]] = Column.columnToArray(using column, summon)
 
-  implicit lazy val arrayToStatement: ToStatement[Array[SqlIdentifier]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
+  given arrayToStatement: ToStatement[Array[SqlIdentifier]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
 
-  implicit lazy val column: Column[SqlIdentifier] = Column.columnToString.map(SqlIdentifier.apply)
+  given column: Column[SqlIdentifier] = Column.columnToString.map(SqlIdentifier.apply)
 
-  implicit lazy val parameterMetadata: ParameterMetaData[SqlIdentifier] = {
+  given parameterMetadata: ParameterMetaData[SqlIdentifier] = {
     new ParameterMetaData[SqlIdentifier] {
       override def sqlType: String = """"information_schema"."sql_identifier""""
       override def jdbcType: Int = Types.OTHER
     }
   }
 
-  implicit lazy val pgText: Text[SqlIdentifier] = {
+  given pgText: Text[SqlIdentifier] = {
     new Text[SqlIdentifier] {
       override def unsafeEncode(v: SqlIdentifier, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
       override def unsafeArrayEncode(v: SqlIdentifier, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
     }
   }
 
-  implicit lazy val reads: Reads[SqlIdentifier] = Reads.StringReads.map(SqlIdentifier.apply)
+  given reads: Reads[SqlIdentifier] = Reads.StringReads.map(SqlIdentifier.apply)
 
-  implicit lazy val toStatement: ToStatement[SqlIdentifier] = ToStatement.stringToStatement.contramap(_.value)
+  given toStatement: ToStatement[SqlIdentifier] = ToStatement.stringToStatement.contramap(_.value)
 
-  implicit lazy val writes: Writes[SqlIdentifier] = Writes.StringWrites.contramap(_.value)
+  given writes: Writes[SqlIdentifier] = Writes.StringWrites.contramap(_.value)
 }

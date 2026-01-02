@@ -128,6 +128,34 @@ object MariaMetaDb {
     }
   }
 
+  /** Check constraint from INFORMATION_SCHEMA.CHECK_CONSTRAINTS - used to detect JSON columns */
+  case class MariaCheckConstraint(
+      constraintSchema: Option[String],
+      tableName: String,
+      constraintName: String,
+      checkClause: String
+  ) {
+
+    /** Returns the column name if this is a json_valid() constraint */
+    def jsonColumnName: Option[String] = {
+      val pattern = """json_valid\s*\(\s*`?(\w+)`?\s*\)""".r
+      pattern.findFirstMatchIn(checkClause.toLowerCase).map(_.group(1))
+    }
+  }
+
+  object MariaCheckConstraint {
+    def rowParser(idx: Int): RowParser[MariaCheckConstraint] = RowParser[MariaCheckConstraint] { row =>
+      Success(
+        MariaCheckConstraint(
+          constraintSchema = row(idx + 0)(Column.columnToOption(Column.columnToString)),
+          tableName = row(idx + 1)(Column.columnToString),
+          constraintName = row(idx + 2)(Column.columnToString),
+          checkClause = row(idx + 3)(Column.columnToString)
+        )
+      )
+    }
+  }
+
   /** View definition from INFORMATION_SCHEMA.VIEWS */
   case class MariaView(
       tableSchema: Option[String],
@@ -159,8 +187,19 @@ object MariaMetaDb {
       columns: List[MariaColumn],
       constraints: List[MariaConstraint],
       keyColumns: List[MariaKeyColumn],
+      checkConstraints: List[MariaCheckConstraint],
       analyzedViews: Map[db.RelationName, AnalyzedView]
   ) {
+
+    /** Set of (schema, table, column) that are JSON columns (detected via json_valid() check constraints) */
+    lazy val jsonColumns: Set[(Option[String], String, String)] =
+      checkConstraints.flatMap { cc =>
+        cc.jsonColumnName.map(colName => (cc.constraintSchema, cc.tableName, colName.toLowerCase))
+      }.toSet
+
+    def isJsonColumn(tableSchema: Option[String], tableName: String, columnName: String): Boolean =
+      jsonColumns.contains((tableSchema, tableName, columnName.toLowerCase))
+
     def filter(schemaMode: SchemaMode): Input = {
       schemaMode match {
         case SchemaMode.MultiSchema => this
@@ -175,6 +214,7 @@ object MariaMetaDb {
               case k if keep(k.tableSchema) || keep(k.constraintSchema) =>
                 k.copy(tableSchema = None, constraintSchema = None, referencedTableSchema = if (keep(k.referencedTableSchema)) None else k.referencedTableSchema)
             },
+            checkConstraints = checkConstraints.collect { case cc if keep(cc.constraintSchema) => cc.copy(constraintSchema = None) },
             analyzedViews = analyzedViews.collect {
               case (k, v) if keep(k.schema) =>
                 k.copy(schema = None) -> v.copy(row = v.row.copy(tableSchema = None))
@@ -191,9 +231,10 @@ object MariaMetaDb {
         columns <- logger.timed("fetching columns")(ds.run(implicit c => fetchColumns(c)))
         constraints <- logger.timed("fetching constraints")(ds.run(implicit c => fetchConstraints(c)))
         keyColumns <- logger.timed("fetching keyColumns")(ds.run(implicit c => fetchKeyColumns(c)))
+        checkConstraints <- logger.timed("fetching checkConstraints")(ds.run(implicit c => fetchCheckConstraints(c)))
         analyzedViews <- logger.timed("fetching and analyzing views")(analyzeViews(ds, viewSelector))
       } yield {
-        val input = Input(tables, columns, constraints, keyColumns, analyzedViews)
+        val input = Input(tables, columns, constraints, keyColumns, checkConstraints, analyzedViews)
         input.filter(schemaMode)
       }
     }
@@ -261,6 +302,14 @@ object MariaMetaDb {
                       WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')
                       ORDER BY TABLE_SCHEMA, TABLE_NAME, CONSTRAINT_NAME, ORDINAL_POSITION"""
       sql.as(MariaKeyColumn.rowParser(1).*)
+    }
+
+    private def fetchCheckConstraints(implicit conn: Connection): List[MariaCheckConstraint] = {
+      val sql = SQL"""SELECT CONSTRAINT_SCHEMA, TABLE_NAME, CONSTRAINT_NAME, CHECK_CLAUSE
+                      FROM INFORMATION_SCHEMA.CHECK_CONSTRAINTS
+                      WHERE CONSTRAINT_SCHEMA NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')
+                      ORDER BY CONSTRAINT_SCHEMA, TABLE_NAME, CONSTRAINT_NAME"""
+      sql.as(MariaCheckConstraint.rowParser(1).*)
     }
   }
 
@@ -361,14 +410,19 @@ object MariaMetaDb {
                 case _     => Nullability.NullableUnknown
               }
 
-              val tpe = typeMapper.dbTypeFrom(
-                dataType = c.dataType,
-                columnType = c.columnType,
-                characterMaximumLength = c.characterMaximumLength,
-                numericPrecision = c.numericPrecision,
-                numericScale = c.numericScale,
-                datetimePrecision = c.datetimePrecision
-              )
+              // Check if this is a JSON column (detected via json_valid() check constraint)
+              val tpe =
+                if (input.isJsonColumn(table.tableSchema, table.tableName, c.columnName))
+                  db.MariaType.Json
+                else
+                  typeMapper.dbTypeFrom(
+                    dataType = c.dataType,
+                    columnType = c.columnType,
+                    characterMaximumLength = c.characterMaximumLength,
+                    numericPrecision = c.numericPrecision,
+                    numericScale = c.numericScale,
+                    datetimePrecision = c.datetimePrecision
+                  )
 
               // Detect AUTO_INCREMENT
               val generated: Option[db.Generated] =
@@ -436,14 +490,20 @@ object MariaMetaDb {
                 case _     => Nullability.NullableUnknown
               }
 
-              val tpe = typeMapper.dbTypeFrom(
-                dataType = c.dataType,
-                columnType = c.columnType,
-                characterMaximumLength = c.characterMaximumLength,
-                numericPrecision = c.numericPrecision,
-                numericScale = c.numericScale,
-                datetimePrecision = c.datetimePrecision
-              )
+              // Check if this is a JSON column (detected via json_valid() check constraint)
+              // Note: For views, use the view's schema/table name
+              val tpe =
+                if (input.isJsonColumn(c.tableSchema, c.tableName, c.columnName))
+                  db.MariaType.Json
+                else
+                  typeMapper.dbTypeFrom(
+                    dataType = c.dataType,
+                    columnType = c.columnType,
+                    characterMaximumLength = c.characterMaximumLength,
+                    numericPrecision = c.numericPrecision,
+                    numericScale = c.numericScale,
+                    datetimePrecision = c.datetimePrecision
+                  )
 
               val col = db.Col(
                 parsedName = parsedName,

@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple5
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -29,7 +30,7 @@ case class PasswordRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple5[BusinessentityId, String, String, UUID, LocalDateTime] {
   def id: BusinessentityId = businessentityid
 
   def toUnsavedRow(
@@ -44,10 +45,20 @@ case class PasswordRow(
       modifieddate
     )
   }
+
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: String = passwordhash
+
+  override def `_3`: String = passwordsalt
+
+  override def `_4`: UUID = rowguid
+
+  override def `_5`: LocalDateTime = modifieddate
 }
 
 object PasswordRow {
-  val `_rowParser`: RowParser[PasswordRow] = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, PgTypes.uuid, PgTypes.timestamp, PasswordRow.apply, row => Array[Any](row.businessentityid, row.passwordhash, row.passwordsalt, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[PasswordRow] = RowParsers.of(BusinessentityId.dbType, PgTypes.text, PgTypes.text, PgTypes.uuid, PgTypes.timestamp, PasswordRow.apply, row => Array[Any](row.businessentityid, row.passwordhash, row.passwordsalt, row.rowguid, row.modifieddate))
 
   given pgText: PgText[PasswordRow] = PgText.from(`_rowParser`)
 }

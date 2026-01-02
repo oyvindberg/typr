@@ -7,14 +7,15 @@ package testdb.brands
 
 import com.fasterxml.jackson.annotation.JsonValue
 import dev.typr.foundations.MariaType
+import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.data.Uint2
 import dev.typr.foundations.scala.Bijection
-import dev.typr.foundations.scala.ScalaDbTypes
 
 /** Type for the primary key of table `brands` */
-case class BrandsId(@JsonValue value: Int) extends scala.AnyVal
+case class BrandsId(@JsonValue value: Uint2) extends scala.AnyVal
 
 object BrandsId {
-  given bijection: Bijection[BrandsId, Int] = Bijection.apply[BrandsId, Int](_.value)(BrandsId.apply)
+  given bijection: Bijection[BrandsId, Uint2] = Bijection.apply[BrandsId, Uint2](_.value)(BrandsId.apply)
 
-  given pgType: MariaType[BrandsId] = ScalaDbTypes.MariaTypes.smallintUnsigned.bimap(BrandsId.apply, _.value)
+  given dbType: MariaType[BrandsId] = MariaTypes.smallintUnsigned.bimap(BrandsId.apply, _.value)
 }

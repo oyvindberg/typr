@@ -96,12 +96,12 @@ class OrdersRepoImpl extends OrdersRepo {
 
   override def upsert(unsaved: OrdersRow)(using c: Connection): OrdersRow = {
   sql"""MERGE INTO [orders] AS target
-    USING (VALUES (${Fragment.encode(CustomersId.sqlServerType, unsaved.customerId)}, ${Fragment.encode(SqlServerTypes.datetime2.nullable, unsaved.orderDate)}, ${Fragment.encode(ScalaDbTypes.SqlServerTypes.money, unsaved.totalAmount)})) AS source([customer_id], [order_date], [total_amount])
+    USING (VALUES (${Fragment.encode(OrdersId.sqlServerType, unsaved.orderId)}, ${Fragment.encode(CustomersId.sqlServerType, unsaved.customerId)}, ${Fragment.encode(SqlServerTypes.datetime2.nullable, unsaved.orderDate)}, ${Fragment.encode(ScalaDbTypes.SqlServerTypes.money, unsaved.totalAmount)})) AS source([order_id], [customer_id], [order_date], [total_amount])
     ON target.[order_id] = source.[order_id]
     WHEN MATCHED THEN UPDATE SET [customer_id] = source.[customer_id],
     [order_date] = source.[order_date],
     [total_amount] = source.[total_amount]
-    WHEN NOT MATCHED THEN INSERT ([customer_id], [order_date], [total_amount]) VALUES (${Fragment.encode(CustomersId.sqlServerType, unsaved.customerId)}, ${Fragment.encode(SqlServerTypes.datetime2.nullable, unsaved.orderDate)}, ${Fragment.encode(ScalaDbTypes.SqlServerTypes.money, unsaved.totalAmount)})
+    WHEN NOT MATCHED THEN INSERT ([order_id], [customer_id], [order_date], [total_amount]) VALUES (${Fragment.encode(OrdersId.sqlServerType, unsaved.orderId)}, ${Fragment.encode(CustomersId.sqlServerType, unsaved.customerId)}, ${Fragment.encode(SqlServerTypes.datetime2.nullable, unsaved.orderDate)}, ${Fragment.encode(ScalaDbTypes.SqlServerTypes.money, unsaved.totalAmount)})
     OUTPUT INSERTED.[order_id], INSERTED.[customer_id], INSERTED.[order_date], INSERTED.[total_amount];"""
     .updateReturning(OrdersRow.`_rowParser`.exactlyOne())
     .runUnchecked(c)

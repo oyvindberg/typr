@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple4
 import java.util.Optional
 import oracledb.MoneyT
 
@@ -20,10 +21,18 @@ case class DepartmentsRow(
   @JsonProperty("DEPT_REGION") deptRegion: String,
   @JsonProperty("DEPT_NAME") deptName: String,
   @JsonProperty("BUDGET") budget: Optional[MoneyT]
-) {
+) extends Tuple4[String, String, String, Optional[MoneyT]] {
   def compositeId: DepartmentsId = new DepartmentsId(deptCode, deptRegion)
 
   def id: DepartmentsId = this.compositeId
+
+  override def `_1`: String = deptCode
+
+  override def `_2`: String = deptRegion
+
+  override def `_3`: String = deptName
+
+  override def `_4`: Optional[MoneyT] = budget
 }
 
 object DepartmentsRow {

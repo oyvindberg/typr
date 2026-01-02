@@ -13,6 +13,7 @@ import adventureworks.public.Flag
 import adventureworks.public.Name
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple25
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -111,7 +112,7 @@ case class ProductRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple25[ProductId, Name, String, Flag, Flag, Option[/* max 15 chars */ String], Short, Short, BigDecimal, BigDecimal, Option[/* max 5 chars */ String], Option[UnitmeasureId], Option[UnitmeasureId], Option[BigDecimal], Int, Option[/* bpchar, max 2 chars */ String], Option[/* bpchar, max 2 chars */ String], Option[/* bpchar, max 2 chars */ String], Option[ProductsubcategoryId], Option[ProductmodelId], LocalDateTime, Option[LocalDateTime], Option[LocalDateTime], UUID, LocalDateTime] {
   def id: ProductId = productid
 
   def toUnsavedRow(
@@ -149,10 +150,60 @@ case class ProductRow(
       modifieddate
     )
   }
+
+  override def `_1`: ProductId = productid
+
+  override def `_2`: Name = name
+
+  override def `_3`: String = productnumber
+
+  override def `_4`: Flag = makeflag
+
+  override def `_5`: Flag = finishedgoodsflag
+
+  override def `_6`: Option[/* max 15 chars */ String] = color
+
+  override def `_7`: Short = safetystocklevel
+
+  override def `_8`: Short = reorderpoint
+
+  override def `_9`: BigDecimal = standardcost
+
+  override def `_10`: BigDecimal = listprice
+
+  override def `_11`: Option[/* max 5 chars */ String] = size
+
+  override def `_12`: Option[UnitmeasureId] = sizeunitmeasurecode
+
+  override def `_13`: Option[UnitmeasureId] = weightunitmeasurecode
+
+  override def `_14`: Option[BigDecimal] = weight
+
+  override def `_15`: Int = daystomanufacture
+
+  override def `_16`: Option[/* bpchar, max 2 chars */ String] = productline
+
+  override def `_17`: Option[/* bpchar, max 2 chars */ String] = `class`
+
+  override def `_18`: Option[/* bpchar, max 2 chars */ String] = style
+
+  override def `_19`: Option[ProductsubcategoryId] = productsubcategoryid
+
+  override def `_20`: Option[ProductmodelId] = productmodelid
+
+  override def `_21`: LocalDateTime = sellstartdate
+
+  override def `_22`: Option[LocalDateTime] = sellenddate
+
+  override def `_23`: Option[LocalDateTime] = discontinueddate
+
+  override def `_24`: UUID = rowguid
+
+  override def `_25`: LocalDateTime = modifieddate
 }
 
 object ProductRow {
-  val `_rowParser`: RowParser[ProductRow] = RowParsers.of(ProductId.pgType, Name.pgType, PgTypes.text, Flag.pgType, Flag.pgType, PgTypes.text.nullable, ScalaDbTypes.PgTypes.int2, ScalaDbTypes.PgTypes.int2, ScalaDbTypes.PgTypes.numeric, ScalaDbTypes.PgTypes.numeric, PgTypes.text.nullable, UnitmeasureId.pgType.nullable, UnitmeasureId.pgType.nullable, ScalaDbTypes.PgTypes.numeric.nullable, ScalaDbTypes.PgTypes.int4, PgTypes.bpchar.nullable, PgTypes.bpchar.nullable, PgTypes.bpchar.nullable, ProductsubcategoryId.pgType.nullable, ProductmodelId.pgType.nullable, PgTypes.timestamp, PgTypes.timestamp.nullable, PgTypes.timestamp.nullable, PgTypes.uuid, PgTypes.timestamp)(ProductRow.apply)(row => Array[Any](row.productid, row.name, row.productnumber, row.makeflag, row.finishedgoodsflag, row.color, row.safetystocklevel, row.reorderpoint, row.standardcost, row.listprice, row.size, row.sizeunitmeasurecode, row.weightunitmeasurecode, row.weight, row.daystomanufacture, row.productline, row.`class`, row.style, row.productsubcategoryid, row.productmodelid, row.sellstartdate, row.sellenddate, row.discontinueddate, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[ProductRow] = RowParsers.of(ProductId.dbType, Name.dbType, PgTypes.text, Flag.dbType, Flag.dbType, PgTypes.text.nullable, ScalaDbTypes.PgTypes.int2, ScalaDbTypes.PgTypes.int2, ScalaDbTypes.PgTypes.numeric, ScalaDbTypes.PgTypes.numeric, PgTypes.text.nullable, UnitmeasureId.dbType.nullable, UnitmeasureId.dbType.nullable, ScalaDbTypes.PgTypes.numeric.nullable, ScalaDbTypes.PgTypes.int4, PgTypes.bpchar.nullable, PgTypes.bpchar.nullable, PgTypes.bpchar.nullable, ProductsubcategoryId.dbType.nullable, ProductmodelId.dbType.nullable, PgTypes.timestamp, PgTypes.timestamp.nullable, PgTypes.timestamp.nullable, PgTypes.uuid, PgTypes.timestamp)(ProductRow.apply)(row => Array[Any](row.productid, row.name, row.productnumber, row.makeflag, row.finishedgoodsflag, row.color, row.safetystocklevel, row.reorderpoint, row.standardcost, row.listprice, row.size, row.sizeunitmeasurecode, row.weightunitmeasurecode, row.weight, row.daystomanufacture, row.productline, row.`class`, row.style, row.productsubcategoryid, row.productmodelid, row.sellstartdate, row.sellenddate, row.discontinueddate, row.rowguid, row.modifieddate))
 
   given pgText: PgText[ProductRow] = PgText.from(`_rowParser`.underlying)
 }

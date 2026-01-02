@@ -6,6 +6,7 @@
 package testdb.update_customer_priority
 
 import java.sql.Connection
+import kotlin.collections.List
 import testdb.Priority
 import testdb.customers.CustomersId
 
@@ -14,5 +15,5 @@ interface UpdateCustomerPrioritySqlRepo {
     newPriority: /* user-picked */ Priority,
     customerId: /* user-picked */ CustomersId,
     c: Connection
-  ): Int
+  ): List<UpdateCustomerPrioritySqlRow>
 }

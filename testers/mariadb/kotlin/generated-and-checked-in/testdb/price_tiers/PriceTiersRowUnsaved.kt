@@ -6,6 +6,7 @@
 package testdb.price_tiers
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Uint4
 import java.math.BigDecimal
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
@@ -21,10 +22,10 @@ data class PriceTiersRowUnsaved(
   /** Default: 1
 
     */
-  @JsonProperty("min_quantity") val minQuantity: Defaulted<Long> = UseDefault()
+  @JsonProperty("min_quantity") val minQuantity: Defaulted<Uint4> = UseDefault()
 ) {
   fun toRow(
-    minQuantityDefault: () -> Long,
+    minQuantityDefault: () -> Uint4,
     tierIdDefault: () -> PriceTiersId
   ): PriceTiersRow = PriceTiersRow(tierId = tierIdDefault(), name = name, minQuantity = minQuantity.getOrElse(minQuantityDefault), discountType = discountType, discountValue = discountValue)
 }

@@ -9,6 +9,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple18;
+import dev.typr.foundations.data.Json;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint4;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import testdb.customers.CustomersId;
@@ -27,25 +31,25 @@ public record ReviewsRow(
     /** Default: NULL Points to {@link testdb.order_items.OrderItemsRow#itemId()} */
     @JsonProperty("order_item_id") Optional<OrderItemsId> orderItemId,
     /** */
-    Short rating,
+    Uint1 rating,
     /** Default: NULL */
     Optional<String> title,
     /** Default: NULL */
     Optional<String> content,
     /** Default: NULL */
-    Optional<String> pros,
+    Optional<Json> pros,
     /** Default: NULL */
-    Optional<String> cons,
+    Optional<Json> cons,
     /** Array of image URLs Default: NULL */
-    Optional<String> images,
+    Optional<Json> images,
     /** Default: 0 */
     @JsonProperty("is_verified_purchase") Boolean isVerifiedPurchase,
     /** Default: 0 */
     @JsonProperty("is_approved") Boolean isApproved,
     /** Default: 0 */
-    @JsonProperty("helpful_votes") Long helpfulVotes,
+    @JsonProperty("helpful_votes") Uint4 helpfulVotes,
     /** Default: 0 */
-    @JsonProperty("unhelpful_votes") Long unhelpfulVotes,
+    @JsonProperty("unhelpful_votes") Uint4 unhelpfulVotes,
     /** Default: NULL */
     @JsonProperty("admin_response") Optional<String> adminResponse,
     /** Default: NULL */
@@ -53,7 +57,26 @@ public record ReviewsRow(
     /** Default: current_timestamp(6) */
     @JsonProperty("created_at") LocalDateTime createdAt,
     /** Default: current_timestamp(6) */
-    @JsonProperty("updated_at") LocalDateTime updatedAt) {
+    @JsonProperty("updated_at") LocalDateTime updatedAt)
+    implements Tuple18<
+        ReviewsId,
+        ProductsId,
+        CustomersId,
+        Optional<OrderItemsId>,
+        Uint1,
+        Optional<String>,
+        Optional<String>,
+        Optional<Json>,
+        Optional<Json>,
+        Optional<Json>,
+        Boolean,
+        Boolean,
+        Uint4,
+        Uint4,
+        Optional<String>,
+        Optional<LocalDateTime>,
+        LocalDateTime,
+        LocalDateTime> {
   /** AUTO_INCREMENT */
   public ReviewsRow withReviewId(ReviewsId reviewId) {
     return new ReviewsRow(
@@ -151,7 +174,7 @@ public record ReviewsRow(
   ;
 
   /** */
-  public ReviewsRow withRating(Short rating) {
+  public ReviewsRow withRating(Uint1 rating) {
     return new ReviewsRow(
         reviewId,
         productId,
@@ -223,7 +246,7 @@ public record ReviewsRow(
   ;
 
   /** Default: NULL */
-  public ReviewsRow withPros(Optional<String> pros) {
+  public ReviewsRow withPros(Optional<Json> pros) {
     return new ReviewsRow(
         reviewId,
         productId,
@@ -247,7 +270,7 @@ public record ReviewsRow(
   ;
 
   /** Default: NULL */
-  public ReviewsRow withCons(Optional<String> cons) {
+  public ReviewsRow withCons(Optional<Json> cons) {
     return new ReviewsRow(
         reviewId,
         productId,
@@ -271,7 +294,7 @@ public record ReviewsRow(
   ;
 
   /** Array of image URLs Default: NULL */
-  public ReviewsRow withImages(Optional<String> images) {
+  public ReviewsRow withImages(Optional<Json> images) {
     return new ReviewsRow(
         reviewId,
         productId,
@@ -343,7 +366,7 @@ public record ReviewsRow(
   ;
 
   /** Default: 0 */
-  public ReviewsRow withHelpfulVotes(Long helpfulVotes) {
+  public ReviewsRow withHelpfulVotes(Uint4 helpfulVotes) {
     return new ReviewsRow(
         reviewId,
         productId,
@@ -367,7 +390,7 @@ public record ReviewsRow(
   ;
 
   /** Default: 0 */
-  public ReviewsRow withUnhelpfulVotes(Long unhelpfulVotes) {
+  public ReviewsRow withUnhelpfulVotes(Uint4 unhelpfulVotes) {
     return new ReviewsRow(
         reviewId,
         productId,
@@ -488,16 +511,16 @@ public record ReviewsRow(
 
   public static RowParser<ReviewsRow> _rowParser =
       RowParsers.of(
-          ReviewsId.pgType,
-          ProductsId.pgType,
-          CustomersId.pgType,
-          OrderItemsId.pgType.opt(),
+          ReviewsId.dbType,
+          ProductsId.dbType,
+          CustomersId.dbType,
+          OrderItemsId.dbType.opt(),
           MariaTypes.tinyintUnsigned,
           MariaTypes.varchar.opt(),
           MariaTypes.text.opt(),
-          MariaTypes.longtext.opt(),
-          MariaTypes.longtext.opt(),
-          MariaTypes.longtext.opt(),
+          MariaTypes.json.opt(),
+          MariaTypes.json.opt(),
+          MariaTypes.json.opt(),
           MariaTypes.bool,
           MariaTypes.bool,
           MariaTypes.intUnsigned,
@@ -530,6 +553,114 @@ public record ReviewsRow(
               });
   ;
 
+  @Override
+  public ReviewsId _1() {
+    return reviewId;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _10() {
+    return images;
+  }
+  ;
+
+  @Override
+  public Boolean _11() {
+    return isVerifiedPurchase;
+  }
+  ;
+
+  @Override
+  public Boolean _12() {
+    return isApproved;
+  }
+  ;
+
+  @Override
+  public Uint4 _13() {
+    return helpfulVotes;
+  }
+  ;
+
+  @Override
+  public Uint4 _14() {
+    return unhelpfulVotes;
+  }
+  ;
+
+  @Override
+  public Optional<String> _15() {
+    return adminResponse;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _16() {
+    return respondedAt;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _17() {
+    return createdAt;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _18() {
+    return updatedAt;
+  }
+  ;
+
+  @Override
+  public ProductsId _2() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public CustomersId _3() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public Optional<OrderItemsId> _4() {
+    return orderItemId;
+  }
+  ;
+
+  @Override
+  public Uint1 _5() {
+    return rating;
+  }
+  ;
+
+  @Override
+  public Optional<String> _6() {
+    return title;
+  }
+  ;
+
+  @Override
+  public Optional<String> _7() {
+    return content;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _8() {
+    return pros;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _9() {
+    return cons;
+  }
+  ;
+
   public ReviewsId id() {
     return reviewId;
   }
@@ -539,13 +670,13 @@ public record ReviewsRow(
       Defaulted<Optional<OrderItemsId>> orderItemId,
       Defaulted<Optional<String>> title,
       Defaulted<Optional<String>> content,
-      Defaulted<Optional<String>> pros,
-      Defaulted<Optional<String>> cons,
-      Defaulted<Optional<String>> images,
+      Defaulted<Optional<Json>> pros,
+      Defaulted<Optional<Json>> cons,
+      Defaulted<Optional<Json>> images,
       Defaulted<Boolean> isVerifiedPurchase,
       Defaulted<Boolean> isApproved,
-      Defaulted<Long> helpfulVotes,
-      Defaulted<Long> unhelpfulVotes,
+      Defaulted<Uint4> helpfulVotes,
+      Defaulted<Uint4> unhelpfulVotes,
       Defaulted<Optional<String>> adminResponse,
       Defaulted<Optional<LocalDateTime>> respondedAt,
       Defaulted<LocalDateTime> createdAt,

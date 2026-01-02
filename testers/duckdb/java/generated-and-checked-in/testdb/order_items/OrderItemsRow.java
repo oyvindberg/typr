@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.math.BigDecimal;
 import testdb.customtypes.Defaulted;
 
@@ -18,7 +19,8 @@ public record OrderItemsRow(
     @JsonProperty("product_id") Integer productId,
     /** Default: 1 */
     Integer quantity,
-    @JsonProperty("unit_price") BigDecimal unitPrice) {
+    @JsonProperty("unit_price") BigDecimal unitPrice)
+    implements Tuple4<Integer, Integer, Integer, BigDecimal> {
   public OrderItemsRow withOrderId(Integer orderId) {
     return new OrderItemsRow(orderId, productId, quantity, unitPrice);
   }
@@ -53,6 +55,30 @@ public record OrderItemsRow(
   public static OrderItemsRow apply(
       OrderItemsId compositeId, Integer quantity, BigDecimal unitPrice) {
     return new OrderItemsRow(compositeId.orderId(), compositeId.productId(), quantity, unitPrice);
+  }
+  ;
+
+  @Override
+  public Integer _1() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public Integer _2() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public Integer _3() {
+    return quantity;
+  }
+  ;
+
+  @Override
+  public BigDecimal _4() {
+    return unitPrice;
   }
   ;
 

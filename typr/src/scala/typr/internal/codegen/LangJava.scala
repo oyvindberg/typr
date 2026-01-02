@@ -238,8 +238,8 @@ case object LangJava extends Lang {
         (ifCases :+ elseCode).mkCode("\n")
       case jvm.StringInterpolate(_, _, _) =>
         // StringInterpolate should never reach LangJava
-        // DbLibTypo.SQL() should have already rewritten it to Fragment.interpolate() calls
-        sys.error("StringInterpolate should not reach LangJava. DbLibTypo.SQL() should have rewritten it to Fragment.interpolate() calls.")
+        // DbLibFoundations.SQL() should have already rewritten it to Fragment.interpolate() calls
+        sys.error("StringInterpolate should not reach LangJava. DbLibFoundations.SQL() should have rewritten it to Fragment.interpolate() calls.")
 
       case jvm.Given(annotations, tparams, name, implicitParams, tpe, body) =>
         val annotationsCode = renderAnnotations(annotations)
@@ -501,10 +501,11 @@ case object LangJava extends Lang {
 
         // Generate fields and constructor from params if present
         val (fieldsCode, constructorCode) = cls.params match {
-          case Nil => (Nil, Nil)
+          case Nil    => (Nil, Nil)
           case params =>
+            // Note: no trailing semicolons - they're added when rendering allBody below
             val fields = params.map { param =>
-              code"${param.tpe} ${param.name};"
+              code"${param.tpe} ${param.name}"
             }
             val constructorAssignments = params.map { param =>
               code"this.${param.name} = ${param.name};"
@@ -537,12 +538,17 @@ case object LangJava extends Lang {
               // In Java, interfaces use 'extends' to inherit from other interfaces,
               // while classes use 'implements' for interfaces
               val keyword = if (cls.classType == jvm.ClassType.Interface) "extends" else "implements"
-              Some(nonEmpty.map(x => code" $keyword $x").mkCode(","))
+              Some(code" $keyword ${nonEmpty.map(x => code"$x").mkCode(", ")}")
           },
           Some {
             val allBody = fieldsCode ++ constructorCode ++ body
+            // Add semicolons only to elements that don't already end with } or ;
+            def addSemicolonIfNeeded(c: jvm.Code): jvm.Code = {
+              val rendered = c.render(LangJava).asString.trim
+              if (rendered.endsWith("}") || rendered.endsWith(";")) c else c ++ code";"
+            }
             code"""| {
-                   |  ${allBody.map(c => c ++ code";").mkCode("\n\n")}
+                   |  ${allBody.map(addSemicolonIfNeeded).mkCode("\n\n")}
                    |}""".stripMargin
           }
         ).flatten.mkCode("")
@@ -703,11 +709,8 @@ case object LangJava extends Lang {
       case jvm.Body.Abstract   => code"for (var $elemVar : $array) {}"
     }
 
-  // Java: arrayMap.map(array, mapper, targetClass)
-  override def arrayMap(array: jvm.Code, mapper: jvm.Code, targetClass: jvm.Code): jvm.Code = {
-    val arrayMapHelper = jvm.Type.Qualified("dev.typr.foundations.internal.arrayMap")
-    code"$arrayMapHelper.map($array, $mapper, $targetClass)"
-  }
+  override def arrayMap(array: jvm.Code, mapper: jvm.Code, targetClass: jvm.Code): jvm.Code =
+    code"${FoundationsTypes.internal.arrayMap}.map($array, $mapper, $targetClass)"
 
   // Java: cond ? thenExpr : elseExpr
   override def ternary(condition: jvm.Code, thenExpr: jvm.Code, elseExpr: jvm.Code): jvm.Code =

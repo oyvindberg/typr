@@ -7,6 +7,7 @@ package testdb.customer_orders_summary
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -32,7 +33,21 @@ data class CustomerOrdersSummarySqlRow(
   @JsonProperty("avg_order_amount") val avgOrderAmount: BigDecimal?,
   /** Points to [testdb.orders.OrdersRow.orderDate] */
   @JsonProperty("last_order_date") val lastOrderDate: LocalDateTime?
-) {
+) : Tuple7<CustomersId, String, String, OrdersId?, BigDecimal?, BigDecimal?, LocalDateTime?> {
+  override fun _1(): CustomersId = customerId
+
+  override fun _2(): String = customerName
+
+  override fun _3(): String = customerEmail
+
+  override fun _4(): OrdersId? = orderCount
+
+  override fun _5(): BigDecimal? = totalSpent
+
+  override fun _6(): BigDecimal? = avgOrderAmount
+
+  override fun _7(): LocalDateTime? = lastOrderDate
+
   companion object {
     val _rowParser: RowParser<CustomerOrdersSummarySqlRow> = RowParsers.of(CustomersId.sqlServerType, SqlServerTypes.nvarchar, SqlServerTypes.nvarchar, OrdersId.sqlServerType.nullable(), KotlinDbTypes.SqlServerTypes.money.nullable(), KotlinDbTypes.SqlServerTypes.money.nullable(), SqlServerTypes.datetime2.nullable(), { t0, t1, t2, t3, t4, t5, t6 -> CustomerOrdersSummarySqlRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.customerId, row.customerName, row.customerEmail, row.orderCount, row.totalSpent, row.avgOrderAmount, row.lastOrderDate) })
   }

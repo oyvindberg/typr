@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple10;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -34,7 +35,18 @@ public record VDailySalesViewRow(
     /** Default: NULL */
     @JsonProperty("net_sales") Optional<BigDecimal> netSales,
     /** Default: NULL */
-    @JsonProperty("avg_order_value") Optional<BigDecimal> avgOrderValue) {
+    @JsonProperty("avg_order_value") Optional<BigDecimal> avgOrderValue)
+    implements Tuple10<
+        Optional<LocalDate>,
+        Long,
+        Long,
+        Optional<BigDecimal>,
+        Optional<BigDecimal>,
+        Optional<BigDecimal>,
+        Optional<BigDecimal>,
+        Optional<BigDecimal>,
+        Optional<BigDecimal>,
+        Optional<BigDecimal>> {
   /** Default: NULL */
   public VDailySalesViewRow withOrderDate(Optional<LocalDate> orderDate) {
     return new VDailySalesViewRow(
@@ -221,5 +233,65 @@ public record VDailySalesViewRow(
                 row.netSales(),
                 row.avgOrderValue()
               });
+  ;
+
+  @Override
+  public Optional<LocalDate> _1() {
+    return orderDate;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _10() {
+    return avgOrderValue;
+  }
+  ;
+
+  @Override
+  public Long _2() {
+    return orderCount;
+  }
+  ;
+
+  @Override
+  public Long _3() {
+    return uniqueCustomers;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _4() {
+    return itemsSold;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _5() {
+    return grossSales;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _6() {
+    return totalDiscounts;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _7() {
+    return totalShipping;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _8() {
+    return totalTax;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _9() {
+    return netSales;
+  }
   ;
 }

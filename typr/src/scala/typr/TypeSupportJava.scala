@@ -135,7 +135,7 @@ object TypeSupportJava extends TypeSupport {
   }
 
   override object IteratorOps extends IteratorSupport {
-    // For java.util.Iterator, we need imperative style - this is used by DbLibTypo mock impl
+    // For java.util.Iterator, we need imperative style - this is used by DbLibFoundations mock impl
     // The mapper is expected to return a long, so we sum using while loop
     def mapSum(iterator: jvm.Code, mapper: jvm.Code): jvm.Code =
       code"""|{

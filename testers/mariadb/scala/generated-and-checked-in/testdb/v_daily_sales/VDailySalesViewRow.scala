@@ -7,6 +7,7 @@ package testdb.v_daily_sales
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple10
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -57,7 +58,27 @@ case class VDailySalesViewRow(
    * Default: NULL
    */
   @JsonProperty("avg_order_value") avgOrderValue: Option[BigDecimal]
-)
+) extends Tuple10[Option[LocalDate], Long, Long, Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal]] {
+  override def `_1`: Option[LocalDate] = orderDate
+
+  override def `_2`: Long = orderCount
+
+  override def `_3`: Long = uniqueCustomers
+
+  override def `_4`: Option[BigDecimal] = itemsSold
+
+  override def `_5`: Option[BigDecimal] = grossSales
+
+  override def `_6`: Option[BigDecimal] = totalDiscounts
+
+  override def `_7`: Option[BigDecimal] = totalShipping
+
+  override def `_8`: Option[BigDecimal] = totalTax
+
+  override def `_9`: Option[BigDecimal] = netSales
+
+  override def `_10`: Option[BigDecimal] = avgOrderValue
+}
 
 object VDailySalesViewRow {
   val `_rowParser`: RowParser[VDailySalesViewRow] = RowParsers.of(MariaTypes.date.nullable, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable)(VDailySalesViewRow.apply)(row => Array[Any](row.orderDate, row.orderCount, row.uniqueCustomers, row.itemsSold, row.grossSales, row.totalDiscounts, row.totalShipping, row.totalTax, row.netSales, row.avgOrderValue))

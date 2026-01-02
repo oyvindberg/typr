@@ -9,8 +9,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple6;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 /** SQL file: customer_orders.sql */
 public record CustomerOrdersSqlRow(
@@ -18,8 +20,9 @@ public record CustomerOrdersSqlRow(
     @JsonProperty("customer_name") String customerName,
     @JsonProperty("order_id") Integer orderId,
     @JsonProperty("order_date") LocalDate orderDate,
-    @JsonProperty("total_amount") BigDecimal totalAmount,
-    String status) {
+    @JsonProperty("total_amount") Optional<BigDecimal> totalAmount,
+    Optional<String> status)
+    implements Tuple6<Integer, String, Integer, LocalDate, Optional<BigDecimal>, Optional<String>> {
   public CustomerOrdersSqlRow withCustomerId(Integer customerId) {
     return new CustomerOrdersSqlRow(
         customerId, customerName, orderId, orderDate, totalAmount, status);
@@ -44,13 +47,13 @@ public record CustomerOrdersSqlRow(
   }
   ;
 
-  public CustomerOrdersSqlRow withTotalAmount(BigDecimal totalAmount) {
+  public CustomerOrdersSqlRow withTotalAmount(Optional<BigDecimal> totalAmount) {
     return new CustomerOrdersSqlRow(
         customerId, customerName, orderId, orderDate, totalAmount, status);
   }
   ;
 
-  public CustomerOrdersSqlRow withStatus(String status) {
+  public CustomerOrdersSqlRow withStatus(Optional<String> status) {
     return new CustomerOrdersSqlRow(
         customerId, customerName, orderId, orderDate, totalAmount, status);
   }
@@ -62,8 +65,8 @@ public record CustomerOrdersSqlRow(
           Db2Types.varchar,
           Db2Types.integer,
           Db2Types.date,
-          Db2Types.decimal,
-          Db2Types.varchar,
+          Db2Types.decimal.opt(),
+          Db2Types.varchar.opt(),
           CustomerOrdersSqlRow::new,
           row ->
               new Object[] {
@@ -74,5 +77,41 @@ public record CustomerOrdersSqlRow(
                 row.totalAmount(),
                 row.status()
               });
+  ;
+
+  @Override
+  public Integer _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return customerName;
+  }
+  ;
+
+  @Override
+  public Integer _3() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public LocalDate _4() {
+    return orderDate;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _5() {
+    return totalAmount;
+  }
+  ;
+
+  @Override
+  public Optional<String> _6() {
+    return status;
+  }
   ;
 }

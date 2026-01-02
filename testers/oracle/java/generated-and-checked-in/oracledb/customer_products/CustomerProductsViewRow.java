@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.OracleTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple6;
 import java.math.BigDecimal;
 import java.util.Optional;
 import oracledb.AddressT;
@@ -21,7 +22,9 @@ public record CustomerProductsViewRow(
     @JsonProperty("BILLING_ADDRESS") Optional<AddressT> billingAddress,
     @JsonProperty("PRODUCT_ID") BigDecimal productId,
     @JsonProperty("PRODUCT_NAME") String productName,
-    @JsonProperty("PRICE") Optional<MoneyT> price) {
+    @JsonProperty("PRICE") Optional<MoneyT> price)
+    implements Tuple6<
+        BigDecimal, String, Optional<AddressT>, BigDecimal, String, Optional<MoneyT>> {
   public CustomerProductsViewRow withCustomerId(BigDecimal customerId) {
     return new CustomerProductsViewRow(
         customerId, customerName, billingAddress, productId, productName, price);
@@ -76,5 +79,41 @@ public record CustomerProductsViewRow(
                 row.productName(),
                 row.price()
               });
+  ;
+
+  @Override
+  public BigDecimal _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return customerName;
+  }
+  ;
+
+  @Override
+  public Optional<AddressT> _3() {
+    return billingAddress;
+  }
+  ;
+
+  @Override
+  public BigDecimal _4() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public String _5() {
+    return productName;
+  }
+  ;
+
+  @Override
+  public Optional<MoneyT> _6() {
+    return price;
+  }
   ;
 }

@@ -38,7 +38,6 @@ class PostgresAdapter(needsTimestampCasts: Boolean) extends DbAdapter {
       case x: db.PgType =>
         x match {
           case db.Unknown(sqlType)                                       => Some(SqlCastValue(sqlType))
-          case _: db.MariaType                                           => None
           case db.PgType.EnumRef(enm)                                    => Some(SqlCastValue(enm.name.value))
           case db.PgType.Boolean | db.PgType.Text | db.PgType.VarChar(_) => None
           case _: db.PgType =>
@@ -87,7 +86,7 @@ class PostgresAdapter(needsTimestampCasts: Boolean) extends DbAdapter {
   val Types: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.PgTypes")
   val TypeClass: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.PgType")
   val TextClass: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.PgText")
-  val typeFieldName: jvm.Ident = jvm.Ident("pgType")
+  val typeFieldName: jvm.Ident = jvm.Ident("dbType")
   val textFieldName: jvm.Ident = jvm.Ident("pgText")
 
   def dialectRef(lang: Lang): Code = code"${lang.dsl.Dialect}.POSTGRESQL"
@@ -105,7 +104,7 @@ class PostgresAdapter(needsTimestampCasts: Boolean) extends DbAdapter {
     case TypoType.UserDefined(_, _, userType) =>
       userType match {
         case Left(qualifiedType) =>
-          // Qualified user types must provide their own pgType field
+          // Qualified user types must provide their own dbType field
           code"$qualifiedType.$typeFieldName"
         case Right(primitive) =>
           // Well-known primitives use the adapter's lookup
@@ -210,6 +209,9 @@ class PostgresAdapter(needsTimestampCasts: Boolean) extends DbAdapter {
       case db.PgType.Char          => code"$Types.char"
       case db.PgType.Date          => code"$Types.date"
       case db.PgType.Inet          => code"$Types.inet"
+      case db.PgType.Cidr          => code"$Types.cidr"
+      case db.PgType.MacAddr       => code"$Types.macaddr"
+      case db.PgType.MacAddr8      => code"$Types.macaddr8"
       case db.PgType.Json          => code"$Types.json"
       case db.PgType.Jsonb         => code"$Types.jsonb"
       case db.PgType.Name          => code"$Types.name"
@@ -343,6 +345,18 @@ class PostgresAdapter(needsTimestampCasts: Boolean) extends DbAdapter {
 
   def returningClause(columns: Code): Code =
     code"RETURNING $columns"
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LAYER 5: Schema DDL
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  def dropSchemaDdl(schemaName: String, cascade: Boolean): String = {
+    val cascadeSuffix = if (cascade) " CASCADE" else ""
+    s"DROP SCHEMA IF EXISTS $schemaName$cascadeSuffix"
+  }
+
+  def createSchemaDdl(schemaName: String): String =
+    s"CREATE SCHEMA IF NOT EXISTS $schemaName"
 }
 
 object PostgresAdapter {

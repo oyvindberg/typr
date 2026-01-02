@@ -12,5 +12,5 @@ trait DeleteOldOrdersSqlRepo {
   def apply(
     cutoffDate: LocalDate,
     status: Option[String]
-  )(using c: Connection): Int
+  )(using c: Connection): List[DeleteOldOrdersSqlRow]
 }

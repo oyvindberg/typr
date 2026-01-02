@@ -9,12 +9,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple2;
 import testdb.customtypes.Defaulted;
 
 /** Table: DB2TEST_IDENTITY_DEFAULT Primary key: ID */
 public record Db2testIdentityDefaultRow(
     /** Identity BY DEFAULT */
-    @JsonProperty("ID") Db2testIdentityDefaultId id, @JsonProperty("NAME") String name) {
+    @JsonProperty("ID") Db2testIdentityDefaultId id, @JsonProperty("NAME") String name)
+    implements Tuple2<Db2testIdentityDefaultId, String> {
   /** Identity BY DEFAULT */
   public Db2testIdentityDefaultRow withId(Db2testIdentityDefaultId id) {
     return new Db2testIdentityDefaultRow(id, name);
@@ -28,10 +30,22 @@ public record Db2testIdentityDefaultRow(
 
   public static RowParser<Db2testIdentityDefaultRow> _rowParser =
       RowParsers.of(
-          Db2testIdentityDefaultId.pgType,
+          Db2testIdentityDefaultId.dbType,
           Db2Types.varchar,
           Db2testIdentityDefaultRow::new,
           row -> new Object[] {row.id(), row.name()});
+  ;
+
+  @Override
+  public Db2testIdentityDefaultId _1() {
+    return id;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return name;
+  }
   ;
 
   public Db2testIdentityDefaultRowUnsaved toUnsavedRow(Defaulted<Db2testIdentityDefaultId> id) {

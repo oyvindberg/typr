@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple17;
+import dev.typr.foundations.data.Uint2;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import testdb.order_items.OrderItemsId;
@@ -46,11 +48,29 @@ public record OrderDetailsSqlRow(
     /** Points to {@link testdb.order_items.OrderItemsRow#productName()} */
     @JsonProperty("product_name") String productName,
     /** Points to {@link testdb.order_items.OrderItemsRow#quantity()} */
-    Integer quantity,
+    Uint2 quantity,
     /** Points to {@link testdb.order_items.OrderItemsRow#unitPrice()} */
     @JsonProperty("unit_price") BigDecimal unitPrice,
     /** Points to {@link testdb.order_items.OrderItemsRow#lineTotal()} */
-    @JsonProperty("line_total") BigDecimal lineTotal) {
+    @JsonProperty("line_total") BigDecimal lineTotal)
+    implements Tuple17<
+        OrdersId,
+        String,
+        String,
+        String,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        LocalDateTime,
+        OrderItemsId,
+        ProductsId,
+        String,
+        String,
+        Uint2,
+        BigDecimal,
+        BigDecimal> {
   /** Points to {@link testdb.orders.OrdersRow#orderId()} */
   public OrderDetailsSqlRow withOrderId(OrdersId orderId) {
     return new OrderDetailsSqlRow(
@@ -374,7 +394,7 @@ public record OrderDetailsSqlRow(
   ;
 
   /** Points to {@link testdb.order_items.OrderItemsRow#quantity()} */
-  public OrderDetailsSqlRow withQuantity(Integer quantity) {
+  public OrderDetailsSqlRow withQuantity(Uint2 quantity) {
     return new OrderDetailsSqlRow(
         orderId,
         orderNumber,
@@ -444,7 +464,7 @@ public record OrderDetailsSqlRow(
 
   public static RowParser<OrderDetailsSqlRow> _rowParser =
       RowParsers.of(
-          OrdersId.pgType,
+          OrdersId.dbType,
           MariaTypes.varchar,
           MariaTypes.text,
           MariaTypes.text,
@@ -454,8 +474,8 @@ public record OrderDetailsSqlRow(
           MariaTypes.numeric,
           MariaTypes.numeric,
           MariaTypes.datetime,
-          OrderItemsId.pgType,
-          ProductsId.pgType,
+          OrderItemsId.dbType,
+          ProductsId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.smallintUnsigned,
@@ -482,5 +502,107 @@ public record OrderDetailsSqlRow(
                 row.unitPrice(),
                 row.lineTotal()
               });
+  ;
+
+  @Override
+  public OrdersId _1() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _10() {
+    return orderedAt;
+  }
+  ;
+
+  @Override
+  public OrderItemsId _11() {
+    return itemId;
+  }
+  ;
+
+  @Override
+  public ProductsId _12() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public String _13() {
+    return sku;
+  }
+  ;
+
+  @Override
+  public String _14() {
+    return productName;
+  }
+  ;
+
+  @Override
+  public Uint2 _15() {
+    return quantity;
+  }
+  ;
+
+  @Override
+  public BigDecimal _16() {
+    return unitPrice;
+  }
+  ;
+
+  @Override
+  public BigDecimal _17() {
+    return lineTotal;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return orderNumber;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return orderStatus;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return paymentStatus;
+  }
+  ;
+
+  @Override
+  public BigDecimal _5() {
+    return subtotal;
+  }
+  ;
+
+  @Override
+  public BigDecimal _6() {
+    return shippingCost;
+  }
+  ;
+
+  @Override
+  public BigDecimal _7() {
+    return taxAmount;
+  }
+  ;
+
+  @Override
+  public BigDecimal _8() {
+    return discountAmount;
+  }
+  ;
+
+  @Override
+  public BigDecimal _9() {
+    return totalAmount;
+  }
   ;
 }

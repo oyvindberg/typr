@@ -21,10 +21,10 @@ public record NameStyle(@JsonValue Boolean value) {
   public static Bijection<NameStyle, Boolean> bijection =
       Bijection.of(NameStyle::value, NameStyle::new);
 
-  public static PgType<NameStyle> pgType =
+  public static PgType<NameStyle> dbType =
       PgTypes.bool.bimap(NameStyle::new, NameStyle::value).renamed("\"public\".\"NameStyle\"");
 
-  public static PgType<NameStyle[]> pgTypeArray =
+  public static PgType<NameStyle[]> dbTypeArray =
       PgTypes.boolArray
           .bimap(
               xs -> arrayMap.map(xs, NameStyle::new, NameStyle.class),

@@ -7,6 +7,7 @@ package testdb.customers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -28,15 +29,23 @@ data class CustomersRow(
   @JsonProperty("EMAIL") val email: String,
   /** Default: CURRENT TIMESTAMP */
   @JsonProperty("CREATED_AT") val createdAt: LocalDateTime?
-) {
+) : Tuple4<CustomersId, String, String, LocalDateTime?> {
+  override fun _1(): CustomersId = customerId
+
+  override fun _2(): String = name
+
+  override fun _3(): String = email
+
+  override fun _4(): LocalDateTime? = createdAt
+
   fun id(): CustomersId = customerId
 
   fun toUnsavedRow(
     customerId: Defaulted<CustomersId>,
-    createdAt: Defaulted<LocalDateTime?>
+    createdAt: Defaulted<LocalDateTime?> = Defaulted.Provided(this.createdAt)
   ): CustomersRowUnsaved = CustomersRowUnsaved(name, email, customerId, createdAt)
 
   companion object {
-    val _rowParser: RowParser<CustomersRow> = RowParsers.of(CustomersId.pgType, Db2Types.varchar, Db2Types.varchar, Db2Types.timestamp.nullable(), { t0, t1, t2, t3 -> CustomersRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.customerId, row.name, row.email, row.createdAt) })
+    val _rowParser: RowParser<CustomersRow> = RowParsers.of(CustomersId.dbType, Db2Types.varchar, Db2Types.varchar, Db2Types.timestamp.nullable(), { t0, t1, t2, t3 -> CustomersRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.customerId, row.name, row.email, row.createdAt) })
   }
 }

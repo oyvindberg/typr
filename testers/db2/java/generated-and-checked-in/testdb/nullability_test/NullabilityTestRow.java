@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
 
@@ -18,7 +19,8 @@ public record NullabilityTestRow(
     @JsonProperty("REQUIRED_COL") String requiredCol,
     @JsonProperty("OPTIONAL_COL") Optional<String> optionalCol,
     /** Default: 'default_value' */
-    @JsonProperty("DEFAULTED_COL") Optional<String> defaultedCol) {
+    @JsonProperty("DEFAULTED_COL") Optional<String> defaultedCol)
+    implements Tuple4<Integer, String, Optional<String>, Optional<String>> {
   public NullabilityTestRow withId(Integer id) {
     return new NullabilityTestRow(id, requiredCol, optionalCol, defaultedCol);
   }
@@ -48,6 +50,30 @@ public record NullabilityTestRow(
           Db2Types.varchar.opt(),
           NullabilityTestRow::new,
           row -> new Object[] {row.id(), row.requiredCol(), row.optionalCol(), row.defaultedCol()});
+  ;
+
+  @Override
+  public Integer _1() {
+    return id;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return requiredCol;
+  }
+  ;
+
+  @Override
+  public Optional<String> _3() {
+    return optionalCol;
+  }
+  ;
+
+  @Override
+  public Optional<String> _4() {
+    return defaultedCol;
+  }
   ;
 
   public NullabilityTestRowUnsaved toUnsavedRow(Defaulted<Optional<String>> defaultedCol) {

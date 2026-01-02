@@ -13,5 +13,5 @@ trait UpdateCustomerPrioritySqlRepo {
   def apply(
     newPriority: /* user-picked */ Priority,
     customerId: /* user-picked */ CustomersId
-  )(using c: Connection): Int
+  )(using c: Connection): List[UpdateCustomerPrioritySqlRow]
 }

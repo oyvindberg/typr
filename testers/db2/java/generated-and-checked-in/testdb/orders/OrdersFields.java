@@ -7,14 +7,16 @@ package testdb.orders;
 
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -23,116 +25,119 @@ import testdb.customers.CustomersFields;
 import testdb.customers.CustomersId;
 import testdb.customers.CustomersRow;
 
-public interface OrdersFields extends FieldsExpr<OrdersRow> {
-  record Impl(List<Path> _path)
-      implements OrdersFields, RelationStructure<OrdersFields, OrdersRow> {
-    @Override
-    public IdField<OrdersId, OrdersRow> orderId() {
-      return new IdField<OrdersId, OrdersRow>(
-          _path,
-          "ORDER_ID",
-          OrdersRow::orderId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderId(value),
-          OrdersId.pgType);
-    }
-    ;
+public class OrdersFields extends TupleExpr5<OrdersId, CustomersId, LocalDate, BigDecimal, String>
+    implements RelationStructure<OrdersFields, OrdersRow>, FieldsBase<OrdersRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<CustomersId, OrdersRow> customerId() {
-      return new Field<CustomersId, OrdersRow>(
-          _path,
-          "CUSTOMER_ID",
-          OrdersRow::customerId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerId(value),
-          CustomersId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<LocalDate, OrdersRow> orderDate() {
-      return new Field<LocalDate, OrdersRow>(
-          _path,
-          "ORDER_DATE",
-          OrdersRow::orderDate,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderDate(value),
-          Db2Types.date);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, OrdersRow> totalAmount() {
-      return new OptField<BigDecimal, OrdersRow>(
-          _path,
-          "TOTAL_AMOUNT",
-          OrdersRow::totalAmount,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTotalAmount(value),
-          Db2Types.decimal);
-    }
-    ;
-
-    @Override
-    public OptField<String, OrdersRow> status() {
-      return new OptField<String, OrdersRow>(
-          _path,
-          "STATUS",
-          OrdersRow::status,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withStatus(value),
-          Db2Types.varchar);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, OrdersRow>> columns() {
-      return java.util.List.of(
-          this.orderId(), this.customerId(), this.orderDate(), this.totalAmount(), this.status());
-    }
-    ;
-
-    @Override
-    public RelationStructure<OrdersFields, OrdersRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public OrdersFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static OrdersFields structure = new OrdersFields(java.util.Collections.emptyList());
+
+  public IdField<OrdersId, OrdersRow> orderId() {
+    return new IdField<OrdersId, OrdersRow>(
+        _path,
+        "ORDER_ID",
+        OrdersRow::orderId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderId(value),
+        OrdersId.dbType);
   }
-  ;
 
-  IdField<OrdersId, OrdersRow> orderId();
+  public Field<CustomersId, OrdersRow> customerId() {
+    return new Field<CustomersId, OrdersRow>(
+        _path,
+        "CUSTOMER_ID",
+        OrdersRow::customerId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerId(value),
+        CustomersId.dbType);
+  }
 
-  Field<CustomersId, OrdersRow> customerId();
+  public Field<LocalDate, OrdersRow> orderDate() {
+    return new Field<LocalDate, OrdersRow>(
+        _path,
+        "ORDER_DATE",
+        OrdersRow::orderDate,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderDate(value),
+        Db2Types.date);
+  }
 
-  Field<LocalDate, OrdersRow> orderDate();
+  public OptField<BigDecimal, OrdersRow> totalAmount() {
+    return new OptField<BigDecimal, OrdersRow>(
+        _path,
+        "TOTAL_AMOUNT",
+        OrdersRow::totalAmount,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTotalAmount(value),
+        Db2Types.decimal);
+  }
 
-  OptField<BigDecimal, OrdersRow> totalAmount();
+  public OptField<String, OrdersRow> status() {
+    return new OptField<String, OrdersRow>(
+        _path,
+        "STATUS",
+        OrdersRow::status,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withStatus(value),
+        Db2Types.varchar);
+  }
 
-  OptField<String, OrdersRow> status();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<CustomersFields, CustomersRow> fkCustomers() {
+  public ForeignKey<CustomersFields, CustomersRow> fkCustomers() {
     return ForeignKey.<CustomersFields, CustomersRow>of("FK_CUSTOMER")
         .<CustomersId>withColumnPair(customerId(), CustomersFields::customerId);
   }
-  ;
 
   @Override
-  List<FieldLike<?, OrdersRow>> columns();
+  public List<FieldLike<?, OrdersRow>> columns() {
+    return java.util.List.of(
+        this.orderId(), this.customerId(), this.orderDate(), this.totalAmount(), this.status());
+  }
 
   @Override
-  default RowParser<OrdersRow> rowParser() {
+  public RowParser<OrdersRow> rowParser() {
     return OrdersRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<OrdersFields, OrdersRow> withPaths(List<Path> _path) {
+    return new OrdersFields(_path);
+  }
+
+  @Override
+  public SqlExpr<OrdersId> _1() {
+    return orderId();
+  }
+
+  @Override
+  public SqlExpr<CustomersId> _2() {
+    return customerId();
+  }
+
+  @Override
+  public SqlExpr<LocalDate> _3() {
+    return orderDate();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _4() {
+    return totalAmount();
+  }
+
+  @Override
+  public SqlExpr<String> _5() {
+    return status();
+  }
 }

@@ -24,6 +24,15 @@ object Db2Adapter extends DbAdapter {
   def writeCast(dbType: db.Type, udtName: Option[String]): Option[SqlCastValue] = None
   def readCast(dbType: db.Type): Option[SqlCastValue] = None
 
+  def dropSchemaDdl(schemaName: String, cascade: Boolean): String = {
+    // DB2 uses RESTRICT by default, CASCADE not directly supported the same way
+    // For cascade, you'd need to drop objects first
+    s"DROP SCHEMA $schemaName RESTRICT"
+  }
+
+  def createSchemaDdl(schemaName: String): String =
+    s"CREATE SCHEMA $schemaName"
+
   // ═══════════════════════════════════════════════════════════════════════════
   // LAYER 2: Runtime Type System
   // ═══════════════════════════════════════════════════════════════════════════
@@ -33,7 +42,7 @@ object Db2Adapter extends DbAdapter {
   val Types: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.Db2Types")
   val TypeClass: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.Db2Type")
   val TextClass: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.Db2Text")
-  val typeFieldName: jvm.Ident = jvm.Ident("pgType") // Keep same name for compatibility
+  val typeFieldName: jvm.Ident = jvm.Ident("dbType")
   val textFieldName: jvm.Ident = jvm.Ident("db2Text")
   def dialectRef(lang: Lang): Code = code"${lang.dsl.Dialect}.DB2"
 

@@ -11,136 +11,143 @@ import adventureworks.production.productcategory.ProductcategoryRow;
 import adventureworks.public_.Name;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface ProductsubcategoryFields extends FieldsExpr<ProductsubcategoryRow> {
-  record Impl(List<Path> _path)
-      implements ProductsubcategoryFields,
-          RelationStructure<ProductsubcategoryFields, ProductsubcategoryRow> {
-    @Override
-    public IdField<ProductsubcategoryId, ProductsubcategoryRow> productsubcategoryid() {
-      return new IdField<ProductsubcategoryId, ProductsubcategoryRow>(
-          _path,
-          "productsubcategoryid",
-          ProductsubcategoryRow::productsubcategoryid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withProductsubcategoryid(value),
-          ProductsubcategoryId.pgType);
-    }
-    ;
+public class ProductsubcategoryFields
+    extends TupleExpr5<ProductsubcategoryId, ProductcategoryId, Name, UUID, LocalDateTime>
+    implements RelationStructure<ProductsubcategoryFields, ProductsubcategoryRow>,
+        FieldsBase<ProductsubcategoryRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<ProductcategoryId, ProductsubcategoryRow> productcategoryid() {
-      return new Field<ProductcategoryId, ProductsubcategoryRow>(
-          _path,
-          "productcategoryid",
-          ProductsubcategoryRow::productcategoryid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withProductcategoryid(value),
-          ProductcategoryId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<Name, ProductsubcategoryRow> name() {
-      return new Field<Name, ProductsubcategoryRow>(
-          _path,
-          "name",
-          ProductsubcategoryRow::name,
-          Optional.empty(),
-          Optional.of("varchar"),
-          (row, value) -> row.withName(value),
-          Name.pgType);
-    }
-    ;
-
-    @Override
-    public Field<UUID, ProductsubcategoryRow> rowguid() {
-      return new Field<UUID, ProductsubcategoryRow>(
-          _path,
-          "rowguid",
-          ProductsubcategoryRow::rowguid,
-          Optional.empty(),
-          Optional.of("uuid"),
-          (row, value) -> row.withRowguid(value),
-          PgTypes.uuid);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, ProductsubcategoryRow> modifieddate() {
-      return new Field<LocalDateTime, ProductsubcategoryRow>(
-          _path,
-          "modifieddate",
-          ProductsubcategoryRow::modifieddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withModifieddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, ProductsubcategoryRow>> columns() {
-      return java.util.List.of(
-          this.productsubcategoryid(),
-          this.productcategoryid(),
-          this.name(),
-          this.rowguid(),
-          this.modifieddate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<ProductsubcategoryFields, ProductsubcategoryRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public ProductsubcategoryFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static ProductsubcategoryFields structure =
+      new ProductsubcategoryFields(java.util.Collections.emptyList());
+
+  public IdField<ProductsubcategoryId, ProductsubcategoryRow> productsubcategoryid() {
+    return new IdField<ProductsubcategoryId, ProductsubcategoryRow>(
+        _path,
+        "productsubcategoryid",
+        ProductsubcategoryRow::productsubcategoryid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withProductsubcategoryid(value),
+        ProductsubcategoryId.dbType);
   }
-  ;
 
-  IdField<ProductsubcategoryId, ProductsubcategoryRow> productsubcategoryid();
+  public Field<ProductcategoryId, ProductsubcategoryRow> productcategoryid() {
+    return new Field<ProductcategoryId, ProductsubcategoryRow>(
+        _path,
+        "productcategoryid",
+        ProductsubcategoryRow::productcategoryid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withProductcategoryid(value),
+        ProductcategoryId.dbType);
+  }
 
-  Field<ProductcategoryId, ProductsubcategoryRow> productcategoryid();
+  public Field<Name, ProductsubcategoryRow> name() {
+    return new Field<Name, ProductsubcategoryRow>(
+        _path,
+        "name",
+        ProductsubcategoryRow::name,
+        Optional.empty(),
+        Optional.of("varchar"),
+        (row, value) -> row.withName(value),
+        Name.dbType);
+  }
 
-  Field<Name, ProductsubcategoryRow> name();
+  public Field<UUID, ProductsubcategoryRow> rowguid() {
+    return new Field<UUID, ProductsubcategoryRow>(
+        _path,
+        "rowguid",
+        ProductsubcategoryRow::rowguid,
+        Optional.empty(),
+        Optional.of("uuid"),
+        (row, value) -> row.withRowguid(value),
+        PgTypes.uuid);
+  }
 
-  Field<UUID, ProductsubcategoryRow> rowguid();
+  public Field<LocalDateTime, ProductsubcategoryRow> modifieddate() {
+    return new Field<LocalDateTime, ProductsubcategoryRow>(
+        _path,
+        "modifieddate",
+        ProductsubcategoryRow::modifieddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withModifieddate(value),
+        PgTypes.timestamp);
+  }
 
-  Field<LocalDateTime, ProductsubcategoryRow> modifieddate();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<ProductcategoryFields, ProductcategoryRow> fkProductcategory() {
+  public ForeignKey<ProductcategoryFields, ProductcategoryRow> fkProductcategory() {
     return ForeignKey.<ProductcategoryFields, ProductcategoryRow>of(
             "production.FK_ProductSubcategory_ProductCategory_ProductCategoryID")
         .<ProductcategoryId>withColumnPair(
             productcategoryid(), ProductcategoryFields::productcategoryid);
   }
-  ;
 
   @Override
-  List<FieldLike<?, ProductsubcategoryRow>> columns();
+  public List<FieldLike<?, ProductsubcategoryRow>> columns() {
+    return java.util.List.of(
+        this.productsubcategoryid(),
+        this.productcategoryid(),
+        this.name(),
+        this.rowguid(),
+        this.modifieddate());
+  }
 
   @Override
-  default RowParser<ProductsubcategoryRow> rowParser() {
+  public RowParser<ProductsubcategoryRow> rowParser() {
     return ProductsubcategoryRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<ProductsubcategoryFields, ProductsubcategoryRow> withPaths(
+      List<Path> _path) {
+    return new ProductsubcategoryFields(_path);
+  }
+
+  @Override
+  public SqlExpr<ProductsubcategoryId> _1() {
+    return productsubcategoryid();
+  }
+
+  @Override
+  public SqlExpr<ProductcategoryId> _2() {
+    return productcategoryid();
+  }
+
+  @Override
+  public SqlExpr<Name> _3() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<UUID> _4() {
+    return rowguid();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _5() {
+    return modifieddate();
+  }
 }

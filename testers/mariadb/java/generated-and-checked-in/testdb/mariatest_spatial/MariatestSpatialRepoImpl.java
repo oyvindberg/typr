@@ -25,27 +25,25 @@ public class MariatestSpatialRepoImpl implements MariatestSpatialRepo {
   @Override
   public DeleteBuilder<MariatestSpatialFields, MariatestSpatialRow> delete() {
     return DeleteBuilder.of(
-        "`mariatest_spatial`", MariatestSpatialFields.structure(), Dialect.MARIADB);
+        "`mariatest_spatial`", MariatestSpatialFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(MariatestSpatialId id, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `mariatest_spatial` where `id` = "),
-                Fragment.encode(MariatestSpatialId.pgType, id),
+                Fragment.encode(MariatestSpatialId.dbType, id),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(MariatestSpatialId[] ids, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : ids) {
-      fragments.add(Fragment.encode(MariatestSpatialId.pgType, id));
+      fragments.add(Fragment.encode(MariatestSpatialId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -55,7 +53,6 @@ public class MariatestSpatialRepoImpl implements MariatestSpatialRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public MariatestSpatialRow insert(MariatestSpatialRow unsaved, Connection c) {
@@ -88,7 +85,6 @@ public class MariatestSpatialRepoImpl implements MariatestSpatialRepo {
         .updateReturning(MariatestSpatialRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public MariatestSpatialRow insert(MariatestSpatialRowUnsaved unsaved, Connection c) {
@@ -141,17 +137,15 @@ public class MariatestSpatialRepoImpl implements MariatestSpatialRepo {
     ;
     return q.updateReturning(MariatestSpatialRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<MariatestSpatialFields, MariatestSpatialRow> select() {
     return SelectBuilder.of(
         "`mariatest_spatial`",
-        MariatestSpatialFields.structure(),
+        MariatestSpatialFields.structure,
         MariatestSpatialRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<MariatestSpatialRow> selectAll(Connection c) {
@@ -164,7 +158,6 @@ public class MariatestSpatialRepoImpl implements MariatestSpatialRepo {
         .query(MariatestSpatialRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<MariatestSpatialRow> selectById(MariatestSpatialId id, Connection c) {
@@ -175,18 +168,17 @@ public class MariatestSpatialRepoImpl implements MariatestSpatialRepo {
                     + " `geometrycollection_col`\n"
                     + "from `mariatest_spatial`\n"
                     + "where `id` = "),
-            Fragment.encode(MariatestSpatialId.pgType, id),
+            Fragment.encode(MariatestSpatialId.dbType, id),
             Fragment.lit(""))
         .query(MariatestSpatialRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<MariatestSpatialRow> selectByIds(MariatestSpatialId[] ids, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : ids) {
-      fragments.add(Fragment.encode(MariatestSpatialId.pgType, id));
+      fragments.add(Fragment.encode(MariatestSpatialId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -199,7 +191,6 @@ public class MariatestSpatialRepoImpl implements MariatestSpatialRepo {
         .query(MariatestSpatialRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<MariatestSpatialId, MariatestSpatialRow> selectByIdsTracked(
@@ -209,17 +200,15 @@ public class MariatestSpatialRepoImpl implements MariatestSpatialRepo {
     selectByIds(ids, c).forEach(row -> ret.put(row.id(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<MariatestSpatialFields, MariatestSpatialRow> update() {
     return UpdateBuilder.of(
         "`mariatest_spatial`",
-        MariatestSpatialFields.structure(),
+        MariatestSpatialFields.structure,
         MariatestSpatialRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(MariatestSpatialRow row, Connection c) {
@@ -243,22 +232,23 @@ public class MariatestSpatialRepoImpl implements MariatestSpatialRepo {
                 Fragment.lit(",\n`geometrycollection_col` = "),
                 Fragment.encode(MariaTypes.geometrycollection, row.geometrycollectionCol()),
                 Fragment.lit("\nwhere `id` = "),
-                Fragment.encode(MariatestSpatialId.pgType, id),
+                Fragment.encode(MariatestSpatialId.dbType, id),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public MariatestSpatialRow upsert(MariatestSpatialRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `mariatest_spatial`(`geometry_col`, `point_col`, `linestring_col`,"
-                    + " `polygon_col`, `multipoint_col`, `multilinestring_col`, `multipolygon_col`,"
-                    + " `geometrycollection_col`)\n"
+                "INSERT INTO `mariatest_spatial`(`id`, `geometry_col`, `point_col`,"
+                    + " `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`,"
+                    + " `multipolygon_col`, `geometrycollection_col`)\n"
                     + "VALUES ("),
+            Fragment.encode(MariatestSpatialId.dbType, unsaved.id()),
+            Fragment.lit(", "),
             Fragment.encode(MariaTypes.geometry, unsaved.geometryCol()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.point, unsaved.pointCol()),
@@ -290,7 +280,6 @@ public class MariatestSpatialRepoImpl implements MariatestSpatialRepo {
         .updateReturning(MariatestSpatialRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<MariatestSpatialRow> upsertBatch(
@@ -315,5 +304,4 @@ public class MariatestSpatialRepoImpl implements MariatestSpatialRepo {
         .updateReturningEach(MariatestSpatialRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

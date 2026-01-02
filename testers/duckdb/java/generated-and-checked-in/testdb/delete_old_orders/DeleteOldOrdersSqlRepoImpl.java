@@ -11,11 +11,13 @@ import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.Fragment;
 import java.sql.Connection;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public class DeleteOldOrdersSqlRepoImpl implements DeleteOldOrdersSqlRepo {
   @Override
-  public Integer apply(LocalDate cutoffDate, Optional<String> status, Connection c) {
+  public List<DeleteOldOrdersSqlRow> apply(
+      LocalDate cutoffDate, Optional<String> status, Connection c) {
     return interpolate(
             Fragment.lit(
                 "-- Delete old orders and return what was deleted\n"
@@ -36,8 +38,7 @@ public class DeleteOldOrdersSqlRepoImpl implements DeleteOldOrdersSqlRepo {
                     + "    order_date,\n"
                     + "    total_amount,\n"
                     + "    status"))
-        .update()
+        .query(DeleteOldOrdersSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

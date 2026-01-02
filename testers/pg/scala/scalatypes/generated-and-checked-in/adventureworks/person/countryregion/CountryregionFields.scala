@@ -8,69 +8,66 @@ package adventureworks.person.countryregion
 import adventureworks.public.Name
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
+import dev.typr.foundations.scala.TupleExpr3
 import java.time.LocalDateTime
 
-trait CountryregionFields extends FieldsExpr0[CountryregionRow] {
-  def countryregioncode: IdField[CountryregionId, CountryregionRow]
+class CountryregionFields(val `_path`: java.util.List[Path]) extends TupleExpr3[CountryregionId, Name, LocalDateTime] with RelationStructure[CountryregionFields, CountryregionRow]  with FieldsBase[CountryregionRow] {
+  def countryregioncode: IdField[CountryregionId, CountryregionRow] = {
+    new IdField[CountryregionId, CountryregionRow](
+      _path,
+      "countryregioncode",
+      _.countryregioncode,
+      None,
+      None,
+      (row, value) => row.copy(countryregioncode = value),
+      CountryregionId.dbType
+    )
+  }
 
-  def name: Field[Name, CountryregionRow]
+  def name: Field[Name, CountryregionRow] = {
+    new Field[Name, CountryregionRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      Some("varchar"),
+      (row, value) => row.copy(name = value),
+      Name.dbType
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, CountryregionRow]
+  def modifieddate: Field[LocalDateTime, CountryregionRow] = {
+    new Field[LocalDateTime, CountryregionRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      None,
+      Some("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, CountryregionRow]]
+  override def columns: java.util.List[FieldLike[?, CountryregionRow]] = java.util.List.of(this.countryregioncode.underlying, this.name.underlying, this.modifieddate.underlying)
 
   override def rowParser: RowParser[CountryregionRow] = CountryregionRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CountryregionFields, CountryregionRow] = new CountryregionFields(`_path`)
+
+  override def `_1`: SqlExpr[CountryregionId] = countryregioncode
+
+  override def `_2`: SqlExpr[Name] = name
+
+  override def `_3`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object CountryregionFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends CountryregionFields with RelationStructure[CountryregionFields, CountryregionRow] {
-
-    override def countryregioncode: IdField[CountryregionId, CountryregionRow] = {
-      new IdField[CountryregionId, CountryregionRow](
-        _path,
-        "countryregioncode",
-        _.countryregioncode,
-        None,
-        None,
-        (row, value) => row.copy(countryregioncode = value),
-        CountryregionId.pgType
-      )
-    }
-
-    override def name: Field[Name, CountryregionRow] = {
-      new Field[Name, CountryregionRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        Some("varchar"),
-        (row, value) => row.copy(name = value),
-        Name.pgType
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, CountryregionRow] = {
-      new Field[LocalDateTime, CountryregionRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        None,
-        Some("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, CountryregionRow]] = java.util.List.of(this.countryregioncode.underlying, this.name.underlying, this.modifieddate.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CountryregionFields, CountryregionRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: CountryregionFields = new CountryregionFields(java.util.Collections.emptyList())
 }

@@ -10,6 +10,7 @@ import adventureworks.person.countryregion.CountryregionId
 import adventureworks.public.Name
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple10
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -57,7 +58,7 @@ case class SalesterritoryRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple10[SalesterritoryId, Name, CountryregionId, String, BigDecimal, BigDecimal, BigDecimal, BigDecimal, UUID, LocalDateTime] {
   def id: SalesterritoryId = territoryid
 
   def toUnsavedRow(
@@ -82,10 +83,30 @@ case class SalesterritoryRow(
       modifieddate
     )
   }
+
+  override def `_1`: SalesterritoryId = territoryid
+
+  override def `_2`: Name = name
+
+  override def `_3`: CountryregionId = countryregioncode
+
+  override def `_4`: String = group
+
+  override def `_5`: BigDecimal = salesytd
+
+  override def `_6`: BigDecimal = saleslastyear
+
+  override def `_7`: BigDecimal = costytd
+
+  override def `_8`: BigDecimal = costlastyear
+
+  override def `_9`: UUID = rowguid
+
+  override def `_10`: LocalDateTime = modifieddate
 }
 
 object SalesterritoryRow {
-  val `_rowParser`: RowParser[SalesterritoryRow] = RowParsers.of(SalesterritoryId.pgType, Name.pgType, CountryregionId.pgType, PgTypes.text, ScalaDbTypes.PgTypes.numeric, ScalaDbTypes.PgTypes.numeric, ScalaDbTypes.PgTypes.numeric, ScalaDbTypes.PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp)(SalesterritoryRow.apply)(row => Array[Any](row.territoryid, row.name, row.countryregioncode, row.group, row.salesytd, row.saleslastyear, row.costytd, row.costlastyear, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[SalesterritoryRow] = RowParsers.of(SalesterritoryId.dbType, Name.dbType, CountryregionId.dbType, PgTypes.text, ScalaDbTypes.PgTypes.numeric, ScalaDbTypes.PgTypes.numeric, ScalaDbTypes.PgTypes.numeric, ScalaDbTypes.PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp)(SalesterritoryRow.apply)(row => Array[Any](row.territoryid, row.name, row.countryregioncode, row.group, row.salesytd, row.saleslastyear, row.costytd, row.costlastyear, row.rowguid, row.modifieddate))
 
   given pgText: PgText[SalesterritoryRow] = PgText.from(`_rowParser`.underlying)
 }

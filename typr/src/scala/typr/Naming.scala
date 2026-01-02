@@ -1,5 +1,7 @@
 package typr
 
+import scala.annotation.unused
+
 class Naming(val pkg: jvm.QIdent, lang: Lang) {
   protected def fragments(source: Source): (jvm.QIdent, String) = {
     def forRelPath(relPath: RelPath): (jvm.QIdent, String) =
@@ -43,8 +45,7 @@ class Naming(val pkg: jvm.QIdent, lang: Lang) {
   protected def tpe(name: db.RelationName, suffix: String): jvm.QIdent =
     pkg / name.schema.map(pkgSafe).toList / jvm.Ident(Naming.titleCase(name.name)).appended(suffix)
 
-  def idName(source: Source, cols: List[db.Col]): jvm.QIdent = {
-    ((), cols)._1 // allow implementors to use this
+  def idName(source: Source, @unused cols: List[db.Col]): jvm.QIdent = {
     relation(source, "Id")
   }
   def repoName(source: Source): jvm.QIdent = relation(source, "Repo")
@@ -65,6 +66,10 @@ class Naming(val pkg: jvm.QIdent, lang: Lang) {
 
   def objectTypeName(name: db.RelationName): jvm.QIdent =
     tpe(name, "")
+
+  /** Name for a DuckDB STRUCT type. The name is pre-computed (e.g., "EmployeeContactInfo"). */
+  def structTypeName(name: String): jvm.QIdent =
+    pkg / jvm.Ident(name)
 
   def enumValue(name: String): jvm.Ident = jvm.Ident(name)
 

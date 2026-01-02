@@ -7,105 +7,102 @@ package testdb.orders
 
 import dev.typr.foundations.Db2Types
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr5
 import java.time.LocalDate
 import testdb.customers.CustomersFields
 import testdb.customers.CustomersId
 import testdb.customers.CustomersRow
 
-trait OrdersFields extends FieldsExpr0[OrdersRow] {
-  def orderId: IdField[OrdersId, OrdersRow]
+class OrdersFields(val `_path`: java.util.List[Path]) extends TupleExpr5[OrdersId, CustomersId, LocalDate, BigDecimal, String] with RelationStructure[OrdersFields, OrdersRow]  with FieldsBase[OrdersRow] {
+  def orderId: IdField[OrdersId, OrdersRow] = {
+    new IdField[OrdersId, OrdersRow](
+      _path,
+      "ORDER_ID",
+      _.orderId,
+      None,
+      None,
+      (row, value) => row.copy(orderId = value),
+      OrdersId.dbType
+    )
+  }
 
-  def customerId: Field[CustomersId, OrdersRow]
+  def customerId: Field[CustomersId, OrdersRow] = {
+    new Field[CustomersId, OrdersRow](
+      _path,
+      "CUSTOMER_ID",
+      _.customerId,
+      None,
+      None,
+      (row, value) => row.copy(customerId = value),
+      CustomersId.dbType
+    )
+  }
 
-  def orderDate: Field[LocalDate, OrdersRow]
+  def orderDate: Field[LocalDate, OrdersRow] = {
+    new Field[LocalDate, OrdersRow](
+      _path,
+      "ORDER_DATE",
+      _.orderDate,
+      None,
+      None,
+      (row, value) => row.copy(orderDate = value),
+      Db2Types.date
+    )
+  }
 
-  def totalAmount: OptField[BigDecimal, OrdersRow]
+  def totalAmount: OptField[BigDecimal, OrdersRow] = {
+    new OptField[BigDecimal, OrdersRow](
+      _path,
+      "TOTAL_AMOUNT",
+      _.totalAmount,
+      None,
+      None,
+      (row, value) => row.copy(totalAmount = value),
+      ScalaDbTypes.Db2Types.decimal
+    )
+  }
 
-  def status: OptField[String, OrdersRow]
+  def status: OptField[String, OrdersRow] = {
+    new OptField[String, OrdersRow](
+      _path,
+      "STATUS",
+      _.status,
+      None,
+      None,
+      (row, value) => row.copy(status = value),
+      Db2Types.varchar
+    )
+  }
 
   def fkCustomers: ForeignKey[CustomersFields, CustomersRow] = ForeignKey.of[CustomersFields, CustomersRow]("FK_CUSTOMER").withColumnPair[CustomersId](customerId, _.customerId)
 
-  override def columns: java.util.List[FieldLike[?, OrdersRow]]
+  override def columns: java.util.List[FieldLike[?, OrdersRow]] = java.util.List.of(this.orderId.underlying, this.customerId.underlying, this.orderDate.underlying, this.totalAmount.underlying, this.status.underlying)
 
   override def rowParser: RowParser[OrdersRow] = OrdersRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OrdersFields, OrdersRow] = new OrdersFields(`_path`)
+
+  override def `_1`: SqlExpr[OrdersId] = orderId
+
+  override def `_2`: SqlExpr[CustomersId] = customerId
+
+  override def `_3`: SqlExpr[LocalDate] = orderDate
+
+  override def `_4`: SqlExpr[BigDecimal] = totalAmount
+
+  override def `_5`: SqlExpr[String] = status
 }
 
 object OrdersFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends OrdersFields with RelationStructure[OrdersFields, OrdersRow] {
-
-    override def orderId: IdField[OrdersId, OrdersRow] = {
-      new IdField[OrdersId, OrdersRow](
-        _path,
-        "ORDER_ID",
-        _.orderId,
-        None,
-        None,
-        (row, value) => row.copy(orderId = value),
-        OrdersId.pgType
-      )
-    }
-
-    override def customerId: Field[CustomersId, OrdersRow] = {
-      new Field[CustomersId, OrdersRow](
-        _path,
-        "CUSTOMER_ID",
-        _.customerId,
-        None,
-        None,
-        (row, value) => row.copy(customerId = value),
-        CustomersId.pgType
-      )
-    }
-
-    override def orderDate: Field[LocalDate, OrdersRow] = {
-      new Field[LocalDate, OrdersRow](
-        _path,
-        "ORDER_DATE",
-        _.orderDate,
-        None,
-        None,
-        (row, value) => row.copy(orderDate = value),
-        Db2Types.date
-      )
-    }
-
-    override def totalAmount: OptField[BigDecimal, OrdersRow] = {
-      new OptField[BigDecimal, OrdersRow](
-        _path,
-        "TOTAL_AMOUNT",
-        _.totalAmount,
-        None,
-        None,
-        (row, value) => row.copy(totalAmount = value),
-        ScalaDbTypes.Db2Types.decimal
-      )
-    }
-
-    override def status: OptField[String, OrdersRow] = {
-      new OptField[String, OrdersRow](
-        _path,
-        "STATUS",
-        _.status,
-        None,
-        None,
-        (row, value) => row.copy(status = value),
-        Db2Types.varchar
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, OrdersRow]] = java.util.List.of(this.orderId.underlying, this.customerId.underlying, this.orderDate.underlying, this.totalAmount.underlying, this.status.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OrdersFields, OrdersRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: OrdersFields = new OrdersFields(java.util.Collections.emptyList())
 }

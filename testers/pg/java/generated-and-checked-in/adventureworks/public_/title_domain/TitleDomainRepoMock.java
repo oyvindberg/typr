@@ -39,7 +39,7 @@ public record TitleDomainRepoMock(HashMap<TitleDomainId, TitleDomainRow> map)
   @Override
   public DeleteBuilder<TitleDomainFields, TitleDomainRow> delete() {
     return new DeleteBuilderMock<>(
-        TitleDomainFields.structure(),
+        TitleDomainFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.code(),
@@ -95,7 +95,7 @@ public record TitleDomainRepoMock(HashMap<TitleDomainId, TitleDomainRow> map)
   @Override
   public SelectBuilder<TitleDomainFields, TitleDomainRow> select() {
     return new SelectBuilderMock<>(
-        TitleDomainFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        TitleDomainFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -137,7 +137,7 @@ public record TitleDomainRepoMock(HashMap<TitleDomainId, TitleDomainRow> map)
   @Override
   public UpdateBuilder<TitleDomainFields, TitleDomainRow> update() {
     return new UpdateBuilderMock<>(
-        TitleDomainFields.structure(),
+        TitleDomainFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

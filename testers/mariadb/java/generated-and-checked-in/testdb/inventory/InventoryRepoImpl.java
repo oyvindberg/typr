@@ -26,27 +26,25 @@ import testdb.warehouses.WarehousesId;
 public class InventoryRepoImpl implements InventoryRepo {
   @Override
   public DeleteBuilder<InventoryFields, InventoryRow> delete() {
-    return DeleteBuilder.of("`inventory`", InventoryFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`inventory`", InventoryFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(InventoryId inventoryId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `inventory` where `inventory_id` = "),
-                Fragment.encode(InventoryId.pgType, inventoryId),
+                Fragment.encode(InventoryId.dbType, inventoryId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(InventoryId[] inventoryIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : inventoryIds) {
-      fragments.add(Fragment.encode(InventoryId.pgType, id));
+      fragments.add(Fragment.encode(InventoryId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -56,7 +54,6 @@ public class InventoryRepoImpl implements InventoryRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public InventoryRow insert(InventoryRow unsaved, Connection c) {
@@ -66,9 +63,9 @@ public class InventoryRepoImpl implements InventoryRepo {
                     + " `quantity_reserved`, `quantity_on_order`, `reorder_point`,"
                     + " `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`)\n"
                     + "values ("),
-            Fragment.encode(ProductsId.pgType, unsaved.productId()),
+            Fragment.encode(ProductsId.dbType, unsaved.productId()),
             Fragment.lit(", "),
-            Fragment.encode(WarehousesId.pgType, unsaved.warehouseId()),
+            Fragment.encode(WarehousesId.dbType, unsaved.warehouseId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.int_, unsaved.quantityOnHand()),
             Fragment.lit(", "),
@@ -93,7 +90,6 @@ public class InventoryRepoImpl implements InventoryRepo {
         .updateReturning(InventoryRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public InventoryRow insert(InventoryRowUnsaved unsaved, Connection c) {
@@ -103,10 +99,10 @@ public class InventoryRepoImpl implements InventoryRepo {
     ;
     columns.add(Fragment.lit("`product_id`"));
     values.add(
-        interpolate(Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit("")));
+        interpolate(Fragment.encode(ProductsId.dbType, unsaved.productId()), Fragment.lit("")));
     columns.add(Fragment.lit("`warehouse_id`"));
     values.add(
-        interpolate(Fragment.encode(WarehousesId.pgType, unsaved.warehouseId()), Fragment.lit("")));
+        interpolate(Fragment.encode(WarehousesId.dbType, unsaved.warehouseId()), Fragment.lit("")));
     unsaved
         .quantityOnHand()
         .visit(
@@ -196,14 +192,12 @@ public class InventoryRepoImpl implements InventoryRepo {
     ;
     return q.updateReturning(InventoryRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<InventoryFields, InventoryRow> select() {
     return SelectBuilder.of(
-        "`inventory`", InventoryFields.structure(), InventoryRow._rowParser, Dialect.MARIADB);
+        "`inventory`", InventoryFields.structure, InventoryRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<InventoryRow> selectAll(Connection c) {
@@ -216,7 +210,6 @@ public class InventoryRepoImpl implements InventoryRepo {
         .query(InventoryRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<InventoryRow> selectById(InventoryId inventoryId, Connection c) {
@@ -227,18 +220,17 @@ public class InventoryRepoImpl implements InventoryRepo {
                     + " `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`\n"
                     + "from `inventory`\n"
                     + "where `inventory_id` = "),
-            Fragment.encode(InventoryId.pgType, inventoryId),
+            Fragment.encode(InventoryId.dbType, inventoryId),
             Fragment.lit(""))
         .query(InventoryRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<InventoryRow> selectByIds(InventoryId[] inventoryIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : inventoryIds) {
-      fragments.add(Fragment.encode(InventoryId.pgType, id));
+      fragments.add(Fragment.encode(InventoryId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -252,7 +244,6 @@ public class InventoryRepoImpl implements InventoryRepo {
         .query(InventoryRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<InventoryId, InventoryRow> selectByIdsTracked(
@@ -261,7 +252,6 @@ public class InventoryRepoImpl implements InventoryRepo {
     selectByIds(inventoryIds, c).forEach(row -> ret.put(row.inventoryId(), row));
     return ret;
   }
-  ;
 
   @Override
   public Optional<InventoryRow> selectByUniqueProductIdAndWarehouseId(
@@ -273,21 +263,19 @@ public class InventoryRepoImpl implements InventoryRepo {
                     + " `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`\n"
                     + "from `inventory`\n"
                     + "where `product_id` = "),
-            Fragment.encode(ProductsId.pgType, productId),
+            Fragment.encode(ProductsId.dbType, productId),
             Fragment.lit(" AND `warehouse_id` = "),
-            Fragment.encode(WarehousesId.pgType, warehouseId),
+            Fragment.encode(WarehousesId.dbType, warehouseId),
             Fragment.lit("\n"))
         .query(InventoryRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<InventoryFields, InventoryRow> update() {
     return UpdateBuilder.of(
-        "`inventory`", InventoryFields.structure(), InventoryRow._rowParser, Dialect.MARIADB);
+        "`inventory`", InventoryFields.structure, InventoryRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(InventoryRow row, Connection c) {
@@ -295,9 +283,9 @@ public class InventoryRepoImpl implements InventoryRepo {
     ;
     return interpolate(
                 Fragment.lit("update `inventory`\nset `product_id` = "),
-                Fragment.encode(ProductsId.pgType, row.productId()),
+                Fragment.encode(ProductsId.dbType, row.productId()),
                 Fragment.lit(",\n`warehouse_id` = "),
-                Fragment.encode(WarehousesId.pgType, row.warehouseId()),
+                Fragment.encode(WarehousesId.dbType, row.warehouseId()),
                 Fragment.lit(",\n`quantity_on_hand` = "),
                 Fragment.encode(MariaTypes.int_, row.quantityOnHand()),
                 Fragment.lit(",\n`quantity_reserved` = "),
@@ -315,25 +303,27 @@ public class InventoryRepoImpl implements InventoryRepo {
                 Fragment.lit(",\n`updated_at` = "),
                 Fragment.encode(MariaTypes.datetime, row.updatedAt()),
                 Fragment.lit("\nwhere `inventory_id` = "),
-                Fragment.encode(InventoryId.pgType, inventoryId),
+                Fragment.encode(InventoryId.dbType, inventoryId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public InventoryRow upsert(InventoryRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `inventory`(`product_id`, `warehouse_id`, `quantity_on_hand`,"
-                    + " `quantity_reserved`, `quantity_on_order`, `reorder_point`,"
-                    + " `reorder_quantity`, `bin_location`, `last_counted_at`, `updated_at`)\n"
+                "INSERT INTO `inventory`(`inventory_id`, `product_id`, `warehouse_id`,"
+                    + " `quantity_on_hand`, `quantity_reserved`, `quantity_on_order`,"
+                    + " `reorder_point`, `reorder_quantity`, `bin_location`, `last_counted_at`,"
+                    + " `updated_at`)\n"
                     + "VALUES ("),
-            Fragment.encode(ProductsId.pgType, unsaved.productId()),
+            Fragment.encode(InventoryId.dbType, unsaved.inventoryId()),
             Fragment.lit(", "),
-            Fragment.encode(WarehousesId.pgType, unsaved.warehouseId()),
+            Fragment.encode(ProductsId.dbType, unsaved.productId()),
+            Fragment.lit(", "),
+            Fragment.encode(WarehousesId.dbType, unsaved.warehouseId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.int_, unsaved.quantityOnHand()),
             Fragment.lit(", "),
@@ -368,7 +358,6 @@ public class InventoryRepoImpl implements InventoryRepo {
         .updateReturning(InventoryRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<InventoryRow> upsertBatch(Iterator<InventoryRow> unsaved, Connection c) {
@@ -395,5 +384,4 @@ public class InventoryRepoImpl implements InventoryRepo {
         .updateReturningEach(InventoryRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

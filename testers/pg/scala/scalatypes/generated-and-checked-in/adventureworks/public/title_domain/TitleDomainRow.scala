@@ -6,18 +6,21 @@
 package adventureworks.public.title_domain
 
 import dev.typr.foundations.PgText
+import dev.typr.foundations.Tuple.Tuple1
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 
 /** Table: public.title_domain
  * Primary key: code
  */
-case class TitleDomainRow(code: TitleDomainId) {
+case class TitleDomainRow(code: TitleDomainId) extends Tuple1[TitleDomainId] {
   def id: TitleDomainId = code
+
+  override def `_1`: TitleDomainId = code
 }
 
 object TitleDomainRow {
-  val `_rowParser`: RowParser[TitleDomainRow] = RowParsers.of(TitleDomainId.pgType)(TitleDomainRow.apply)(row => Array[Any](row.code))
+  val `_rowParser`: RowParser[TitleDomainRow] = RowParsers.of(TitleDomainId.dbType)(TitleDomainRow.apply)(row => Array[Any](row.code))
 
   given pgText: PgText[TitleDomainRow] = PgText.from(`_rowParser`.underlying)
 }

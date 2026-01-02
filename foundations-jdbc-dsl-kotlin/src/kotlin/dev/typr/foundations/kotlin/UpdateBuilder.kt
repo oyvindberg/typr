@@ -18,26 +18,26 @@ class UpdateBuilder<Fields, Row> internal constructor(
      * Set a field to a new value.
      * @param field The field to update (returns Kotlin FieldLike wrapper)
      * @param value The value to set
-     * @param pgType The PostgreSQL type of the value
+     * @param dbType The database type of the value
      */
-    fun <T> set(field: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T, Row>, value: T, pgType: DbType<T>): UpdateBuilder<Fields, Row> {
-        return UpdateBuilder(javaBuilder.set({ fields -> field(fields).underlying }, value, pgType))
+    fun <T> set(field: (Fields) -> SqlExpr.FieldLike<T, Row>, value: T, dbType: DbType<T>): UpdateBuilder<Fields, Row> {
+        return UpdateBuilder(javaBuilder.set({ fields -> field(fields).underlying }, value, dbType))
     }
 
     /**
-     * Set a field to a new value. The pgType is extracted from the field.
+     * Set a field to a new value. The dbType is extracted from the field.
      * Convenience method equivalent to setComputedValue with a constant expression.
      * @param field The field to update (returns Kotlin FieldLike wrapper)
      * @param value The value to set
      */
-    fun <T> setValue(field: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T, Row>, value: T): UpdateBuilder<Fields, Row> {
+    fun <T> setValue(field: (Fields) -> SqlExpr.FieldLike<T, Row>, value: T): UpdateBuilder<Fields, Row> {
         return UpdateBuilder(javaBuilder.setValue({ fields -> field(fields).underlying }, value))
     }
 
     /**
      * Set a field using an expression.
      */
-    fun <T> setExpr(field: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T, Row>, expr: dev.typr.foundations.dsl.SqlExpr<T>): UpdateBuilder<Fields, Row> {
+    fun <T> setExpr(field: (Fields) -> SqlExpr.FieldLike<T, Row>, expr: dev.typr.foundations.dsl.SqlExpr<T>): UpdateBuilder<Fields, Row> {
         return UpdateBuilder(javaBuilder.setExpr({ fields -> field(fields).underlying }, expr))
     }
 
@@ -47,7 +47,7 @@ class UpdateBuilder<Fields, Row> internal constructor(
      * Example: setComputedValue({ p -> p.name() }) { name -> name.upper(Name.bijection) }
      */
     fun <T> setComputedValue(
-        field: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T, Row>,
+        field: (Fields) -> SqlExpr.FieldLike<T, Row>,
         compute: (dev.typr.foundations.dsl.SqlExpr.FieldLike<T, Row>) -> dev.typr.foundations.dsl.SqlExpr<T>
     ): UpdateBuilder<Fields, Row> {
         return UpdateBuilder(javaBuilder.setComputedValue({ fields -> field(fields).underlying }, compute))
@@ -57,8 +57,8 @@ class UpdateBuilder<Fields, Row> internal constructor(
      * Add a WHERE clause to the update.
      * Consecutive calls will be combined with AND.
      */
-    fun where(predicate: (Fields) -> dev.typr.foundations.dsl.SqlExpr<Boolean>): UpdateBuilder<Fields, Row> {
-        return UpdateBuilder(javaBuilder.where(predicate))
+    fun where(predicate: (Fields) -> SqlExpr<Boolean>): UpdateBuilder<Fields, Row> {
+        return UpdateBuilder(javaBuilder.where { fields -> predicate(fields).underlying })
     }
 
     /**

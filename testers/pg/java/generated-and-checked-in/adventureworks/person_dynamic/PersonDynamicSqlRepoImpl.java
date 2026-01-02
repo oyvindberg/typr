@@ -28,5 +28,4 @@ public class PersonDynamicSqlRepoImpl implements PersonDynamicSqlRepo {
         .query(PersonDynamicSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

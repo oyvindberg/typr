@@ -6,6 +6,9 @@
 package testdb.promotions
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.data.maria.MariaSet
 import java.time.LocalDateTime
 import testdb.customtypes.Defaulted
@@ -36,15 +39,15 @@ case class PromotionsRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("max_uses") maxUses: Defaulted[Option[Long]] = new UseDefault(),
+  @JsonProperty("max_uses") maxUses: Defaulted[Option[Uint4]] = new UseDefault(),
   /** Default: 0
 
    */
-  @JsonProperty("uses_count") usesCount: Defaulted[Long] = new UseDefault(),
+  @JsonProperty("uses_count") usesCount: Defaulted[Uint4] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("max_uses_per_customer") maxUsesPerCustomer: Defaulted[Option[Short]] = new UseDefault(),
+  @JsonProperty("max_uses_per_customer") maxUsesPerCustomer: Defaulted[Option[Uint1]] = new UseDefault(),
   /** Default: NULL
 
    */
@@ -52,7 +55,7 @@ case class PromotionsRowUnsaved(
   /** Default: NULL
    * Complex eligibility rules
    */
-  @JsonProperty("rules_json") rulesJson: Defaulted[Option[String]] = new UseDefault(),
+  @JsonProperty("rules_json") rulesJson: Defaulted[Option[Json]] = new UseDefault(),
   /** Default: 1
 
    */
@@ -65,11 +68,11 @@ case class PromotionsRowUnsaved(
   def toRow(
     descriptionDefault: => Option[String],
     minOrderAmountDefault: => Option[BigDecimal],
-    maxUsesDefault: => Option[Long],
-    usesCountDefault: => Long,
-    maxUsesPerCustomerDefault: => Option[Short],
+    maxUsesDefault: => Option[Uint4],
+    usesCountDefault: => Uint4,
+    maxUsesPerCustomerDefault: => Option[Uint1],
     applicableToDefault: => Option[MariaSet],
-    rulesJsonDefault: => Option[String],
+    rulesJsonDefault: => Option[Json],
     isActiveDefault: => Boolean,
     createdAtDefault: => LocalDateTime,
     promotionIdDefault: => PromotionsId

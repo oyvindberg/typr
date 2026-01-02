@@ -8,14 +8,14 @@ package testdb.customers
 import com.fasterxml.jackson.annotation.JsonValue
 import dev.typr.foundations.MariaType
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.scala.Bijection
-import java.math.BigInteger
 
 /** Type for the primary key of table `customers` */
-case class CustomersId(@JsonValue value: BigInteger) extends scala.AnyVal
+case class CustomersId(@JsonValue value: Uint8) extends scala.AnyVal
 
 object CustomersId {
-  given bijection: Bijection[CustomersId, BigInteger] = Bijection.apply[CustomersId, BigInteger](_.value)(CustomersId.apply)
+  given bijection: Bijection[CustomersId, Uint8] = Bijection.apply[CustomersId, Uint8](_.value)(CustomersId.apply)
 
-  given pgType: MariaType[CustomersId] = MariaTypes.bigintUnsigned.bimap(CustomersId.apply, _.value)
+  given dbType: MariaType[CustomersId] = MariaTypes.bigintUnsigned.bimap(CustomersId.apply, _.value)
 }

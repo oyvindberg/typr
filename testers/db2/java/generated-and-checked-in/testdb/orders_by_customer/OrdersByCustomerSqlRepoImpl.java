@@ -28,5 +28,4 @@ public class OrdersByCustomerSqlRepoImpl implements OrdersByCustomerSqlRepo {
         .query(OrdersByCustomerSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

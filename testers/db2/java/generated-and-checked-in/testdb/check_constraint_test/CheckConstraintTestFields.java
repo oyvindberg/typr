@@ -7,107 +7,114 @@ package testdb.check_constraint_test;
 
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr4;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-public interface CheckConstraintTestFields extends FieldsExpr<CheckConstraintTestRow> {
-  record Impl(List<Path> _path)
-      implements CheckConstraintTestFields,
-          RelationStructure<CheckConstraintTestFields, CheckConstraintTestRow> {
-    @Override
-    public IdField<CheckConstraintTestId, CheckConstraintTestRow> id() {
-      return new IdField<CheckConstraintTestId, CheckConstraintTestRow>(
-          _path,
-          "ID",
-          CheckConstraintTestRow::id,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withId(value),
-          CheckConstraintTestId.pgType);
-    }
-    ;
+public class CheckConstraintTestFields
+    extends TupleExpr4<CheckConstraintTestId, Integer, String, BigDecimal>
+    implements RelationStructure<CheckConstraintTestFields, CheckConstraintTestRow>,
+        FieldsBase<CheckConstraintTestRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<Integer, CheckConstraintTestRow> age() {
-      return new Field<Integer, CheckConstraintTestRow>(
-          _path,
-          "AGE",
-          CheckConstraintTestRow::age,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withAge(value),
-          Db2Types.integer);
-    }
-    ;
-
-    @Override
-    public Field<String, CheckConstraintTestRow> status() {
-      return new Field<String, CheckConstraintTestRow>(
-          _path,
-          "STATUS",
-          CheckConstraintTestRow::status,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withStatus(value),
-          Db2Types.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, CheckConstraintTestRow> price() {
-      return new OptField<BigDecimal, CheckConstraintTestRow>(
-          _path,
-          "PRICE",
-          CheckConstraintTestRow::price,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPrice(value),
-          Db2Types.decimal);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, CheckConstraintTestRow>> columns() {
-      return java.util.List.of(this.id(), this.age(), this.status(), this.price());
-    }
-    ;
-
-    @Override
-    public RelationStructure<CheckConstraintTestFields, CheckConstraintTestRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public CheckConstraintTestFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static CheckConstraintTestFields structure =
+      new CheckConstraintTestFields(java.util.Collections.emptyList());
+
+  public IdField<CheckConstraintTestId, CheckConstraintTestRow> id() {
+    return new IdField<CheckConstraintTestId, CheckConstraintTestRow>(
+        _path,
+        "ID",
+        CheckConstraintTestRow::id,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withId(value),
+        CheckConstraintTestId.dbType);
   }
-  ;
 
-  IdField<CheckConstraintTestId, CheckConstraintTestRow> id();
+  public Field<Integer, CheckConstraintTestRow> age() {
+    return new Field<Integer, CheckConstraintTestRow>(
+        _path,
+        "AGE",
+        CheckConstraintTestRow::age,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withAge(value),
+        Db2Types.integer);
+  }
 
-  Field<Integer, CheckConstraintTestRow> age();
+  public Field<String, CheckConstraintTestRow> status() {
+    return new Field<String, CheckConstraintTestRow>(
+        _path,
+        "STATUS",
+        CheckConstraintTestRow::status,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withStatus(value),
+        Db2Types.varchar);
+  }
 
-  Field<String, CheckConstraintTestRow> status();
-
-  OptField<BigDecimal, CheckConstraintTestRow> price();
+  public OptField<BigDecimal, CheckConstraintTestRow> price() {
+    return new OptField<BigDecimal, CheckConstraintTestRow>(
+        _path,
+        "PRICE",
+        CheckConstraintTestRow::price,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPrice(value),
+        Db2Types.decimal);
+  }
 
   @Override
-  List<FieldLike<?, CheckConstraintTestRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<CheckConstraintTestRow> rowParser() {
+  public List<FieldLike<?, CheckConstraintTestRow>> columns() {
+    return java.util.List.of(this.id(), this.age(), this.status(), this.price());
+  }
+
+  @Override
+  public RowParser<CheckConstraintTestRow> rowParser() {
     return CheckConstraintTestRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<CheckConstraintTestFields, CheckConstraintTestRow> withPaths(
+      List<Path> _path) {
+    return new CheckConstraintTestFields(_path);
+  }
+
+  @Override
+  public SqlExpr<CheckConstraintTestId> _1() {
+    return id();
+  }
+
+  @Override
+  public SqlExpr<Integer> _2() {
+    return age();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return status();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _4() {
+    return price();
+  }
 }

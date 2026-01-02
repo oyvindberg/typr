@@ -7,85 +7,82 @@ package oracledb.contacts
 
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr4
 import oracledb.EmailTableT
 import oracledb.TagVarrayT
 
-trait ContactsFields extends FieldsExpr0[ContactsRow] {
-  def contactId: IdField[ContactsId, ContactsRow]
+class ContactsFields(val `_path`: java.util.List[Path]) extends TupleExpr4[ContactsId, String, EmailTableT, TagVarrayT] with RelationStructure[ContactsFields, ContactsRow]  with FieldsBase[ContactsRow] {
+  def contactId: IdField[ContactsId, ContactsRow] = {
+    new IdField[ContactsId, ContactsRow](
+      _path,
+      "CONTACT_ID",
+      _.contactId,
+      None,
+      None,
+      (row, value) => row.copy(contactId = value),
+      ContactsId.oracleType
+    )
+  }
 
-  def name: Field[String, ContactsRow]
+  def name: Field[String, ContactsRow] = {
+    new Field[String, ContactsRow](
+      _path,
+      "NAME",
+      _.name,
+      None,
+      None,
+      (row, value) => row.copy(name = value),
+      OracleTypes.varchar2
+    )
+  }
 
-  def emails: OptField[EmailTableT, ContactsRow]
+  def emails: OptField[EmailTableT, ContactsRow] = {
+    new OptField[EmailTableT, ContactsRow](
+      _path,
+      "EMAILS",
+      _.emails,
+      None,
+      None,
+      (row, value) => row.copy(emails = value),
+      EmailTableT.oracleType
+    )
+  }
 
-  def tags: OptField[TagVarrayT, ContactsRow]
+  def tags: OptField[TagVarrayT, ContactsRow] = {
+    new OptField[TagVarrayT, ContactsRow](
+      _path,
+      "TAGS",
+      _.tags,
+      None,
+      None,
+      (row, value) => row.copy(tags = value),
+      TagVarrayT.oracleType
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, ContactsRow]]
+  override def columns: java.util.List[FieldLike[?, ContactsRow]] = java.util.List.of(this.contactId.underlying, this.name.underlying, this.emails.underlying, this.tags.underlying)
 
   override def rowParser: RowParser[ContactsRow] = ContactsRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ContactsFields, ContactsRow] = new ContactsFields(`_path`)
+
+  override def `_1`: SqlExpr[ContactsId] = contactId
+
+  override def `_2`: SqlExpr[String] = name
+
+  override def `_3`: SqlExpr[EmailTableT] = emails
+
+  override def `_4`: SqlExpr[TagVarrayT] = tags
 }
 
 object ContactsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ContactsFields with RelationStructure[ContactsFields, ContactsRow] {
-
-    override def contactId: IdField[ContactsId, ContactsRow] = {
-      new IdField[ContactsId, ContactsRow](
-        _path,
-        "CONTACT_ID",
-        _.contactId,
-        None,
-        None,
-        (row, value) => row.copy(contactId = value),
-        ContactsId.oracleType
-      )
-    }
-
-    override def name: Field[String, ContactsRow] = {
-      new Field[String, ContactsRow](
-        _path,
-        "NAME",
-        _.name,
-        None,
-        None,
-        (row, value) => row.copy(name = value),
-        OracleTypes.varchar2
-      )
-    }
-
-    override def emails: OptField[EmailTableT, ContactsRow] = {
-      new OptField[EmailTableT, ContactsRow](
-        _path,
-        "EMAILS",
-        _.emails,
-        None,
-        None,
-        (row, value) => row.copy(emails = value),
-        EmailTableT.oracleType
-      )
-    }
-
-    override def tags: OptField[TagVarrayT, ContactsRow] = {
-      new OptField[TagVarrayT, ContactsRow](
-        _path,
-        "TAGS",
-        _.tags,
-        None,
-        None,
-        (row, value) => row.copy(tags = value),
-        TagVarrayT.oracleType
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, ContactsRow]] = java.util.List.of(this.contactId.underlying, this.name.underlying, this.emails.underlying, this.tags.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ContactsFields, ContactsRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: ContactsFields = new ContactsFields(java.util.Collections.emptyList())
 }

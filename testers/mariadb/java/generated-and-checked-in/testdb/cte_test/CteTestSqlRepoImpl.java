@@ -51,5 +51,4 @@ public class CteTestSqlRepoImpl implements CteTestSqlRepo {
         .query(CteTestSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

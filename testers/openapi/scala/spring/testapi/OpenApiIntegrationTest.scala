@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Bean
 import testapi.api._
 import testapi.model._
 
-import java.lang.Void
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -34,7 +33,6 @@ class OpenApiIntegrationTest {
   private val TestTime = OffsetDateTime.parse("2024-01-01T12:00:00Z")
 
   private var context: ConfigurableApplicationContext = uninitialized
-  private var client: PetsApiClient = uninitialized
   private var serverImpl: TestPetsApiServer = uninitialized
   private var baseUri: URI = uninitialized
   private var httpClient: HttpClient = uninitialized
@@ -73,7 +71,7 @@ class OpenApiIntegrationTest {
     }
 
     override def deletePet(petId: PetId): Unit = {
-      pets.remove(petId)
+      val _ = pets.remove(petId)
     }
 
     override def getPet(petId: PetId): Response200404[Pet, Error] = {
@@ -118,16 +116,14 @@ class OpenApiIntegrationTest {
     baseUri = URI.create(s"http://127.0.0.1:$port")
 
     val objectMapper = new ObjectMapper()
-    objectMapper.registerModule(new Jdk8Module())
-    objectMapper.registerModule(new JavaTimeModule())
-    objectMapper.registerModule(DefaultScalaModule)
+    val _ = objectMapper.registerModule(new Jdk8Module())
+    val _ = objectMapper.registerModule(new JavaTimeModule())
+    val _ = objectMapper.registerModule(DefaultScalaModule)
 
     httpClient = HttpClient
       .newBuilder()
       .version(HttpClient.Version.HTTP_1_1)
       .build()
-
-    client = new PetsApiClient(httpClient, baseUri, objectMapper)
   }
 
   @After
@@ -189,9 +185,9 @@ object OpenApiIntegrationTest {
     @Bean
     def objectMapper(): ObjectMapper = {
       val mapper = new ObjectMapper()
-      mapper.registerModule(new Jdk8Module())
-      mapper.registerModule(new JavaTimeModule())
-      mapper.registerModule(DefaultScalaModule)
+      val _ = mapper.registerModule(new Jdk8Module())
+      val _ = mapper.registerModule(new JavaTimeModule())
+      val _ = mapper.registerModule(DefaultScalaModule)
       mapper
     }
   }

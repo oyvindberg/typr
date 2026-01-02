@@ -25,9 +25,8 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
   @Override
   public DeleteBuilder<AllScalarTypesFields, AllScalarTypesRow> delete() {
     return DeleteBuilder.of(
-        "[all_scalar_types]", AllScalarTypesFields.structure(), Dialect.SQLSERVER);
+        "[all_scalar_types]", AllScalarTypesFields.structure, Dialect.SQLSERVER);
   }
-  ;
 
   @Override
   public Boolean deleteById(AllScalarTypesId id, Connection c) {
@@ -39,7 +38,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(AllScalarTypesId[] ids, Connection c) {
@@ -55,7 +53,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public AllScalarTypesRow insert(AllScalarTypesRow unsaved, Connection c) {
@@ -148,7 +145,7 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.xml.opt(), unsaved.colXml()),
             Fragment.lit(", "),
-            Fragment.encode(SqlServerTypes.nvarchar.opt(), unsaved.colJson()),
+            Fragment.encode(SqlServerTypes.json.opt(), unsaved.colJson()),
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.hierarchyid.opt(), unsaved.colHierarchyid()),
             Fragment.lit(", "),
@@ -161,7 +158,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .updateReturning(AllScalarTypesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public AllScalarTypesRow insert(AllScalarTypesRowUnsaved unsaved, Connection c) {
@@ -306,7 +302,7 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
     columns.add(Fragment.lit("[col_json]"));
     values.add(
         interpolate(
-            Fragment.encode(SqlServerTypes.nvarchar.opt(), unsaved.colJson()), Fragment.lit("")));
+            Fragment.encode(SqlServerTypes.json.opt(), unsaved.colJson()), Fragment.lit("")));
     columns.add(Fragment.lit("[col_hierarchyid]"));
     values.add(
         interpolate(
@@ -359,17 +355,15 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
     ;
     return q.updateReturning(AllScalarTypesRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<AllScalarTypesFields, AllScalarTypesRow> select() {
     return SelectBuilder.of(
         "[all_scalar_types]",
-        AllScalarTypesFields.structure(),
+        AllScalarTypesFields.structure,
         AllScalarTypesRow._rowParser,
         Dialect.SQLSERVER);
   }
-  ;
 
   @Override
   public List<AllScalarTypesRow> selectAll(Connection c) {
@@ -388,7 +382,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .query(AllScalarTypesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<AllScalarTypesRow> selectById(AllScalarTypesId id, Connection c) {
@@ -410,7 +403,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .query(AllScalarTypesRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<AllScalarTypesRow> selectByIds(AllScalarTypesId[] ids, Connection c) {
@@ -435,7 +427,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .query(AllScalarTypesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<AllScalarTypesId, AllScalarTypesRow> selectByIdsTracked(
@@ -445,17 +436,15 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
     selectByIds(ids, c).forEach(row -> ret.put(row.id(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<AllScalarTypesFields, AllScalarTypesRow> update() {
     return UpdateBuilder.of(
         "[all_scalar_types]",
-        AllScalarTypesFields.structure(),
+        AllScalarTypesFields.structure,
         AllScalarTypesRow._rowParser,
         Dialect.SQLSERVER);
   }
-  ;
 
   @Override
   public Boolean update(AllScalarTypesRow row, Connection c) {
@@ -525,7 +514,7 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
                 Fragment.lit(",\n[col_xml] = "),
                 Fragment.encode(SqlServerTypes.xml.opt(), row.colXml()),
                 Fragment.lit(",\n[col_json] = "),
-                Fragment.encode(SqlServerTypes.nvarchar.opt(), row.colJson()),
+                Fragment.encode(SqlServerTypes.json.opt(), row.colJson()),
                 Fragment.lit(",\n[col_hierarchyid] = "),
                 Fragment.encode(SqlServerTypes.hierarchyid.opt(), row.colHierarchyid()),
                 Fragment.lit(",\n[col_geography] = "),
@@ -541,12 +530,13 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public AllScalarTypesRow upsert(AllScalarTypesRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit("MERGE INTO [all_scalar_types] AS target\nUSING (VALUES ("),
+            Fragment.encode(AllScalarTypesId.sqlServerType, unsaved.id()),
+            Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.tinyint.opt(), unsaved.colTinyint()),
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.smallint.opt(), unsaved.colSmallint()),
@@ -609,7 +599,9 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.xml.opt(), unsaved.colXml()),
             Fragment.lit(", "),
-            Fragment.encode(SqlServerTypes.nvarchar.opt(), unsaved.colJson()),
+            Fragment.encode(SqlServerTypes.json.opt(), unsaved.colJson()),
+            Fragment.lit(", "),
+            Fragment.encode(SqlServerTypes.rowversion, unsaved.colRowversion()),
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.hierarchyid.opt(), unsaved.colHierarchyid()),
             Fragment.lit(", "),
@@ -619,15 +611,15 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.nvarchar, unsaved.colNotNull()),
             Fragment.lit(
-                ")) AS source([col_tinyint], [col_smallint], [col_int], [col_bigint],"
+                ")) AS source([id], [col_tinyint], [col_smallint], [col_int], [col_bigint],"
                     + " [col_decimal], [col_numeric], [col_money], [col_smallmoney], [col_real],"
                     + " [col_float], [col_bit], [col_char], [col_varchar], [col_varchar_max],"
                     + " [col_text], [col_nchar], [col_nvarchar], [col_nvarchar_max], [col_ntext],"
                     + " [col_binary], [col_varbinary], [col_varbinary_max], [col_image],"
                     + " [col_date], [col_time], [col_datetime], [col_smalldatetime],"
                     + " [col_datetime2], [col_datetimeoffset], [col_uniqueidentifier], [col_xml],"
-                    + " [col_json], [col_hierarchyid], [col_geography], [col_geometry],"
-                    + " [col_not_null])\n"
+                    + " [col_json], [col_rowversion], [col_hierarchyid], [col_geography],"
+                    + " [col_geometry], [col_not_null])\n"
                     + "ON target.[id] = source.[id]\n"
                     + "WHEN MATCHED THEN UPDATE SET [col_tinyint] = source.[col_tinyint],\n"
                     + "[col_smallint] = source.[col_smallint],\n"
@@ -661,19 +653,23 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
                     + "[col_uniqueidentifier] = source.[col_uniqueidentifier],\n"
                     + "[col_xml] = source.[col_xml],\n"
                     + "[col_json] = source.[col_json],\n"
+                    + "[col_rowversion] = source.[col_rowversion],\n"
                     + "[col_hierarchyid] = source.[col_hierarchyid],\n"
                     + "[col_geography] = source.[col_geography],\n"
                     + "[col_geometry] = source.[col_geometry],\n"
                     + "[col_not_null] = source.[col_not_null]\n"
-                    + "WHEN NOT MATCHED THEN INSERT ([col_tinyint], [col_smallint], [col_int],"
-                    + " [col_bigint], [col_decimal], [col_numeric], [col_money], [col_smallmoney],"
-                    + " [col_real], [col_float], [col_bit], [col_char], [col_varchar],"
-                    + " [col_varchar_max], [col_text], [col_nchar], [col_nvarchar],"
+                    + "WHEN NOT MATCHED THEN INSERT ([id], [col_tinyint], [col_smallint],"
+                    + " [col_int], [col_bigint], [col_decimal], [col_numeric], [col_money],"
+                    + " [col_smallmoney], [col_real], [col_float], [col_bit], [col_char],"
+                    + " [col_varchar], [col_varchar_max], [col_text], [col_nchar], [col_nvarchar],"
                     + " [col_nvarchar_max], [col_ntext], [col_binary], [col_varbinary],"
                     + " [col_varbinary_max], [col_image], [col_date], [col_time], [col_datetime],"
                     + " [col_smalldatetime], [col_datetime2], [col_datetimeoffset],"
-                    + " [col_uniqueidentifier], [col_xml], [col_json], [col_hierarchyid],"
-                    + " [col_geography], [col_geometry], [col_not_null]) VALUES ("),
+                    + " [col_uniqueidentifier], [col_xml], [col_json], [col_rowversion],"
+                    + " [col_hierarchyid], [col_geography], [col_geometry], [col_not_null]) VALUES"
+                    + " ("),
+            Fragment.encode(AllScalarTypesId.sqlServerType, unsaved.id()),
+            Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.tinyint.opt(), unsaved.colTinyint()),
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.smallint.opt(), unsaved.colSmallint()),
@@ -736,7 +732,9 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.xml.opt(), unsaved.colXml()),
             Fragment.lit(", "),
-            Fragment.encode(SqlServerTypes.nvarchar.opt(), unsaved.colJson()),
+            Fragment.encode(SqlServerTypes.json.opt(), unsaved.colJson()),
+            Fragment.lit(", "),
+            Fragment.encode(SqlServerTypes.rowversion, unsaved.colRowversion()),
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.hierarchyid.opt(), unsaved.colHierarchyid()),
             Fragment.lit(", "),
@@ -765,7 +763,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .updateReturning(AllScalarTypesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<AllScalarTypesRow> upsertBatch(Iterator<AllScalarTypesRow> unsaved, Connection c) {
@@ -849,5 +846,4 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .updateReturningEach(AllScalarTypesRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

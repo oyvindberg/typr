@@ -18,11 +18,10 @@ public class VInventoryStatusViewRepoImpl implements VInventoryStatusViewRepo {
   public SelectBuilder<VInventoryStatusViewFields, VInventoryStatusViewRow> select() {
     return SelectBuilder.of(
         "`v_inventory_status`",
-        VInventoryStatusViewFields.structure(),
+        VInventoryStatusViewFields.structure,
         VInventoryStatusViewRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<VInventoryStatusViewRow> selectAll(Connection c) {
@@ -36,5 +35,4 @@ public class VInventoryStatusViewRepoImpl implements VInventoryStatusViewRepo {
         .query(VInventoryStatusViewRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

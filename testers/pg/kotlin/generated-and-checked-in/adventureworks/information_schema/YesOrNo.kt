@@ -19,10 +19,10 @@ data class YesOrNo(@JsonValue val value: String) {
     val bijection: Bijection<YesOrNo, String> =
       Bijection.of(YesOrNo::value, ::YesOrNo)
 
-    val pgType: PgType<YesOrNo> =
+    val dbType: PgType<YesOrNo> =
       PgTypes.text.bimap(::YesOrNo, YesOrNo::value).renamed("\"information_schema\".\"yes_or_no\"")
 
-    val pgTypeArray: PgType<Array<YesOrNo>> =
+    val dbTypeArray: PgType<Array<YesOrNo>> =
       PgTypes.textArray.bimap({ xs -> arrayMap.map(xs, ::YesOrNo, YesOrNo::class.java) }, { xs -> arrayMap.map(xs, YesOrNo::value, String::class.java) }).renamed("\"information_schema\".\"yes_or_no\"[]")
   }
 }

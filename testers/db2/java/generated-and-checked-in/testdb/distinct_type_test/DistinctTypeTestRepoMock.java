@@ -48,7 +48,7 @@ public record DistinctTypeTestRepoMock(
   @Override
   public DeleteBuilder<DistinctTypeTestFields, DistinctTypeTestRow> delete() {
     return new DeleteBuilderMock<>(
-        DistinctTypeTestFields.structure(),
+        DistinctTypeTestFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.id(),
@@ -97,7 +97,7 @@ public record DistinctTypeTestRepoMock(
   @Override
   public SelectBuilder<DistinctTypeTestFields, DistinctTypeTestRow> select() {
     return new SelectBuilderMock<>(
-        DistinctTypeTestFields.structure(),
+        DistinctTypeTestFields.structure,
         () -> new ArrayList<>(map.values()),
         SelectParams.empty());
   }
@@ -141,7 +141,7 @@ public record DistinctTypeTestRepoMock(
   @Override
   public UpdateBuilder<DistinctTypeTestFields, DistinctTypeTestRow> update() {
     return new UpdateBuilderMock<>(
-        DistinctTypeTestFields.structure(),
+        DistinctTypeTestFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

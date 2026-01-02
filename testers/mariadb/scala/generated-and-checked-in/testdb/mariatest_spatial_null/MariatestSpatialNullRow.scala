@@ -7,6 +7,7 @@ package testdb.mariatest_spatial_null
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple9
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -60,7 +61,7 @@ case class MariatestSpatialNullRow(
    * Default: NULL
    */
   @JsonProperty("geometrycollection_col") geometrycollectionCol: Option[GeometryCollection]
-) {
+) extends Tuple9[MariatestSpatialNullId, Option[Geometry], Option[Point], Option[LineString], Option[Polygon], Option[MultiPoint], Option[MultiLineString], Option[MultiPolygon], Option[GeometryCollection]] {
   def toUnsavedRow(
     geometryCol: Defaulted[Option[Geometry]] = Defaulted.Provided(this.geometryCol),
     pointCol: Defaulted[Option[Point]] = Defaulted.Provided(this.pointCol),
@@ -82,8 +83,26 @@ case class MariatestSpatialNullRow(
       geometrycollectionCol
     )
   }
+
+  override def `_1`: MariatestSpatialNullId = id
+
+  override def `_2`: Option[Geometry] = geometryCol
+
+  override def `_3`: Option[Point] = pointCol
+
+  override def `_4`: Option[LineString] = linestringCol
+
+  override def `_5`: Option[Polygon] = polygonCol
+
+  override def `_6`: Option[MultiPoint] = multipointCol
+
+  override def `_7`: Option[MultiLineString] = multilinestringCol
+
+  override def `_8`: Option[MultiPolygon] = multipolygonCol
+
+  override def `_9`: Option[GeometryCollection] = geometrycollectionCol
 }
 
 object MariatestSpatialNullRow {
-  val `_rowParser`: RowParser[MariatestSpatialNullRow] = RowParsers.of(MariatestSpatialNullId.pgType, MariaTypes.geometry.nullable, MariaTypes.point.nullable, MariaTypes.linestring.nullable, MariaTypes.polygon.nullable, MariaTypes.multipoint.nullable, MariaTypes.multilinestring.nullable, MariaTypes.multipolygon.nullable, MariaTypes.geometrycollection.nullable)(MariatestSpatialNullRow.apply)(row => Array[Any](row.id, row.geometryCol, row.pointCol, row.linestringCol, row.polygonCol, row.multipointCol, row.multilinestringCol, row.multipolygonCol, row.geometrycollectionCol))
+  val `_rowParser`: RowParser[MariatestSpatialNullRow] = RowParsers.of(MariatestSpatialNullId.dbType, MariaTypes.geometry.nullable, MariaTypes.point.nullable, MariaTypes.linestring.nullable, MariaTypes.polygon.nullable, MariaTypes.multipoint.nullable, MariaTypes.multilinestring.nullable, MariaTypes.multipolygon.nullable, MariaTypes.geometrycollection.nullable)(MariatestSpatialNullRow.apply)(row => Array[Any](row.id, row.geometryCol, row.pointCol, row.linestringCol, row.polygonCol, row.multipointCol, row.multilinestringCol, row.multipolygonCol, row.geometrycollectionCol))
 }

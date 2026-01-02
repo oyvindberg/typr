@@ -42,11 +42,6 @@ object Publish extends BleepScript("Publish") {
           "oyvindberg",
           "Øyvind Raddum Berg",
           "https://github.com/oyvindberg"
-        ),
-        Info.Developer(
-          "eirikm",
-          "Eirik Meland",
-          "https://github.com/eirikm"
         )
       ),
       publication = None,

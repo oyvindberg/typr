@@ -10,13 +10,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 
 /** Type for the composite primary key of table `public.flaff` */
 public record FlaffId(
     ShortText code,
     @JsonProperty("another_code") String anotherCode,
     @JsonProperty("some_number") Integer someNumber,
-    ShortText specifier) {
+    ShortText specifier)
+    implements Tuple4<ShortText, String, Integer, ShortText> {
   public FlaffId withCode(ShortText code) {
     return new FlaffId(code, anotherCode, someNumber, specifier);
   }
@@ -39,11 +41,35 @@ public record FlaffId(
 
   public static RowParser<FlaffId> _rowParser =
       RowParsers.of(
-          ShortText.pgType,
+          ShortText.dbType,
           PgTypes.text,
           PgTypes.int4,
-          ShortText.pgType,
+          ShortText.dbType,
           FlaffId::new,
           row -> new Object[] {row.code(), row.anotherCode(), row.someNumber(), row.specifier()});
+  ;
+
+  @Override
+  public ShortText _1() {
+    return code;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return anotherCode;
+  }
+  ;
+
+  @Override
+  public Integer _3() {
+    return someNumber;
+  }
+  ;
+
+  @Override
+  public ShortText _4() {
+    return specifier;
+  }
   ;
 }

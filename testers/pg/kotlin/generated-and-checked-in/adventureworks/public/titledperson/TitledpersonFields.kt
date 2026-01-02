@@ -13,44 +13,42 @@ import adventureworks.public.title_domain.TitleDomainId
 import adventureworks.public.title_domain.TitleDomainRow
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.ForeignKey
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
+import dev.typr.foundations.kotlin.TupleExpr3
 import kotlin.collections.List
 
-interface TitledpersonFields : FieldsExpr<TitledpersonRow> {
-  abstract override fun columns(): List<FieldLike<*, TitledpersonRow>>
+data class TitledpersonFields(val _path: List<Path>) : TupleExpr3<TitleDomainId, TitleId, String>, RelationStructure<TitledpersonFields, TitledpersonRow>, FieldsBase<TitledpersonRow> {
+  override fun _1(): SqlExpr<TitleDomainId> = titleShort()
+
+  override fun _2(): SqlExpr<TitleId> = title()
+
+  override fun _3(): SqlExpr<String> = name()
+
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, TitledpersonRow>> = listOf(this.titleShort().underlying, this.title().underlying, this.name().underlying)
 
   fun fkTitle(): ForeignKey<TitleFields, TitleRow> = ForeignKey.of<TitleFields, TitleRow>("public.titledperson_title_fkey").withColumnPair<TitleId>(title(), TitleFields::code)
 
   fun fkTitleDomain(): ForeignKey<TitleDomainFields, TitleDomainRow> = ForeignKey.of<TitleDomainFields, TitleDomainRow>("public.titledperson_title_short_fkey").withColumnPair<TitleDomainId>(titleShort(), TitleDomainFields::code)
 
-  abstract fun name(): Field<String, TitledpersonRow>
+  fun name(): Field<String, TitledpersonRow> = Field<String, TitledpersonRow>(_path, "name", TitledpersonRow::name, null, null, { row, value -> row.copy(name = value) }, PgTypes.text)
 
   override fun rowParser(): RowParser<TitledpersonRow> = TitledpersonRow._rowParser.underlying
 
-  abstract fun title(): Field<TitleId, TitledpersonRow>
+  fun title(): Field<TitleId, TitledpersonRow> = Field<TitleId, TitledpersonRow>(_path, "title", TitledpersonRow::title, null, null, { row, value -> row.copy(title = value) }, TitleId.dbType)
 
-  abstract fun titleShort(): Field<TitleDomainId, TitledpersonRow>
+  fun titleShort(): Field<TitleDomainId, TitledpersonRow> = Field<TitleDomainId, TitledpersonRow>(_path, "title_short", TitledpersonRow::titleShort, null, "text", { row, value -> row.copy(titleShort = value) }, TitleDomainId.dbType)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<TitledpersonFields, TitledpersonRow> = TitledpersonFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : TitledpersonFields, RelationStructure<TitledpersonFields, TitledpersonRow> {
-      override fun titleShort(): Field<TitleDomainId, TitledpersonRow> = Field<TitleDomainId, TitledpersonRow>(_path, "title_short", TitledpersonRow::titleShort, null, "text", { row, value -> row.copy(titleShort = value) }, TitleDomainId.pgType)
-
-      override fun title(): Field<TitleId, TitledpersonRow> = Field<TitleId, TitledpersonRow>(_path, "title", TitledpersonRow::title, null, null, { row, value -> row.copy(title = value) }, TitleId.pgType)
-
-      override fun name(): Field<String, TitledpersonRow> = Field<String, TitledpersonRow>(_path, "name", TitledpersonRow::name, null, null, { row, value -> row.copy(name = value) }, PgTypes.text)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, TitledpersonRow>> = listOf(this.titleShort().underlying, this.title().underlying, this.name().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<TitledpersonFields, TitledpersonRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: TitledpersonFields = TitledpersonFields(emptyList<Path>())
   }
 }

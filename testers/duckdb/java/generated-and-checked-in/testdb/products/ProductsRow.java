@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
 import dev.typr.foundations.data.Json;
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -19,7 +20,8 @@ public record ProductsRow(
     String sku,
     String name,
     BigDecimal price,
-    Optional<Json> metadata) {
+    Optional<Json> metadata)
+    implements Tuple5<ProductsId, String, String, BigDecimal, Optional<Json>> {
   public ProductsRow withProductId(ProductsId productId) {
     return new ProductsRow(productId, sku, name, price, metadata);
   }
@@ -55,6 +57,36 @@ public record ProductsRow(
           ProductsRow::new,
           row ->
               new Object[] {row.productId(), row.sku(), row.name(), row.price(), row.metadata()});
+  ;
+
+  @Override
+  public ProductsId _1() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return sku;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return name;
+  }
+  ;
+
+  @Override
+  public BigDecimal _4() {
+    return price;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _5() {
+    return metadata;
+  }
   ;
 
   public ProductsId id() {

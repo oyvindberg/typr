@@ -11,7 +11,7 @@ import adventureworks.sales.salesperson.SalespersonRepoImpl;
 import adventureworks.userdefined.FirstName;
 import dev.typr.foundations.dsl.Bijection;
 import dev.typr.foundations.dsl.SqlExpr;
-import dev.typr.foundations.dsl.Tuples;
+import dev.typr.foundations.dsl.TupleExpr;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -124,7 +124,7 @@ public class DSLTest extends SnapshotTest {
               personRepoImpl
                   .select()
                   .where(p -> p.businessentityid().isEqual(personRow.businessentityid()))
-                  .map(p -> p.firstname(), p -> p.lastname());
+                  .map(p -> p.firstname().tupleWith(p.lastname()));
 
           // Verify SQL generation
           compareFragment("mapProjectsColumns", projected.sql());
@@ -167,7 +167,7 @@ public class DSLTest extends SnapshotTest {
                   .where(p -> p.businessentityid().isEqual(personRow.businessentityid()))
                   .join(emailaddressRepoImpl.select())
                   .on(pe -> pe._1().businessentityid().isEqual(pe._2().businessentityid()))
-                  .map(pe -> pe._1().firstname(), pe -> pe._2().emailaddress());
+                  .map(pe -> pe._1().firstname().tupleWith(pe._2().emailaddress()));
 
           // Verify SQL generation
           compareFragment("mapAfterJoin", projected.sql());
@@ -177,7 +177,7 @@ public class DSLTest extends SnapshotTest {
           assertEquals(1, results.size());
           assertEquals(new FirstName("Jane"), results.get(0)._1());
 
-          // Test nested tuple syntax: Tuples.of() can be used as a SqlExpr
+          // Test nested tuple syntax: Tuple.of() can be used as a SqlExpr
           var nestedProjected =
               personRepoImpl
                   .select()
@@ -185,14 +185,16 @@ public class DSLTest extends SnapshotTest {
                   .join(emailaddressRepoImpl.select())
                   .on(pe -> pe._1().businessentityid().isEqual(pe._2().businessentityid()))
                   .map(
-                      pe -> Tuples.of(pe._1().firstname(), pe._1().lastname()),
-                      pe -> pe._2().emailaddress());
+                      pe ->
+                          pe._1()
+                              .firstname()
+                              .tupleWith(pe._1().lastname(), pe._2().emailaddress()));
 
           // Execute - result is Tuple2<Tuple2<FirstName, Name>, Optional<String>>
           var nestedResults = nestedProjected.toList(c);
           assertEquals(1, nestedResults.size());
           // First element is a nested tuple
-          var nameTuple = nestedResults.get(0)._1();
+          var nameTuple = nestedResults.get(0);
           assertEquals(new FirstName("Jane"), nameTuple._1());
           assertEquals(new Name("Smith"), nameTuple._2());
         });
@@ -334,7 +336,10 @@ public class DSLTest extends SnapshotTest {
               personRepoImpl
                   .select()
                   .where(p -> p.businessentityid().isEqual(personRow.businessentityid()))
-                  .map(p -> Tuples.of(p.firstname(), p.lastname()), p -> p.businessentityid());
+                  .map(
+                      p ->
+                          TupleExpr.of(p.firstname(), p.lastname())
+                              .tupleWith(p.businessentityid()));
 
           // Now multisetOn with the projected query
           // The parent fields are: TupleExpr2<Tuple2<FirstName, Name>, BusinessentityId>
@@ -398,7 +403,8 @@ public class DSLTest extends SnapshotTest {
                   .insert(c);
 
           // Find persons whose businessentityid is IN the email table
-          var subquery = emailaddressRepoImpl.select().map(e -> e.businessentityid());
+          var subquery =
+              emailaddressRepoImpl.select().map(e -> e.businessentityid().tupleWith()).subquery();
 
           var query =
               personRepoImpl
@@ -410,7 +416,7 @@ public class DSLTest extends SnapshotTest {
                               .or(
                                   p.businessentityid().isEqual(person2.businessentityid()),
                                   dev.typr.foundations.dsl.Bijection.asBool()))
-                  .where(p -> p.businessentityid().inSubquery(subquery));
+                  .where(p -> p.businessentityid().tupleWith().in(subquery));
 
           // Verify SQL generation
           compareFragment("inSubqueryFindsMatchingRows", query.sql());
@@ -1119,9 +1125,11 @@ public class DSLTest extends SnapshotTest {
                                   Bijection.asBool()))
                   .orderBy(p -> p.firstname().asc())
                   .map(
-                      p -> p.firstname(),
-                      // Only include lastname if person is an employee (EM type)
-                      p -> p.lastname().includeIf(p.persontype().isEqual("EM")));
+                      p ->
+                          TupleExpr.of(
+                              p.firstname(),
+                              // Only include lastname if person is an employee (EM type)
+                              p.lastname().includeIf(p.persontype().isEqual("EM"))));
 
           // Verify SQL generation
           compareFragment("includeIfReturnsOptionalBasedOnPredicate", query.sql());
@@ -1161,11 +1169,13 @@ public class DSLTest extends SnapshotTest {
                   .select()
                   .where(p -> p.businessentityid().isEqual(person.businessentityid()))
                   .map(
-                      p -> p.firstname(),
                       p ->
-                          p.lastname()
-                              .includeIf(
-                                  new SqlExpr.ConstReq<>(true, dev.typr.foundations.PgTypes.bool)));
+                          TupleExpr.of(
+                              p.firstname(),
+                              p.lastname()
+                                  .includeIf(
+                                      new SqlExpr.ConstReq<>(
+                                          true, dev.typr.foundations.PgTypes.bool))));
 
           var results = query.toList(c);
           assertEquals(1, results.size());
@@ -1195,12 +1205,13 @@ public class DSLTest extends SnapshotTest {
                   .select()
                   .where(p -> p.businessentityid().isEqual(person.businessentityid()))
                   .map(
-                      p -> p.firstname(),
                       p ->
-                          p.lastname()
-                              .includeIf(
-                                  new SqlExpr.ConstReq<>(
-                                      false, dev.typr.foundations.PgTypes.bool)));
+                          TupleExpr.of(
+                              p.firstname(),
+                              p.lastname()
+                                  .includeIf(
+                                      new SqlExpr.ConstReq<>(
+                                          false, dev.typr.foundations.PgTypes.bool))));
 
           var results = query.toList(c);
           assertEquals(1, results.size());
@@ -1238,7 +1249,7 @@ public class DSLTest extends SnapshotTest {
                   .select()
                   .where(p -> p.lastname().isEqual(new Name("GroupTest")))
                   .groupBy(p -> p.persontype())
-                  .select(p -> Tuples.of(p.persontype(), SqlExpr.count()));
+                  .select(p -> TupleExpr.of(p.persontype(), SqlExpr.count()));
 
           // Verify SQL generation
           compareFragment("groupByCountStarCountsRowsPerGroup", query.sql());
@@ -1290,7 +1301,7 @@ public class DSLTest extends SnapshotTest {
                           SqlExpr.count()
                               .greaterThan(
                                   new SqlExpr.ConstReq<>(1L, dev.typr.foundations.PgTypes.int8)))
-                  .select(p -> Tuples.of(p.persontype(), SqlExpr.count()));
+                  .select(p -> TupleExpr.of(p.persontype(), SqlExpr.count()));
 
           // Verify SQL generation
           compareFragment("groupByWithHavingFiltersGroups", query.sql());
@@ -1361,7 +1372,7 @@ public class DSLTest extends SnapshotTest {
             .select()
             .where(p -> p.lastname().isEqual(new Name("Test")))
             .groupBy(p -> p.persontype())
-            .select(p -> Tuples.of(p.persontype(), SqlExpr.count()));
+            .select(p -> TupleExpr.of(p.persontype(), SqlExpr.count()));
 
     // Execute grouped query and verify (without join)
     var groupedResults = grouped.toList(null);
@@ -1424,7 +1435,7 @@ public class DSLTest extends SnapshotTest {
                   .groupBy(p -> p.persontype())
                   .select(
                       p ->
-                          Tuples.of(
+                          TupleExpr.of(
                               p.persontype(),
                               SqlExpr.min(p.firstname()),
                               SqlExpr.max(p.firstname())));
@@ -1498,7 +1509,7 @@ public class DSLTest extends SnapshotTest {
                   .select()
                   .where(p -> p.lastname().isEqual(new Name("JoinTest")))
                   .groupBy(p -> p.persontype())
-                  .select(p -> Tuples.of(p.persontype(), SqlExpr.count()));
+                  .select(p -> TupleExpr.of(p.persontype(), SqlExpr.count()));
 
           // Join the grouped results with departments using a cross join (always true)
           // This tests the SQL rendering of GroupedTableState in join context

@@ -18,11 +18,10 @@ public class CustomerOrdersViewRepoImpl implements CustomerOrdersViewRepo {
   public SelectBuilder<CustomerOrdersViewFields, CustomerOrdersViewRow> select() {
     return SelectBuilder.of(
         "\"customer_orders\"",
-        CustomerOrdersViewFields.structure(),
+        CustomerOrdersViewFields.structure,
         CustomerOrdersViewRow._rowParser,
         Dialect.DUCKDB);
   }
-  ;
 
   @Override
   public List<CustomerOrdersViewRow> selectAll(Connection c) {
@@ -34,5 +33,4 @@ public class CustomerOrdersViewRepoImpl implements CustomerOrdersViewRepo {
         .query(CustomerOrdersViewRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

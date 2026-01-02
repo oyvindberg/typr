@@ -12,12 +12,13 @@ import dev.typr.foundations.Fragment;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import testdb.customers.CustomersId;
 
 public class InsertOrderWithItemsSqlRepoImpl implements InsertOrderWithItemsSqlRepo {
   @Override
-  public Integer apply(
+  public List<InsertOrderWithItemsSqlRow> apply(
       Integer orderId,
       /* user-picked */ CustomersId customerId,
       Optional<LocalDate> orderDate,
@@ -51,8 +52,7 @@ public class InsertOrderWithItemsSqlRepoImpl implements InsertOrderWithItemsSqlR
                     + "    order_date,\n"
                     + "    total_amount,\n"
                     + "    status"))
-        .update()
+        .query(InsertOrderWithItemsSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

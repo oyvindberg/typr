@@ -7,6 +7,7 @@ package testdb.employees
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -27,12 +28,26 @@ data class EmployeesRow(
   val salary: BigDecimal?,
   /** Default: current_date */
   @JsonProperty("hire_date") val hireDate: LocalDate
-) {
+) : Tuple7<Int, String, String, String, String, BigDecimal?, LocalDate> {
+  override fun _1(): Int = empNumber
+
+  override fun _2(): String = empSuffix
+
+  override fun _3(): String = deptCode
+
+  override fun _4(): String = deptRegion
+
+  override fun _5(): String = empName
+
+  override fun _6(): BigDecimal? = salary
+
+  override fun _7(): LocalDate = hireDate
+
   fun compositeId(): EmployeesId = EmployeesId(empNumber, empSuffix)
 
   fun id(): EmployeesId = this.compositeId()
 
-  fun toUnsavedRow(hireDate: Defaulted<LocalDate>): EmployeesRowUnsaved = EmployeesRowUnsaved(empNumber, empSuffix, deptCode, deptRegion, empName, salary, hireDate)
+  fun toUnsavedRow(hireDate: Defaulted<LocalDate> = Defaulted.Provided(this.hireDate)): EmployeesRowUnsaved = EmployeesRowUnsaved(empNumber, empSuffix, deptCode, deptRegion, empName, salary, hireDate)
 
   companion object {
     val _rowParser: RowParser<EmployeesRow> = RowParsers.of(KotlinDbTypes.DuckDbTypes.integer, DuckDbTypes.varchar, DuckDbTypes.varchar, DuckDbTypes.varchar, DuckDbTypes.varchar, DuckDbTypes.numeric.nullable(), DuckDbTypes.date, { t0, t1, t2, t3, t4, t5, t6 -> EmployeesRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.empNumber, row.empSuffix, row.deptCode, row.deptRegion, row.empName, row.salary, row.hireDate) })

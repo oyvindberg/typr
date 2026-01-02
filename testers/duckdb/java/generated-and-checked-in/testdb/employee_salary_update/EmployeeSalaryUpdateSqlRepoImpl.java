@@ -11,11 +11,12 @@ import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.Fragment;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.util.List;
 import java.util.Optional;
 
 public class EmployeeSalaryUpdateSqlRepoImpl implements EmployeeSalaryUpdateSqlRepo {
   @Override
-  public Integer apply(
+  public List<EmployeeSalaryUpdateSqlRow> apply(
       Optional<BigDecimal> raisePercentage,
       BigDecimal newSalary,
       Integer empNumber,
@@ -48,8 +49,7 @@ public class EmployeeSalaryUpdateSqlRepoImpl implements EmployeeSalaryUpdateSqlR
                     + "    emp_name,\n"
                     + "    salary,\n"
                     + "    hire_date"))
-        .update()
+        .query(EmployeeSalaryUpdateSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

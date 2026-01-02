@@ -20,10 +20,10 @@ public record Flag(@JsonValue Boolean value) {
 
   public static Bijection<Flag, Boolean> bijection = Bijection.of(Flag::value, Flag::new);
 
-  public static PgType<Flag> pgType =
+  public static PgType<Flag> dbType =
       PgTypes.bool.bimap(Flag::new, Flag::value).renamed("\"public\".\"Flag\"");
 
-  public static PgType<Flag[]> pgTypeArray =
+  public static PgType<Flag[]> dbTypeArray =
       PgTypes.boolArray
           .bimap(
               xs -> arrayMap.map(xs, Flag::new, Flag.class),

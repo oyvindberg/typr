@@ -54,18 +54,18 @@ case class DomainsSqlRow(
 )
 
 object DomainsSqlRow {
-  implicit lazy val reads: Reads[DomainsSqlRow] = {
+  given reads: Reads[DomainsSqlRow] = {
     Reads[DomainsSqlRow](json => JsResult.fromTry(
         Try(
           DomainsSqlRow(
-            schema = json.\("schema").toOption.map(_.as(Reads.StringReads)),
-            name = json.\("name").as(Reads.StringReads),
-            `type` = json.\("type").as(Reads.StringReads),
-            collation = json.\("collation").toOption.map(_.as(Reads.StringReads)),
-            isNotNull = json.\("isNotNull").as(Reads.BooleanReads),
-            default = json.\("default").toOption.map(_.as(Reads.StringReads)),
-            constraintName = json.\("constraintName").toOption.map(_.as(Reads.StringReads)),
-            constraintDefinition = json.\("constraintDefinition").toOption.map(_.as(Reads.StringReads))
+            schema = json.\("schema").toOption.map(_.as(using Reads.StringReads)),
+            name = json.\("name").as(using Reads.StringReads),
+            `type` = json.\("type").as(using Reads.StringReads),
+            collation = json.\("collation").toOption.map(_.as(using Reads.StringReads)),
+            isNotNull = json.\("isNotNull").as(using Reads.BooleanReads),
+            default = json.\("default").toOption.map(_.as(using Reads.StringReads)),
+            constraintName = json.\("constraintName").toOption.map(_.as(using Reads.StringReads)),
+            constraintDefinition = json.\("constraintDefinition").toOption.map(_.as(using Reads.StringReads))
           )
         )
       ),
@@ -76,30 +76,30 @@ object DomainsSqlRow {
     RowParser[DomainsSqlRow] { row =>
       Success(
         DomainsSqlRow(
-          schema = row(idx + 0)(Column.columnToOption(Column.columnToString)),
-          name = row(idx + 1)(Column.columnToString),
-          `type` = row(idx + 2)(Column.columnToString),
-          collation = row(idx + 3)(Column.columnToOption(Column.columnToString)),
-          isNotNull = row(idx + 4)(Column.columnToBoolean),
-          default = row(idx + 5)(Column.columnToOption(Column.columnToString)),
-          constraintName = row(idx + 6)(Column.columnToOption(Column.columnToString)),
-          constraintDefinition = row(idx + 7)(Column.columnToOption(Column.columnToString))
+          schema = row(idx + 0)(using Column.columnToOption(using Column.columnToString)),
+          name = row(idx + 1)(using Column.columnToString),
+          `type` = row(idx + 2)(using Column.columnToString),
+          collation = row(idx + 3)(using Column.columnToOption(using Column.columnToString)),
+          isNotNull = row(idx + 4)(using Column.columnToBoolean),
+          default = row(idx + 5)(using Column.columnToOption(using Column.columnToString)),
+          constraintName = row(idx + 6)(using Column.columnToOption(using Column.columnToString)),
+          constraintDefinition = row(idx + 7)(using Column.columnToOption(using Column.columnToString))
         )
       )
     }
   }
 
-  implicit lazy val writes: OWrites[DomainsSqlRow] = {
+  given writes: OWrites[DomainsSqlRow] = {
     OWrites[DomainsSqlRow](o =>
       new JsObject(ListMap[String, JsValue](
-        "schema" -> Writes.OptionWrites(Writes.StringWrites).writes(o.schema),
+        "schema" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.schema),
         "name" -> Writes.StringWrites.writes(o.name),
         "type" -> Writes.StringWrites.writes(o.`type`),
-        "collation" -> Writes.OptionWrites(Writes.StringWrites).writes(o.collation),
+        "collation" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.collation),
         "isNotNull" -> Writes.BooleanWrites.writes(o.isNotNull),
-        "default" -> Writes.OptionWrites(Writes.StringWrites).writes(o.default),
-        "constraintName" -> Writes.OptionWrites(Writes.StringWrites).writes(o.constraintName),
-        "constraintDefinition" -> Writes.OptionWrites(Writes.StringWrites).writes(o.constraintDefinition)
+        "default" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.default),
+        "constraintName" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.constraintName),
+        "constraintDefinition" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.constraintDefinition)
       ))
     )
   }

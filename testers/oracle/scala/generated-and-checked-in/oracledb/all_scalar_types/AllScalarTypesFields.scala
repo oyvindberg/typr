@@ -7,127 +7,124 @@ package oracledb.all_scalar_types
 
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
+import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
 import dev.typr.foundations.dsl.SqlExpr.OptField
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr7
 import java.time.LocalDateTime
 import java.util.Optional
 
-trait AllScalarTypesFields extends FieldsExpr0[AllScalarTypesRow] {
-  def id: IdField[AllScalarTypesId, AllScalarTypesRow]
+class AllScalarTypesFields(val `_path`: java.util.List[Path]) extends TupleExpr7[AllScalarTypesId, String, java.math.BigDecimal, LocalDateTime, LocalDateTime, String, String] with RelationStructure[AllScalarTypesFields, AllScalarTypesRow]  with FieldsBase[AllScalarTypesRow] {
+  def id: IdField[AllScalarTypesId, AllScalarTypesRow] = {
+    new IdField[AllScalarTypesId, AllScalarTypesRow](
+      _path,
+      "ID",
+      _.id,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(id = value),
+      AllScalarTypesId.oracleType
+    )
+  }
 
-  def colVarchar2: OptField[String, AllScalarTypesRow]
+  def colVarchar2: OptField[String, AllScalarTypesRow] = {
+    new OptField[String, AllScalarTypesRow](
+      _path,
+      "COL_VARCHAR2",
+      _.colVarchar2,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(colVarchar2 = value),
+      OracleTypes.varchar2
+    )
+  }
 
-  def colNumber: OptField[java.math.BigDecimal, AllScalarTypesRow]
+  def colNumber: OptField[java.math.BigDecimal, AllScalarTypesRow] = {
+    new OptField[java.math.BigDecimal, AllScalarTypesRow](
+      _path,
+      "COL_NUMBER",
+      _.colNumber,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(colNumber = value),
+      OracleTypes.number
+    )
+  }
 
-  def colDate: OptField[LocalDateTime, AllScalarTypesRow]
+  def colDate: OptField[LocalDateTime, AllScalarTypesRow] = {
+    new OptField[LocalDateTime, AllScalarTypesRow](
+      _path,
+      "COL_DATE",
+      _.colDate,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(colDate = value),
+      OracleTypes.date
+    )
+  }
 
-  def colTimestamp: OptField[LocalDateTime, AllScalarTypesRow]
+  def colTimestamp: OptField[LocalDateTime, AllScalarTypesRow] = {
+    new OptField[LocalDateTime, AllScalarTypesRow](
+      _path,
+      "COL_TIMESTAMP",
+      _.colTimestamp,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(colTimestamp = value),
+      OracleTypes.timestamp
+    )
+  }
 
-  def colClob: OptField[String, AllScalarTypesRow]
+  def colClob: OptField[String, AllScalarTypesRow] = {
+    new OptField[String, AllScalarTypesRow](
+      _path,
+      "COL_CLOB",
+      _.colClob,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(colClob = value),
+      OracleTypes.clob
+    )
+  }
 
-  def colNotNull: Field[String, AllScalarTypesRow]
+  def colNotNull: Field[String, AllScalarTypesRow] = {
+    new Field[String, AllScalarTypesRow](
+      _path,
+      "COL_NOT_NULL",
+      _.colNotNull,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(colNotNull = value),
+      OracleTypes.varchar2
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, AllScalarTypesRow]]
+  override def columns: java.util.List[FieldLike[?, AllScalarTypesRow]] = java.util.List.of(this.id, this.colVarchar2, this.colNumber, this.colDate, this.colTimestamp, this.colClob, this.colNotNull)
 
   override def rowParser: RowParser[AllScalarTypesRow] = AllScalarTypesRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[AllScalarTypesFields, AllScalarTypesRow] = new AllScalarTypesFields(`_path`)
+
+  override def `_1`: SqlExpr[AllScalarTypesId] = id
+
+  override def `_2`: SqlExpr[String] = colVarchar2
+
+  override def `_3`: SqlExpr[java.math.BigDecimal] = colNumber
+
+  override def `_4`: SqlExpr[LocalDateTime] = colDate
+
+  override def `_5`: SqlExpr[LocalDateTime] = colTimestamp
+
+  override def `_6`: SqlExpr[String] = colClob
+
+  override def `_7`: SqlExpr[String] = colNotNull
 }
 
 object AllScalarTypesFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends AllScalarTypesFields with RelationStructure[AllScalarTypesFields, AllScalarTypesRow] {
-
-    override def id: IdField[AllScalarTypesId, AllScalarTypesRow] = {
-      new IdField[AllScalarTypesId, AllScalarTypesRow](
-        _path,
-        "ID",
-        _.id,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(id = value),
-        AllScalarTypesId.oracleType
-      )
-    }
-
-    override def colVarchar2: OptField[String, AllScalarTypesRow] = {
-      new OptField[String, AllScalarTypesRow](
-        _path,
-        "COL_VARCHAR2",
-        _.colVarchar2,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(colVarchar2 = value),
-        OracleTypes.varchar2
-      )
-    }
-
-    override def colNumber: OptField[java.math.BigDecimal, AllScalarTypesRow] = {
-      new OptField[java.math.BigDecimal, AllScalarTypesRow](
-        _path,
-        "COL_NUMBER",
-        _.colNumber,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(colNumber = value),
-        OracleTypes.number
-      )
-    }
-
-    override def colDate: OptField[LocalDateTime, AllScalarTypesRow] = {
-      new OptField[LocalDateTime, AllScalarTypesRow](
-        _path,
-        "COL_DATE",
-        _.colDate,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(colDate = value),
-        OracleTypes.date
-      )
-    }
-
-    override def colTimestamp: OptField[LocalDateTime, AllScalarTypesRow] = {
-      new OptField[LocalDateTime, AllScalarTypesRow](
-        _path,
-        "COL_TIMESTAMP",
-        _.colTimestamp,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(colTimestamp = value),
-        OracleTypes.timestamp
-      )
-    }
-
-    override def colClob: OptField[String, AllScalarTypesRow] = {
-      new OptField[String, AllScalarTypesRow](
-        _path,
-        "COL_CLOB",
-        _.colClob,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(colClob = value),
-        OracleTypes.clob
-      )
-    }
-
-    override def colNotNull: Field[String, AllScalarTypesRow] = {
-      new Field[String, AllScalarTypesRow](
-        _path,
-        "COL_NOT_NULL",
-        _.colNotNull,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(colNotNull = value),
-        OracleTypes.varchar2
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, AllScalarTypesRow]] = java.util.List.of(this.id, this.colVarchar2, this.colNumber, this.colDate, this.colTimestamp, this.colClob, this.colNotNull)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[AllScalarTypesFields, AllScalarTypesRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: AllScalarTypesFields = new AllScalarTypesFields(java.util.Collections.emptyList())
 }

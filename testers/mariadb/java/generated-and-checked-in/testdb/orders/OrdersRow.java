@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple22;
 import dev.typr.foundations.data.maria.Inet6;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -67,7 +68,30 @@ public record OrdersRow(
     /** Default: NULL */
     @JsonProperty("shipped_at") Optional<LocalDateTime> shippedAt,
     /** Default: NULL */
-    @JsonProperty("delivered_at") Optional<LocalDateTime> deliveredAt) {
+    @JsonProperty("delivered_at") Optional<LocalDateTime> deliveredAt)
+    implements Tuple22<
+        OrdersId,
+        String,
+        CustomersId,
+        String,
+        String,
+        Optional<CustomerAddressesId>,
+        Optional<CustomerAddressesId>,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        String,
+        Optional<PromotionsId>,
+        Optional<String>,
+        Optional<String>,
+        Optional<Inet6>,
+        Optional<String>,
+        LocalDateTime,
+        Optional<LocalDateTime>,
+        Optional<LocalDateTime>,
+        Optional<LocalDateTime>> {
   /** AUTO_INCREMENT */
   public OrdersRow withOrderId(OrdersId orderId) {
     return new OrdersRow(
@@ -686,20 +710,20 @@ public record OrdersRow(
 
   public static RowParser<OrdersRow> _rowParser =
       RowParsers.of(
-          OrdersId.pgType,
+          OrdersId.dbType,
           MariaTypes.varchar,
-          CustomersId.pgType,
+          CustomersId.dbType,
           MariaTypes.text,
           MariaTypes.text,
-          CustomerAddressesId.pgType.opt(),
-          CustomerAddressesId.pgType.opt(),
+          CustomerAddressesId.dbType.opt(),
+          CustomerAddressesId.dbType.opt(),
           MariaTypes.numeric,
           MariaTypes.numeric,
           MariaTypes.numeric,
           MariaTypes.numeric,
           MariaTypes.numeric,
           MariaTypes.char_,
-          PromotionsId.pgType.opt(),
+          PromotionsId.dbType.opt(),
           MariaTypes.text.opt(),
           MariaTypes.mediumtext.opt(),
           MariaTypes.inet6.opt(),
@@ -734,6 +758,138 @@ public record OrdersRow(
                 row.shippedAt(),
                 row.deliveredAt()
               });
+  ;
+
+  @Override
+  public OrdersId _1() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public BigDecimal _10() {
+    return taxAmount;
+  }
+  ;
+
+  @Override
+  public BigDecimal _11() {
+    return discountAmount;
+  }
+  ;
+
+  @Override
+  public BigDecimal _12() {
+    return totalAmount;
+  }
+  ;
+
+  @Override
+  public String _13() {
+    return currencyCode;
+  }
+  ;
+
+  @Override
+  public Optional<PromotionsId> _14() {
+    return promotionId;
+  }
+  ;
+
+  @Override
+  public Optional<String> _15() {
+    return notes;
+  }
+  ;
+
+  @Override
+  public Optional<String> _16() {
+    return internalNotes;
+  }
+  ;
+
+  @Override
+  public Optional<Inet6> _17() {
+    return ipAddress;
+  }
+  ;
+
+  @Override
+  public Optional<String> _18() {
+    return userAgent;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _19() {
+    return orderedAt;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return orderNumber;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _20() {
+    return confirmedAt;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _21() {
+    return shippedAt;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _22() {
+    return deliveredAt;
+  }
+  ;
+
+  @Override
+  public CustomersId _3() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return orderStatus;
+  }
+  ;
+
+  @Override
+  public String _5() {
+    return paymentStatus;
+  }
+  ;
+
+  @Override
+  public Optional<CustomerAddressesId> _6() {
+    return shippingAddressId;
+  }
+  ;
+
+  @Override
+  public Optional<CustomerAddressesId> _7() {
+    return billingAddressId;
+  }
+  ;
+
+  @Override
+  public BigDecimal _8() {
+    return subtotal;
+  }
+  ;
+
+  @Override
+  public BigDecimal _9() {
+    return shippingCost;
+  }
   ;
 
   public OrdersId id() {

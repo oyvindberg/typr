@@ -7,6 +7,8 @@ package testdb.db2testnull
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple24
+import dev.typr.foundations.data.Xml
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -40,8 +42,56 @@ case class Db2testnullRow(
   @JsonProperty("TIMESTAMP_COL") timestampCol: Option[LocalDateTime],
   @JsonProperty("TIMESTAMP6_COL") timestamp6Col: Option[LocalDateTime],
   @JsonProperty("TIMESTAMP12_COL") timestamp12Col: Option[LocalDateTime],
-  @JsonProperty("XML_COL") xmlCol: Option[/* XML */ String]
-)
+  @JsonProperty("XML_COL") xmlCol: Option[Xml]
+) extends Tuple24[Option[Short], Option[Int], Option[Long], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[Float], Option[Double], Option[Boolean], Option[String], Option[String], Option[String], Option[String], Option[String], Option[Array[Byte]], Option[Array[Byte]], Option[Array[Byte]], Option[LocalDate], Option[LocalTime], Option[LocalDateTime], Option[LocalDateTime], Option[LocalDateTime], Option[Xml]] {
+  override def `_1`: Option[Short] = smallintCol
+
+  override def `_2`: Option[Int] = intCol
+
+  override def `_3`: Option[Long] = bigintCol
+
+  override def `_4`: Option[BigDecimal] = decimalCol
+
+  override def `_5`: Option[BigDecimal] = numericCol
+
+  override def `_6`: Option[BigDecimal] = decfloat16Col
+
+  override def `_7`: Option[BigDecimal] = decfloat34Col
+
+  override def `_8`: Option[Float] = realCol
+
+  override def `_9`: Option[Double] = doubleCol
+
+  override def `_10`: Option[Boolean] = boolCol
+
+  override def `_11`: Option[String] = charCol
+
+  override def `_12`: Option[String] = varcharCol
+
+  override def `_13`: Option[String] = clobCol
+
+  override def `_14`: Option[String] = graphicCol
+
+  override def `_15`: Option[String] = vargraphicCol
+
+  override def `_16`: Option[Array[Byte]] = binaryCol
+
+  override def `_17`: Option[Array[Byte]] = varbinaryCol
+
+  override def `_18`: Option[Array[Byte]] = blobCol
+
+  override def `_19`: Option[LocalDate] = dateCol
+
+  override def `_20`: Option[LocalTime] = timeCol
+
+  override def `_21`: Option[LocalDateTime] = timestampCol
+
+  override def `_22`: Option[LocalDateTime] = timestamp6Col
+
+  override def `_23`: Option[LocalDateTime] = timestamp12Col
+
+  override def `_24`: Option[Xml] = xmlCol
+}
 
 object Db2testnullRow {
   val `_rowParser`: RowParser[Db2testnullRow] = RowParsers.of(ScalaDbTypes.Db2Types.smallint.nullable, ScalaDbTypes.Db2Types.integer.nullable, ScalaDbTypes.Db2Types.bigint.nullable, ScalaDbTypes.Db2Types.decimal.nullable, ScalaDbTypes.Db2Types.decimal.nullable, ScalaDbTypes.Db2Types.decfloat.nullable, ScalaDbTypes.Db2Types.decfloat.nullable, ScalaDbTypes.Db2Types.real.nullable, ScalaDbTypes.Db2Types.double_.nullable, ScalaDbTypes.Db2Types.boolean_.nullable, Db2Types.char_.nullable, Db2Types.varchar.nullable, Db2Types.clob.nullable, Db2Types.graphic.nullable, Db2Types.vargraphic.nullable, Db2Types.binary.nullable, Db2Types.varbinary.nullable, Db2Types.blob.nullable, Db2Types.date.nullable, Db2Types.time.nullable, Db2Types.timestamp.nullable, Db2Types.timestamp.nullable, Db2Types.timestamp.nullable, Db2Types.xml.nullable)(Db2testnullRow.apply)(row => Array[Any](row.smallintCol, row.intCol, row.bigintCol, row.decimalCol, row.numericCol, row.decfloat16Col, row.decfloat34Col, row.realCol, row.doubleCol, row.boolCol, row.charCol, row.varcharCol, row.clobCol, row.graphicCol, row.vargraphicCol, row.binaryCol, row.varbinaryCol, row.blobCol, row.dateCol, row.timeCol, row.timestampCol, row.timestamp6Col, row.timestamp12Col, row.xmlCol))

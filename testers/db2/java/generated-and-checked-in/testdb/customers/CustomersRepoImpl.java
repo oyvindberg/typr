@@ -24,27 +24,25 @@ import java.util.Optional;
 public class CustomersRepoImpl implements CustomersRepo {
   @Override
   public DeleteBuilder<CustomersFields, CustomersRow> delete() {
-    return DeleteBuilder.of("\"CUSTOMERS\"", CustomersFields.structure(), Dialect.DB2);
+    return DeleteBuilder.of("\"CUSTOMERS\"", CustomersFields.structure, Dialect.DB2);
   }
-  ;
 
   @Override
   public Boolean deleteById(CustomersId customerId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"CUSTOMERS\" where \"CUSTOMER_ID\" = "),
-                Fragment.encode(CustomersId.pgType, customerId),
+                Fragment.encode(CustomersId.dbType, customerId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(CustomersId[] customerIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : customerIds) {
-      fragments.add(Fragment.encode(CustomersId.pgType, id));
+      fragments.add(Fragment.encode(CustomersId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -54,7 +52,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CustomersRow insert(CustomersRow unsaved, Connection c) {
@@ -64,7 +61,7 @@ public class CustomersRepoImpl implements CustomersRepo {
                     + " (INSERT INTO \"CUSTOMERS\"(\"CUSTOMER_ID\", \"NAME\", \"EMAIL\","
                     + " \"CREATED_AT\")\n"
                     + "VALUES ("),
-            Fragment.encode(CustomersId.pgType, unsaved.customerId()),
+            Fragment.encode(CustomersId.dbType, unsaved.customerId()),
             Fragment.lit(", "),
             Fragment.encode(Db2Types.varchar, unsaved.name()),
             Fragment.lit(", "),
@@ -75,7 +72,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .updateReturning(CustomersRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CustomersRow insert(CustomersRowUnsaved unsaved, Connection c) {
@@ -93,7 +89,7 @@ public class CustomersRepoImpl implements CustomersRepo {
             () -> {},
             value -> {
               columns.add(Fragment.lit("\"CUSTOMER_ID\""));
-              values.add(interpolate(Fragment.encode(CustomersId.pgType, value), Fragment.lit("")));
+              values.add(interpolate(Fragment.encode(CustomersId.dbType, value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -118,14 +114,12 @@ public class CustomersRepoImpl implements CustomersRepo {
     ;
     return q.updateReturning(CustomersRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<CustomersFields, CustomersRow> select() {
     return SelectBuilder.of(
-        "\"CUSTOMERS\"", CustomersFields.structure(), CustomersRow._rowParser, Dialect.DB2);
+        "\"CUSTOMERS\"", CustomersFields.structure, CustomersRow._rowParser, Dialect.DB2);
   }
-  ;
 
   @Override
   public List<CustomersRow> selectAll(Connection c) {
@@ -136,7 +130,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .query(CustomersRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<CustomersRow> selectById(CustomersId customerId, Connection c) {
@@ -145,18 +138,17 @@ public class CustomersRepoImpl implements CustomersRepo {
                 "select \"CUSTOMER_ID\", \"NAME\", \"EMAIL\", \"CREATED_AT\"\n"
                     + "from \"CUSTOMERS\"\n"
                     + "where \"CUSTOMER_ID\" = "),
-            Fragment.encode(CustomersId.pgType, customerId),
+            Fragment.encode(CustomersId.dbType, customerId),
             Fragment.lit(""))
         .query(CustomersRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<CustomersRow> selectByIds(CustomersId[] customerIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : customerIds) {
-      fragments.add(Fragment.encode(CustomersId.pgType, id));
+      fragments.add(Fragment.encode(CustomersId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -168,7 +160,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .query(CustomersRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<CustomersId, CustomersRow> selectByIdsTracked(
@@ -177,7 +168,6 @@ public class CustomersRepoImpl implements CustomersRepo {
     selectByIds(customerIds, c).forEach(row -> ret.put(row.customerId(), row));
     return ret;
   }
-  ;
 
   @Override
   public Optional<CustomersRow> selectByUniqueEmail(String email, Connection c) {
@@ -191,14 +181,12 @@ public class CustomersRepoImpl implements CustomersRepo {
         .query(CustomersRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<CustomersFields, CustomersRow> update() {
     return UpdateBuilder.of(
-        "\"CUSTOMERS\"", CustomersFields.structure(), CustomersRow._rowParser, Dialect.DB2);
+        "\"CUSTOMERS\"", CustomersFields.structure, CustomersRow._rowParser, Dialect.DB2);
   }
-  ;
 
   @Override
   public Boolean update(CustomersRow row, Connection c) {
@@ -212,19 +200,18 @@ public class CustomersRepoImpl implements CustomersRepo {
                 Fragment.lit(",\n\"CREATED_AT\" = "),
                 Fragment.encode(Db2Types.timestamp.opt(), row.createdAt()),
                 Fragment.lit("\nwhere \"CUSTOMER_ID\" = "),
-                Fragment.encode(CustomersId.pgType, customerId),
+                Fragment.encode(CustomersId.dbType, customerId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public void upsert(CustomersRow unsaved, Connection c) {
     interpolate(
             Fragment.lit("MERGE INTO \"CUSTOMERS\" AS t\nUSING (VALUES ("),
-            Fragment.encode(CustomersId.pgType, unsaved.customerId()),
+            Fragment.encode(CustomersId.dbType, unsaved.customerId()),
             Fragment.lit(", "),
             Fragment.encode(Db2Types.varchar, unsaved.name()),
             Fragment.lit(", "),
@@ -239,7 +226,7 @@ public class CustomersRepoImpl implements CustomersRepo {
                     + "\"CREATED_AT\" = s.\"CREATED_AT\"\n"
                     + "WHEN NOT MATCHED THEN INSERT (\"CUSTOMER_ID\", \"NAME\", \"EMAIL\","
                     + " \"CREATED_AT\") VALUES ("),
-            Fragment.encode(CustomersId.pgType, unsaved.customerId()),
+            Fragment.encode(CustomersId.dbType, unsaved.customerId()),
             Fragment.lit(", "),
             Fragment.encode(Db2Types.varchar, unsaved.name()),
             Fragment.lit(", "),
@@ -250,7 +237,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public void upsertBatch(Iterator<CustomersRow> unsaved, Connection c) {
@@ -268,5 +254,4 @@ public class CustomersRepoImpl implements CustomersRepo {
         .updateMany(CustomersRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

@@ -11,7 +11,7 @@ import java.sql.Connection
 import anorm.SqlStringInterpolation
 
 class TableConstraintsViewRepoImpl extends TableConstraintsViewRepo {
-  override def selectAll(implicit c: Connection): List[TableConstraintsViewRow] = {
+  override def selectAll(using c: Connection): List[TableConstraintsViewRow] = {
     SQL"""select "constraint_catalog", "constraint_schema", "constraint_name", "table_catalog", "table_schema", "table_name", "constraint_type", "is_deferrable", "initially_deferred", "enforced", "nulls_distinct"
     from "information_schema"."table_constraints"
     """.as(TableConstraintsViewRow.rowParser(1).*)

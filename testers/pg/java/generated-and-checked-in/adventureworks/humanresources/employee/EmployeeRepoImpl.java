@@ -28,34 +28,31 @@ public class EmployeeRepoImpl implements EmployeeRepo {
   @Override
   public DeleteBuilder<EmployeeFields, EmployeeRow> delete() {
     return DeleteBuilder.of(
-        "\"humanresources\".\"employee\"", EmployeeFields.structure(), Dialect.POSTGRESQL);
+        "\"humanresources\".\"employee\"", EmployeeFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(BusinessentityId businessentityid, Connection c) {
     return interpolate(
                 Fragment.lit(
                     "delete from \"humanresources\".\"employee\" where \"businessentityid\" = "),
-                Fragment.encode(BusinessentityId.pgType, businessentityid),
+                Fragment.encode(BusinessentityId.dbType, businessentityid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(BusinessentityId[] businessentityids, Connection c) {
     return interpolate(
             Fragment.lit(
                 "delete\nfrom \"humanresources\".\"employee\"\nwhere \"businessentityid\" = ANY("),
-            Fragment.encode(BusinessentityId.pgTypeArray, businessentityids),
+            Fragment.encode(BusinessentityId.dbTypeArray, businessentityids),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public EmployeeRow insert(EmployeeRow unsaved, Connection c) {
@@ -67,7 +64,7 @@ public class EmployeeRepoImpl implements EmployeeRepo {
                     + " \"vacationhours\", \"sickleavehours\", \"currentflag\", \"rowguid\","
                     + " \"modifieddate\", \"organizationnode\")\n"
                     + "values ("),
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.text, unsaved.nationalidnumber()),
             Fragment.lit(", "),
@@ -83,13 +80,13 @@ public class EmployeeRepoImpl implements EmployeeRepo {
             Fragment.lit("::bpchar, "),
             Fragment.encode(PgTypes.date, unsaved.hiredate()),
             Fragment.lit("::date, "),
-            Fragment.encode(Flag.pgType, unsaved.salariedflag()),
+            Fragment.encode(Flag.dbType, unsaved.salariedflag()),
             Fragment.lit("::bool, "),
             Fragment.encode(PgTypes.int2, unsaved.vacationhours()),
             Fragment.lit("::int2, "),
             Fragment.encode(PgTypes.int2, unsaved.sickleavehours()),
             Fragment.lit("::int2, "),
-            Fragment.encode(Flag.pgType, unsaved.currentflag()),
+            Fragment.encode(Flag.dbType, unsaved.currentflag()),
             Fragment.lit("::bool, "),
             Fragment.encode(PgTypes.uuid, unsaved.rowguid()),
             Fragment.lit("::uuid, "),
@@ -105,7 +102,6 @@ public class EmployeeRepoImpl implements EmployeeRepo {
         .updateReturning(EmployeeRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public EmployeeRow insert(EmployeeRowUnsaved unsaved, Connection c) {
@@ -116,7 +112,7 @@ public class EmployeeRepoImpl implements EmployeeRepo {
     columns.add(Fragment.lit("\"businessentityid\""));
     values.add(
         interpolate(
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"nationalidnumber\""));
     values.add(
@@ -144,7 +140,7 @@ public class EmployeeRepoImpl implements EmployeeRepo {
             () -> {},
             value -> {
               columns.add(Fragment.lit("\"salariedflag\""));
-              values.add(interpolate(Fragment.encode(Flag.pgType, value), Fragment.lit("::bool")));
+              values.add(interpolate(Fragment.encode(Flag.dbType, value), Fragment.lit("::bool")));
             });
     ;
     unsaved
@@ -171,7 +167,7 @@ public class EmployeeRepoImpl implements EmployeeRepo {
             () -> {},
             value -> {
               columns.add(Fragment.lit("\"currentflag\""));
-              values.add(interpolate(Fragment.encode(Flag.pgType, value), Fragment.lit("::bool")));
+              values.add(interpolate(Fragment.encode(Flag.dbType, value), Fragment.lit("::bool")));
             });
     ;
     unsaved
@@ -218,7 +214,6 @@ public class EmployeeRepoImpl implements EmployeeRepo {
     ;
     return q.updateReturning(EmployeeRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<EmployeeRow> unsaved, Integer batchSize, Connection c) {
@@ -232,7 +227,6 @@ public class EmployeeRepoImpl implements EmployeeRepo {
         c,
         EmployeeRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -249,17 +243,15 @@ public class EmployeeRepoImpl implements EmployeeRepo {
         c,
         EmployeeRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<EmployeeFields, EmployeeRow> select() {
     return SelectBuilder.of(
         "\"humanresources\".\"employee\"",
-        EmployeeFields.structure(),
+        EmployeeFields.structure,
         EmployeeRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<EmployeeRow> selectAll(Connection c) {
@@ -273,7 +265,6 @@ public class EmployeeRepoImpl implements EmployeeRepo {
         .query(EmployeeRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<EmployeeRow> selectById(BusinessentityId businessentityid, Connection c) {
@@ -285,12 +276,11 @@ public class EmployeeRepoImpl implements EmployeeRepo {
                     + " \"rowguid\", \"modifieddate\", \"organizationnode\"\n"
                     + "from \"humanresources\".\"employee\"\n"
                     + "where \"businessentityid\" = "),
-            Fragment.encode(BusinessentityId.pgType, businessentityid),
+            Fragment.encode(BusinessentityId.dbType, businessentityid),
             Fragment.lit(""))
         .query(EmployeeRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<EmployeeRow> selectByIds(BusinessentityId[] businessentityids, Connection c) {
@@ -302,12 +292,11 @@ public class EmployeeRepoImpl implements EmployeeRepo {
                     + " \"rowguid\", \"modifieddate\", \"organizationnode\"\n"
                     + "from \"humanresources\".\"employee\"\n"
                     + "where \"businessentityid\" = ANY("),
-            Fragment.encode(BusinessentityId.pgTypeArray, businessentityids),
+            Fragment.encode(BusinessentityId.dbTypeArray, businessentityids),
             Fragment.lit(")"))
         .query(EmployeeRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<BusinessentityId, EmployeeRow> selectByIdsTracked(
@@ -316,17 +305,15 @@ public class EmployeeRepoImpl implements EmployeeRepo {
     selectByIds(businessentityids, c).forEach(row -> ret.put(row.businessentityid(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<EmployeeFields, EmployeeRow> update() {
     return UpdateBuilder.of(
         "\"humanresources\".\"employee\"",
-        EmployeeFields.structure(),
+        EmployeeFields.structure,
         EmployeeRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(EmployeeRow row, Connection c) {
@@ -348,13 +335,13 @@ public class EmployeeRepoImpl implements EmployeeRepo {
                 Fragment.lit("::bpchar,\n\"hiredate\" = "),
                 Fragment.encode(PgTypes.date, row.hiredate()),
                 Fragment.lit("::date,\n\"salariedflag\" = "),
-                Fragment.encode(Flag.pgType, row.salariedflag()),
+                Fragment.encode(Flag.dbType, row.salariedflag()),
                 Fragment.lit("::bool,\n\"vacationhours\" = "),
                 Fragment.encode(PgTypes.int2, row.vacationhours()),
                 Fragment.lit("::int2,\n\"sickleavehours\" = "),
                 Fragment.encode(PgTypes.int2, row.sickleavehours()),
                 Fragment.lit("::int2,\n\"currentflag\" = "),
-                Fragment.encode(Flag.pgType, row.currentflag()),
+                Fragment.encode(Flag.dbType, row.currentflag()),
                 Fragment.lit("::bool,\n\"rowguid\" = "),
                 Fragment.encode(PgTypes.uuid, row.rowguid()),
                 Fragment.lit("::uuid,\n\"modifieddate\" = "),
@@ -362,13 +349,12 @@ public class EmployeeRepoImpl implements EmployeeRepo {
                 Fragment.lit("::timestamp,\n\"organizationnode\" = "),
                 Fragment.encode(PgTypes.text.opt(), row.organizationnode()),
                 Fragment.lit("\nwhere \"businessentityid\" = "),
-                Fragment.encode(BusinessentityId.pgType, businessentityid),
+                Fragment.encode(BusinessentityId.dbType, businessentityid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public EmployeeRow upsert(EmployeeRow unsaved, Connection c) {
@@ -380,7 +366,7 @@ public class EmployeeRepoImpl implements EmployeeRepo {
                     + " \"vacationhours\", \"sickleavehours\", \"currentflag\", \"rowguid\","
                     + " \"modifieddate\", \"organizationnode\")\n"
                     + "values ("),
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.text, unsaved.nationalidnumber()),
             Fragment.lit(", "),
@@ -396,13 +382,13 @@ public class EmployeeRepoImpl implements EmployeeRepo {
             Fragment.lit("::bpchar, "),
             Fragment.encode(PgTypes.date, unsaved.hiredate()),
             Fragment.lit("::date, "),
-            Fragment.encode(Flag.pgType, unsaved.salariedflag()),
+            Fragment.encode(Flag.dbType, unsaved.salariedflag()),
             Fragment.lit("::bool, "),
             Fragment.encode(PgTypes.int2, unsaved.vacationhours()),
             Fragment.lit("::int2, "),
             Fragment.encode(PgTypes.int2, unsaved.sickleavehours()),
             Fragment.lit("::int2, "),
-            Fragment.encode(Flag.pgType, unsaved.currentflag()),
+            Fragment.encode(Flag.dbType, unsaved.currentflag()),
             Fragment.lit("::bool, "),
             Fragment.encode(PgTypes.uuid, unsaved.rowguid()),
             Fragment.lit("::uuid, "),
@@ -434,7 +420,6 @@ public class EmployeeRepoImpl implements EmployeeRepo {
         .updateReturning(EmployeeRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<EmployeeRow> upsertBatch(Iterator<EmployeeRow> unsaved, Connection c) {
@@ -470,7 +455,6 @@ public class EmployeeRepoImpl implements EmployeeRepo {
         .updateManyReturning(EmployeeRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -519,5 +503,4 @@ public class EmployeeRepoImpl implements EmployeeRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

@@ -7,6 +7,8 @@ package testdb.order_details
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple17
+import dev.typr.foundations.data.Uint2
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -46,13 +48,47 @@ case class OrderDetailsSqlRow(
   /** Points to [[testdb.order_items.OrderItemsRow.productName]] */
   @JsonProperty("product_name") productName: String,
   /** Points to [[testdb.order_items.OrderItemsRow.quantity]] */
-  quantity: Int,
+  quantity: Uint2,
   /** Points to [[testdb.order_items.OrderItemsRow.unitPrice]] */
   @JsonProperty("unit_price") unitPrice: BigDecimal,
   /** Points to [[testdb.order_items.OrderItemsRow.lineTotal]] */
   @JsonProperty("line_total") lineTotal: BigDecimal
-)
+) extends Tuple17[OrdersId, String, String, String, BigDecimal, BigDecimal, BigDecimal, BigDecimal, BigDecimal, LocalDateTime, OrderItemsId, ProductsId, String, String, Uint2, BigDecimal, BigDecimal] {
+  override def `_1`: OrdersId = orderId
+
+  override def `_2`: String = orderNumber
+
+  override def `_3`: String = orderStatus
+
+  override def `_4`: String = paymentStatus
+
+  override def `_5`: BigDecimal = subtotal
+
+  override def `_6`: BigDecimal = shippingCost
+
+  override def `_7`: BigDecimal = taxAmount
+
+  override def `_8`: BigDecimal = discountAmount
+
+  override def `_9`: BigDecimal = totalAmount
+
+  override def `_10`: LocalDateTime = orderedAt
+
+  override def `_11`: OrderItemsId = itemId
+
+  override def `_12`: ProductsId = productId
+
+  override def `_13`: String = sku
+
+  override def `_14`: String = productName
+
+  override def `_15`: Uint2 = quantity
+
+  override def `_16`: BigDecimal = unitPrice
+
+  override def `_17`: BigDecimal = lineTotal
+}
 
 object OrderDetailsSqlRow {
-  val `_rowParser`: RowParser[OrderDetailsSqlRow] = RowParsers.of(OrdersId.pgType, MariaTypes.varchar, MariaTypes.text, MariaTypes.text, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, MariaTypes.datetime, OrderItemsId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, ScalaDbTypes.MariaTypes.smallintUnsigned, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric)(OrderDetailsSqlRow.apply)(row => Array[Any](row.orderId, row.orderNumber, row.orderStatus, row.paymentStatus, row.subtotal, row.shippingCost, row.taxAmount, row.discountAmount, row.totalAmount, row.orderedAt, row.itemId, row.productId, row.sku, row.productName, row.quantity, row.unitPrice, row.lineTotal))
+  val `_rowParser`: RowParser[OrderDetailsSqlRow] = RowParsers.of(OrdersId.dbType, MariaTypes.varchar, MariaTypes.text, MariaTypes.text, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, MariaTypes.datetime, OrderItemsId.dbType, ProductsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.smallintUnsigned, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric)(OrderDetailsSqlRow.apply)(row => Array[Any](row.orderId, row.orderNumber, row.orderStatus, row.paymentStatus, row.subtotal, row.shippingCost, row.taxAmount, row.discountAmount, row.totalAmount, row.orderedAt, row.itemId, row.productId, row.sku, row.productName, row.quantity, row.unitPrice, row.lineTotal))
 }

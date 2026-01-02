@@ -26,9 +26,8 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
   @Override
   public DeleteBuilder<OnlyPkColumnsFields, OnlyPkColumnsRow> delete() {
     return DeleteBuilder.of(
-        "\"public\".\"only_pk_columns\"", OnlyPkColumnsFields.structure(), Dialect.POSTGRESQL);
+        "\"public\".\"only_pk_columns\"", OnlyPkColumnsFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(OnlyPkColumnsId compositeId, Connection c) {
@@ -43,7 +42,6 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(OnlyPkColumnsId[] compositeIds, Connection c) {
@@ -64,7 +62,6 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public OnlyPkColumnsRow insert(OnlyPkColumnsRow unsaved, Connection c) {
@@ -79,7 +76,6 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
         .updateReturning(OnlyPkColumnsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<OnlyPkColumnsRow> unsaved, Integer batchSize, Connection c) {
@@ -90,17 +86,15 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
         c,
         OnlyPkColumnsRow.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<OnlyPkColumnsFields, OnlyPkColumnsRow> select() {
     return SelectBuilder.of(
         "\"public\".\"only_pk_columns\"",
-        OnlyPkColumnsFields.structure(),
+        OnlyPkColumnsFields.structure,
         OnlyPkColumnsRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<OnlyPkColumnsRow> selectAll(Connection c) {
@@ -110,7 +104,6 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
         .query(OnlyPkColumnsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<OnlyPkColumnsRow> selectById(OnlyPkColumnsId compositeId, Connection c) {
@@ -126,7 +119,6 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
         .query(OnlyPkColumnsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<OnlyPkColumnsRow> selectByIds(OnlyPkColumnsId[] compositeIds, Connection c) {
@@ -147,7 +139,6 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
         .query(OnlyPkColumnsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<OnlyPkColumnsId, OnlyPkColumnsRow> selectByIdsTracked(
@@ -157,17 +148,15 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
     selectByIds(compositeIds, c).forEach(row -> ret.put(row.compositeId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<OnlyPkColumnsFields, OnlyPkColumnsRow> update() {
     return UpdateBuilder.of(
         "\"public\".\"only_pk_columns\"",
-        OnlyPkColumnsFields.structure(),
+        OnlyPkColumnsFields.structure,
         OnlyPkColumnsRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public OnlyPkColumnsRow upsert(OnlyPkColumnsRow unsaved, Connection c) {
@@ -186,7 +175,6 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
         .updateReturning(OnlyPkColumnsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<OnlyPkColumnsRow> upsertBatch(Iterator<OnlyPkColumnsRow> unsaved, Connection c) {
@@ -200,7 +188,6 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
         .updateManyReturning(OnlyPkColumnsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -229,5 +216,4 @@ public class OnlyPkColumnsRepoImpl implements OnlyPkColumnsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

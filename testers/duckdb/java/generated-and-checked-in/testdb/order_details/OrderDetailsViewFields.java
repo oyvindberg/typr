@@ -7,158 +7,168 @@ package testdb.order_details;
 
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr7;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface OrderDetailsViewFields extends FieldsExpr<OrderDetailsViewRow> {
-  record Impl(List<Path> _path)
-      implements OrderDetailsViewFields,
-          RelationStructure<OrderDetailsViewFields, OrderDetailsViewRow> {
-    @Override
-    public OptField<Integer, OrderDetailsViewRow> orderId() {
-      return new OptField<Integer, OrderDetailsViewRow>(
-          _path,
-          "order_id",
-          OrderDetailsViewRow::orderId,
-          Optional.empty(),
-          Optional.of("INTEGER"),
-          (row, value) -> row.withOrderId(value),
-          DuckDbTypes.integer);
-    }
-    ;
+public class OrderDetailsViewFields
+    extends TupleExpr7<Integer, LocalDate, String, String, Integer, BigDecimal, BigDecimal>
+    implements RelationStructure<OrderDetailsViewFields, OrderDetailsViewRow>,
+        FieldsBase<OrderDetailsViewRow> {
+  List<Path> _path;
 
-    @Override
-    public OptField<LocalDate, OrderDetailsViewRow> orderDate() {
-      return new OptField<LocalDate, OrderDetailsViewRow>(
-          _path,
-          "order_date",
-          OrderDetailsViewRow::orderDate,
-          Optional.empty(),
-          Optional.of("DATE"),
-          (row, value) -> row.withOrderDate(value),
-          DuckDbTypes.date);
-    }
-    ;
-
-    @Override
-    public OptField<String, OrderDetailsViewRow> customerName() {
-      return new OptField<String, OrderDetailsViewRow>(
-          _path,
-          "customer_name",
-          OrderDetailsViewRow::customerName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerName(value),
-          DuckDbTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, OrderDetailsViewRow> productName() {
-      return new OptField<String, OrderDetailsViewRow>(
-          _path,
-          "product_name",
-          OrderDetailsViewRow::productName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withProductName(value),
-          DuckDbTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<Integer, OrderDetailsViewRow> quantity() {
-      return new OptField<Integer, OrderDetailsViewRow>(
-          _path,
-          "quantity",
-          OrderDetailsViewRow::quantity,
-          Optional.empty(),
-          Optional.of("INTEGER"),
-          (row, value) -> row.withQuantity(value),
-          DuckDbTypes.integer);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, OrderDetailsViewRow> unitPrice() {
-      return new OptField<BigDecimal, OrderDetailsViewRow>(
-          _path,
-          "unit_price",
-          OrderDetailsViewRow::unitPrice,
-          Optional.empty(),
-          Optional.of("DECIMAL(10,2)"),
-          (row, value) -> row.withUnitPrice(value),
-          DuckDbTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, OrderDetailsViewRow> lineTotal() {
-      return new OptField<BigDecimal, OrderDetailsViewRow>(
-          _path,
-          "line_total",
-          OrderDetailsViewRow::lineTotal,
-          Optional.empty(),
-          Optional.of("DECIMAL(18,2)"),
-          (row, value) -> row.withLineTotal(value),
-          DuckDbTypes.numeric);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, OrderDetailsViewRow>> columns() {
-      return java.util.List.of(
-          this.orderId(),
-          this.orderDate(),
-          this.customerName(),
-          this.productName(),
-          this.quantity(),
-          this.unitPrice(),
-          this.lineTotal());
-    }
-    ;
-
-    @Override
-    public RelationStructure<OrderDetailsViewFields, OrderDetailsViewRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public OrderDetailsViewFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static OrderDetailsViewFields structure =
+      new OrderDetailsViewFields(java.util.Collections.emptyList());
+
+  public OptField<Integer, OrderDetailsViewRow> orderId() {
+    return new OptField<Integer, OrderDetailsViewRow>(
+        _path,
+        "order_id",
+        OrderDetailsViewRow::orderId,
+        Optional.empty(),
+        Optional.of("INTEGER"),
+        (row, value) -> row.withOrderId(value),
+        DuckDbTypes.integer);
   }
-  ;
 
-  OptField<Integer, OrderDetailsViewRow> orderId();
+  public OptField<LocalDate, OrderDetailsViewRow> orderDate() {
+    return new OptField<LocalDate, OrderDetailsViewRow>(
+        _path,
+        "order_date",
+        OrderDetailsViewRow::orderDate,
+        Optional.empty(),
+        Optional.of("DATE"),
+        (row, value) -> row.withOrderDate(value),
+        DuckDbTypes.date);
+  }
 
-  OptField<LocalDate, OrderDetailsViewRow> orderDate();
+  public OptField<String, OrderDetailsViewRow> customerName() {
+    return new OptField<String, OrderDetailsViewRow>(
+        _path,
+        "customer_name",
+        OrderDetailsViewRow::customerName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerName(value),
+        DuckDbTypes.varchar);
+  }
 
-  OptField<String, OrderDetailsViewRow> customerName();
+  public OptField<String, OrderDetailsViewRow> productName() {
+    return new OptField<String, OrderDetailsViewRow>(
+        _path,
+        "product_name",
+        OrderDetailsViewRow::productName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withProductName(value),
+        DuckDbTypes.varchar);
+  }
 
-  OptField<String, OrderDetailsViewRow> productName();
+  public OptField<Integer, OrderDetailsViewRow> quantity() {
+    return new OptField<Integer, OrderDetailsViewRow>(
+        _path,
+        "quantity",
+        OrderDetailsViewRow::quantity,
+        Optional.empty(),
+        Optional.of("INTEGER"),
+        (row, value) -> row.withQuantity(value),
+        DuckDbTypes.integer);
+  }
 
-  OptField<Integer, OrderDetailsViewRow> quantity();
+  public OptField<BigDecimal, OrderDetailsViewRow> unitPrice() {
+    return new OptField<BigDecimal, OrderDetailsViewRow>(
+        _path,
+        "unit_price",
+        OrderDetailsViewRow::unitPrice,
+        Optional.empty(),
+        Optional.of("DECIMAL(10,2)"),
+        (row, value) -> row.withUnitPrice(value),
+        DuckDbTypes.numeric);
+  }
 
-  OptField<BigDecimal, OrderDetailsViewRow> unitPrice();
-
-  OptField<BigDecimal, OrderDetailsViewRow> lineTotal();
+  public OptField<BigDecimal, OrderDetailsViewRow> lineTotal() {
+    return new OptField<BigDecimal, OrderDetailsViewRow>(
+        _path,
+        "line_total",
+        OrderDetailsViewRow::lineTotal,
+        Optional.empty(),
+        Optional.of("DECIMAL(18,2)"),
+        (row, value) -> row.withLineTotal(value),
+        DuckDbTypes.numeric);
+  }
 
   @Override
-  List<FieldLike<?, OrderDetailsViewRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<OrderDetailsViewRow> rowParser() {
+  public List<FieldLike<?, OrderDetailsViewRow>> columns() {
+    return java.util.List.of(
+        this.orderId(),
+        this.orderDate(),
+        this.customerName(),
+        this.productName(),
+        this.quantity(),
+        this.unitPrice(),
+        this.lineTotal());
+  }
+
+  @Override
+  public RowParser<OrderDetailsViewRow> rowParser() {
     return OrderDetailsViewRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<OrderDetailsViewFields, OrderDetailsViewRow> withPaths(
+      List<Path> _path) {
+    return new OrderDetailsViewFields(_path);
+  }
+
+  @Override
+  public SqlExpr<Integer> _1() {
+    return orderId();
+  }
+
+  @Override
+  public SqlExpr<LocalDate> _2() {
+    return orderDate();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return customerName();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return productName();
+  }
+
+  @Override
+  public SqlExpr<Integer> _5() {
+    return quantity();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _6() {
+    return unitPrice();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _7() {
+    return lineTotal();
+  }
 }

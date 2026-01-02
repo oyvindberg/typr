@@ -26,34 +26,31 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
   @Override
   public DeleteBuilder<BusinessentityFields, BusinessentityRow> delete() {
     return DeleteBuilder.of(
-        "\"person\".\"businessentity\"", BusinessentityFields.structure(), Dialect.POSTGRESQL);
+        "\"person\".\"businessentity\"", BusinessentityFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(BusinessentityId businessentityid, Connection c) {
     return interpolate(
                 Fragment.lit(
                     "delete from \"person\".\"businessentity\" where \"businessentityid\" = "),
-                Fragment.encode(BusinessentityId.pgType, businessentityid),
+                Fragment.encode(BusinessentityId.dbType, businessentityid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(BusinessentityId[] businessentityids, Connection c) {
     return interpolate(
             Fragment.lit(
                 "delete\nfrom \"person\".\"businessentity\"\nwhere \"businessentityid\" = ANY("),
-            Fragment.encode(BusinessentityId.pgTypeArray, businessentityids),
+            Fragment.encode(BusinessentityId.dbTypeArray, businessentityids),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public BusinessentityRow insert(BusinessentityRow unsaved, Connection c) {
@@ -62,7 +59,7 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
                 "insert into \"person\".\"businessentity\"(\"businessentityid\", \"rowguid\","
                     + " \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.uuid, unsaved.rowguid()),
             Fragment.lit("::uuid, "),
@@ -72,7 +69,6 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
         .updateReturning(BusinessentityRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public BusinessentityRow insert(BusinessentityRowUnsaved unsaved, Connection c) {
@@ -88,7 +84,7 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
               columns.add(Fragment.lit("\"businessentityid\""));
               values.add(
                   interpolate(
-                      Fragment.encode(BusinessentityId.pgType, value), Fragment.lit("::int4")));
+                      Fragment.encode(BusinessentityId.dbType, value), Fragment.lit("::int4")));
             });
     ;
     unsaved
@@ -127,7 +123,6 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
     ;
     return q.updateReturning(BusinessentityRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(
@@ -140,7 +135,6 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
         c,
         BusinessentityRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -154,17 +148,15 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
         c,
         BusinessentityRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<BusinessentityFields, BusinessentityRow> select() {
     return SelectBuilder.of(
         "\"person\".\"businessentity\"",
-        BusinessentityFields.structure(),
+        BusinessentityFields.structure,
         BusinessentityRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<BusinessentityRow> selectAll(Connection c) {
@@ -175,7 +167,6 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
         .query(BusinessentityRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<BusinessentityRow> selectById(BusinessentityId businessentityid, Connection c) {
@@ -184,12 +175,11 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
                 "select \"businessentityid\", \"rowguid\", \"modifieddate\"\n"
                     + "from \"person\".\"businessentity\"\n"
                     + "where \"businessentityid\" = "),
-            Fragment.encode(BusinessentityId.pgType, businessentityid),
+            Fragment.encode(BusinessentityId.dbType, businessentityid),
             Fragment.lit(""))
         .query(BusinessentityRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<BusinessentityRow> selectByIds(BusinessentityId[] businessentityids, Connection c) {
@@ -198,12 +188,11 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
                 "select \"businessentityid\", \"rowguid\", \"modifieddate\"\n"
                     + "from \"person\".\"businessentity\"\n"
                     + "where \"businessentityid\" = ANY("),
-            Fragment.encode(BusinessentityId.pgTypeArray, businessentityids),
+            Fragment.encode(BusinessentityId.dbTypeArray, businessentityids),
             Fragment.lit(")"))
         .query(BusinessentityRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<BusinessentityId, BusinessentityRow> selectByIdsTracked(
@@ -213,17 +202,15 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
     selectByIds(businessentityids, c).forEach(row -> ret.put(row.businessentityid(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<BusinessentityFields, BusinessentityRow> update() {
     return UpdateBuilder.of(
         "\"person\".\"businessentity\"",
-        BusinessentityFields.structure(),
+        BusinessentityFields.structure,
         BusinessentityRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(BusinessentityRow row, Connection c) {
@@ -235,13 +222,12 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
                 Fragment.lit("::uuid,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"businessentityid\" = "),
-                Fragment.encode(BusinessentityId.pgType, businessentityid),
+                Fragment.encode(BusinessentityId.dbType, businessentityid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public BusinessentityRow upsert(BusinessentityRow unsaved, Connection c) {
@@ -250,7 +236,7 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
                 "insert into \"person\".\"businessentity\"(\"businessentityid\", \"rowguid\","
                     + " \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.uuid, unsaved.rowguid()),
             Fragment.lit("::uuid, "),
@@ -265,7 +251,6 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
         .updateReturning(BusinessentityRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<BusinessentityRow> upsertBatch(Iterator<BusinessentityRow> unsaved, Connection c) {
@@ -282,7 +267,6 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
         .updateManyReturning(BusinessentityRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -314,5 +298,4 @@ public class BusinessentityRepoImpl implements BusinessentityRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

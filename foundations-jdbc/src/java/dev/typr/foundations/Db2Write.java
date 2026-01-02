@@ -106,11 +106,11 @@ public sealed interface Db2Write<A> extends DbWrite<A> permits Db2Write.Instance
   // ==================== Special Type Writers ====================
 
   // XML
-  Db2Write<String> writeXml =
+  Db2Write<dev.typr.foundations.data.Xml> writeXml =
       primitive(
           (ps, idx, xml) -> {
             java.sql.SQLXML sqlxml = ps.getConnection().createSQLXML();
-            sqlxml.setString(xml);
+            sqlxml.setString(xml.value());
             ps.setSQLXML(idx, sqlxml);
           });
 

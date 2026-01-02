@@ -7,16 +7,16 @@ package testdb.order_items;
 
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
 import dev.typr.foundations.dsl.SqlExpr;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn.Part;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -24,133 +24,129 @@ import testdb.orders.OrdersFields;
 import testdb.orders.OrdersId;
 import testdb.orders.OrdersRow;
 
-public interface OrderItemsFields extends FieldsExpr<OrderItemsRow> {
-  record Impl(List<Path> _path)
-      implements OrderItemsFields, RelationStructure<OrderItemsFields, OrderItemsRow> {
-    @Override
-    public IdField<OrdersId, OrderItemsRow> orderId() {
-      return new IdField<OrdersId, OrderItemsRow>(
-          _path,
-          "ORDER_ID",
-          OrderItemsRow::orderId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderId(value),
-          OrdersId.pgType);
-    }
-    ;
+public class OrderItemsFields extends TupleExpr5<OrdersId, Integer, String, Integer, BigDecimal>
+    implements RelationStructure<OrderItemsFields, OrderItemsRow>, FieldsBase<OrderItemsRow> {
+  List<Path> _path;
 
-    @Override
-    public IdField<Integer, OrderItemsRow> itemNumber() {
-      return new IdField<Integer, OrderItemsRow>(
-          _path,
-          "ITEM_NUMBER",
-          OrderItemsRow::itemNumber,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withItemNumber(value),
-          Db2Types.integer);
-    }
-    ;
-
-    @Override
-    public Field<String, OrderItemsRow> productName() {
-      return new Field<String, OrderItemsRow>(
-          _path,
-          "PRODUCT_NAME",
-          OrderItemsRow::productName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withProductName(value),
-          Db2Types.varchar);
-    }
-    ;
-
-    @Override
-    public Field<Integer, OrderItemsRow> quantity() {
-      return new Field<Integer, OrderItemsRow>(
-          _path,
-          "QUANTITY",
-          OrderItemsRow::quantity,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withQuantity(value),
-          Db2Types.integer);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, OrderItemsRow> unitPrice() {
-      return new Field<BigDecimal, OrderItemsRow>(
-          _path,
-          "UNIT_PRICE",
-          OrderItemsRow::unitPrice,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withUnitPrice(value),
-          Db2Types.decimal);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, OrderItemsRow>> columns() {
-      return java.util.List.of(
-          this.orderId(), this.itemNumber(), this.productName(), this.quantity(), this.unitPrice());
-    }
-    ;
-
-    @Override
-    public RelationStructure<OrderItemsFields, OrderItemsRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public OrderItemsFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static OrderItemsFields structure =
+      new OrderItemsFields(java.util.Collections.emptyList());
+
+  public IdField<OrdersId, OrderItemsRow> orderId() {
+    return new IdField<OrdersId, OrderItemsRow>(
+        _path,
+        "ORDER_ID",
+        OrderItemsRow::orderId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderId(value),
+        OrdersId.dbType);
   }
-  ;
 
-  IdField<OrdersId, OrderItemsRow> orderId();
+  public IdField<Integer, OrderItemsRow> itemNumber() {
+    return new IdField<Integer, OrderItemsRow>(
+        _path,
+        "ITEM_NUMBER",
+        OrderItemsRow::itemNumber,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withItemNumber(value),
+        Db2Types.integer);
+  }
 
-  IdField<Integer, OrderItemsRow> itemNumber();
+  public Field<String, OrderItemsRow> productName() {
+    return new Field<String, OrderItemsRow>(
+        _path,
+        "PRODUCT_NAME",
+        OrderItemsRow::productName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withProductName(value),
+        Db2Types.varchar);
+  }
 
-  Field<String, OrderItemsRow> productName();
+  public Field<Integer, OrderItemsRow> quantity() {
+    return new Field<Integer, OrderItemsRow>(
+        _path,
+        "QUANTITY",
+        OrderItemsRow::quantity,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withQuantity(value),
+        Db2Types.integer);
+  }
 
-  Field<Integer, OrderItemsRow> quantity();
+  public Field<BigDecimal, OrderItemsRow> unitPrice() {
+    return new Field<BigDecimal, OrderItemsRow>(
+        _path,
+        "UNIT_PRICE",
+        OrderItemsRow::unitPrice,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withUnitPrice(value),
+        Db2Types.decimal);
+  }
 
-  Field<BigDecimal, OrderItemsRow> unitPrice();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<OrdersFields, OrdersRow> fkOrders() {
+  public ForeignKey<OrdersFields, OrdersRow> fkOrders() {
     return ForeignKey.<OrdersFields, OrdersRow>of("FK_ORDER")
         .<OrdersId>withColumnPair(orderId(), OrdersFields::orderId);
   }
-  ;
 
-  default SqlExpr<Boolean> compositeIdIs(OrderItemsId compositeId) {
+  public SqlExpr<Boolean> compositeIdIs(OrderItemsId compositeId) {
     return SqlExpr.all(
         orderId().isEqual(compositeId.orderId()), itemNumber().isEqual(compositeId.itemNumber()));
   }
-  ;
 
-  default SqlExpr<Boolean> compositeIdIn(List<OrderItemsId> compositeIds) {
-    return new CompositeIn(
-        List.of(
-            new Part<OrdersId, OrderItemsId, OrderItemsRow>(
-                orderId(), OrderItemsId::orderId, OrdersId.pgType),
-            new Part<Integer, OrderItemsId, OrderItemsRow>(
-                itemNumber(), OrderItemsId::itemNumber, Db2Types.integer)),
-        compositeIds);
+  public SqlExpr<Boolean> compositeIdIn(List<OrderItemsId> compositeIds) {
+    return TupleExpr.of(orderId(), itemNumber()).among(compositeIds);
   }
-  ;
 
   @Override
-  List<FieldLike<?, OrderItemsRow>> columns();
+  public List<FieldLike<?, OrderItemsRow>> columns() {
+    return java.util.List.of(
+        this.orderId(), this.itemNumber(), this.productName(), this.quantity(), this.unitPrice());
+  }
 
   @Override
-  default RowParser<OrderItemsRow> rowParser() {
+  public RowParser<OrderItemsRow> rowParser() {
     return OrderItemsRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<OrderItemsFields, OrderItemsRow> withPaths(List<Path> _path) {
+    return new OrderItemsFields(_path);
+  }
+
+  @Override
+  public SqlExpr<OrdersId> _1() {
+    return orderId();
+  }
+
+  @Override
+  public SqlExpr<Integer> _2() {
+    return itemNumber();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return productName();
+  }
+
+  @Override
+  public SqlExpr<Integer> _4() {
+    return quantity();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _5() {
+    return unitPrice();
+  }
 }

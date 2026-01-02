@@ -7,47 +7,45 @@ package oracledb.contacts
 
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr4
 import kotlin.collections.List
 import oracledb.EmailTableT
 import oracledb.TagVarrayT
 
-interface ContactsFields : FieldsExpr<ContactsRow> {
-  abstract override fun columns(): List<FieldLike<*, ContactsRow>>
+data class ContactsFields(val _path: List<Path>) : TupleExpr4<ContactsId, String, EmailTableT, TagVarrayT>, RelationStructure<ContactsFields, ContactsRow>, FieldsBase<ContactsRow> {
+  override fun _1(): SqlExpr<ContactsId> = contactId()
 
-  abstract fun contactId(): IdField<ContactsId, ContactsRow>
+  override fun _2(): SqlExpr<String> = name()
 
-  abstract fun emails(): OptField<EmailTableT, ContactsRow>
+  override fun _3(): SqlExpr<EmailTableT> = emails()
 
-  abstract fun name(): Field<String, ContactsRow>
+  override fun _4(): SqlExpr<TagVarrayT> = tags()
+
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, ContactsRow>> = listOf(this.contactId().underlying, this.name().underlying, this.emails().underlying, this.tags().underlying)
+
+  fun contactId(): IdField<ContactsId, ContactsRow> = IdField<ContactsId, ContactsRow>(_path, "CONTACT_ID", ContactsRow::contactId, null, null, { row, value -> row.copy(contactId = value) }, ContactsId.oracleType)
+
+  fun emails(): OptField<EmailTableT, ContactsRow> = OptField<EmailTableT, ContactsRow>(_path, "EMAILS", ContactsRow::emails, null, null, { row, value -> row.copy(emails = value) }, EmailTableT.oracleType)
+
+  fun name(): Field<String, ContactsRow> = Field<String, ContactsRow>(_path, "NAME", ContactsRow::name, null, null, { row, value -> row.copy(name = value) }, OracleTypes.varchar2)
 
   override fun rowParser(): RowParser<ContactsRow> = ContactsRow._rowParser.underlying
 
-  abstract fun tags(): OptField<TagVarrayT, ContactsRow>
+  fun tags(): OptField<TagVarrayT, ContactsRow> = OptField<TagVarrayT, ContactsRow>(_path, "TAGS", ContactsRow::tags, null, null, { row, value -> row.copy(tags = value) }, TagVarrayT.oracleType)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<ContactsFields, ContactsRow> = ContactsFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : ContactsFields, RelationStructure<ContactsFields, ContactsRow> {
-      override fun contactId(): IdField<ContactsId, ContactsRow> = IdField<ContactsId, ContactsRow>(_path, "CONTACT_ID", ContactsRow::contactId, null, null, { row, value -> row.copy(contactId = value) }, ContactsId.oracleType)
-
-      override fun name(): Field<String, ContactsRow> = Field<String, ContactsRow>(_path, "NAME", ContactsRow::name, null, null, { row, value -> row.copy(name = value) }, OracleTypes.varchar2)
-
-      override fun emails(): OptField<EmailTableT, ContactsRow> = OptField<EmailTableT, ContactsRow>(_path, "EMAILS", ContactsRow::emails, null, null, { row, value -> row.copy(emails = value) }, EmailTableT.oracleType)
-
-      override fun tags(): OptField<TagVarrayT, ContactsRow> = OptField<TagVarrayT, ContactsRow>(_path, "TAGS", ContactsRow::tags, null, null, { row, value -> row.copy(tags = value) }, TagVarrayT.oracleType)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, ContactsRow>> = listOf(this.contactId().underlying, this.name().underlying, this.emails().underlying, this.tags().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<ContactsFields, ContactsRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: ContactsFields = ContactsFields(emptyList<Path>())
   }
 }

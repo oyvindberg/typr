@@ -6,6 +6,7 @@
 package testdb.shipments;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.typr.foundations.data.Json;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,7 +32,7 @@ public record ShipmentsRowUnsaved(
     /** Default: NULL */
     @JsonProperty("weight_kg") Defaulted<Optional<BigDecimal>> weightKg,
     /** Default: NULL */
-    @JsonProperty("dimensions_json") Defaulted<Optional<String>> dimensionsJson,
+    @JsonProperty("dimensions_json") Defaulted<Optional<Json>> dimensionsJson,
     /** Default: NULL */
     @JsonProperty("label_data") Defaulted<Optional<byte[]>> labelData,
     /** Default: 'pending' */
@@ -212,7 +213,7 @@ public record ShipmentsRowUnsaved(
   ;
 
   /** Default: NULL */
-  public ShipmentsRowUnsaved withDimensionsJson(Defaulted<Optional<String>> dimensionsJson) {
+  public ShipmentsRowUnsaved withDimensionsJson(Defaulted<Optional<Json>> dimensionsJson) {
     return new ShipmentsRowUnsaved(
         orderId,
         carrierId,
@@ -437,7 +438,7 @@ public record ShipmentsRowUnsaved(
   public ShipmentsRow toRow(
       java.util.function.Supplier<Optional<String>> trackingNumberDefault,
       java.util.function.Supplier<Optional<BigDecimal>> weightKgDefault,
-      java.util.function.Supplier<Optional<String>> dimensionsJsonDefault,
+      java.util.function.Supplier<Optional<Json>> dimensionsJsonDefault,
       java.util.function.Supplier<Optional<byte[]>> labelDataDefault,
       java.util.function.Supplier<String> statusDefault,
       java.util.function.Supplier<Optional<LocalDate>> estimatedDeliveryDateDefault,

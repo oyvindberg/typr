@@ -95,11 +95,11 @@ public record ProductsubcategoryRowUnsaved(
   public static PgText<ProductsubcategoryRowUnsaved> pgText =
       PgText.instance(
           (row, sb) -> {
-            ProductcategoryId.pgType.text().unsafeEncode(row.productcategoryid, sb);
+            ProductcategoryId.dbType.text().unsafeEncode(row.productcategoryid, sb);
             sb.append(PgText.DELIMETER);
-            Name.pgType.text().unsafeEncode(row.name, sb);
+            Name.dbType.text().unsafeEncode(row.name, sb);
             sb.append(PgText.DELIMETER);
-            Defaulted.pgText(ProductsubcategoryId.pgType.text())
+            Defaulted.pgText(ProductsubcategoryId.dbType.text())
                 .unsafeEncode(row.productsubcategoryid, sb);
             sb.append(PgText.DELIMETER);
             Defaulted.pgText(PgTypes.uuid.text()).unsafeEncode(row.rowguid, sb);

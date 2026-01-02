@@ -9,6 +9,7 @@ import adventureworks.humanresources.department.DepartmentId
 import adventureworks.humanresources.shift.ShiftId
 import adventureworks.person.businessentity.BusinessentityId
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import java.time.LocalDate
@@ -19,8 +20,16 @@ data class EmployeedepartmenthistoryId(
   val startdate: LocalDate,
   val departmentid: DepartmentId,
   val shiftid: ShiftId
-) {
+) : Tuple4<BusinessentityId, LocalDate, DepartmentId, ShiftId> {
+  override fun _1(): BusinessentityId = businessentityid
+
+  override fun _2(): LocalDate = startdate
+
+  override fun _3(): DepartmentId = departmentid
+
+  override fun _4(): ShiftId = shiftid
+
   companion object {
-    val _rowParser: RowParser<EmployeedepartmenthistoryId> = RowParsers.of(BusinessentityId.pgType, PgTypes.date, DepartmentId.pgType, ShiftId.pgType, { t0, t1, t2, t3 -> EmployeedepartmenthistoryId(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.businessentityid, row.startdate, row.departmentid, row.shiftid) })
+    val _rowParser: RowParser<EmployeedepartmenthistoryId> = RowParsers.of(BusinessentityId.dbType, PgTypes.date, DepartmentId.dbType, ShiftId.dbType, { t0, t1, t2, t3 -> EmployeedepartmenthistoryId(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.businessentityid, row.startdate, row.departmentid, row.shiftid) })
   }
 }

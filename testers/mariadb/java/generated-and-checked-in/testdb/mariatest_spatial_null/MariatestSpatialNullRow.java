@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple9;
 import java.util.Optional;
 import org.mariadb.jdbc.type.Geometry;
 import org.mariadb.jdbc.type.GeometryCollection;
@@ -39,7 +40,17 @@ public record MariatestSpatialNullRow(
     /** Default: NULL */
     @JsonProperty("multipolygon_col") Optional<MultiPolygon> multipolygonCol,
     /** Default: NULL */
-    @JsonProperty("geometrycollection_col") Optional<GeometryCollection> geometrycollectionCol) {
+    @JsonProperty("geometrycollection_col") Optional<GeometryCollection> geometrycollectionCol)
+    implements Tuple9<
+        MariatestSpatialNullId,
+        Optional<Geometry>,
+        Optional<Point>,
+        Optional<LineString>,
+        Optional<Polygon>,
+        Optional<MultiPoint>,
+        Optional<MultiLineString>,
+        Optional<MultiPolygon>,
+        Optional<GeometryCollection>> {
   /** AUTO_INCREMENT */
   public MariatestSpatialNullRow withId(MariatestSpatialNullId id) {
     return new MariatestSpatialNullRow(
@@ -179,7 +190,7 @@ public record MariatestSpatialNullRow(
 
   public static RowParser<MariatestSpatialNullRow> _rowParser =
       RowParsers.of(
-          MariatestSpatialNullId.pgType,
+          MariatestSpatialNullId.dbType,
           MariaTypes.geometry.opt(),
           MariaTypes.point.opt(),
           MariaTypes.linestring.opt(),
@@ -201,6 +212,60 @@ public record MariatestSpatialNullRow(
                 row.multipolygonCol(),
                 row.geometrycollectionCol()
               });
+  ;
+
+  @Override
+  public MariatestSpatialNullId _1() {
+    return id;
+  }
+  ;
+
+  @Override
+  public Optional<Geometry> _2() {
+    return geometryCol;
+  }
+  ;
+
+  @Override
+  public Optional<Point> _3() {
+    return pointCol;
+  }
+  ;
+
+  @Override
+  public Optional<LineString> _4() {
+    return linestringCol;
+  }
+  ;
+
+  @Override
+  public Optional<Polygon> _5() {
+    return polygonCol;
+  }
+  ;
+
+  @Override
+  public Optional<MultiPoint> _6() {
+    return multipointCol;
+  }
+  ;
+
+  @Override
+  public Optional<MultiLineString> _7() {
+    return multilinestringCol;
+  }
+  ;
+
+  @Override
+  public Optional<MultiPolygon> _8() {
+    return multipolygonCol;
+  }
+  ;
+
+  @Override
+  public Optional<GeometryCollection> _9() {
+    return geometrycollectionCol;
+  }
   ;
 
   public MariatestSpatialNullRowUnsaved toUnsavedRow(

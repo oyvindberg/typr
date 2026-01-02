@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple7;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
 
@@ -27,7 +28,9 @@ public record BrandsRow(
     /** Default: NULL */
     @JsonProperty("country_of_origin") Optional<String> countryOfOrigin,
     /** Default: 1 */
-    @JsonProperty("is_active") Boolean isActive) {
+    @JsonProperty("is_active") Boolean isActive)
+    implements Tuple7<
+        BrandsId, String, String, Optional<byte[]>, Optional<String>, Optional<String>, Boolean> {
   /** AUTO_INCREMENT */
   public BrandsRow withBrandId(BrandsId brandId) {
     return new BrandsRow(brandId, name, slug, logoBlob, websiteUrl, countryOfOrigin, isActive);
@@ -72,7 +75,7 @@ public record BrandsRow(
 
   public static RowParser<BrandsRow> _rowParser =
       RowParsers.of(
-          BrandsId.pgType,
+          BrandsId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.mediumblob.opt(),
@@ -90,6 +93,48 @@ public record BrandsRow(
                 row.countryOfOrigin(),
                 row.isActive()
               });
+  ;
+
+  @Override
+  public BrandsId _1() {
+    return brandId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return slug;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _4() {
+    return logoBlob;
+  }
+  ;
+
+  @Override
+  public Optional<String> _5() {
+    return websiteUrl;
+  }
+  ;
+
+  @Override
+  public Optional<String> _6() {
+    return countryOfOrigin;
+  }
+  ;
+
+  @Override
+  public Boolean _7() {
+    return isActive;
+  }
   ;
 
   public BrandsId id() {

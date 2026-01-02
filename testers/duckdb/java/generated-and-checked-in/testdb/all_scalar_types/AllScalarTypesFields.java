@@ -8,13 +8,19 @@ package testdb.all_scalar_types;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.data.Json;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint2;
+import dev.typr.foundations.data.Uint4;
+import dev.typr.foundations.data.Uint8;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr26;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Duration;
@@ -27,450 +33,504 @@ import java.util.Optional;
 import java.util.UUID;
 import testdb.Mood;
 
-public interface AllScalarTypesFields extends FieldsExpr<AllScalarTypesRow> {
-  record Impl(List<Path> _path)
-      implements AllScalarTypesFields, RelationStructure<AllScalarTypesFields, AllScalarTypesRow> {
-    @Override
-    public IdField<AllScalarTypesId, AllScalarTypesRow> id() {
-      return new IdField<AllScalarTypesId, AllScalarTypesRow>(
-          _path,
-          "id",
-          AllScalarTypesRow::id,
-          Optional.empty(),
-          Optional.of("INTEGER"),
-          (row, value) -> row.withId(value),
-          AllScalarTypesId.duckDbType);
-    }
-    ;
+public class AllScalarTypesFields
+    extends TupleExpr26<
+        AllScalarTypesId,
+        Byte,
+        Short,
+        Integer,
+        Long,
+        BigInteger,
+        Uint1,
+        Uint2,
+        Uint4,
+        Uint8,
+        Float,
+        Double,
+        BigDecimal,
+        Boolean,
+        String,
+        String,
+        byte[],
+        LocalDate,
+        LocalTime,
+        LocalDateTime,
+        OffsetDateTime,
+        Duration,
+        UUID,
+        Json,
+        Mood,
+        String>
+    implements RelationStructure<AllScalarTypesFields, AllScalarTypesRow>,
+        FieldsBase<AllScalarTypesRow> {
+  List<Path> _path;
 
-    @Override
-    public OptField<Byte, AllScalarTypesRow> colTinyint() {
-      return new OptField<Byte, AllScalarTypesRow>(
-          _path,
-          "col_tinyint",
-          AllScalarTypesRow::colTinyint,
-          Optional.empty(),
-          Optional.of("TINYINT"),
-          (row, value) -> row.withColTinyint(value),
-          DuckDbTypes.tinyint);
-    }
-    ;
-
-    @Override
-    public OptField<Short, AllScalarTypesRow> colSmallint() {
-      return new OptField<Short, AllScalarTypesRow>(
-          _path,
-          "col_smallint",
-          AllScalarTypesRow::colSmallint,
-          Optional.empty(),
-          Optional.of("SMALLINT"),
-          (row, value) -> row.withColSmallint(value),
-          DuckDbTypes.smallint);
-    }
-    ;
-
-    @Override
-    public OptField<Integer, AllScalarTypesRow> colInteger() {
-      return new OptField<Integer, AllScalarTypesRow>(
-          _path,
-          "col_integer",
-          AllScalarTypesRow::colInteger,
-          Optional.empty(),
-          Optional.of("INTEGER"),
-          (row, value) -> row.withColInteger(value),
-          DuckDbTypes.integer);
-    }
-    ;
-
-    @Override
-    public OptField<Long, AllScalarTypesRow> colBigint() {
-      return new OptField<Long, AllScalarTypesRow>(
-          _path,
-          "col_bigint",
-          AllScalarTypesRow::colBigint,
-          Optional.empty(),
-          Optional.of("BIGINT"),
-          (row, value) -> row.withColBigint(value),
-          DuckDbTypes.bigint);
-    }
-    ;
-
-    @Override
-    public OptField<BigInteger, AllScalarTypesRow> colHugeint() {
-      return new OptField<BigInteger, AllScalarTypesRow>(
-          _path,
-          "col_hugeint",
-          AllScalarTypesRow::colHugeint,
-          Optional.empty(),
-          Optional.of("HUGEINT"),
-          (row, value) -> row.withColHugeint(value),
-          DuckDbTypes.hugeint);
-    }
-    ;
-
-    @Override
-    public OptField<Short, AllScalarTypesRow> colUtinyint() {
-      return new OptField<Short, AllScalarTypesRow>(
-          _path,
-          "col_utinyint",
-          AllScalarTypesRow::colUtinyint,
-          Optional.empty(),
-          Optional.of("UTINYINT"),
-          (row, value) -> row.withColUtinyint(value),
-          DuckDbTypes.smallint);
-    }
-    ;
-
-    @Override
-    public OptField<Integer, AllScalarTypesRow> colUsmallint() {
-      return new OptField<Integer, AllScalarTypesRow>(
-          _path,
-          "col_usmallint",
-          AllScalarTypesRow::colUsmallint,
-          Optional.empty(),
-          Optional.of("USMALLINT"),
-          (row, value) -> row.withColUsmallint(value),
-          DuckDbTypes.integer);
-    }
-    ;
-
-    @Override
-    public OptField<Long, AllScalarTypesRow> colUinteger() {
-      return new OptField<Long, AllScalarTypesRow>(
-          _path,
-          "col_uinteger",
-          AllScalarTypesRow::colUinteger,
-          Optional.empty(),
-          Optional.of("UINTEGER"),
-          (row, value) -> row.withColUinteger(value),
-          DuckDbTypes.bigint);
-    }
-    ;
-
-    @Override
-    public OptField<BigInteger, AllScalarTypesRow> colUbigint() {
-      return new OptField<BigInteger, AllScalarTypesRow>(
-          _path,
-          "col_ubigint",
-          AllScalarTypesRow::colUbigint,
-          Optional.empty(),
-          Optional.of("UBIGINT"),
-          (row, value) -> row.withColUbigint(value),
-          DuckDbTypes.ubigint);
-    }
-    ;
-
-    @Override
-    public OptField<Float, AllScalarTypesRow> colFloat() {
-      return new OptField<Float, AllScalarTypesRow>(
-          _path,
-          "col_float",
-          AllScalarTypesRow::colFloat,
-          Optional.empty(),
-          Optional.of("FLOAT"),
-          (row, value) -> row.withColFloat(value),
-          DuckDbTypes.float_);
-    }
-    ;
-
-    @Override
-    public OptField<Double, AllScalarTypesRow> colDouble() {
-      return new OptField<Double, AllScalarTypesRow>(
-          _path,
-          "col_double",
-          AllScalarTypesRow::colDouble,
-          Optional.empty(),
-          Optional.of("DOUBLE"),
-          (row, value) -> row.withColDouble(value),
-          DuckDbTypes.double_);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, AllScalarTypesRow> colDecimal() {
-      return new OptField<BigDecimal, AllScalarTypesRow>(
-          _path,
-          "col_decimal",
-          AllScalarTypesRow::colDecimal,
-          Optional.empty(),
-          Optional.of("DECIMAL(10,2)"),
-          (row, value) -> row.withColDecimal(value),
-          DuckDbTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<Boolean, AllScalarTypesRow> colBoolean() {
-      return new OptField<Boolean, AllScalarTypesRow>(
-          _path,
-          "col_boolean",
-          AllScalarTypesRow::colBoolean,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColBoolean(value),
-          DuckDbTypes.boolean_);
-    }
-    ;
-
-    @Override
-    public OptField<String, AllScalarTypesRow> colVarchar() {
-      return new OptField<String, AllScalarTypesRow>(
-          _path,
-          "col_varchar",
-          AllScalarTypesRow::colVarchar,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColVarchar(value),
-          DuckDbTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, AllScalarTypesRow> colText() {
-      return new OptField<String, AllScalarTypesRow>(
-          _path,
-          "col_text",
-          AllScalarTypesRow::colText,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColText(value),
-          DuckDbTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<byte[], AllScalarTypesRow> colBlob() {
-      return new OptField<byte[], AllScalarTypesRow>(
-          _path,
-          "col_blob",
-          AllScalarTypesRow::colBlob,
-          Optional.empty(),
-          Optional.of("BLOB"),
-          (row, value) -> row.withColBlob(value),
-          DuckDbTypes.blob);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDate, AllScalarTypesRow> colDate() {
-      return new OptField<LocalDate, AllScalarTypesRow>(
-          _path,
-          "col_date",
-          AllScalarTypesRow::colDate,
-          Optional.empty(),
-          Optional.of("DATE"),
-          (row, value) -> row.withColDate(value),
-          DuckDbTypes.date);
-    }
-    ;
-
-    @Override
-    public OptField<LocalTime, AllScalarTypesRow> colTime() {
-      return new OptField<LocalTime, AllScalarTypesRow>(
-          _path,
-          "col_time",
-          AllScalarTypesRow::colTime,
-          Optional.empty(),
-          Optional.of("TIME"),
-          (row, value) -> row.withColTime(value),
-          DuckDbTypes.time);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, AllScalarTypesRow> colTimestamp() {
-      return new OptField<LocalDateTime, AllScalarTypesRow>(
-          _path,
-          "col_timestamp",
-          AllScalarTypesRow::colTimestamp,
-          Optional.empty(),
-          Optional.of("TIMESTAMP"),
-          (row, value) -> row.withColTimestamp(value),
-          DuckDbTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public OptField<OffsetDateTime, AllScalarTypesRow> colTimestamptz() {
-      return new OptField<OffsetDateTime, AllScalarTypesRow>(
-          _path,
-          "col_timestamptz",
-          AllScalarTypesRow::colTimestamptz,
-          Optional.empty(),
-          Optional.of("TIMESTAMP WITH TIME ZONE"),
-          (row, value) -> row.withColTimestamptz(value),
-          DuckDbTypes.timestamptz);
-    }
-    ;
-
-    @Override
-    public OptField<Duration, AllScalarTypesRow> colInterval() {
-      return new OptField<Duration, AllScalarTypesRow>(
-          _path,
-          "col_interval",
-          AllScalarTypesRow::colInterval,
-          Optional.empty(),
-          Optional.of("INTERVAL"),
-          (row, value) -> row.withColInterval(value),
-          DuckDbTypes.interval);
-    }
-    ;
-
-    @Override
-    public OptField<UUID, AllScalarTypesRow> colUuid() {
-      return new OptField<UUID, AllScalarTypesRow>(
-          _path,
-          "col_uuid",
-          AllScalarTypesRow::colUuid,
-          Optional.empty(),
-          Optional.of("UUID"),
-          (row, value) -> row.withColUuid(value),
-          DuckDbTypes.uuid);
-    }
-    ;
-
-    @Override
-    public OptField<Json, AllScalarTypesRow> colJson() {
-      return new OptField<Json, AllScalarTypesRow>(
-          _path,
-          "col_json",
-          AllScalarTypesRow::colJson,
-          Optional.empty(),
-          Optional.of("JSON"),
-          (row, value) -> row.withColJson(value),
-          DuckDbTypes.json);
-    }
-    ;
-
-    @Override
-    public OptField<Mood, AllScalarTypesRow> colMood() {
-      return new OptField<Mood, AllScalarTypesRow>(
-          _path,
-          "col_mood",
-          AllScalarTypesRow::colMood,
-          Optional.empty(),
-          Optional.of("mood"),
-          (row, value) -> row.withColMood(value),
-          Mood.duckDbType);
-    }
-    ;
-
-    @Override
-    public Field<String, AllScalarTypesRow> colNotNull() {
-      return new Field<String, AllScalarTypesRow>(
-          _path,
-          "col_not_null",
-          AllScalarTypesRow::colNotNull,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColNotNull(value),
-          DuckDbTypes.varchar);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, AllScalarTypesRow>> columns() {
-      return java.util.List.of(
-          this.id(),
-          this.colTinyint(),
-          this.colSmallint(),
-          this.colInteger(),
-          this.colBigint(),
-          this.colHugeint(),
-          this.colUtinyint(),
-          this.colUsmallint(),
-          this.colUinteger(),
-          this.colUbigint(),
-          this.colFloat(),
-          this.colDouble(),
-          this.colDecimal(),
-          this.colBoolean(),
-          this.colVarchar(),
-          this.colText(),
-          this.colBlob(),
-          this.colDate(),
-          this.colTime(),
-          this.colTimestamp(),
-          this.colTimestamptz(),
-          this.colInterval(),
-          this.colUuid(),
-          this.colJson(),
-          this.colMood(),
-          this.colNotNull());
-    }
-    ;
-
-    @Override
-    public RelationStructure<AllScalarTypesFields, AllScalarTypesRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public AllScalarTypesFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static AllScalarTypesFields structure =
+      new AllScalarTypesFields(java.util.Collections.emptyList());
+
+  public IdField<AllScalarTypesId, AllScalarTypesRow> id() {
+    return new IdField<AllScalarTypesId, AllScalarTypesRow>(
+        _path,
+        "id",
+        AllScalarTypesRow::id,
+        Optional.empty(),
+        Optional.of("INTEGER"),
+        (row, value) -> row.withId(value),
+        AllScalarTypesId.duckDbType);
   }
-  ;
 
-  IdField<AllScalarTypesId, AllScalarTypesRow> id();
+  public OptField<Byte, AllScalarTypesRow> colTinyint() {
+    return new OptField<Byte, AllScalarTypesRow>(
+        _path,
+        "col_tinyint",
+        AllScalarTypesRow::colTinyint,
+        Optional.empty(),
+        Optional.of("TINYINT"),
+        (row, value) -> row.withColTinyint(value),
+        DuckDbTypes.tinyint);
+  }
 
-  OptField<Byte, AllScalarTypesRow> colTinyint();
+  public OptField<Short, AllScalarTypesRow> colSmallint() {
+    return new OptField<Short, AllScalarTypesRow>(
+        _path,
+        "col_smallint",
+        AllScalarTypesRow::colSmallint,
+        Optional.empty(),
+        Optional.of("SMALLINT"),
+        (row, value) -> row.withColSmallint(value),
+        DuckDbTypes.smallint);
+  }
 
-  OptField<Short, AllScalarTypesRow> colSmallint();
+  public OptField<Integer, AllScalarTypesRow> colInteger() {
+    return new OptField<Integer, AllScalarTypesRow>(
+        _path,
+        "col_integer",
+        AllScalarTypesRow::colInteger,
+        Optional.empty(),
+        Optional.of("INTEGER"),
+        (row, value) -> row.withColInteger(value),
+        DuckDbTypes.integer);
+  }
 
-  OptField<Integer, AllScalarTypesRow> colInteger();
+  public OptField<Long, AllScalarTypesRow> colBigint() {
+    return new OptField<Long, AllScalarTypesRow>(
+        _path,
+        "col_bigint",
+        AllScalarTypesRow::colBigint,
+        Optional.empty(),
+        Optional.of("BIGINT"),
+        (row, value) -> row.withColBigint(value),
+        DuckDbTypes.bigint);
+  }
 
-  OptField<Long, AllScalarTypesRow> colBigint();
+  public OptField<BigInteger, AllScalarTypesRow> colHugeint() {
+    return new OptField<BigInteger, AllScalarTypesRow>(
+        _path,
+        "col_hugeint",
+        AllScalarTypesRow::colHugeint,
+        Optional.empty(),
+        Optional.of("HUGEINT"),
+        (row, value) -> row.withColHugeint(value),
+        DuckDbTypes.hugeint);
+  }
 
-  OptField<BigInteger, AllScalarTypesRow> colHugeint();
+  public OptField<Uint1, AllScalarTypesRow> colUtinyint() {
+    return new OptField<Uint1, AllScalarTypesRow>(
+        _path,
+        "col_utinyint",
+        AllScalarTypesRow::colUtinyint,
+        Optional.empty(),
+        Optional.of("UTINYINT"),
+        (row, value) -> row.withColUtinyint(value),
+        DuckDbTypes.utinyint);
+  }
 
-  OptField<Short, AllScalarTypesRow> colUtinyint();
+  public OptField<Uint2, AllScalarTypesRow> colUsmallint() {
+    return new OptField<Uint2, AllScalarTypesRow>(
+        _path,
+        "col_usmallint",
+        AllScalarTypesRow::colUsmallint,
+        Optional.empty(),
+        Optional.of("USMALLINT"),
+        (row, value) -> row.withColUsmallint(value),
+        DuckDbTypes.usmallint);
+  }
 
-  OptField<Integer, AllScalarTypesRow> colUsmallint();
+  public OptField<Uint4, AllScalarTypesRow> colUinteger() {
+    return new OptField<Uint4, AllScalarTypesRow>(
+        _path,
+        "col_uinteger",
+        AllScalarTypesRow::colUinteger,
+        Optional.empty(),
+        Optional.of("UINTEGER"),
+        (row, value) -> row.withColUinteger(value),
+        DuckDbTypes.uinteger);
+  }
 
-  OptField<Long, AllScalarTypesRow> colUinteger();
+  public OptField<Uint8, AllScalarTypesRow> colUbigint() {
+    return new OptField<Uint8, AllScalarTypesRow>(
+        _path,
+        "col_ubigint",
+        AllScalarTypesRow::colUbigint,
+        Optional.empty(),
+        Optional.of("UBIGINT"),
+        (row, value) -> row.withColUbigint(value),
+        DuckDbTypes.ubigint);
+  }
 
-  OptField<BigInteger, AllScalarTypesRow> colUbigint();
+  public OptField<Float, AllScalarTypesRow> colFloat() {
+    return new OptField<Float, AllScalarTypesRow>(
+        _path,
+        "col_float",
+        AllScalarTypesRow::colFloat,
+        Optional.empty(),
+        Optional.of("FLOAT"),
+        (row, value) -> row.withColFloat(value),
+        DuckDbTypes.float_);
+  }
 
-  OptField<Float, AllScalarTypesRow> colFloat();
+  public OptField<Double, AllScalarTypesRow> colDouble() {
+    return new OptField<Double, AllScalarTypesRow>(
+        _path,
+        "col_double",
+        AllScalarTypesRow::colDouble,
+        Optional.empty(),
+        Optional.of("DOUBLE"),
+        (row, value) -> row.withColDouble(value),
+        DuckDbTypes.double_);
+  }
 
-  OptField<Double, AllScalarTypesRow> colDouble();
+  public OptField<BigDecimal, AllScalarTypesRow> colDecimal() {
+    return new OptField<BigDecimal, AllScalarTypesRow>(
+        _path,
+        "col_decimal",
+        AllScalarTypesRow::colDecimal,
+        Optional.empty(),
+        Optional.of("DECIMAL(10,2)"),
+        (row, value) -> row.withColDecimal(value),
+        DuckDbTypes.numeric);
+  }
 
-  OptField<BigDecimal, AllScalarTypesRow> colDecimal();
+  public OptField<Boolean, AllScalarTypesRow> colBoolean() {
+    return new OptField<Boolean, AllScalarTypesRow>(
+        _path,
+        "col_boolean",
+        AllScalarTypesRow::colBoolean,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColBoolean(value),
+        DuckDbTypes.boolean_);
+  }
 
-  OptField<Boolean, AllScalarTypesRow> colBoolean();
+  public OptField<String, AllScalarTypesRow> colVarchar() {
+    return new OptField<String, AllScalarTypesRow>(
+        _path,
+        "col_varchar",
+        AllScalarTypesRow::colVarchar,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColVarchar(value),
+        DuckDbTypes.varchar);
+  }
 
-  OptField<String, AllScalarTypesRow> colVarchar();
+  public OptField<String, AllScalarTypesRow> colText() {
+    return new OptField<String, AllScalarTypesRow>(
+        _path,
+        "col_text",
+        AllScalarTypesRow::colText,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColText(value),
+        DuckDbTypes.varchar);
+  }
 
-  OptField<String, AllScalarTypesRow> colText();
+  public OptField<byte[], AllScalarTypesRow> colBlob() {
+    return new OptField<byte[], AllScalarTypesRow>(
+        _path,
+        "col_blob",
+        AllScalarTypesRow::colBlob,
+        Optional.empty(),
+        Optional.of("BLOB"),
+        (row, value) -> row.withColBlob(value),
+        DuckDbTypes.blob);
+  }
 
-  OptField<byte[], AllScalarTypesRow> colBlob();
+  public OptField<LocalDate, AllScalarTypesRow> colDate() {
+    return new OptField<LocalDate, AllScalarTypesRow>(
+        _path,
+        "col_date",
+        AllScalarTypesRow::colDate,
+        Optional.empty(),
+        Optional.of("DATE"),
+        (row, value) -> row.withColDate(value),
+        DuckDbTypes.date);
+  }
 
-  OptField<LocalDate, AllScalarTypesRow> colDate();
+  public OptField<LocalTime, AllScalarTypesRow> colTime() {
+    return new OptField<LocalTime, AllScalarTypesRow>(
+        _path,
+        "col_time",
+        AllScalarTypesRow::colTime,
+        Optional.empty(),
+        Optional.of("TIME"),
+        (row, value) -> row.withColTime(value),
+        DuckDbTypes.time);
+  }
 
-  OptField<LocalTime, AllScalarTypesRow> colTime();
+  public OptField<LocalDateTime, AllScalarTypesRow> colTimestamp() {
+    return new OptField<LocalDateTime, AllScalarTypesRow>(
+        _path,
+        "col_timestamp",
+        AllScalarTypesRow::colTimestamp,
+        Optional.empty(),
+        Optional.of("TIMESTAMP"),
+        (row, value) -> row.withColTimestamp(value),
+        DuckDbTypes.timestamp);
+  }
 
-  OptField<LocalDateTime, AllScalarTypesRow> colTimestamp();
+  public OptField<OffsetDateTime, AllScalarTypesRow> colTimestamptz() {
+    return new OptField<OffsetDateTime, AllScalarTypesRow>(
+        _path,
+        "col_timestamptz",
+        AllScalarTypesRow::colTimestamptz,
+        Optional.empty(),
+        Optional.of("TIMESTAMP WITH TIME ZONE"),
+        (row, value) -> row.withColTimestamptz(value),
+        DuckDbTypes.timestamptz);
+  }
 
-  OptField<OffsetDateTime, AllScalarTypesRow> colTimestamptz();
+  public OptField<Duration, AllScalarTypesRow> colInterval() {
+    return new OptField<Duration, AllScalarTypesRow>(
+        _path,
+        "col_interval",
+        AllScalarTypesRow::colInterval,
+        Optional.empty(),
+        Optional.of("INTERVAL"),
+        (row, value) -> row.withColInterval(value),
+        DuckDbTypes.interval);
+  }
 
-  OptField<Duration, AllScalarTypesRow> colInterval();
+  public OptField<UUID, AllScalarTypesRow> colUuid() {
+    return new OptField<UUID, AllScalarTypesRow>(
+        _path,
+        "col_uuid",
+        AllScalarTypesRow::colUuid,
+        Optional.empty(),
+        Optional.of("UUID"),
+        (row, value) -> row.withColUuid(value),
+        DuckDbTypes.uuid);
+  }
 
-  OptField<UUID, AllScalarTypesRow> colUuid();
+  public OptField<Json, AllScalarTypesRow> colJson() {
+    return new OptField<Json, AllScalarTypesRow>(
+        _path,
+        "col_json",
+        AllScalarTypesRow::colJson,
+        Optional.empty(),
+        Optional.of("JSON"),
+        (row, value) -> row.withColJson(value),
+        DuckDbTypes.json);
+  }
 
-  OptField<Json, AllScalarTypesRow> colJson();
+  public OptField<Mood, AllScalarTypesRow> colMood() {
+    return new OptField<Mood, AllScalarTypesRow>(
+        _path,
+        "col_mood",
+        AllScalarTypesRow::colMood,
+        Optional.empty(),
+        Optional.of("mood"),
+        (row, value) -> row.withColMood(value),
+        Mood.duckDbType);
+  }
 
-  OptField<Mood, AllScalarTypesRow> colMood();
-
-  Field<String, AllScalarTypesRow> colNotNull();
+  public Field<String, AllScalarTypesRow> colNotNull() {
+    return new Field<String, AllScalarTypesRow>(
+        _path,
+        "col_not_null",
+        AllScalarTypesRow::colNotNull,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColNotNull(value),
+        DuckDbTypes.varchar);
+  }
 
   @Override
-  List<FieldLike<?, AllScalarTypesRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<AllScalarTypesRow> rowParser() {
+  public List<FieldLike<?, AllScalarTypesRow>> columns() {
+    return java.util.List.of(
+        this.id(),
+        this.colTinyint(),
+        this.colSmallint(),
+        this.colInteger(),
+        this.colBigint(),
+        this.colHugeint(),
+        this.colUtinyint(),
+        this.colUsmallint(),
+        this.colUinteger(),
+        this.colUbigint(),
+        this.colFloat(),
+        this.colDouble(),
+        this.colDecimal(),
+        this.colBoolean(),
+        this.colVarchar(),
+        this.colText(),
+        this.colBlob(),
+        this.colDate(),
+        this.colTime(),
+        this.colTimestamp(),
+        this.colTimestamptz(),
+        this.colInterval(),
+        this.colUuid(),
+        this.colJson(),
+        this.colMood(),
+        this.colNotNull());
+  }
+
+  @Override
+  public RowParser<AllScalarTypesRow> rowParser() {
     return AllScalarTypesRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<AllScalarTypesFields, AllScalarTypesRow> withPaths(List<Path> _path) {
+    return new AllScalarTypesFields(_path);
+  }
+
+  @Override
+  public SqlExpr<AllScalarTypesId> _1() {
+    return id();
+  }
+
+  @Override
+  public SqlExpr<Byte> _2() {
+    return colTinyint();
+  }
+
+  @Override
+  public SqlExpr<Short> _3() {
+    return colSmallint();
+  }
+
+  @Override
+  public SqlExpr<Integer> _4() {
+    return colInteger();
+  }
+
+  @Override
+  public SqlExpr<Long> _5() {
+    return colBigint();
+  }
+
+  @Override
+  public SqlExpr<BigInteger> _6() {
+    return colHugeint();
+  }
+
+  @Override
+  public SqlExpr<Uint1> _7() {
+    return colUtinyint();
+  }
+
+  @Override
+  public SqlExpr<Uint2> _8() {
+    return colUsmallint();
+  }
+
+  @Override
+  public SqlExpr<Uint4> _9() {
+    return colUinteger();
+  }
+
+  @Override
+  public SqlExpr<Uint8> _10() {
+    return colUbigint();
+  }
+
+  @Override
+  public SqlExpr<Float> _11() {
+    return colFloat();
+  }
+
+  @Override
+  public SqlExpr<Double> _12() {
+    return colDouble();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _13() {
+    return colDecimal();
+  }
+
+  @Override
+  public SqlExpr<Boolean> _14() {
+    return colBoolean();
+  }
+
+  @Override
+  public SqlExpr<String> _15() {
+    return colVarchar();
+  }
+
+  @Override
+  public SqlExpr<String> _16() {
+    return colText();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _17() {
+    return colBlob();
+  }
+
+  @Override
+  public SqlExpr<LocalDate> _18() {
+    return colDate();
+  }
+
+  @Override
+  public SqlExpr<LocalTime> _19() {
+    return colTime();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _20() {
+    return colTimestamp();
+  }
+
+  @Override
+  public SqlExpr<OffsetDateTime> _21() {
+    return colTimestamptz();
+  }
+
+  @Override
+  public SqlExpr<Duration> _22() {
+    return colInterval();
+  }
+
+  @Override
+  public SqlExpr<UUID> _23() {
+    return colUuid();
+  }
+
+  @Override
+  public SqlExpr<Json> _24() {
+    return colJson();
+  }
+
+  @Override
+  public SqlExpr<Mood> _25() {
+    return colMood();
+  }
+
+  @Override
+  public SqlExpr<String> _26() {
+    return colNotNull();
+  }
 }

@@ -21,16 +21,13 @@ import oracledb.customtypes.Defaulted.UseDefault;
 public class DefaultedDeserializer extends JsonDeserializer<Defaulted<?>>
     implements ContextualDeserializer {
   JavaType valueType;
-  ;
 
   Class<?> defaultedClass;
-  ;
 
   public DefaultedDeserializer(JavaType valueType, Class<?> defaultedClass) {
     this.valueType = valueType;
     this.defaultedClass = defaultedClass;
   }
-  ;
 
   @Override
   public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) {
@@ -42,7 +39,6 @@ public class DefaultedDeserializer extends JsonDeserializer<Defaulted<?>>
     ;
     throw new RuntimeException("unexpected");
   }
-  ;
 
   @Override
   public Defaulted<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
@@ -65,5 +61,4 @@ public class DefaultedDeserializer extends JsonDeserializer<Defaulted<?>>
     ;
     throw new IOException("Expected 'provided' field but got: " + p.currentName());
   }
-  ;
 }

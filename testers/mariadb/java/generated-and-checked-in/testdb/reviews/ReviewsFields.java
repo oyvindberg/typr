@@ -7,14 +7,19 @@ package testdb.reviews;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.data.Json;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint4;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr18;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -28,340 +33,373 @@ import testdb.products.ProductsFields;
 import testdb.products.ProductsId;
 import testdb.products.ProductsRow;
 
-public interface ReviewsFields extends FieldsExpr<ReviewsRow> {
-  record Impl(List<Path> _path)
-      implements ReviewsFields, RelationStructure<ReviewsFields, ReviewsRow> {
-    @Override
-    public IdField<ReviewsId, ReviewsRow> reviewId() {
-      return new IdField<ReviewsId, ReviewsRow>(
-          _path,
-          "review_id",
-          ReviewsRow::reviewId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withReviewId(value),
-          ReviewsId.pgType);
-    }
-    ;
+public class ReviewsFields
+    extends TupleExpr18<
+        ReviewsId,
+        ProductsId,
+        CustomersId,
+        OrderItemsId,
+        Uint1,
+        String,
+        String,
+        Json,
+        Json,
+        Json,
+        Boolean,
+        Boolean,
+        Uint4,
+        Uint4,
+        String,
+        LocalDateTime,
+        LocalDateTime,
+        LocalDateTime>
+    implements RelationStructure<ReviewsFields, ReviewsRow>, FieldsBase<ReviewsRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<ProductsId, ReviewsRow> productId() {
-      return new Field<ProductsId, ReviewsRow>(
-          _path,
-          "product_id",
-          ReviewsRow::productId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withProductId(value),
-          ProductsId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<CustomersId, ReviewsRow> customerId() {
-      return new Field<CustomersId, ReviewsRow>(
-          _path,
-          "customer_id",
-          ReviewsRow::customerId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerId(value),
-          CustomersId.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<OrderItemsId, ReviewsRow> orderItemId() {
-      return new OptField<OrderItemsId, ReviewsRow>(
-          _path,
-          "order_item_id",
-          ReviewsRow::orderItemId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderItemId(value),
-          OrderItemsId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<Short, ReviewsRow> rating() {
-      return new Field<Short, ReviewsRow>(
-          _path,
-          "rating",
-          ReviewsRow::rating,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withRating(value),
-          MariaTypes.tinyintUnsigned);
-    }
-    ;
-
-    @Override
-    public OptField<String, ReviewsRow> title() {
-      return new OptField<String, ReviewsRow>(
-          _path,
-          "title",
-          ReviewsRow::title,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTitle(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, ReviewsRow> content() {
-      return new OptField<String, ReviewsRow>(
-          _path,
-          "content",
-          ReviewsRow::content,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withContent(value),
-          MariaTypes.text);
-    }
-    ;
-
-    @Override
-    public OptField<String, ReviewsRow> pros() {
-      return new OptField<String, ReviewsRow>(
-          _path,
-          "pros",
-          ReviewsRow::pros,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPros(value),
-          MariaTypes.longtext);
-    }
-    ;
-
-    @Override
-    public OptField<String, ReviewsRow> cons() {
-      return new OptField<String, ReviewsRow>(
-          _path,
-          "cons",
-          ReviewsRow::cons,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCons(value),
-          MariaTypes.longtext);
-    }
-    ;
-
-    @Override
-    public OptField<String, ReviewsRow> images() {
-      return new OptField<String, ReviewsRow>(
-          _path,
-          "images",
-          ReviewsRow::images,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withImages(value),
-          MariaTypes.longtext);
-    }
-    ;
-
-    @Override
-    public Field<Boolean, ReviewsRow> isVerifiedPurchase() {
-      return new Field<Boolean, ReviewsRow>(
-          _path,
-          "is_verified_purchase",
-          ReviewsRow::isVerifiedPurchase,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withIsVerifiedPurchase(value),
-          MariaTypes.bool);
-    }
-    ;
-
-    @Override
-    public Field<Boolean, ReviewsRow> isApproved() {
-      return new Field<Boolean, ReviewsRow>(
-          _path,
-          "is_approved",
-          ReviewsRow::isApproved,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withIsApproved(value),
-          MariaTypes.bool);
-    }
-    ;
-
-    @Override
-    public Field<Long, ReviewsRow> helpfulVotes() {
-      return new Field<Long, ReviewsRow>(
-          _path,
-          "helpful_votes",
-          ReviewsRow::helpfulVotes,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withHelpfulVotes(value),
-          MariaTypes.intUnsigned);
-    }
-    ;
-
-    @Override
-    public Field<Long, ReviewsRow> unhelpfulVotes() {
-      return new Field<Long, ReviewsRow>(
-          _path,
-          "unhelpful_votes",
-          ReviewsRow::unhelpfulVotes,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withUnhelpfulVotes(value),
-          MariaTypes.intUnsigned);
-    }
-    ;
-
-    @Override
-    public OptField<String, ReviewsRow> adminResponse() {
-      return new OptField<String, ReviewsRow>(
-          _path,
-          "admin_response",
-          ReviewsRow::adminResponse,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withAdminResponse(value),
-          MariaTypes.text);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, ReviewsRow> respondedAt() {
-      return new OptField<LocalDateTime, ReviewsRow>(
-          _path,
-          "responded_at",
-          ReviewsRow::respondedAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withRespondedAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, ReviewsRow> createdAt() {
-      return new Field<LocalDateTime, ReviewsRow>(
-          _path,
-          "created_at",
-          ReviewsRow::createdAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCreatedAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, ReviewsRow> updatedAt() {
-      return new Field<LocalDateTime, ReviewsRow>(
-          _path,
-          "updated_at",
-          ReviewsRow::updatedAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withUpdatedAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, ReviewsRow>> columns() {
-      return java.util.List.of(
-          this.reviewId(),
-          this.productId(),
-          this.customerId(),
-          this.orderItemId(),
-          this.rating(),
-          this.title(),
-          this.content(),
-          this.pros(),
-          this.cons(),
-          this.images(),
-          this.isVerifiedPurchase(),
-          this.isApproved(),
-          this.helpfulVotes(),
-          this.unhelpfulVotes(),
-          this.adminResponse(),
-          this.respondedAt(),
-          this.createdAt(),
-          this.updatedAt());
-    }
-    ;
-
-    @Override
-    public RelationStructure<ReviewsFields, ReviewsRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public ReviewsFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static ReviewsFields structure = new ReviewsFields(java.util.Collections.emptyList());
+
+  public IdField<ReviewsId, ReviewsRow> reviewId() {
+    return new IdField<ReviewsId, ReviewsRow>(
+        _path,
+        "review_id",
+        ReviewsRow::reviewId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withReviewId(value),
+        ReviewsId.dbType);
   }
-  ;
 
-  IdField<ReviewsId, ReviewsRow> reviewId();
+  public Field<ProductsId, ReviewsRow> productId() {
+    return new Field<ProductsId, ReviewsRow>(
+        _path,
+        "product_id",
+        ReviewsRow::productId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withProductId(value),
+        ProductsId.dbType);
+  }
 
-  Field<ProductsId, ReviewsRow> productId();
+  public Field<CustomersId, ReviewsRow> customerId() {
+    return new Field<CustomersId, ReviewsRow>(
+        _path,
+        "customer_id",
+        ReviewsRow::customerId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerId(value),
+        CustomersId.dbType);
+  }
 
-  Field<CustomersId, ReviewsRow> customerId();
+  public OptField<OrderItemsId, ReviewsRow> orderItemId() {
+    return new OptField<OrderItemsId, ReviewsRow>(
+        _path,
+        "order_item_id",
+        ReviewsRow::orderItemId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderItemId(value),
+        OrderItemsId.dbType);
+  }
 
-  OptField<OrderItemsId, ReviewsRow> orderItemId();
+  public Field<Uint1, ReviewsRow> rating() {
+    return new Field<Uint1, ReviewsRow>(
+        _path,
+        "rating",
+        ReviewsRow::rating,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withRating(value),
+        MariaTypes.tinyintUnsigned);
+  }
 
-  Field<Short, ReviewsRow> rating();
+  public OptField<String, ReviewsRow> title() {
+    return new OptField<String, ReviewsRow>(
+        _path,
+        "title",
+        ReviewsRow::title,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTitle(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, ReviewsRow> title();
+  public OptField<String, ReviewsRow> content() {
+    return new OptField<String, ReviewsRow>(
+        _path,
+        "content",
+        ReviewsRow::content,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withContent(value),
+        MariaTypes.text);
+  }
 
-  OptField<String, ReviewsRow> content();
+  public OptField<Json, ReviewsRow> pros() {
+    return new OptField<Json, ReviewsRow>(
+        _path,
+        "pros",
+        ReviewsRow::pros,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPros(value),
+        MariaTypes.json);
+  }
 
-  OptField<String, ReviewsRow> pros();
+  public OptField<Json, ReviewsRow> cons() {
+    return new OptField<Json, ReviewsRow>(
+        _path,
+        "cons",
+        ReviewsRow::cons,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCons(value),
+        MariaTypes.json);
+  }
 
-  OptField<String, ReviewsRow> cons();
+  public OptField<Json, ReviewsRow> images() {
+    return new OptField<Json, ReviewsRow>(
+        _path,
+        "images",
+        ReviewsRow::images,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withImages(value),
+        MariaTypes.json);
+  }
 
-  OptField<String, ReviewsRow> images();
+  public Field<Boolean, ReviewsRow> isVerifiedPurchase() {
+    return new Field<Boolean, ReviewsRow>(
+        _path,
+        "is_verified_purchase",
+        ReviewsRow::isVerifiedPurchase,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withIsVerifiedPurchase(value),
+        MariaTypes.bool);
+  }
 
-  Field<Boolean, ReviewsRow> isVerifiedPurchase();
+  public Field<Boolean, ReviewsRow> isApproved() {
+    return new Field<Boolean, ReviewsRow>(
+        _path,
+        "is_approved",
+        ReviewsRow::isApproved,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withIsApproved(value),
+        MariaTypes.bool);
+  }
 
-  Field<Boolean, ReviewsRow> isApproved();
+  public Field<Uint4, ReviewsRow> helpfulVotes() {
+    return new Field<Uint4, ReviewsRow>(
+        _path,
+        "helpful_votes",
+        ReviewsRow::helpfulVotes,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withHelpfulVotes(value),
+        MariaTypes.intUnsigned);
+  }
 
-  Field<Long, ReviewsRow> helpfulVotes();
+  public Field<Uint4, ReviewsRow> unhelpfulVotes() {
+    return new Field<Uint4, ReviewsRow>(
+        _path,
+        "unhelpful_votes",
+        ReviewsRow::unhelpfulVotes,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withUnhelpfulVotes(value),
+        MariaTypes.intUnsigned);
+  }
 
-  Field<Long, ReviewsRow> unhelpfulVotes();
+  public OptField<String, ReviewsRow> adminResponse() {
+    return new OptField<String, ReviewsRow>(
+        _path,
+        "admin_response",
+        ReviewsRow::adminResponse,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withAdminResponse(value),
+        MariaTypes.text);
+  }
 
-  OptField<String, ReviewsRow> adminResponse();
+  public OptField<LocalDateTime, ReviewsRow> respondedAt() {
+    return new OptField<LocalDateTime, ReviewsRow>(
+        _path,
+        "responded_at",
+        ReviewsRow::respondedAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withRespondedAt(value),
+        MariaTypes.datetime);
+  }
 
-  OptField<LocalDateTime, ReviewsRow> respondedAt();
+  public Field<LocalDateTime, ReviewsRow> createdAt() {
+    return new Field<LocalDateTime, ReviewsRow>(
+        _path,
+        "created_at",
+        ReviewsRow::createdAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCreatedAt(value),
+        MariaTypes.datetime);
+  }
 
-  Field<LocalDateTime, ReviewsRow> createdAt();
+  public Field<LocalDateTime, ReviewsRow> updatedAt() {
+    return new Field<LocalDateTime, ReviewsRow>(
+        _path,
+        "updated_at",
+        ReviewsRow::updatedAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withUpdatedAt(value),
+        MariaTypes.datetime);
+  }
 
-  Field<LocalDateTime, ReviewsRow> updatedAt();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<CustomersFields, CustomersRow> fkCustomers() {
+  public ForeignKey<CustomersFields, CustomersRow> fkCustomers() {
     return ForeignKey.<CustomersFields, CustomersRow>of("fk_rev_customer")
         .<CustomersId>withColumnPair(customerId(), CustomersFields::customerId);
   }
-  ;
 
-  default ForeignKey<OrderItemsFields, OrderItemsRow> fkOrderItems() {
+  public ForeignKey<OrderItemsFields, OrderItemsRow> fkOrderItems() {
     return ForeignKey.<OrderItemsFields, OrderItemsRow>of("fk_rev_order_item")
         .<OrderItemsId>withColumnPair(orderItemId(), OrderItemsFields::itemId);
   }
-  ;
 
-  default ForeignKey<ProductsFields, ProductsRow> fkProducts() {
+  public ForeignKey<ProductsFields, ProductsRow> fkProducts() {
     return ForeignKey.<ProductsFields, ProductsRow>of("fk_rev_product")
         .<ProductsId>withColumnPair(productId(), ProductsFields::productId);
   }
-  ;
 
   @Override
-  List<FieldLike<?, ReviewsRow>> columns();
+  public List<FieldLike<?, ReviewsRow>> columns() {
+    return java.util.List.of(
+        this.reviewId(),
+        this.productId(),
+        this.customerId(),
+        this.orderItemId(),
+        this.rating(),
+        this.title(),
+        this.content(),
+        this.pros(),
+        this.cons(),
+        this.images(),
+        this.isVerifiedPurchase(),
+        this.isApproved(),
+        this.helpfulVotes(),
+        this.unhelpfulVotes(),
+        this.adminResponse(),
+        this.respondedAt(),
+        this.createdAt(),
+        this.updatedAt());
+  }
 
   @Override
-  default RowParser<ReviewsRow> rowParser() {
+  public RowParser<ReviewsRow> rowParser() {
     return ReviewsRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<ReviewsFields, ReviewsRow> withPaths(List<Path> _path) {
+    return new ReviewsFields(_path);
+  }
+
+  @Override
+  public SqlExpr<ReviewsId> _1() {
+    return reviewId();
+  }
+
+  @Override
+  public SqlExpr<ProductsId> _2() {
+    return productId();
+  }
+
+  @Override
+  public SqlExpr<CustomersId> _3() {
+    return customerId();
+  }
+
+  @Override
+  public SqlExpr<OrderItemsId> _4() {
+    return orderItemId();
+  }
+
+  @Override
+  public SqlExpr<Uint1> _5() {
+    return rating();
+  }
+
+  @Override
+  public SqlExpr<String> _6() {
+    return title();
+  }
+
+  @Override
+  public SqlExpr<String> _7() {
+    return content();
+  }
+
+  @Override
+  public SqlExpr<Json> _8() {
+    return pros();
+  }
+
+  @Override
+  public SqlExpr<Json> _9() {
+    return cons();
+  }
+
+  @Override
+  public SqlExpr<Json> _10() {
+    return images();
+  }
+
+  @Override
+  public SqlExpr<Boolean> _11() {
+    return isVerifiedPurchase();
+  }
+
+  @Override
+  public SqlExpr<Boolean> _12() {
+    return isApproved();
+  }
+
+  @Override
+  public SqlExpr<Uint4> _13() {
+    return helpfulVotes();
+  }
+
+  @Override
+  public SqlExpr<Uint4> _14() {
+    return unhelpfulVotes();
+  }
+
+  @Override
+  public SqlExpr<String> _15() {
+    return adminResponse();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _16() {
+    return respondedAt();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _17() {
+    return createdAt();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _18() {
+    return updatedAt();
+  }
 }

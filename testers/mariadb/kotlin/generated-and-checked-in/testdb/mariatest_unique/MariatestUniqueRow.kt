@@ -6,6 +6,7 @@
 package testdb.mariatest_unique
 
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 
@@ -23,10 +24,18 @@ data class MariatestUniqueRow(
   val code: String,
   /**  */
   val category: String
-) {
+) : Tuple4<MariatestUniqueId, String, String, String> {
+  override fun _1(): MariatestUniqueId = id
+
+  override fun _2(): String = email
+
+  override fun _3(): String = code
+
+  override fun _4(): String = category
+
   fun toUnsavedRow(): MariatestUniqueRowUnsaved = MariatestUniqueRowUnsaved(email, code, category)
 
   companion object {
-    val _rowParser: RowParser<MariatestUniqueRow> = RowParsers.of(MariatestUniqueId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, { t0, t1, t2, t3 -> MariatestUniqueRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.id, row.email, row.code, row.category) })
+    val _rowParser: RowParser<MariatestUniqueRow> = RowParsers.of(MariatestUniqueId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, { t0, t1, t2, t3 -> MariatestUniqueRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.id, row.email, row.code, row.category) })
   }
 }

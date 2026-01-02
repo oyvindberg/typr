@@ -8,8 +8,8 @@ case class CustomCreditcardId(value: Int) extends AnyVal
 
 object CustomCreditcardId {
   given bijection: Bijection[CustomCreditcardId, Int] = Bijection.apply[CustomCreditcardId, Int](_.value)(CustomCreditcardId.apply)
-  given pgType: dev.typr.foundations.PgType[CustomCreditcardId] = PgTypes.int4.bimap(CustomCreditcardId.apply, _.value)
-  given pgTypeArray: dev.typr.foundations.PgType[Array[CustomCreditcardId]] = PgTypes.int4Array.bimap(xs => xs.map(CustomCreditcardId.apply), xs => xs.map(_.value))
+  given dbType: dev.typr.foundations.DbType[CustomCreditcardId] = PgTypes.int4.bimap(CustomCreditcardId.apply, _.value)
+  given dbTypeArray: dev.typr.foundations.DbType[Array[CustomCreditcardId]] = PgTypes.int4Array.bimap(xs => xs.map(CustomCreditcardId.apply), xs => xs.map(_.value))
   given pgText: PgText[CustomCreditcardId] = new PgText[CustomCreditcardId] {
     override def unsafeEncode(v: CustomCreditcardId, sb: java.lang.StringBuilder): Unit = PgText.textInteger.unsafeEncode(v.value, sb)
     override def unsafeArrayEncode(v: CustomCreditcardId, sb: java.lang.StringBuilder): Unit = PgText.textInteger.unsafeArrayEncode(v.value, sb)

@@ -6,6 +6,7 @@
 package testdb.order_items
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Uint2
 import java.math.BigDecimal
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
@@ -28,7 +29,7 @@ data class OrderItemsRowUnsaved(
   /**  */
   @JsonProperty("product_name") val productName: String,
   /**  */
-  val quantity: Int,
+  val quantity: Uint2,
   /**  */
   @JsonProperty("unit_price") val unitPrice: BigDecimal,
   /**  */

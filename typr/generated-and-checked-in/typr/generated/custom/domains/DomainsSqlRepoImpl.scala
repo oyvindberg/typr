@@ -11,7 +11,7 @@ import java.sql.Connection
 import anorm.SqlStringInterpolation
 
 class DomainsSqlRepoImpl extends DomainsSqlRepo {
-  override def apply(implicit c: Connection): List[DomainsSqlRow] = {
+  override def apply(using c: Connection): List[DomainsSqlRow] = {
     val sql =
       SQL"""SELECT nsp.nspname                   as "schema?",
              typ.typname                   as "name",

@@ -32,5 +32,4 @@ public class SimpleCustomerLookupSqlRepoImpl implements SimpleCustomerLookupSqlR
         .query(SimpleCustomerLookupSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

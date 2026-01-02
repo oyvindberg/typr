@@ -6,57 +6,60 @@
 package adventureworks.public_.title_domain;
 
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr1;
 import java.util.List;
 import java.util.Optional;
 
-public interface TitleDomainFields extends FieldsExpr<TitleDomainRow> {
-  record Impl(List<Path> _path)
-      implements TitleDomainFields, RelationStructure<TitleDomainFields, TitleDomainRow> {
-    @Override
-    public IdField<TitleDomainId, TitleDomainRow> code() {
-      return new IdField<TitleDomainId, TitleDomainRow>(
-          _path,
-          "code",
-          TitleDomainRow::code,
-          Optional.empty(),
-          Optional.of("text"),
-          (row, value) -> row.withCode(value),
-          TitleDomainId.pgType);
-    }
-    ;
+public class TitleDomainFields extends TupleExpr1<TitleDomainId>
+    implements RelationStructure<TitleDomainFields, TitleDomainRow>, FieldsBase<TitleDomainRow> {
+  List<Path> _path;
 
-    @Override
-    public List<FieldLike<?, TitleDomainRow>> columns() {
-      return java.util.List.of(this.code());
-    }
-    ;
-
-    @Override
-    public RelationStructure<TitleDomainFields, TitleDomainRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public TitleDomainFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static TitleDomainFields structure =
+      new TitleDomainFields(java.util.Collections.emptyList());
+
+  public IdField<TitleDomainId, TitleDomainRow> code() {
+    return new IdField<TitleDomainId, TitleDomainRow>(
+        _path,
+        "code",
+        TitleDomainRow::code,
+        Optional.empty(),
+        Optional.of("text"),
+        (row, value) -> row.withCode(value),
+        TitleDomainId.dbType);
   }
-  ;
-
-  IdField<TitleDomainId, TitleDomainRow> code();
 
   @Override
-  List<FieldLike<?, TitleDomainRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<TitleDomainRow> rowParser() {
+  public List<FieldLike<?, TitleDomainRow>> columns() {
+    return java.util.List.of(this.code());
+  }
+
+  @Override
+  public RowParser<TitleDomainRow> rowParser() {
     return TitleDomainRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<TitleDomainFields, TitleDomainRow> withPaths(List<Path> _path) {
+    return new TitleDomainFields(_path);
+  }
+
+  @Override
+  public SqlExpr<TitleDomainId> _1() {
+    return code();
+  }
 }

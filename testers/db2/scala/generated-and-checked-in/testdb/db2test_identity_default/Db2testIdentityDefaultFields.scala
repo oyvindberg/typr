@@ -7,54 +7,51 @@ package testdb.db2test_identity_default
 
 import dev.typr.foundations.Db2Types
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
+import dev.typr.foundations.scala.TupleExpr2
 
-trait Db2testIdentityDefaultFields extends FieldsExpr0[Db2testIdentityDefaultRow] {
-  def id: IdField[Db2testIdentityDefaultId, Db2testIdentityDefaultRow]
+class Db2testIdentityDefaultFields(val `_path`: java.util.List[Path]) extends TupleExpr2[Db2testIdentityDefaultId, String] with RelationStructure[Db2testIdentityDefaultFields, Db2testIdentityDefaultRow]  with FieldsBase[Db2testIdentityDefaultRow] {
+  def id: IdField[Db2testIdentityDefaultId, Db2testIdentityDefaultRow] = {
+    new IdField[Db2testIdentityDefaultId, Db2testIdentityDefaultRow](
+      _path,
+      "ID",
+      _.id,
+      None,
+      None,
+      (row, value) => row.copy(id = value),
+      Db2testIdentityDefaultId.dbType
+    )
+  }
 
-  def name: Field[String, Db2testIdentityDefaultRow]
+  def name: Field[String, Db2testIdentityDefaultRow] = {
+    new Field[String, Db2testIdentityDefaultRow](
+      _path,
+      "NAME",
+      _.name,
+      None,
+      None,
+      (row, value) => row.copy(name = value),
+      Db2Types.varchar
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, Db2testIdentityDefaultRow]]
+  override def columns: java.util.List[FieldLike[?, Db2testIdentityDefaultRow]] = java.util.List.of(this.id.underlying, this.name.underlying)
 
   override def rowParser: RowParser[Db2testIdentityDefaultRow] = Db2testIdentityDefaultRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[Db2testIdentityDefaultFields, Db2testIdentityDefaultRow] = new Db2testIdentityDefaultFields(`_path`)
+
+  override def `_1`: SqlExpr[Db2testIdentityDefaultId] = id
+
+  override def `_2`: SqlExpr[String] = name
 }
 
 object Db2testIdentityDefaultFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends Db2testIdentityDefaultFields with RelationStructure[Db2testIdentityDefaultFields, Db2testIdentityDefaultRow] {
-
-    override def id: IdField[Db2testIdentityDefaultId, Db2testIdentityDefaultRow] = {
-      new IdField[Db2testIdentityDefaultId, Db2testIdentityDefaultRow](
-        _path,
-        "ID",
-        _.id,
-        None,
-        None,
-        (row, value) => row.copy(id = value),
-        Db2testIdentityDefaultId.pgType
-      )
-    }
-
-    override def name: Field[String, Db2testIdentityDefaultRow] = {
-      new Field[String, Db2testIdentityDefaultRow](
-        _path,
-        "NAME",
-        _.name,
-        None,
-        None,
-        (row, value) => row.copy(name = value),
-        Db2Types.varchar
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, Db2testIdentityDefaultRow]] = java.util.List.of(this.id.underlying, this.name.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[Db2testIdentityDefaultFields, Db2testIdentityDefaultRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: Db2testIdentityDefaultFields = new Db2testIdentityDefaultFields(java.util.Collections.emptyList())
 }

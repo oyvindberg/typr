@@ -24,27 +24,25 @@ import java.util.Optional;
 public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
   @Override
   public DeleteBuilder<PaymentMethodsFields, PaymentMethodsRow> delete() {
-    return DeleteBuilder.of("`payment_methods`", PaymentMethodsFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`payment_methods`", PaymentMethodsFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(PaymentMethodsId methodId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `payment_methods` where `method_id` = "),
-                Fragment.encode(PaymentMethodsId.pgType, methodId),
+                Fragment.encode(PaymentMethodsId.dbType, methodId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(PaymentMethodsId[] methodIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : methodIds) {
-      fragments.add(Fragment.encode(PaymentMethodsId.pgType, id));
+      fragments.add(Fragment.encode(PaymentMethodsId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -54,7 +52,6 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public PaymentMethodsRow insert(PaymentMethodsRow unsaved, Connection c) {
@@ -69,7 +66,7 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text, unsaved.methodType()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.processorConfig()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.processorConfig()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.bool, unsaved.isActive()),
             Fragment.lit(", "),
@@ -81,7 +78,6 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
         .updateReturning(PaymentMethodsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public PaymentMethodsRow insert(PaymentMethodsRowUnsaved unsaved, Connection c) {
@@ -103,7 +99,7 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
             value -> {
               columns.add(Fragment.lit("`processor_config`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(MariaTypes.json.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -137,17 +133,15 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
     ;
     return q.updateReturning(PaymentMethodsRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<PaymentMethodsFields, PaymentMethodsRow> select() {
     return SelectBuilder.of(
         "`payment_methods`",
-        PaymentMethodsFields.structure(),
+        PaymentMethodsFields.structure,
         PaymentMethodsRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<PaymentMethodsRow> selectAll(Connection c) {
@@ -159,7 +153,6 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
         .query(PaymentMethodsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<PaymentMethodsRow> selectById(PaymentMethodsId methodId, Connection c) {
@@ -169,18 +162,17 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
                     + " `is_active`, `sort_order`\n"
                     + "from `payment_methods`\n"
                     + "where `method_id` = "),
-            Fragment.encode(PaymentMethodsId.pgType, methodId),
+            Fragment.encode(PaymentMethodsId.dbType, methodId),
             Fragment.lit(""))
         .query(PaymentMethodsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<PaymentMethodsRow> selectByIds(PaymentMethodsId[] methodIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : methodIds) {
-      fragments.add(Fragment.encode(PaymentMethodsId.pgType, id));
+      fragments.add(Fragment.encode(PaymentMethodsId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -192,7 +184,6 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
         .query(PaymentMethodsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<PaymentMethodsId, PaymentMethodsRow> selectByIdsTracked(
@@ -202,7 +193,6 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
     selectByIds(methodIds, c).forEach(row -> ret.put(row.methodId(), row));
     return ret;
   }
-  ;
 
   @Override
   public Optional<PaymentMethodsRow> selectByUniqueCode(String code, Connection c) {
@@ -217,17 +207,15 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
         .query(PaymentMethodsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<PaymentMethodsFields, PaymentMethodsRow> update() {
     return UpdateBuilder.of(
         "`payment_methods`",
-        PaymentMethodsFields.structure(),
+        PaymentMethodsFields.structure,
         PaymentMethodsRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(PaymentMethodsRow row, Connection c) {
@@ -241,34 +229,35 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
                 Fragment.lit(",\n`method_type` = "),
                 Fragment.encode(MariaTypes.text, row.methodType()),
                 Fragment.lit(",\n`processor_config` = "),
-                Fragment.encode(MariaTypes.longtext.opt(), row.processorConfig()),
+                Fragment.encode(MariaTypes.json.opt(), row.processorConfig()),
                 Fragment.lit(",\n`is_active` = "),
                 Fragment.encode(MariaTypes.bool, row.isActive()),
                 Fragment.lit(",\n`sort_order` = "),
                 Fragment.encode(MariaTypes.tinyint, row.sortOrder()),
                 Fragment.lit("\nwhere `method_id` = "),
-                Fragment.encode(PaymentMethodsId.pgType, methodId),
+                Fragment.encode(PaymentMethodsId.dbType, methodId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public PaymentMethodsRow upsert(PaymentMethodsRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `payment_methods`(`code`, `name`, `method_type`, `processor_config`,"
-                    + " `is_active`, `sort_order`)\n"
+                "INSERT INTO `payment_methods`(`method_id`, `code`, `name`, `method_type`,"
+                    + " `processor_config`, `is_active`, `sort_order`)\n"
                     + "VALUES ("),
+            Fragment.encode(PaymentMethodsId.dbType, unsaved.methodId()),
+            Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.code()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.name()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text, unsaved.methodType()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.processorConfig()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.processorConfig()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.bool, unsaved.isActive()),
             Fragment.lit(", "),
@@ -286,7 +275,6 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
         .updateReturning(PaymentMethodsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<PaymentMethodsRow> upsertBatch(Iterator<PaymentMethodsRow> unsaved, Connection c) {
@@ -306,5 +294,4 @@ public class PaymentMethodsRepoImpl implements PaymentMethodsRepo {
         .updateReturningEach(PaymentMethodsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

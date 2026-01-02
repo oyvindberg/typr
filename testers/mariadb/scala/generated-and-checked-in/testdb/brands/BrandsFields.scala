@@ -7,126 +7,123 @@ package testdb.brands
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr7
 
-trait BrandsFields extends FieldsExpr0[BrandsRow] {
-  def brandId: IdField[BrandsId, BrandsRow]
+class BrandsFields(val `_path`: java.util.List[Path]) extends TupleExpr7[BrandsId, String, String, Array[Byte], String, String, Boolean] with RelationStructure[BrandsFields, BrandsRow]  with FieldsBase[BrandsRow] {
+  def brandId: IdField[BrandsId, BrandsRow] = {
+    new IdField[BrandsId, BrandsRow](
+      _path,
+      "brand_id",
+      _.brandId,
+      None,
+      None,
+      (row, value) => row.copy(brandId = value),
+      BrandsId.dbType
+    )
+  }
 
-  def name: Field[String, BrandsRow]
+  def name: Field[String, BrandsRow] = {
+    new Field[String, BrandsRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      None,
+      (row, value) => row.copy(name = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def slug: Field[String, BrandsRow]
+  def slug: Field[String, BrandsRow] = {
+    new Field[String, BrandsRow](
+      _path,
+      "slug",
+      _.slug,
+      None,
+      None,
+      (row, value) => row.copy(slug = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def logoBlob: OptField[Array[Byte], BrandsRow]
+  def logoBlob: OptField[Array[Byte], BrandsRow] = {
+    new OptField[Array[Byte], BrandsRow](
+      _path,
+      "logo_blob",
+      _.logoBlob,
+      None,
+      None,
+      (row, value) => row.copy(logoBlob = value),
+      MariaTypes.mediumblob
+    )
+  }
 
-  def websiteUrl: OptField[String, BrandsRow]
+  def websiteUrl: OptField[String, BrandsRow] = {
+    new OptField[String, BrandsRow](
+      _path,
+      "website_url",
+      _.websiteUrl,
+      None,
+      None,
+      (row, value) => row.copy(websiteUrl = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def countryOfOrigin: OptField[String, BrandsRow]
+  def countryOfOrigin: OptField[String, BrandsRow] = {
+    new OptField[String, BrandsRow](
+      _path,
+      "country_of_origin",
+      _.countryOfOrigin,
+      None,
+      None,
+      (row, value) => row.copy(countryOfOrigin = value),
+      MariaTypes.char_
+    )
+  }
 
-  def isActive: Field[Boolean, BrandsRow]
+  def isActive: Field[Boolean, BrandsRow] = {
+    new Field[Boolean, BrandsRow](
+      _path,
+      "is_active",
+      _.isActive,
+      None,
+      None,
+      (row, value) => row.copy(isActive = value),
+      ScalaDbTypes.MariaTypes.bool
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, BrandsRow]]
+  override def columns: java.util.List[FieldLike[?, BrandsRow]] = java.util.List.of(this.brandId.underlying, this.name.underlying, this.slug.underlying, this.logoBlob.underlying, this.websiteUrl.underlying, this.countryOfOrigin.underlying, this.isActive.underlying)
 
   override def rowParser: RowParser[BrandsRow] = BrandsRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[BrandsFields, BrandsRow] = new BrandsFields(`_path`)
+
+  override def `_1`: SqlExpr[BrandsId] = brandId
+
+  override def `_2`: SqlExpr[String] = name
+
+  override def `_3`: SqlExpr[String] = slug
+
+  override def `_4`: SqlExpr[Array[Byte]] = logoBlob
+
+  override def `_5`: SqlExpr[String] = websiteUrl
+
+  override def `_6`: SqlExpr[String] = countryOfOrigin
+
+  override def `_7`: SqlExpr[Boolean] = isActive
 }
 
 object BrandsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends BrandsFields with RelationStructure[BrandsFields, BrandsRow] {
-
-    override def brandId: IdField[BrandsId, BrandsRow] = {
-      new IdField[BrandsId, BrandsRow](
-        _path,
-        "brand_id",
-        _.brandId,
-        None,
-        None,
-        (row, value) => row.copy(brandId = value),
-        BrandsId.pgType
-      )
-    }
-
-    override def name: Field[String, BrandsRow] = {
-      new Field[String, BrandsRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        None,
-        (row, value) => row.copy(name = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def slug: Field[String, BrandsRow] = {
-      new Field[String, BrandsRow](
-        _path,
-        "slug",
-        _.slug,
-        None,
-        None,
-        (row, value) => row.copy(slug = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def logoBlob: OptField[Array[Byte], BrandsRow] = {
-      new OptField[Array[Byte], BrandsRow](
-        _path,
-        "logo_blob",
-        _.logoBlob,
-        None,
-        None,
-        (row, value) => row.copy(logoBlob = value),
-        MariaTypes.mediumblob
-      )
-    }
-
-    override def websiteUrl: OptField[String, BrandsRow] = {
-      new OptField[String, BrandsRow](
-        _path,
-        "website_url",
-        _.websiteUrl,
-        None,
-        None,
-        (row, value) => row.copy(websiteUrl = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def countryOfOrigin: OptField[String, BrandsRow] = {
-      new OptField[String, BrandsRow](
-        _path,
-        "country_of_origin",
-        _.countryOfOrigin,
-        None,
-        None,
-        (row, value) => row.copy(countryOfOrigin = value),
-        MariaTypes.char_
-      )
-    }
-
-    override def isActive: Field[Boolean, BrandsRow] = {
-      new Field[Boolean, BrandsRow](
-        _path,
-        "is_active",
-        _.isActive,
-        None,
-        None,
-        (row, value) => row.copy(isActive = value),
-        ScalaDbTypes.MariaTypes.bool
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, BrandsRow]] = java.util.List.of(this.brandId.underlying, this.name.underlying, this.slug.underlying, this.logoBlob.underlying, this.websiteUrl.underlying, this.countryOfOrigin.underlying, this.isActive.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[BrandsFields, BrandsRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: BrandsFields = new BrandsFields(java.util.Collections.emptyList())
 }

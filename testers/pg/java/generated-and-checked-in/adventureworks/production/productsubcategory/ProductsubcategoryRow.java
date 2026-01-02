@@ -12,6 +12,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -36,7 +37,8 @@ public record ProductsubcategoryRow(
     /** Default: uuid_generate_v1() */
     UUID rowguid,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple5<ProductsubcategoryId, ProductcategoryId, Name, UUID, LocalDateTime> {
   /**
    * Primary key for ProductSubcategory records. Default:
    * nextval('production.productsubcategory_productsubcategoryid_seq'::regclass)
@@ -81,9 +83,9 @@ public record ProductsubcategoryRow(
 
   public static RowParser<ProductsubcategoryRow> _rowParser =
       RowParsers.of(
-          ProductsubcategoryId.pgType,
-          ProductcategoryId.pgType,
-          Name.pgType,
+          ProductsubcategoryId.dbType,
+          ProductcategoryId.dbType,
+          Name.dbType,
           PgTypes.uuid,
           PgTypes.timestamp,
           ProductsubcategoryRow::new,
@@ -98,6 +100,36 @@ public record ProductsubcategoryRow(
   ;
 
   public static PgText<ProductsubcategoryRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public ProductsubcategoryId _1() {
+    return productsubcategoryid;
+  }
+  ;
+
+  @Override
+  public ProductcategoryId _2() {
+    return productcategoryid;
+  }
+  ;
+
+  @Override
+  public Name _3() {
+    return name;
+  }
+  ;
+
+  @Override
+  public UUID _4() {
+    return rowguid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _5() {
+    return modifieddate;
+  }
+  ;
 
   public ProductsubcategoryId id() {
     return productsubcategoryid;

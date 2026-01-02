@@ -13,6 +13,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -39,7 +40,8 @@ public record BusinessentityaddressRow(
     /** Default: uuid_generate_v1() */
     UUID rowguid,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple5<BusinessentityId, AddressId, AddresstypeId, UUID, LocalDateTime> {
   /**
    * Primary key. Foreign key to BusinessEntity.BusinessEntityID. Points to {@link
    * adventureworks.person.businessentity.BusinessentityRow#businessentityid()}
@@ -86,9 +88,9 @@ public record BusinessentityaddressRow(
 
   public static RowParser<BusinessentityaddressRow> _rowParser =
       RowParsers.of(
-          BusinessentityId.pgType,
-          AddressId.pgType,
-          AddresstypeId.pgType,
+          BusinessentityId.dbType,
+          AddressId.dbType,
+          AddresstypeId.dbType,
           PgTypes.uuid,
           PgTypes.timestamp,
           BusinessentityaddressRow::new,
@@ -114,6 +116,36 @@ public record BusinessentityaddressRow(
   ;
 
   public static PgText<BusinessentityaddressRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public BusinessentityId _1() {
+    return businessentityid;
+  }
+  ;
+
+  @Override
+  public AddressId _2() {
+    return addressid;
+  }
+  ;
+
+  @Override
+  public AddresstypeId _3() {
+    return addresstypeid;
+  }
+  ;
+
+  @Override
+  public UUID _4() {
+    return rowguid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _5() {
+    return modifieddate;
+  }
+  ;
 
   public BusinessentityaddressId compositeId() {
     return new BusinessentityaddressId(businessentityid, addressid, addresstypeid);

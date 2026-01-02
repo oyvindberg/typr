@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple24;
+import dev.typr.foundations.data.Xml;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,7 +41,32 @@ public record Db2testRow(
     @JsonProperty("TIMESTAMP_COL") LocalDateTime timestampCol,
     @JsonProperty("TIMESTAMP6_COL") LocalDateTime timestamp6Col,
     @JsonProperty("TIMESTAMP12_COL") LocalDateTime timestamp12Col,
-    @JsonProperty("XML_COL") String xmlCol) {
+    @JsonProperty("XML_COL") Xml xmlCol)
+    implements Tuple24<
+        Short,
+        Db2testId,
+        Long,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        Float,
+        Double,
+        Boolean,
+        String,
+        String,
+        String,
+        String,
+        String,
+        byte[],
+        byte[],
+        byte[],
+        LocalDate,
+        LocalTime,
+        LocalDateTime,
+        LocalDateTime,
+        LocalDateTime,
+        Xml> {
   public Db2testRow withSmallintCol(Short smallintCol) {
     return new Db2testRow(
         smallintCol,
@@ -707,7 +734,7 @@ public record Db2testRow(
   }
   ;
 
-  public Db2testRow withXmlCol(String xmlCol) {
+  public Db2testRow withXmlCol(Xml xmlCol) {
     return new Db2testRow(
         smallintCol,
         intCol,
@@ -739,7 +766,7 @@ public record Db2testRow(
   public static RowParser<Db2testRow> _rowParser =
       RowParsers.of(
           Db2Types.smallint,
-          Db2testId.pgType,
+          Db2testId.dbType,
           Db2Types.bigint,
           Db2Types.decimal,
           Db2Types.decimal,
@@ -790,6 +817,150 @@ public record Db2testRow(
                 row.timestamp12Col(),
                 row.xmlCol()
               });
+  ;
+
+  @Override
+  public Short _1() {
+    return smallintCol;
+  }
+  ;
+
+  @Override
+  public Boolean _10() {
+    return boolCol;
+  }
+  ;
+
+  @Override
+  public String _11() {
+    return charCol;
+  }
+  ;
+
+  @Override
+  public String _12() {
+    return varcharCol;
+  }
+  ;
+
+  @Override
+  public String _13() {
+    return clobCol;
+  }
+  ;
+
+  @Override
+  public String _14() {
+    return graphicCol;
+  }
+  ;
+
+  @Override
+  public String _15() {
+    return vargraphicCol;
+  }
+  ;
+
+  @Override
+  public byte[] _16() {
+    return binaryCol;
+  }
+  ;
+
+  @Override
+  public byte[] _17() {
+    return varbinaryCol;
+  }
+  ;
+
+  @Override
+  public byte[] _18() {
+    return blobCol;
+  }
+  ;
+
+  @Override
+  public LocalDate _19() {
+    return dateCol;
+  }
+  ;
+
+  @Override
+  public Db2testId _2() {
+    return intCol;
+  }
+  ;
+
+  @Override
+  public LocalTime _20() {
+    return timeCol;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _21() {
+    return timestampCol;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _22() {
+    return timestamp6Col;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _23() {
+    return timestamp12Col;
+  }
+  ;
+
+  @Override
+  public Xml _24() {
+    return xmlCol;
+  }
+  ;
+
+  @Override
+  public Long _3() {
+    return bigintCol;
+  }
+  ;
+
+  @Override
+  public BigDecimal _4() {
+    return decimalCol;
+  }
+  ;
+
+  @Override
+  public BigDecimal _5() {
+    return numericCol;
+  }
+  ;
+
+  @Override
+  public BigDecimal _6() {
+    return decfloat16Col;
+  }
+  ;
+
+  @Override
+  public BigDecimal _7() {
+    return decfloat34Col;
+  }
+  ;
+
+  @Override
+  public Float _8() {
+    return realCol;
+  }
+  ;
+
+  @Override
+  public Double _9() {
+    return doubleCol;
+  }
   ;
 
   public Db2testId id() {

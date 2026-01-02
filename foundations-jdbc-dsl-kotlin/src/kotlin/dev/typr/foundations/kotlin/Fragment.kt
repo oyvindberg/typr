@@ -139,14 +139,6 @@ class Fragment(val underlying: JavaFragment) {
             Fragment(JavaFragment.concat(*fragments.map { it.underlying }.toTypedArray()))
 
         @JvmStatic
-        fun <T> `in`(column: String, values: Array<T>, dbType: DbType<T>): Fragment =
-            Fragment(JavaFragment.`in`(column, values, dbType))
-
-        @JvmStatic
-        fun compositeIn(columns: Array<String>, tuples: List<Array<Any?>>, types: Array<DbType<*>>): Fragment =
-            Fragment(JavaFragment.compositeIn(columns, tuples, types))
-
-        @JvmStatic
         fun interpolate(initial: String): Builder =
             Builder(JavaFragment.interpolate(initial))
 

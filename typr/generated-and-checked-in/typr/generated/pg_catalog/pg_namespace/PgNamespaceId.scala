@@ -18,29 +18,29 @@ import typr.generated.Text
 case class PgNamespaceId(value: Long) extends scala.AnyVal
 
 object PgNamespaceId {
-  implicit lazy val arrayColumn: Column[Array[PgNamespaceId]] = Column.columnToArray(column, implicitly)
+  given arrayColumn: Column[Array[PgNamespaceId]] = Column.columnToArray(using column, summon)
 
-  implicit lazy val arrayToStatement: ToStatement[Array[PgNamespaceId]] = typr.generated.LongArrayToStatement.contramap(_.map(_.value))
+  given arrayToStatement: ToStatement[Array[PgNamespaceId]] = typr.generated.LongArrayToStatement.contramap(_.map(_.value))
 
-  implicit lazy val column: Column[PgNamespaceId] = Column.columnToLong.map(PgNamespaceId.apply)
+  given column: Column[PgNamespaceId] = Column.columnToLong.map(PgNamespaceId.apply)
 
-  implicit lazy val parameterMetadata: ParameterMetaData[PgNamespaceId] = {
+  given parameterMetadata: ParameterMetaData[PgNamespaceId] = {
     new ParameterMetaData[PgNamespaceId] {
       override def sqlType: String = ParameterMetaData.LongParameterMetaData.sqlType
       override def jdbcType: Int = ParameterMetaData.LongParameterMetaData.jdbcType
     }
   }
 
-  implicit lazy val pgText: Text[PgNamespaceId] = {
+  given pgText: Text[PgNamespaceId] = {
     new Text[PgNamespaceId] {
       override def unsafeEncode(v: PgNamespaceId, sb: StringBuilder): Unit = Text.longInstance.unsafeEncode(v.value, sb)
       override def unsafeArrayEncode(v: PgNamespaceId, sb: StringBuilder): Unit = Text.longInstance.unsafeArrayEncode(v.value, sb)
     }
   }
 
-  implicit lazy val reads: Reads[PgNamespaceId] = Reads.LongReads.map(PgNamespaceId.apply)
+  given reads: Reads[PgNamespaceId] = Reads.LongReads.map(PgNamespaceId.apply)
 
-  implicit lazy val toStatement: ToStatement[PgNamespaceId] = ToStatement.longToStatement.contramap(_.value)
+  given toStatement: ToStatement[PgNamespaceId] = ToStatement.longToStatement.contramap(_.value)
 
-  implicit lazy val writes: Writes[PgNamespaceId] = Writes.LongWrites.contramap(_.value)
+  given writes: Writes[PgNamespaceId] = Writes.LongWrites.contramap(_.value)
 }

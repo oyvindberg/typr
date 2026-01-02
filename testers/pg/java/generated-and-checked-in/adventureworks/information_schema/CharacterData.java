@@ -21,12 +21,12 @@ public record CharacterData(@JsonValue String value) {
   public static Bijection<CharacterData, String> bijection =
       Bijection.of(CharacterData::value, CharacterData::new);
 
-  public static PgType<CharacterData> pgType =
+  public static PgType<CharacterData> dbType =
       PgTypes.text
           .bimap(CharacterData::new, CharacterData::value)
           .renamed("\"information_schema\".\"character_data\"");
 
-  public static PgType<CharacterData[]> pgTypeArray =
+  public static PgType<CharacterData[]> dbTypeArray =
       PgTypes.textArray
           .bimap(
               xs -> arrayMap.map(xs, CharacterData::new, CharacterData.class),

@@ -22,17 +22,17 @@ import dev.typr.foundations.scala.Fragment.sql
 class PaymentsRepoImpl extends PaymentsRepo {
   override def delete: DeleteBuilder[PaymentsFields, PaymentsRow] = DeleteBuilder.of("`payments`", PaymentsFields.structure, Dialect.MARIADB)
 
-  override def deleteById(paymentId: PaymentsId)(using c: Connection): Boolean = sql"delete from `payments` where `payment_id` = ${Fragment.encode(PaymentsId.pgType, paymentId)}".update().runUnchecked(c) > 0
+  override def deleteById(paymentId: PaymentsId)(using c: Connection): Boolean = sql"delete from `payments` where `payment_id` = ${Fragment.encode(PaymentsId.dbType, paymentId)}".update().runUnchecked(c) > 0
 
   override def deleteByIds(paymentIds: Array[PaymentsId])(using c: Connection): Int = {
     val fragments: ListBuffer[Fragment] = ListBuffer()
-    paymentIds.foreach { id => fragments.addOne(Fragment.encode(PaymentsId.pgType, id)): @scala.annotation.nowarn }
+    paymentIds.foreach { id => fragments.addOne(Fragment.encode(PaymentsId.dbType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("delete from `payments` where `payment_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override def insert(unsaved: PaymentsRow)(using c: Connection): PaymentsRow = {
   sql"""insert into `payments`(`order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`)
-    values (${Fragment.encode(OrdersId.pgType, unsaved.orderId)}, ${Fragment.encode(PaymentMethodsId.pgType, unsaved.methodId)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.transactionId)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.amount)}, ${Fragment.encode(MariaTypes.char_, unsaved.currencyCode)}, ${Fragment.encode(MariaTypes.text, unsaved.status)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.processorResponse)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.errorMessage)}, ${Fragment.encode(MariaTypes.inet6.nullable, unsaved.ipAddress)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.processedAt)})
+    values (${Fragment.encode(OrdersId.dbType, unsaved.orderId)}, ${Fragment.encode(PaymentMethodsId.dbType, unsaved.methodId)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.transactionId)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.amount)}, ${Fragment.encode(MariaTypes.char_, unsaved.currencyCode)}, ${Fragment.encode(MariaTypes.text, unsaved.status)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.processorResponse)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.errorMessage)}, ${Fragment.encode(MariaTypes.inet6.nullable, unsaved.ipAddress)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.processedAt)})
     RETURNING `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`
     """
     .updateReturning(PaymentsRow.`_rowParser`.exactlyOne()).runUnchecked(c)
@@ -42,9 +42,9 @@ class PaymentsRepoImpl extends PaymentsRepo {
     val columns: ListBuffer[Fragment] = ListBuffer()
     val values: ListBuffer[Fragment] = ListBuffer()
     columns.addOne(Fragment.lit("`order_id`")): @scala.annotation.nowarn
-    values.addOne(sql"${Fragment.encode(OrdersId.pgType, unsaved.orderId)}"): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(OrdersId.dbType, unsaved.orderId)}"): @scala.annotation.nowarn
     columns.addOne(Fragment.lit("`method_id`")): @scala.annotation.nowarn
-    values.addOne(sql"${Fragment.encode(PaymentMethodsId.pgType, unsaved.methodId)}"): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(PaymentMethodsId.dbType, unsaved.methodId)}"): @scala.annotation.nowarn
     columns.addOne(Fragment.lit("`amount`")): @scala.annotation.nowarn
     values.addOne(sql"${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.amount)}"): @scala.annotation.nowarn
     unsaved.transactionId.visit(
@@ -61,7 +61,7 @@ class PaymentsRepoImpl extends PaymentsRepo {
     );
     unsaved.processorResponse.visit(
       {  },
-      value => { columns.addOne(Fragment.lit("`processor_response`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.longtext.nullable, value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`processor_response`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.json.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.errorMessage.visit(
       {  },
@@ -99,12 +99,12 @@ class PaymentsRepoImpl extends PaymentsRepo {
   override def selectById(paymentId: PaymentsId)(using c: Connection): Option[PaymentsRow] = {
     sql"""select `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`
     from `payments`
-    where `payment_id` = ${Fragment.encode(PaymentsId.pgType, paymentId)}""".query(PaymentsRow.`_rowParser`.first()).runUnchecked(c)
+    where `payment_id` = ${Fragment.encode(PaymentsId.dbType, paymentId)}""".query(PaymentsRow.`_rowParser`.first()).runUnchecked(c)
   }
 
   override def selectByIds(paymentIds: Array[PaymentsId])(using c: Connection): List[PaymentsRow] = {
     val fragments: ListBuffer[Fragment] = ListBuffer()
-    paymentIds.foreach { id => fragments.addOne(Fragment.encode(PaymentsId.pgType, id)): @scala.annotation.nowarn }
+    paymentIds.foreach { id => fragments.addOne(Fragment.encode(PaymentsId.dbType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("select `payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at` from `payments` where `payment_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(PaymentsRow.`_rowParser`.all()).runUnchecked(c)
   }
 
@@ -119,23 +119,23 @@ class PaymentsRepoImpl extends PaymentsRepo {
   override def update(row: PaymentsRow)(using c: Connection): Boolean = {
     val paymentId: PaymentsId = row.paymentId
     return sql"""update `payments`
-    set `order_id` = ${Fragment.encode(OrdersId.pgType, row.orderId)},
-    `method_id` = ${Fragment.encode(PaymentMethodsId.pgType, row.methodId)},
+    set `order_id` = ${Fragment.encode(OrdersId.dbType, row.orderId)},
+    `method_id` = ${Fragment.encode(PaymentMethodsId.dbType, row.methodId)},
     `transaction_id` = ${Fragment.encode(MariaTypes.varchar.nullable, row.transactionId)},
     `amount` = ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, row.amount)},
     `currency_code` = ${Fragment.encode(MariaTypes.char_, row.currencyCode)},
     `status` = ${Fragment.encode(MariaTypes.text, row.status)},
-    `processor_response` = ${Fragment.encode(MariaTypes.longtext.nullable, row.processorResponse)},
+    `processor_response` = ${Fragment.encode(MariaTypes.json.nullable, row.processorResponse)},
     `error_message` = ${Fragment.encode(MariaTypes.varchar.nullable, row.errorMessage)},
     `ip_address` = ${Fragment.encode(MariaTypes.inet6.nullable, row.ipAddress)},
     `created_at` = ${Fragment.encode(MariaTypes.datetime, row.createdAt)},
     `processed_at` = ${Fragment.encode(MariaTypes.datetime.nullable, row.processedAt)}
-    where `payment_id` = ${Fragment.encode(PaymentsId.pgType, paymentId)}""".update().runUnchecked(c) > 0
+    where `payment_id` = ${Fragment.encode(PaymentsId.dbType, paymentId)}""".update().runUnchecked(c) > 0
   }
 
   override def upsert(unsaved: PaymentsRow)(using c: Connection): PaymentsRow = {
-  sql"""INSERT INTO `payments`(`order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`)
-    VALUES (${Fragment.encode(OrdersId.pgType, unsaved.orderId)}, ${Fragment.encode(PaymentMethodsId.pgType, unsaved.methodId)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.transactionId)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.amount)}, ${Fragment.encode(MariaTypes.char_, unsaved.currencyCode)}, ${Fragment.encode(MariaTypes.text, unsaved.status)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.processorResponse)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.errorMessage)}, ${Fragment.encode(MariaTypes.inet6.nullable, unsaved.ipAddress)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.processedAt)})
+  sql"""INSERT INTO `payments`(`payment_id`, `order_id`, `method_id`, `transaction_id`, `amount`, `currency_code`, `status`, `processor_response`, `error_message`, `ip_address`, `created_at`, `processed_at`)
+    VALUES (${Fragment.encode(PaymentsId.dbType, unsaved.paymentId)}, ${Fragment.encode(OrdersId.dbType, unsaved.orderId)}, ${Fragment.encode(PaymentMethodsId.dbType, unsaved.methodId)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.transactionId)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.amount)}, ${Fragment.encode(MariaTypes.char_, unsaved.currencyCode)}, ${Fragment.encode(MariaTypes.text, unsaved.status)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.processorResponse)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.errorMessage)}, ${Fragment.encode(MariaTypes.inet6.nullable, unsaved.ipAddress)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.processedAt)})
     ON DUPLICATE KEY UPDATE `order_id` = VALUES(`order_id`),
     `method_id` = VALUES(`method_id`),
     `transaction_id` = VALUES(`transaction_id`),

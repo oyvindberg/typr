@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple9;
 import org.mariadb.jdbc.type.Geometry;
 import org.mariadb.jdbc.type.GeometryCollection;
 import org.mariadb.jdbc.type.LineString;
@@ -37,7 +38,17 @@ public record MariatestSpatialRow(
     /** */
     @JsonProperty("multipolygon_col") MultiPolygon multipolygonCol,
     /** */
-    @JsonProperty("geometrycollection_col") GeometryCollection geometrycollectionCol) {
+    @JsonProperty("geometrycollection_col") GeometryCollection geometrycollectionCol)
+    implements Tuple9<
+        MariatestSpatialId,
+        Geometry,
+        Point,
+        LineString,
+        Polygon,
+        MultiPoint,
+        MultiLineString,
+        MultiPolygon,
+        GeometryCollection> {
   /** AUTO_INCREMENT */
   public MariatestSpatialRow withId(MariatestSpatialId id) {
     return new MariatestSpatialRow(
@@ -175,7 +186,7 @@ public record MariatestSpatialRow(
 
   public static RowParser<MariatestSpatialRow> _rowParser =
       RowParsers.of(
-          MariatestSpatialId.pgType,
+          MariatestSpatialId.dbType,
           MariaTypes.geometry,
           MariaTypes.point,
           MariaTypes.linestring,
@@ -197,6 +208,60 @@ public record MariatestSpatialRow(
                 row.multipolygonCol(),
                 row.geometrycollectionCol()
               });
+  ;
+
+  @Override
+  public MariatestSpatialId _1() {
+    return id;
+  }
+  ;
+
+  @Override
+  public Geometry _2() {
+    return geometryCol;
+  }
+  ;
+
+  @Override
+  public Point _3() {
+    return pointCol;
+  }
+  ;
+
+  @Override
+  public LineString _4() {
+    return linestringCol;
+  }
+  ;
+
+  @Override
+  public Polygon _5() {
+    return polygonCol;
+  }
+  ;
+
+  @Override
+  public MultiPoint _6() {
+    return multipointCol;
+  }
+  ;
+
+  @Override
+  public MultiLineString _7() {
+    return multilinestringCol;
+  }
+  ;
+
+  @Override
+  public MultiPolygon _8() {
+    return multipolygonCol;
+  }
+  ;
+
+  @Override
+  public GeometryCollection _9() {
+    return geometrycollectionCol;
+  }
   ;
 
   public MariatestSpatialRowUnsaved toUnsavedRow() {

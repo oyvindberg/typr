@@ -47,7 +47,7 @@ public record ReviewsRepoMock(
   @Override
   public DeleteBuilder<ReviewsFields, ReviewsRow> delete() {
     return new DeleteBuilderMock<>(
-        ReviewsFields.structure(),
+        ReviewsFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.reviewId(),
@@ -96,7 +96,7 @@ public record ReviewsRepoMock(
   @Override
   public SelectBuilder<ReviewsFields, ReviewsRow> select() {
     return new SelectBuilderMock<>(
-        ReviewsFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        ReviewsFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -137,7 +137,7 @@ public record ReviewsRepoMock(
   @Override
   public UpdateBuilder<ReviewsFields, ReviewsRow> update() {
     return new UpdateBuilderMock<>(
-        ReviewsFields.structure(),
+        ReviewsFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

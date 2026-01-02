@@ -11,6 +11,7 @@ import adventureworks.person.addresstype.AddresstypeId
 import adventureworks.person.businessentity.BusinessentityId
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import java.time.LocalDateTime
@@ -37,7 +38,17 @@ data class BusinessentityaddressRow(
   val rowguid: UUID,
   /** Default: now() */
   val modifieddate: LocalDateTime
-) {
+) : Tuple5<BusinessentityId, AddressId, AddresstypeId, UUID, LocalDateTime> {
+  override fun _1(): BusinessentityId = businessentityid
+
+  override fun _2(): AddressId = addressid
+
+  override fun _3(): AddresstypeId = addresstypeid
+
+  override fun _4(): UUID = rowguid
+
+  override fun _5(): LocalDateTime = modifieddate
+
   fun compositeId(): BusinessentityaddressId = BusinessentityaddressId(businessentityid, addressid, addresstypeid)
 
   fun id(): BusinessentityaddressId = this.compositeId()
@@ -48,7 +59,7 @@ data class BusinessentityaddressRow(
   ): BusinessentityaddressRowUnsaved = BusinessentityaddressRowUnsaved(businessentityid, addressid, addresstypeid, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<BusinessentityaddressRow> = RowParsers.of(BusinessentityId.pgType, AddressId.pgType, AddresstypeId.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> BusinessentityaddressRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.businessentityid, row.addressid, row.addresstypeid, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<BusinessentityaddressRow> = RowParsers.of(BusinessentityId.dbType, AddressId.dbType, AddresstypeId.dbType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> BusinessentityaddressRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.businessentityid, row.addressid, row.addresstypeid, row.rowguid, row.modifieddate) })
 
     fun apply(
       compositeId: BusinessentityaddressId,

@@ -538,6 +538,9 @@ public interface PgJson<A> extends DbJson<A> {
 
   // Wrapper types that use string representation
   PgJson<Inet> inet = text.bimap(Inet::new, Inet::value);
+  PgJson<Cidr> cidr = text.bimap(Cidr::new, Cidr::value);
+  PgJson<MacAddr> macaddr = text.bimap(MacAddr::new, MacAddr::value);
+  PgJson<MacAddr8> macaddr8 = text.bimap(MacAddr8::new, MacAddr8::value);
   // Money is returned as string by PostgreSQL's to_json (e.g., "$42.22")
   PgJson<Money> money =
       new PgJson<>() {

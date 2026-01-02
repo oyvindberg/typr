@@ -9,10 +9,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple2;
 
 /** Type for the composite primary key of table `departments` */
 public record DepartmentsId(
-    @JsonProperty("dept_code") String deptCode, @JsonProperty("dept_region") String deptRegion) {
+    @JsonProperty("dept_code") String deptCode, @JsonProperty("dept_region") String deptRegion)
+    implements Tuple2<String, String> {
   public DepartmentsId withDeptCode(String deptCode) {
     return new DepartmentsId(deptCode, deptRegion);
   }
@@ -29,5 +31,17 @@ public record DepartmentsId(
           DuckDbTypes.varchar,
           DepartmentsId::new,
           row -> new Object[] {row.deptCode(), row.deptRegion()});
+  ;
+
+  @Override
+  public String _1() {
+    return deptCode;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return deptRegion;
+  }
   ;
 }

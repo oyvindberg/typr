@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
 import java.util.Optional;
 
 /** Table: public.flaff Composite primary key: code, another_code, some_number, specifier */
@@ -23,7 +24,8 @@ public record FlaffRow(
     @JsonProperty("some_number") Integer someNumber,
     ShortText specifier,
     /** Points to {@link adventureworks.public_.flaff.FlaffRow#specifier()} */
-    Optional<ShortText> parentspecifier) {
+    Optional<ShortText> parentspecifier)
+    implements Tuple5<ShortText, String, Integer, ShortText, Optional<ShortText>> {
   /** Points to {@link adventureworks.public_.flaff.FlaffRow#code()} */
   public FlaffRow withCode(ShortText code) {
     return new FlaffRow(code, anotherCode, someNumber, specifier, parentspecifier);
@@ -55,11 +57,11 @@ public record FlaffRow(
 
   public static RowParser<FlaffRow> _rowParser =
       RowParsers.of(
-          ShortText.pgType,
+          ShortText.dbType,
           PgTypes.text,
           PgTypes.int4,
-          ShortText.pgType,
-          ShortText.pgType.opt(),
+          ShortText.dbType,
+          ShortText.dbType.opt(),
           FlaffRow::new,
           row ->
               new Object[] {
@@ -82,6 +84,36 @@ public record FlaffRow(
   ;
 
   public static PgText<FlaffRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public ShortText _1() {
+    return code;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return anotherCode;
+  }
+  ;
+
+  @Override
+  public Integer _3() {
+    return someNumber;
+  }
+  ;
+
+  @Override
+  public ShortText _4() {
+    return specifier;
+  }
+  ;
+
+  @Override
+  public Optional<ShortText> _5() {
+    return parentspecifier;
+  }
+  ;
 
   public FlaffId compositeId() {
     return new FlaffId(code, anotherCode, someNumber, specifier);

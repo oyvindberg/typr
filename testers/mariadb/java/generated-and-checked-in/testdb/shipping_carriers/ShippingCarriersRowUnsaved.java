@@ -6,6 +6,7 @@
 package testdb.shipping_carriers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.typr.foundations.data.Json;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
 import testdb.customtypes.Defaulted.UseDefault;
@@ -19,7 +20,7 @@ public record ShippingCarriersRowUnsaved(
     /** Default: NULL */
     @JsonProperty("tracking_url_template") Defaulted<Optional<String>> trackingUrlTemplate,
     /** Default: NULL */
-    @JsonProperty("api_config") Defaulted<Optional<String>> apiConfig,
+    @JsonProperty("api_config") Defaulted<Optional<Json>> apiConfig,
     /** Default: 1 */
     @JsonProperty("is_active") Defaulted<Boolean> isActive) {
   public ShippingCarriersRowUnsaved(
@@ -51,7 +52,7 @@ public record ShippingCarriersRowUnsaved(
   ;
 
   /** Default: NULL */
-  public ShippingCarriersRowUnsaved withApiConfig(Defaulted<Optional<String>> apiConfig) {
+  public ShippingCarriersRowUnsaved withApiConfig(Defaulted<Optional<Json>> apiConfig) {
     return new ShippingCarriersRowUnsaved(code, name, trackingUrlTemplate, apiConfig, isActive);
   }
   ;
@@ -64,7 +65,7 @@ public record ShippingCarriersRowUnsaved(
 
   public ShippingCarriersRow toRow(
       java.util.function.Supplier<Optional<String>> trackingUrlTemplateDefault,
-      java.util.function.Supplier<Optional<String>> apiConfigDefault,
+      java.util.function.Supplier<Optional<Json>> apiConfigDefault,
       java.util.function.Supplier<Boolean> isActiveDefault,
       java.util.function.Supplier<ShippingCarriersId> carrierIdDefault) {
     return new ShippingCarriersRow(

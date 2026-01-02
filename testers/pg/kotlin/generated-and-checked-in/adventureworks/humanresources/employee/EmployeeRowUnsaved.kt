@@ -84,7 +84,7 @@ data class EmployeeRowUnsaved(
 
   companion object {
     val pgText: PgText<EmployeeRowUnsaved> =
-      PgText.instance({ row, sb -> BusinessentityId.pgType.text().unsafeEncode(row.businessentityid, sb)
+      PgText.instance({ row, sb -> BusinessentityId.dbType.text().unsafeEncode(row.businessentityid, sb)
       sb.append(PgText.DELIMETER)
       PgTypes.text.text().unsafeEncode(row.nationalidnumber, sb)
       sb.append(PgText.DELIMETER)
@@ -100,13 +100,13 @@ data class EmployeeRowUnsaved(
       sb.append(PgText.DELIMETER)
       PgTypes.date.text().unsafeEncode(row.hiredate, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(Flag.pgType.text()).unsafeEncode(row.salariedflag, sb)
+      Defaulted.pgText(Flag.dbType.text()).unsafeEncode(row.salariedflag, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(KotlinDbTypes.PgTypes.int2.text()).unsafeEncode(row.vacationhours, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(KotlinDbTypes.PgTypes.int2.text()).unsafeEncode(row.sickleavehours, sb)
       sb.append(PgText.DELIMETER)
-      Defaulted.pgText(Flag.pgType.text()).unsafeEncode(row.currentflag, sb)
+      Defaulted.pgText(Flag.dbType.text()).unsafeEncode(row.currentflag, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(PgTypes.uuid.text()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)

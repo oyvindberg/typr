@@ -6,6 +6,7 @@
 package testdb.mariatest_identity
 
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 
@@ -19,10 +20,14 @@ data class MariatestIdentityRow(
   val id: MariatestIdentityId,
   /**  */
   val name: String
-) {
+) : Tuple2<MariatestIdentityId, String> {
+  override fun _1(): MariatestIdentityId = id
+
+  override fun _2(): String = name
+
   fun toUnsavedRow(): MariatestIdentityRowUnsaved = MariatestIdentityRowUnsaved(name)
 
   companion object {
-    val _rowParser: RowParser<MariatestIdentityRow> = RowParsers.of(MariatestIdentityId.pgType, MariaTypes.varchar, { t0, t1 -> MariatestIdentityRow(t0, t1) }, { row -> arrayOf<Any?>(row.id, row.name) })
+    val _rowParser: RowParser<MariatestIdentityRow> = RowParsers.of(MariatestIdentityId.dbType, MariaTypes.varchar, { t0, t1 -> MariatestIdentityRow(t0, t1) }, { row -> arrayOf<Any?>(row.id, row.name) })
   }
 }

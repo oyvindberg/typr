@@ -1,11 +1,14 @@
 package dev.typr.foundations;
 
 import dev.typr.foundations.data.Json;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint2;
+import dev.typr.foundations.data.Uint4;
+import dev.typr.foundations.data.Uint8;
 import dev.typr.foundations.data.maria.Inet4;
 import dev.typr.foundations.data.maria.Inet6;
 import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -67,50 +70,51 @@ public interface MariaTypes {
 
   // ==================== Integer Types (Unsigned) ====================
 
-  // TINYINT UNSIGNED: 0-255, fits in Short
-  MariaType<Short> tinyintUnsigned =
+  // TINYINT UNSIGNED: 0-255, wrapped in Uint1
+  MariaType<Uint1> tinyintUnsigned =
       MariaType.of(
           "TINYINT UNSIGNED",
-          MariaRead.readShort,
-          MariaWrite.writeShort,
-          MariaText.textShort,
-          MariaJson.int2);
+          MariaRead.readShort.map(Uint1::new),
+          MariaWrite.writeShort.contramap(Uint1::value),
+          MariaText.textShort.contramap(Uint1::value),
+          MariaJson.int2.bimap(Uint1::new, Uint1::value));
 
-  // SMALLINT UNSIGNED: 0-65535, fits in Integer
-  MariaType<Integer> smallintUnsigned =
+  // SMALLINT UNSIGNED: 0-65535, wrapped in Uint2
+  MariaType<Uint2> smallintUnsigned =
       MariaType.of(
           "SMALLINT UNSIGNED",
-          MariaRead.readInteger,
-          MariaWrite.writeInteger,
-          MariaText.textInteger,
-          MariaJson.int4);
+          MariaRead.readInteger.map(Uint2::new),
+          MariaWrite.writeInteger.contramap(Uint2::value),
+          MariaText.textInteger.contramap(Uint2::value),
+          MariaJson.int4.bimap(Uint2::new, Uint2::value));
 
-  // MEDIUMINT UNSIGNED: 0-16777215, fits in Integer
-  MariaType<Integer> mediumintUnsigned =
+  // MEDIUMINT UNSIGNED: 0-16777215, wrapped in Uint4
+  MariaType<Uint4> mediumintUnsigned =
       MariaType.of(
           "MEDIUMINT UNSIGNED",
-          MariaRead.readInteger,
-          MariaWrite.writeInteger,
-          MariaText.textInteger,
-          MariaJson.int4);
+          MariaRead.readLong.map(Uint4::new),
+          MariaWrite.writeLong.contramap(Uint4::value),
+          MariaText.textLong.contramap(Uint4::value),
+          MariaJson.int8.bimap(Uint4::new, Uint4::value));
 
-  // INT UNSIGNED: 0-4294967295, fits in Long
-  MariaType<Long> intUnsigned =
+  // INT UNSIGNED: 0-4294967295, wrapped in Uint4
+  MariaType<Uint4> intUnsigned =
       MariaType.of(
           "INT UNSIGNED",
-          MariaRead.readLong,
-          MariaWrite.writeLong,
-          MariaText.textLong,
-          MariaJson.int8);
+          MariaRead.readLong.map(Uint4::new),
+          MariaWrite.writeLong.contramap(Uint4::value),
+          MariaText.textLong.contramap(Uint4::value),
+          MariaJson.int8.bimap(Uint4::new, Uint4::value));
 
-  // BIGINT UNSIGNED: 0-18446744073709551615, needs BigInteger
-  MariaType<BigInteger> bigintUnsigned =
+  // BIGINT UNSIGNED: 0-18446744073709551615, wrapped in Uint8
+  MariaType<Uint8> bigintUnsigned =
       MariaType.of(
           "BIGINT UNSIGNED",
-          MariaRead.readBigInteger,
-          MariaWrite.writeBigInteger,
-          MariaText.textBigInteger,
-          MariaJson.numeric.bimap(BigDecimal::toBigInteger, BigDecimal::new));
+          MariaRead.readBigInteger.map(Uint8::new),
+          MariaWrite.writeBigInteger.contramap(Uint8::value),
+          MariaText.textBigInteger.contramap(Uint8::value),
+          MariaJson.numeric.bimap(
+              v -> new Uint8(v.toBigInteger()), v -> new BigDecimal(v.value())));
 
   // ==================== Fixed-Point Types ====================
 
@@ -446,15 +450,16 @@ public interface MariaTypes {
 
   // ==================== Spatial Types ====================
   // Using MariaDB Connector/J types directly.
-  // We use getObjectAs() instead of castJdbcObjectTo() because it allows the JDBC driver
-  // to convert WKB bytes (returned from RETURNING clauses) back to typed geometry objects.
+  // We use readGeometry() which handles both normal SELECT (returns typed Geometry objects)
+  // and RETURNING clauses (returns WKB bytes). For base Geometry type, it parses the WKB
+  // header to determine the actual geometry type and uses the appropriate codec.
   // Note: Spatial types use text representation for JSON (WKT format would be better but is
   // complex)
 
   MariaType<Geometry> geometry =
       MariaType.of(
           "GEOMETRY",
-          MariaRead.getObjectAs(Geometry.class),
+          MariaRead.readGeometry(Geometry.class),
           MariaWrite.passObjectToJdbc(),
           MariaText.NotWorking(),
           MariaJson.text.bimap(
@@ -466,7 +471,7 @@ public interface MariaTypes {
   MariaType<Point> point =
       MariaType.of(
           "POINT",
-          MariaRead.getObjectAs(Point.class),
+          MariaRead.readGeometry(Point.class),
           MariaWrite.passObjectToJdbc(),
           MariaText.NotWorking(),
           MariaJson.text.bimap(
@@ -478,7 +483,7 @@ public interface MariaTypes {
   MariaType<LineString> linestring =
       MariaType.of(
           "LINESTRING",
-          MariaRead.getObjectAs(LineString.class),
+          MariaRead.readGeometry(LineString.class),
           MariaWrite.passObjectToJdbc(),
           MariaText.NotWorking(),
           MariaJson.text.bimap(
@@ -490,7 +495,7 @@ public interface MariaTypes {
   MariaType<Polygon> polygon =
       MariaType.of(
           "POLYGON",
-          MariaRead.getObjectAs(Polygon.class),
+          MariaRead.readGeometry(Polygon.class),
           MariaWrite.passObjectToJdbc(),
           MariaText.NotWorking(),
           MariaJson.text.bimap(
@@ -502,7 +507,7 @@ public interface MariaTypes {
   MariaType<MultiPoint> multipoint =
       MariaType.of(
           "MULTIPOINT",
-          MariaRead.getObjectAs(MultiPoint.class),
+          MariaRead.readGeometry(MultiPoint.class),
           MariaWrite.passObjectToJdbc(),
           MariaText.NotWorking(),
           MariaJson.text.bimap(
@@ -514,7 +519,7 @@ public interface MariaTypes {
   MariaType<MultiLineString> multilinestring =
       MariaType.of(
           "MULTILINESTRING",
-          MariaRead.getObjectAs(MultiLineString.class),
+          MariaRead.readGeometry(MultiLineString.class),
           MariaWrite.passObjectToJdbc(),
           MariaText.NotWorking(),
           MariaJson.text.bimap(
@@ -526,7 +531,7 @@ public interface MariaTypes {
   MariaType<MultiPolygon> multipolygon =
       MariaType.of(
           "MULTIPOLYGON",
-          MariaRead.getObjectAs(MultiPolygon.class),
+          MariaRead.readGeometry(MultiPolygon.class),
           MariaWrite.passObjectToJdbc(),
           MariaText.NotWorking(),
           MariaJson.text.bimap(
@@ -538,7 +543,7 @@ public interface MariaTypes {
   MariaType<GeometryCollection> geometrycollection =
       MariaType.of(
           "GEOMETRYCOLLECTION",
-          MariaRead.getObjectAs(GeometryCollection.class),
+          MariaRead.readGeometry(GeometryCollection.class),
           MariaWrite.passObjectToJdbc(),
           MariaText.NotWorking(),
           MariaJson.text.bimap(
@@ -546,4 +551,15 @@ public interface MariaTypes {
                 throw new UnsupportedOperationException("GeometryCollection JSON not supported");
               },
               Object::toString));
+
+  // ==================== Unknown Type ====================
+  // For columns whose type typr doesn't know how to handle - cast to/from string
+  MariaType<dev.typr.foundations.data.Unknown> unknown =
+      MariaType.of(
+              "TEXT",
+              MariaRead.readString,
+              MariaWrite.writeString,
+              MariaText.textString,
+              MariaJson.text)
+          .bimap(dev.typr.foundations.data.Unknown::new, dev.typr.foundations.data.Unknown::value);
 }

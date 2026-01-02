@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple12;
 import java.util.Optional;
 import testdb.inventory.InventoryId;
 import testdb.products.ProductsId;
@@ -34,12 +35,25 @@ public record InventoryCheckSqlRow(
     @JsonProperty("quantity_on_hand") Integer quantityOnHand,
     /** Points to {@link testdb.inventory.InventoryRow#quantityReserved()} */
     @JsonProperty("quantity_reserved") Integer quantityReserved,
-    /** Points to {@link testdb.inventory.InventoryRow#quantityOnHand()} */
+    /** Points to {@link testdb.inventory.InventoryRow#quantityReserved()} */
     Integer available,
     /** Points to {@link testdb.inventory.InventoryRow#reorderPoint()} */
     @JsonProperty("reorder_point") Integer reorderPoint,
     /** Points to {@link testdb.inventory.InventoryRow#binLocation()} */
-    @JsonProperty("bin_location") Optional<String> binLocation) {
+    @JsonProperty("bin_location") Optional<String> binLocation)
+    implements Tuple12<
+        InventoryId,
+        ProductsId,
+        String,
+        String,
+        WarehousesId,
+        String,
+        String,
+        Integer,
+        Integer,
+        Integer,
+        Integer,
+        Optional<String>> {
   /** Points to {@link testdb.inventory.InventoryRow#inventoryId()} */
   public InventoryCheckSqlRow withInventoryId(InventoryId inventoryId) {
     return new InventoryCheckSqlRow(
@@ -202,7 +216,7 @@ public record InventoryCheckSqlRow(
   }
   ;
 
-  /** Points to {@link testdb.inventory.InventoryRow#quantityOnHand()} */
+  /** Points to {@link testdb.inventory.InventoryRow#quantityReserved()} */
   public InventoryCheckSqlRow withAvailable(Integer available) {
     return new InventoryCheckSqlRow(
         inventoryId,
@@ -258,11 +272,11 @@ public record InventoryCheckSqlRow(
 
   public static RowParser<InventoryCheckSqlRow> _rowParser =
       RowParsers.of(
-          InventoryId.pgType,
-          ProductsId.pgType,
+          InventoryId.dbType,
+          ProductsId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar,
-          WarehousesId.pgType,
+          WarehousesId.dbType,
           MariaTypes.char_,
           MariaTypes.varchar,
           MariaTypes.int_,
@@ -286,5 +300,77 @@ public record InventoryCheckSqlRow(
                 row.reorderPoint(),
                 row.binLocation()
               });
+  ;
+
+  @Override
+  public InventoryId _1() {
+    return inventoryId;
+  }
+  ;
+
+  @Override
+  public Integer _10() {
+    return available;
+  }
+  ;
+
+  @Override
+  public Integer _11() {
+    return reorderPoint;
+  }
+  ;
+
+  @Override
+  public Optional<String> _12() {
+    return binLocation;
+  }
+  ;
+
+  @Override
+  public ProductsId _2() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return sku;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return productName;
+  }
+  ;
+
+  @Override
+  public WarehousesId _5() {
+    return warehouseId;
+  }
+  ;
+
+  @Override
+  public String _6() {
+    return warehouseCode;
+  }
+  ;
+
+  @Override
+  public String _7() {
+    return warehouseName;
+  }
+  ;
+
+  @Override
+  public Integer _8() {
+    return quantityOnHand;
+  }
+  ;
+
+  @Override
+  public Integer _9() {
+    return quantityReserved;
+  }
   ;
 }

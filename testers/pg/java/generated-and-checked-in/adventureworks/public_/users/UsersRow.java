@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple7;
 import dev.typr.foundations.data.Unknown;
 import java.time.Instant;
 import java.util.Optional;
@@ -24,7 +25,9 @@ public record UsersRow(
     String password,
     /** Default: now() */
     @JsonProperty("created_at") Instant createdAt,
-    @JsonProperty("verified_on") Optional<Instant> verifiedOn) {
+    @JsonProperty("verified_on") Optional<Instant> verifiedOn)
+    implements Tuple7<
+        UsersId, String, Optional<String>, Unknown, String, Instant, Optional<Instant>> {
   public UsersRow withUserId(UsersId userId) {
     return new UsersRow(userId, name, lastName, email, password, createdAt, verifiedOn);
   }
@@ -63,7 +66,7 @@ public record UsersRow(
 
   public static RowParser<UsersRow> _rowParser =
       RowParsers.of(
-          UsersId.pgType,
+          UsersId.dbType,
           PgTypes.text,
           PgTypes.text.opt(),
           PgTypes.unknown,
@@ -84,6 +87,48 @@ public record UsersRow(
   ;
 
   public static PgText<UsersRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public UsersId _1() {
+    return userId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public Optional<String> _3() {
+    return lastName;
+  }
+  ;
+
+  @Override
+  public Unknown _4() {
+    return email;
+  }
+  ;
+
+  @Override
+  public String _5() {
+    return password;
+  }
+  ;
+
+  @Override
+  public Instant _6() {
+    return createdAt;
+  }
+  ;
+
+  @Override
+  public Optional<Instant> _7() {
+    return verifiedOn;
+  }
+  ;
 
   public UsersId id() {
     return userId;

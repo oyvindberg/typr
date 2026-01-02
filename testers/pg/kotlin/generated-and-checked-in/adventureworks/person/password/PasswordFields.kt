@@ -10,53 +10,51 @@ import adventureworks.person.person.PersonFields
 import adventureworks.person.person.PersonRow
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.ForeignKey
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
+import dev.typr.foundations.kotlin.TupleExpr5
 import java.time.LocalDateTime
 import java.util.UUID
 import kotlin.collections.List
 
-interface PasswordFields : FieldsExpr<PasswordRow> {
-  abstract fun businessentityid(): IdField<BusinessentityId, PasswordRow>
+data class PasswordFields(val _path: List<Path>) : TupleExpr5<BusinessentityId, String, String, UUID, LocalDateTime>, RelationStructure<PasswordFields, PasswordRow>, FieldsBase<PasswordRow> {
+  override fun _1(): SqlExpr<BusinessentityId> = businessentityid()
 
-  abstract override fun columns(): List<FieldLike<*, PasswordRow>>
+  override fun _2(): SqlExpr<String> = passwordhash()
+
+  override fun _3(): SqlExpr<String> = passwordsalt()
+
+  override fun _4(): SqlExpr<UUID> = rowguid()
+
+  override fun _5(): SqlExpr<LocalDateTime> = modifieddate()
+
+  override fun _path(): List<Path> = _path
+
+  fun businessentityid(): IdField<BusinessentityId, PasswordRow> = IdField<BusinessentityId, PasswordRow>(_path, "businessentityid", PasswordRow::businessentityid, null, "int4", { row, value -> row.copy(businessentityid = value) }, BusinessentityId.dbType)
+
+  override fun columns(): List<FieldLike<*, PasswordRow>> = listOf(this.businessentityid().underlying, this.passwordhash().underlying, this.passwordsalt().underlying, this.rowguid().underlying, this.modifieddate().underlying)
 
   fun fkPerson(): ForeignKey<PersonFields, PersonRow> = ForeignKey.of<PersonFields, PersonRow>("person.FK_Password_Person_BusinessEntityID").withColumnPair<BusinessentityId>(businessentityid(), PersonFields::businessentityid)
 
-  abstract fun modifieddate(): Field<LocalDateTime, PasswordRow>
+  fun modifieddate(): Field<LocalDateTime, PasswordRow> = Field<LocalDateTime, PasswordRow>(_path, "modifieddate", PasswordRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-  abstract fun passwordhash(): Field<String, PasswordRow>
+  fun passwordhash(): Field<String, PasswordRow> = Field<String, PasswordRow>(_path, "passwordhash", PasswordRow::passwordhash, null, null, { row, value -> row.copy(passwordhash = value) }, PgTypes.text)
 
-  abstract fun passwordsalt(): Field<String, PasswordRow>
+  fun passwordsalt(): Field<String, PasswordRow> = Field<String, PasswordRow>(_path, "passwordsalt", PasswordRow::passwordsalt, null, null, { row, value -> row.copy(passwordsalt = value) }, PgTypes.text)
 
   override fun rowParser(): RowParser<PasswordRow> = PasswordRow._rowParser.underlying
 
-  abstract fun rowguid(): Field<UUID, PasswordRow>
+  fun rowguid(): Field<UUID, PasswordRow> = Field<UUID, PasswordRow>(_path, "rowguid", PasswordRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<PasswordFields, PasswordRow> = PasswordFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : PasswordFields, RelationStructure<PasswordFields, PasswordRow> {
-      override fun businessentityid(): IdField<BusinessentityId, PasswordRow> = IdField<BusinessentityId, PasswordRow>(_path, "businessentityid", PasswordRow::businessentityid, null, "int4", { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
-
-      override fun passwordhash(): Field<String, PasswordRow> = Field<String, PasswordRow>(_path, "passwordhash", PasswordRow::passwordhash, null, null, { row, value -> row.copy(passwordhash = value) }, PgTypes.text)
-
-      override fun passwordsalt(): Field<String, PasswordRow> = Field<String, PasswordRow>(_path, "passwordsalt", PasswordRow::passwordsalt, null, null, { row, value -> row.copy(passwordsalt = value) }, PgTypes.text)
-
-      override fun rowguid(): Field<UUID, PasswordRow> = Field<UUID, PasswordRow>(_path, "rowguid", PasswordRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
-
-      override fun modifieddate(): Field<LocalDateTime, PasswordRow> = Field<LocalDateTime, PasswordRow>(_path, "modifieddate", PasswordRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, PasswordRow>> = listOf(this.businessentityid().underlying, this.passwordhash().underlying, this.passwordsalt().underlying, this.rowguid().underlying, this.modifieddate().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<PasswordFields, PasswordRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: PasswordFields = PasswordFields(emptyList<Path>())
   }
 }

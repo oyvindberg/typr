@@ -182,11 +182,16 @@ object DuckDbSqlFileMetadata {
             buildSelectSqlFile(logger, path, scriptsPath, decomposed, result, schema)
 
           case Some("UPDATE") | Some("INSERT") | Some("DELETE") =>
-            // Non-SELECT queries don't return rows (unless they have RETURNING)
-            // For now, treat as Update - RETURNING support can be added later
-            buildParams(logger, path, decomposed, result, schema).map { params =>
-              val jdbcMetadata = JdbcMetadata(params, MaybeReturnsRows.Update)
-              SqlFile(RelPath.relativeTo(scriptsPath, path), decomposed, jdbcMetadata, None)
+            // Check if query has RETURNING clause by looking for columns
+            if (result.columns.nonEmpty) {
+              // Has RETURNING - treat like SELECT for row parsing
+              buildSelectSqlFile(logger, path, scriptsPath, decomposed, result, schema)
+            } else {
+              // No RETURNING - pure update
+              buildParams(logger, path, decomposed, result, schema).map { params =>
+                val jdbcMetadata = JdbcMetadata(params, MaybeReturnsRows.Update)
+                SqlFile(RelPath.relativeTo(scriptsPath, path), decomposed, jdbcMetadata, None)
+              }
             }
 
           case Some(other) =>

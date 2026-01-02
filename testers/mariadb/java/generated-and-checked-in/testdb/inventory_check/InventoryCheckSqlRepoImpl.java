@@ -9,7 +9,8 @@ import static dev.typr.foundations.Fragment.interpolate;
 
 import dev.typr.foundations.Fragment;
 import dev.typr.foundations.MariaTypes;
-import java.math.BigInteger;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint8;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Optional;
@@ -17,8 +18,8 @@ import java.util.Optional;
 public class InventoryCheckSqlRepoImpl implements InventoryCheckSqlRepo {
   @Override
   public List<InventoryCheckSqlRow> apply(
-      Optional<Short> warehouseId,
-      Optional<BigInteger> productId,
+      Optional<Uint1> warehouseId,
+      Optional<Uint8> productId,
       Optional<Boolean> lowStockOnly,
       Connection c) {
     return interpolate(
@@ -54,5 +55,4 @@ public class InventoryCheckSqlRepoImpl implements InventoryCheckSqlRepo {
         .query(InventoryCheckSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

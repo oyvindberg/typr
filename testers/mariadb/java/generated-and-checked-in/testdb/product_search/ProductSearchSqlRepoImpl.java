@@ -9,6 +9,7 @@ import static dev.typr.foundations.Fragment.interpolate;
 
 import dev.typr.foundations.Fragment;
 import dev.typr.foundations.MariaTypes;
+import dev.typr.foundations.data.Uint2;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.Optional;
 public class ProductSearchSqlRepoImpl implements ProductSearchSqlRepo {
   @Override
   public List<ProductSearchSqlRow> apply(
-      Optional<Integer> brandId,
+      Optional<Uint2> brandId,
       Optional<BigDecimal> minPrice,
       Optional<BigDecimal> maxPrice,
       Optional<String> status,
@@ -57,5 +58,4 @@ public class ProductSearchSqlRepoImpl implements ProductSearchSqlRepo {
         .query(ProductSearchSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

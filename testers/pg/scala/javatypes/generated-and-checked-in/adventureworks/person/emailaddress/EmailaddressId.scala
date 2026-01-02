@@ -9,13 +9,18 @@ import adventureworks.person.businessentity.BusinessentityId
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple2
 
 /** Type for the composite primary key of table `person.emailaddress` */
 case class EmailaddressId(
   businessentityid: BusinessentityId,
   emailaddressid: Integer
-)
+) extends Tuple2[BusinessentityId, Integer] {
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: Integer = emailaddressid
+}
 
 object EmailaddressId {
-  val `_rowParser`: RowParser[EmailaddressId] = RowParsers.of(BusinessentityId.pgType, PgTypes.int4, EmailaddressId.apply, row => Array[Any](row.businessentityid, row.emailaddressid))
+  val `_rowParser`: RowParser[EmailaddressId] = RowParsers.of(BusinessentityId.dbType, PgTypes.int4, EmailaddressId.apply, row => Array[Any](row.businessentityid, row.emailaddressid))
 }

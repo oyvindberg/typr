@@ -7,6 +7,7 @@ package testdb.order_summary_by_customer
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple9
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -35,7 +36,25 @@ case class OrderSummaryByCustomerSqlRow(
   @JsonProperty("first_order_date") firstOrderDate: Option[LocalDate],
   /** Points to [[testdb.orders.OrdersRow.totalAmount]] */
   @JsonProperty("avg_order_amount") avgOrderAmount: Option[Double]
-)
+) extends Tuple9[CustomersId, String, Option[String], Option[Priority], Option[Long], Option[BigDecimal], Option[LocalDate], Option[LocalDate], Option[Double]] {
+  override def `_1`: CustomersId = customerId
+
+  override def `_2`: String = customerName
+
+  override def `_3`: Option[String] = email
+
+  override def `_4`: Option[Priority] = priority
+
+  override def `_5`: Option[Long] = orderCount
+
+  override def `_6`: Option[BigDecimal] = totalSpent
+
+  override def `_7`: Option[LocalDate] = lastOrderDate
+
+  override def `_8`: Option[LocalDate] = firstOrderDate
+
+  override def `_9`: Option[Double] = avgOrderAmount
+}
 
 object OrderSummaryByCustomerSqlRow {
   val `_rowParser`: RowParser[OrderSummaryByCustomerSqlRow] = RowParsers.of(CustomersId.duckDbType, DuckDbTypes.varchar, DuckDbTypes.varchar.nullable, Priority.duckDbType.nullable, ScalaDbTypes.DuckDbTypes.bigint.nullable, ScalaDbTypes.DuckDbTypes.numeric.nullable, DuckDbTypes.date.nullable, DuckDbTypes.date.nullable, ScalaDbTypes.DuckDbTypes.double_.nullable)(OrderSummaryByCustomerSqlRow.apply)(row => Array[Any](row.customerId, row.customerName, row.email, row.priority, row.orderCount, row.totalSpent, row.lastOrderDate, row.firstOrderDate, row.avgOrderAmount))

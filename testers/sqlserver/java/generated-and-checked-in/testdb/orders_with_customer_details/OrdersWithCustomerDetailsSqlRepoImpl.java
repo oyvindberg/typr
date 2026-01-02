@@ -43,5 +43,4 @@ public class OrdersWithCustomerDetailsSqlRepoImpl implements OrdersWithCustomerD
         .query(OrdersWithCustomerDetailsSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

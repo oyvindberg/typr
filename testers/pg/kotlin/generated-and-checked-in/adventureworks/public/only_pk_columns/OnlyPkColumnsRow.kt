@@ -8,6 +8,7 @@ package adventureworks.public.only_pk_columns
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -18,7 +19,11 @@ import dev.typr.foundations.kotlin.RowParsers
 data class OnlyPkColumnsRow(
   @JsonProperty("key_column_1") val keyColumn1: String,
   @JsonProperty("key_column_2") val keyColumn2: Int
-) {
+) : Tuple2<String, Int> {
+  override fun _1(): String = keyColumn1
+
+  override fun _2(): Int = keyColumn2
+
   fun compositeId(): OnlyPkColumnsId = OnlyPkColumnsId(keyColumn1, keyColumn2)
 
   fun id(): OnlyPkColumnsId = this.compositeId()

@@ -128,9 +128,12 @@ public class Db2TypeTest {
           // ==================== Special Types ====================
           // DB2 normalizes XML: strips XML declaration, so use pre-normalized values
           // XML types can't be compared with = in SQL, so mark as noIdentity
-          new Db2TypeAndExample<>(Db2Types.xml, "<root><element>value</element></root>")
+          new Db2TypeAndExample<>(
+                  Db2Types.xml,
+                  new dev.typr.foundations.data.Xml("<root><element>value</element></root>"))
               .noIdentity(),
-          new Db2TypeAndExample<>(Db2Types.xml, "<simple/>").noIdentity());
+          new Db2TypeAndExample<>(Db2Types.xml, new dev.typr.foundations.data.Xml("<simple/>"))
+              .noIdentity());
 
   // Note: DB2 does not support arrays as a column type like PostgreSQL
   // Array operations in DB2 are handled via ARRAY data type in SQL PL only

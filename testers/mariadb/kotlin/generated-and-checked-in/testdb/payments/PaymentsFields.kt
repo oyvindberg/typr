@@ -7,16 +7,19 @@ package testdb.payments
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.Inet6
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.ForeignKey
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr12
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import kotlin.collections.List
@@ -27,72 +30,68 @@ import testdb.payment_methods.PaymentMethodsFields
 import testdb.payment_methods.PaymentMethodsId
 import testdb.payment_methods.PaymentMethodsRow
 
-interface PaymentsFields : FieldsExpr<PaymentsRow> {
-  abstract fun amount(): Field<BigDecimal, PaymentsRow>
+data class PaymentsFields(val _path: List<Path>) : TupleExpr12<PaymentsId, OrdersId, PaymentMethodsId, String, BigDecimal, String, String, Json, String, Inet6, LocalDateTime, LocalDateTime>, RelationStructure<PaymentsFields, PaymentsRow>, FieldsBase<PaymentsRow> {
+  override fun _1(): SqlExpr<PaymentsId> = paymentId()
 
-  abstract override fun columns(): List<FieldLike<*, PaymentsRow>>
+  override fun _10(): SqlExpr<Inet6> = ipAddress()
 
-  abstract fun createdAt(): Field<LocalDateTime, PaymentsRow>
+  override fun _11(): SqlExpr<LocalDateTime> = createdAt()
 
-  abstract fun currencyCode(): Field<String, PaymentsRow>
+  override fun _12(): SqlExpr<LocalDateTime> = processedAt()
 
-  abstract fun errorMessage(): OptField<String, PaymentsRow>
+  override fun _2(): SqlExpr<OrdersId> = orderId()
+
+  override fun _3(): SqlExpr<PaymentMethodsId> = methodId()
+
+  override fun _4(): SqlExpr<String> = transactionId()
+
+  override fun _5(): SqlExpr<BigDecimal> = amount()
+
+  override fun _6(): SqlExpr<String> = currencyCode()
+
+  override fun _7(): SqlExpr<String> = status()
+
+  override fun _8(): SqlExpr<Json> = processorResponse()
+
+  override fun _9(): SqlExpr<String> = errorMessage()
+
+  override fun _path(): List<Path> = _path
+
+  fun amount(): Field<BigDecimal, PaymentsRow> = Field<BigDecimal, PaymentsRow>(_path, "amount", PaymentsRow::amount, null, null, { row, value -> row.copy(amount = value) }, KotlinDbTypes.MariaTypes.numeric)
+
+  override fun columns(): List<FieldLike<*, PaymentsRow>> = listOf(this.paymentId().underlying, this.orderId().underlying, this.methodId().underlying, this.transactionId().underlying, this.amount().underlying, this.currencyCode().underlying, this.status().underlying, this.processorResponse().underlying, this.errorMessage().underlying, this.ipAddress().underlying, this.createdAt().underlying, this.processedAt().underlying)
+
+  fun createdAt(): Field<LocalDateTime, PaymentsRow> = Field<LocalDateTime, PaymentsRow>(_path, "created_at", PaymentsRow::createdAt, null, null, { row, value -> row.copy(createdAt = value) }, MariaTypes.datetime)
+
+  fun currencyCode(): Field<String, PaymentsRow> = Field<String, PaymentsRow>(_path, "currency_code", PaymentsRow::currencyCode, null, null, { row, value -> row.copy(currencyCode = value) }, MariaTypes.char_)
+
+  fun errorMessage(): OptField<String, PaymentsRow> = OptField<String, PaymentsRow>(_path, "error_message", PaymentsRow::errorMessage, null, null, { row, value -> row.copy(errorMessage = value) }, MariaTypes.varchar)
 
   fun fkOrders(): ForeignKey<OrdersFields, OrdersRow> = ForeignKey.of<OrdersFields, OrdersRow>("fk_pay_order").withColumnPair<OrdersId>(orderId(), OrdersFields::orderId)
 
   fun fkPaymentMethods(): ForeignKey<PaymentMethodsFields, PaymentMethodsRow> = ForeignKey.of<PaymentMethodsFields, PaymentMethodsRow>("fk_pay_method").withColumnPair<PaymentMethodsId>(methodId(), PaymentMethodsFields::methodId)
 
-  abstract fun ipAddress(): OptField<Inet6, PaymentsRow>
+  fun ipAddress(): OptField<Inet6, PaymentsRow> = OptField<Inet6, PaymentsRow>(_path, "ip_address", PaymentsRow::ipAddress, null, null, { row, value -> row.copy(ipAddress = value) }, MariaTypes.inet6)
 
-  abstract fun methodId(): Field<PaymentMethodsId, PaymentsRow>
+  fun methodId(): Field<PaymentMethodsId, PaymentsRow> = Field<PaymentMethodsId, PaymentsRow>(_path, "method_id", PaymentsRow::methodId, null, null, { row, value -> row.copy(methodId = value) }, PaymentMethodsId.dbType)
 
-  abstract fun orderId(): Field<OrdersId, PaymentsRow>
+  fun orderId(): Field<OrdersId, PaymentsRow> = Field<OrdersId, PaymentsRow>(_path, "order_id", PaymentsRow::orderId, null, null, { row, value -> row.copy(orderId = value) }, OrdersId.dbType)
 
-  abstract fun paymentId(): IdField<PaymentsId, PaymentsRow>
+  fun paymentId(): IdField<PaymentsId, PaymentsRow> = IdField<PaymentsId, PaymentsRow>(_path, "payment_id", PaymentsRow::paymentId, null, null, { row, value -> row.copy(paymentId = value) }, PaymentsId.dbType)
 
-  abstract fun processedAt(): OptField<LocalDateTime, PaymentsRow>
+  fun processedAt(): OptField<LocalDateTime, PaymentsRow> = OptField<LocalDateTime, PaymentsRow>(_path, "processed_at", PaymentsRow::processedAt, null, null, { row, value -> row.copy(processedAt = value) }, MariaTypes.datetime)
 
-  abstract fun processorResponse(): OptField<String, PaymentsRow>
+  fun processorResponse(): OptField<Json, PaymentsRow> = OptField<Json, PaymentsRow>(_path, "processor_response", PaymentsRow::processorResponse, null, null, { row, value -> row.copy(processorResponse = value) }, MariaTypes.json)
 
   override fun rowParser(): RowParser<PaymentsRow> = PaymentsRow._rowParser.underlying
 
-  abstract fun status(): Field<String, PaymentsRow>
+  fun status(): Field<String, PaymentsRow> = Field<String, PaymentsRow>(_path, "status", PaymentsRow::status, null, null, { row, value -> row.copy(status = value) }, MariaTypes.text)
 
-  abstract fun transactionId(): OptField<String, PaymentsRow>
+  fun transactionId(): OptField<String, PaymentsRow> = OptField<String, PaymentsRow>(_path, "transaction_id", PaymentsRow::transactionId, null, null, { row, value -> row.copy(transactionId = value) }, MariaTypes.varchar)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<PaymentsFields, PaymentsRow> = PaymentsFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : PaymentsFields, RelationStructure<PaymentsFields, PaymentsRow> {
-      override fun paymentId(): IdField<PaymentsId, PaymentsRow> = IdField<PaymentsId, PaymentsRow>(_path, "payment_id", PaymentsRow::paymentId, null, null, { row, value -> row.copy(paymentId = value) }, PaymentsId.pgType)
-
-      override fun orderId(): Field<OrdersId, PaymentsRow> = Field<OrdersId, PaymentsRow>(_path, "order_id", PaymentsRow::orderId, null, null, { row, value -> row.copy(orderId = value) }, OrdersId.pgType)
-
-      override fun methodId(): Field<PaymentMethodsId, PaymentsRow> = Field<PaymentMethodsId, PaymentsRow>(_path, "method_id", PaymentsRow::methodId, null, null, { row, value -> row.copy(methodId = value) }, PaymentMethodsId.pgType)
-
-      override fun transactionId(): OptField<String, PaymentsRow> = OptField<String, PaymentsRow>(_path, "transaction_id", PaymentsRow::transactionId, null, null, { row, value -> row.copy(transactionId = value) }, MariaTypes.varchar)
-
-      override fun amount(): Field<BigDecimal, PaymentsRow> = Field<BigDecimal, PaymentsRow>(_path, "amount", PaymentsRow::amount, null, null, { row, value -> row.copy(amount = value) }, KotlinDbTypes.MariaTypes.numeric)
-
-      override fun currencyCode(): Field<String, PaymentsRow> = Field<String, PaymentsRow>(_path, "currency_code", PaymentsRow::currencyCode, null, null, { row, value -> row.copy(currencyCode = value) }, MariaTypes.char_)
-
-      override fun status(): Field<String, PaymentsRow> = Field<String, PaymentsRow>(_path, "status", PaymentsRow::status, null, null, { row, value -> row.copy(status = value) }, MariaTypes.text)
-
-      override fun processorResponse(): OptField<String, PaymentsRow> = OptField<String, PaymentsRow>(_path, "processor_response", PaymentsRow::processorResponse, null, null, { row, value -> row.copy(processorResponse = value) }, MariaTypes.longtext)
-
-      override fun errorMessage(): OptField<String, PaymentsRow> = OptField<String, PaymentsRow>(_path, "error_message", PaymentsRow::errorMessage, null, null, { row, value -> row.copy(errorMessage = value) }, MariaTypes.varchar)
-
-      override fun ipAddress(): OptField<Inet6, PaymentsRow> = OptField<Inet6, PaymentsRow>(_path, "ip_address", PaymentsRow::ipAddress, null, null, { row, value -> row.copy(ipAddress = value) }, MariaTypes.inet6)
-
-      override fun createdAt(): Field<LocalDateTime, PaymentsRow> = Field<LocalDateTime, PaymentsRow>(_path, "created_at", PaymentsRow::createdAt, null, null, { row, value -> row.copy(createdAt = value) }, MariaTypes.datetime)
-
-      override fun processedAt(): OptField<LocalDateTime, PaymentsRow> = OptField<LocalDateTime, PaymentsRow>(_path, "processed_at", PaymentsRow::processedAt, null, null, { row, value -> row.copy(processedAt = value) }, MariaTypes.datetime)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, PaymentsRow>> = listOf(this.paymentId().underlying, this.orderId().underlying, this.methodId().underlying, this.transactionId().underlying, this.amount().underlying, this.currencyCode().underlying, this.status().underlying, this.processorResponse().underlying, this.errorMessage().underlying, this.ipAddress().underlying, this.createdAt().underlying, this.processedAt().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<PaymentsFields, PaymentsRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: PaymentsFields = PaymentsFields(emptyList<Path>())
   }
 }

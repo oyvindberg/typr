@@ -3,6 +3,7 @@ package oracledb;
 import static org.junit.Assert.*;
 
 import dev.typr.foundations.dsl.Bijection;
+import dev.typr.foundations.dsl.TupleExpr;
 import java.math.BigDecimal;
 import java.util.Optional;
 import oracledb.customers.CustomersRepoImpl;
@@ -137,7 +138,10 @@ public class OracleDSLTest {
 
           // Single-column map returns Tuple1
           var query =
-              productsRepo.select().where(p -> p.sku().isEqual("MAP-001")).map(p -> p.name());
+              productsRepo
+                  .select()
+                  .where(p -> p.sku().isEqual("MAP-001"))
+                  .map(p -> TupleExpr.of(p.name()));
 
           var results = query.toList(c);
           assertFalse(results.isEmpty());

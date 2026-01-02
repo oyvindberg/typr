@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
 import java.math.BigDecimal;
 import testdb.orders.OrdersId;
 
@@ -19,7 +20,8 @@ public record OrderItemsRow(
     @JsonProperty("ITEM_NUMBER") Integer itemNumber,
     @JsonProperty("PRODUCT_NAME") String productName,
     @JsonProperty("QUANTITY") Integer quantity,
-    @JsonProperty("UNIT_PRICE") BigDecimal unitPrice) {
+    @JsonProperty("UNIT_PRICE") BigDecimal unitPrice)
+    implements Tuple5<OrdersId, Integer, String, Integer, BigDecimal> {
   /** Points to {@link testdb.orders.OrdersRow#orderId()} */
   public OrderItemsRow withOrderId(OrdersId orderId) {
     return new OrderItemsRow(orderId, itemNumber, productName, quantity, unitPrice);
@@ -48,7 +50,7 @@ public record OrderItemsRow(
 
   public static RowParser<OrderItemsRow> _rowParser =
       RowParsers.of(
-          OrdersId.pgType,
+          OrdersId.dbType,
           Db2Types.integer,
           Db2Types.varchar,
           Db2Types.integer,
@@ -64,6 +66,36 @@ public record OrderItemsRow(
       OrderItemsId compositeId, String productName, Integer quantity, BigDecimal unitPrice) {
     return new OrderItemsRow(
         compositeId.orderId(), compositeId.itemNumber(), productName, quantity, unitPrice);
+  }
+  ;
+
+  @Override
+  public OrdersId _1() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public Integer _2() {
+    return itemNumber;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return productName;
+  }
+  ;
+
+  @Override
+  public Integer _4() {
+    return quantity;
+  }
+  ;
+
+  @Override
+  public BigDecimal _5() {
+    return unitPrice;
   }
   ;
 

@@ -9,10 +9,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple2;
 
 /** Type for the composite primary key of table `employees` */
 public record EmployeesId(
-    @JsonProperty("emp_number") Integer empNumber, @JsonProperty("emp_suffix") String empSuffix) {
+    @JsonProperty("emp_number") Integer empNumber, @JsonProperty("emp_suffix") String empSuffix)
+    implements Tuple2<Integer, String> {
   public EmployeesId withEmpNumber(Integer empNumber) {
     return new EmployeesId(empNumber, empSuffix);
   }
@@ -29,5 +31,17 @@ public record EmployeesId(
           DuckDbTypes.varchar,
           EmployeesId::new,
           row -> new Object[] {row.empNumber(), row.empSuffix()});
+  ;
+
+  @Override
+  public Integer _1() {
+    return empNumber;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return empSuffix;
+  }
   ;
 }

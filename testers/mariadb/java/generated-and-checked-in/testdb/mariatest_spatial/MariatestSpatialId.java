@@ -26,6 +26,6 @@ public record MariatestSpatialId(@JsonValue Integer value) {
   public static Bijection<MariatestSpatialId, Integer> bijection =
       Bijection.of(MariatestSpatialId::value, MariatestSpatialId::new);
 
-  public static MariaType<MariatestSpatialId> pgType =
+  public static MariaType<MariatestSpatialId> dbType =
       MariaTypes.int_.bimap(MariatestSpatialId::new, MariatestSpatialId::value);
 }

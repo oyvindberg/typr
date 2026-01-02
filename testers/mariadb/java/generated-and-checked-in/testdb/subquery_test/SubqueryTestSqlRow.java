@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple6;
 import java.math.BigDecimal;
 import java.util.Optional;
 import testdb.customers.CustomersId;
@@ -24,7 +25,8 @@ public record SubqueryTestSqlRow(
     @JsonProperty("order_count") Long orderCount,
     @JsonProperty("total_spent") BigDecimal totalSpent,
     /** Points to {@link testdb.brands.BrandsRow#name()} */
-    @JsonProperty("favorite_brand") Optional<String> favoriteBrand) {
+    @JsonProperty("favorite_brand") Optional<String> favoriteBrand)
+    implements Tuple6<CustomersId, String, String, Long, BigDecimal, Optional<String>> {
   /** Points to {@link testdb.customers.CustomersRow#customerId()} */
   public SubqueryTestSqlRow withCustomerId(CustomersId customerId) {
     return new SubqueryTestSqlRow(
@@ -67,7 +69,7 @@ public record SubqueryTestSqlRow(
 
   public static RowParser<SubqueryTestSqlRow> _rowParser =
       RowParsers.of(
-          CustomersId.pgType,
+          CustomersId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.bigint,
@@ -83,5 +85,41 @@ public record SubqueryTestSqlRow(
                 row.totalSpent(),
                 row.favoriteBrand()
               });
+  ;
+
+  @Override
+  public CustomersId _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return email;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return firstName;
+  }
+  ;
+
+  @Override
+  public Long _4() {
+    return orderCount;
+  }
+  ;
+
+  @Override
+  public BigDecimal _5() {
+    return totalSpent;
+  }
+  ;
+
+  @Override
+  public Optional<String> _6() {
+    return favoriteBrand;
+  }
   ;
 }

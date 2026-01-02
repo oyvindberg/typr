@@ -9,12 +9,17 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple2
 
 /** Type for the composite primary key of table `public.only_pk_columns` */
 case class OnlyPkColumnsId(
   @JsonProperty("key_column_1") keyColumn1: String,
   @JsonProperty("key_column_2") keyColumn2: Integer
-)
+) extends Tuple2[String, Integer] {
+  override def `_1`: String = keyColumn1
+
+  override def `_2`: Integer = keyColumn2
+}
 
 object OnlyPkColumnsId {
   val `_rowParser`: RowParser[OnlyPkColumnsId] = RowParsers.of(PgTypes.text, PgTypes.int4, OnlyPkColumnsId.apply, row => Array[Any](row.keyColumn1, row.keyColumn2))

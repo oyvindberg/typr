@@ -13,100 +13,103 @@ import adventureworks.public_.title_domain.TitleDomainId;
 import adventureworks.public_.title_domain.TitleDomainRow;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr3;
 import java.util.List;
 import java.util.Optional;
 
-public interface TitledpersonFields extends FieldsExpr<TitledpersonRow> {
-  record Impl(List<Path> _path)
-      implements TitledpersonFields, RelationStructure<TitledpersonFields, TitledpersonRow> {
-    @Override
-    public Field<TitleDomainId, TitledpersonRow> titleShort() {
-      return new Field<TitleDomainId, TitledpersonRow>(
-          _path,
-          "title_short",
-          TitledpersonRow::titleShort,
-          Optional.empty(),
-          Optional.of("text"),
-          (row, value) -> row.withTitleShort(value),
-          TitleDomainId.pgType);
-    }
-    ;
+public class TitledpersonFields extends TupleExpr3<TitleDomainId, TitleId, String>
+    implements RelationStructure<TitledpersonFields, TitledpersonRow>, FieldsBase<TitledpersonRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<TitleId, TitledpersonRow> title() {
-      return new Field<TitleId, TitledpersonRow>(
-          _path,
-          "title",
-          TitledpersonRow::title,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTitle(value),
-          TitleId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<String, TitledpersonRow> name() {
-      return new Field<String, TitledpersonRow>(
-          _path,
-          "name",
-          TitledpersonRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, TitledpersonRow>> columns() {
-      return java.util.List.of(this.titleShort(), this.title(), this.name());
-    }
-    ;
-
-    @Override
-    public RelationStructure<TitledpersonFields, TitledpersonRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public TitledpersonFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static TitledpersonFields structure =
+      new TitledpersonFields(java.util.Collections.emptyList());
+
+  public Field<TitleDomainId, TitledpersonRow> titleShort() {
+    return new Field<TitleDomainId, TitledpersonRow>(
+        _path,
+        "title_short",
+        TitledpersonRow::titleShort,
+        Optional.empty(),
+        Optional.of("text"),
+        (row, value) -> row.withTitleShort(value),
+        TitleDomainId.dbType);
   }
-  ;
 
-  Field<TitleDomainId, TitledpersonRow> titleShort();
+  public Field<TitleId, TitledpersonRow> title() {
+    return new Field<TitleId, TitledpersonRow>(
+        _path,
+        "title",
+        TitledpersonRow::title,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTitle(value),
+        TitleId.dbType);
+  }
 
-  Field<TitleId, TitledpersonRow> title();
+  public Field<String, TitledpersonRow> name() {
+    return new Field<String, TitledpersonRow>(
+        _path,
+        "name",
+        TitledpersonRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        PgTypes.text);
+  }
 
-  Field<String, TitledpersonRow> name();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<TitleFields, TitleRow> fkTitle() {
+  public ForeignKey<TitleFields, TitleRow> fkTitle() {
     return ForeignKey.<TitleFields, TitleRow>of("public.titledperson_title_fkey")
         .<TitleId>withColumnPair(title(), TitleFields::code);
   }
-  ;
 
-  default ForeignKey<TitleDomainFields, TitleDomainRow> fkTitleDomain() {
+  public ForeignKey<TitleDomainFields, TitleDomainRow> fkTitleDomain() {
     return ForeignKey.<TitleDomainFields, TitleDomainRow>of("public.titledperson_title_short_fkey")
         .<TitleDomainId>withColumnPair(titleShort(), TitleDomainFields::code);
   }
-  ;
 
   @Override
-  List<FieldLike<?, TitledpersonRow>> columns();
+  public List<FieldLike<?, TitledpersonRow>> columns() {
+    return java.util.List.of(this.titleShort(), this.title(), this.name());
+  }
 
   @Override
-  default RowParser<TitledpersonRow> rowParser() {
+  public RowParser<TitledpersonRow> rowParser() {
     return TitledpersonRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<TitledpersonFields, TitledpersonRow> withPaths(List<Path> _path) {
+    return new TitledpersonFields(_path);
+  }
+
+  @Override
+  public SqlExpr<TitleDomainId> _1() {
+    return titleShort();
+  }
+
+  @Override
+  public SqlExpr<TitleId> _2() {
+    return title();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return name();
+  }
 }

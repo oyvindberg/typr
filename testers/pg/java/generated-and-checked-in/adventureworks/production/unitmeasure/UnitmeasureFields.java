@@ -8,89 +8,94 @@ package adventureworks.production.unitmeasure;
 import adventureworks.public_.Name;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr3;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface UnitmeasureFields extends FieldsExpr<UnitmeasureRow> {
-  record Impl(List<Path> _path)
-      implements UnitmeasureFields, RelationStructure<UnitmeasureFields, UnitmeasureRow> {
-    @Override
-    public IdField<UnitmeasureId, UnitmeasureRow> unitmeasurecode() {
-      return new IdField<UnitmeasureId, UnitmeasureRow>(
-          _path,
-          "unitmeasurecode",
-          UnitmeasureRow::unitmeasurecode,
-          Optional.empty(),
-          Optional.of("bpchar"),
-          (row, value) -> row.withUnitmeasurecode(value),
-          UnitmeasureId.pgType);
-    }
-    ;
+public class UnitmeasureFields extends TupleExpr3<UnitmeasureId, Name, LocalDateTime>
+    implements RelationStructure<UnitmeasureFields, UnitmeasureRow>, FieldsBase<UnitmeasureRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<Name, UnitmeasureRow> name() {
-      return new Field<Name, UnitmeasureRow>(
-          _path,
-          "name",
-          UnitmeasureRow::name,
-          Optional.empty(),
-          Optional.of("varchar"),
-          (row, value) -> row.withName(value),
-          Name.pgType);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, UnitmeasureRow> modifieddate() {
-      return new Field<LocalDateTime, UnitmeasureRow>(
-          _path,
-          "modifieddate",
-          UnitmeasureRow::modifieddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withModifieddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, UnitmeasureRow>> columns() {
-      return java.util.List.of(this.unitmeasurecode(), this.name(), this.modifieddate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<UnitmeasureFields, UnitmeasureRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public UnitmeasureFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static UnitmeasureFields structure =
+      new UnitmeasureFields(java.util.Collections.emptyList());
+
+  public IdField<UnitmeasureId, UnitmeasureRow> unitmeasurecode() {
+    return new IdField<UnitmeasureId, UnitmeasureRow>(
+        _path,
+        "unitmeasurecode",
+        UnitmeasureRow::unitmeasurecode,
+        Optional.empty(),
+        Optional.of("bpchar"),
+        (row, value) -> row.withUnitmeasurecode(value),
+        UnitmeasureId.dbType);
   }
-  ;
 
-  IdField<UnitmeasureId, UnitmeasureRow> unitmeasurecode();
+  public Field<Name, UnitmeasureRow> name() {
+    return new Field<Name, UnitmeasureRow>(
+        _path,
+        "name",
+        UnitmeasureRow::name,
+        Optional.empty(),
+        Optional.of("varchar"),
+        (row, value) -> row.withName(value),
+        Name.dbType);
+  }
 
-  Field<Name, UnitmeasureRow> name();
-
-  Field<LocalDateTime, UnitmeasureRow> modifieddate();
+  public Field<LocalDateTime, UnitmeasureRow> modifieddate() {
+    return new Field<LocalDateTime, UnitmeasureRow>(
+        _path,
+        "modifieddate",
+        UnitmeasureRow::modifieddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withModifieddate(value),
+        PgTypes.timestamp);
+  }
 
   @Override
-  List<FieldLike<?, UnitmeasureRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<UnitmeasureRow> rowParser() {
+  public List<FieldLike<?, UnitmeasureRow>> columns() {
+    return java.util.List.of(this.unitmeasurecode(), this.name(), this.modifieddate());
+  }
+
+  @Override
+  public RowParser<UnitmeasureRow> rowParser() {
     return UnitmeasureRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<UnitmeasureFields, UnitmeasureRow> withPaths(List<Path> _path) {
+    return new UnitmeasureFields(_path);
+  }
+
+  @Override
+  public SqlExpr<UnitmeasureId> _1() {
+    return unitmeasurecode();
+  }
+
+  @Override
+  public SqlExpr<Name> _2() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _3() {
+    return modifieddate();
+  }
 }

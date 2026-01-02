@@ -6,6 +6,12 @@
 package testdb
 
 import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint2
+import dev.typr.foundations.data.Uint4
+import dev.typr.foundations.data.Uint8
+import dev.typr.foundations.internal.RandomHelper
+import java.lang.Math
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.sql.Connection
@@ -14,6 +20,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.Random
 import java.util.UUID
 import testdb.all_scalar_types.AllScalarTypesId
@@ -24,6 +31,7 @@ import testdb.customers.CustomersRepoImpl
 import testdb.customers.CustomersRow
 import testdb.customers.CustomersRowUnsaved
 import testdb.customtypes.Defaulted
+import testdb.customtypes.Defaulted.UseDefault
 import testdb.departments.DepartmentsRepoImpl
 import testdb.departments.DepartmentsRow
 import testdb.employees.EmployeesRepoImpl
@@ -44,40 +52,40 @@ import testdb.products.ProductsRow
 data class TestInsert(val random: Random) {
   fun AllScalarTypes(
     colNotNull: String,
-    id: AllScalarTypesId,
-    colTinyint: Byte?,
-    colSmallint: Short?,
-    colInteger: Int?,
-    colBigint: Long?,
-    colHugeint: BigInteger?,
-    colUtinyint: Short?,
-    colUsmallint: Int?,
-    colUinteger: Long?,
-    colUbigint: BigInteger?,
-    colFloat: Float?,
-    colDouble: Double?,
-    colDecimal: BigDecimal?,
-    colBoolean: Boolean?,
-    colVarchar: String?,
-    colText: String?,
-    colBlob: ByteArray?,
-    colDate: LocalDate?,
-    colTime: LocalTime?,
-    colTimestamp: LocalDateTime?,
-    colTimestamptz: OffsetDateTime?,
-    colInterval: Duration?,
-    colUuid: UUID?,
-    colJson: Json?,
-    colMood: Mood?,
+    id: AllScalarTypesId = AllScalarTypesId(random.nextInt()),
+    colTinyint: Byte? = if (random.nextBoolean()) null else random.nextInt(Byte.MAX_VALUE.toInt()).toByte(),
+    colSmallint: Short? = if (random.nextBoolean()) null else random.nextInt(Short.MAX_VALUE.toInt()).toShort(),
+    colInteger: Int? = if (random.nextBoolean()) null else random.nextInt(),
+    colBigint: Long? = if (random.nextBoolean()) null else random.nextLong(),
+    colHugeint: BigInteger? = null,
+    colUtinyint: Uint1? = if (random.nextBoolean()) null else Uint1.of(random.nextInt(256)),
+    colUsmallint: Uint2? = if (random.nextBoolean()) null else Uint2.of(random.nextInt(65536)),
+    colUinteger: Uint4? = if (random.nextBoolean()) null else Uint4.of(Math.abs(random.nextInt()).toLong()),
+    colUbigint: Uint8? = if (random.nextBoolean()) null else Uint8.of(Math.abs(random.nextLong())),
+    colFloat: Float? = if (random.nextBoolean()) null else random.nextFloat(),
+    colDouble: Double? = if (random.nextBoolean()) null else random.nextDouble(),
+    colDecimal: BigDecimal? = if (random.nextBoolean()) null else BigDecimal.valueOf(random.nextDouble()),
+    colBoolean: Boolean? = if (random.nextBoolean()) null else random.nextBoolean(),
+    colVarchar: String? = null,
+    colText: String? = null,
+    colBlob: ByteArray? = null,
+    colDate: LocalDate? = if (random.nextBoolean()) null else LocalDate.ofEpochDay(random.nextInt(30000).toLong()),
+    colTime: LocalTime? = if (random.nextBoolean()) null else LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong()),
+    colTimestamp: LocalDateTime? = if (random.nextBoolean()) null else LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
+    colTimestamptz: OffsetDateTime? = if (random.nextBoolean()) null else OffsetDateTime.of(LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())), ZoneOffset.ofHours(random.nextInt(24) - 12)),
+    colInterval: Duration? = null,
+    colUuid: UUID? = if (random.nextBoolean()) null else RandomHelper.randomUUID(random),
+    colJson: Json? = if (random.nextBoolean()) null else Json("{}"),
+    colMood: Mood? = if (random.nextBoolean()) null else Mood.entries[random.nextInt(Mood.entries.size)],
     c: Connection
   ): AllScalarTypesRow = (AllScalarTypesRepoImpl()).insert(AllScalarTypesRow(id = id, colTinyint = colTinyint, colSmallint = colSmallint, colInteger = colInteger, colBigint = colBigint, colHugeint = colHugeint, colUtinyint = colUtinyint, colUsmallint = colUsmallint, colUinteger = colUinteger, colUbigint = colUbigint, colFloat = colFloat, colDouble = colDouble, colDecimal = colDecimal, colBoolean = colBoolean, colVarchar = colVarchar, colText = colText, colBlob = colBlob, colDate = colDate, colTime = colTime, colTimestamp = colTimestamp, colTimestamptz = colTimestamptz, colInterval = colInterval, colUuid = colUuid, colJson = colJson, colMood = colMood, colNotNull = colNotNull), c)
 
   fun Customers(
     name: String,
-    customerId: CustomersId,
-    email: String?,
-    createdAt: Defaulted<LocalDateTime>,
-    priority: Defaulted<Priority?>,
+    customerId: CustomersId = CustomersId(random.nextInt()),
+    email: String? = null,
+    createdAt: Defaulted<LocalDateTime> = UseDefault(),
+    priority: Defaulted<Priority?> = UseDefault(),
     c: Connection
   ): CustomersRow = (CustomersRepoImpl()).insert(CustomersRowUnsaved(customerId = customerId, name = name, email = email, createdAt = createdAt, priority = priority), c)
 
@@ -85,7 +93,7 @@ data class TestInsert(val random: Random) {
     deptCode: String,
     deptRegion: String,
     deptName: String,
-    budget: BigDecimal?,
+    budget: BigDecimal? = if (random.nextBoolean()) null else BigDecimal.valueOf(random.nextDouble()),
     c: Connection
   ): DepartmentsRow = (DepartmentsRepoImpl()).insert(DepartmentsRow(deptCode = deptCode, deptRegion = deptRegion, deptName = deptName, budget = budget), c)
 
@@ -94,35 +102,35 @@ data class TestInsert(val random: Random) {
     deptCode: String,
     deptRegion: String,
     empName: String,
-    empNumber: Int,
-    salary: BigDecimal?,
-    hireDate: Defaulted<LocalDate>,
+    empNumber: Int = random.nextInt(),
+    salary: BigDecimal? = if (random.nextBoolean()) null else BigDecimal.valueOf(random.nextDouble()),
+    hireDate: Defaulted<LocalDate> = UseDefault(),
     c: Connection
   ): EmployeesRow = (EmployeesRepoImpl()).insert(EmployeesRowUnsaved(empNumber = empNumber, empSuffix = empSuffix, deptCode = deptCode, deptRegion = deptRegion, empName = empName, salary = salary, hireDate = hireDate), c)
 
   fun OrderItems(
-    orderId: Int,
-    productId: Int,
-    unitPrice: BigDecimal,
-    quantity: Defaulted<Int>,
+    orderId: Int = random.nextInt(),
+    productId: Int = random.nextInt(),
+    unitPrice: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
+    quantity: Defaulted<Int> = UseDefault(),
     c: Connection
   ): OrderItemsRow = (OrderItemsRepoImpl()).insert(OrderItemsRowUnsaved(orderId = orderId, productId = productId, unitPrice = unitPrice, quantity = quantity), c)
 
   fun Orders(
-    orderId: OrdersId,
-    customerId: Int,
-    totalAmount: BigDecimal?,
-    orderDate: Defaulted<LocalDate>,
-    status: Defaulted<String?>,
+    orderId: OrdersId = OrdersId(random.nextInt()),
+    customerId: Int = random.nextInt(),
+    totalAmount: BigDecimal? = if (random.nextBoolean()) null else BigDecimal.valueOf(random.nextDouble()),
+    orderDate: Defaulted<LocalDate> = UseDefault(),
+    status: Defaulted<String?> = UseDefault(),
     c: Connection
   ): OrdersRow = (OrdersRepoImpl()).insert(OrdersRowUnsaved(orderId = orderId, customerId = customerId, totalAmount = totalAmount, orderDate = orderDate, status = status), c)
 
   fun Products(
     sku: String,
     name: String,
-    productId: ProductsId,
-    price: BigDecimal,
-    metadata: Json?,
+    productId: ProductsId = ProductsId(random.nextInt()),
+    price: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
+    metadata: Json? = if (random.nextBoolean()) null else Json("{}"),
     c: Connection
   ): ProductsRow = (ProductsRepoImpl()).insert(ProductsRow(productId = productId, sku = sku, name = name, price = price, metadata = metadata), c)
 }

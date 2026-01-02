@@ -7,6 +7,8 @@ package testdb.order_history
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple8
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -43,23 +45,39 @@ data class OrderHistoryRow(
   /** 
     * Default: NULL
     */
-  val metadata: String?,
+  val metadata: Json?,
   /** 
     * Default: current_timestamp(6)
     */
   @JsonProperty("created_at") val createdAt: LocalDateTime
-) {
+) : Tuple8<OrderHistoryId, OrdersId, String?, String, String?, String?, Json?, LocalDateTime> {
+  override fun _1(): OrderHistoryId = historyId
+
+  override fun _2(): OrdersId = orderId
+
+  override fun _3(): String? = previousStatus
+
+  override fun _4(): String = newStatus
+
+  override fun _5(): String? = changedBy
+
+  override fun _6(): String? = changeReason
+
+  override fun _7(): Json? = metadata
+
+  override fun _8(): LocalDateTime = createdAt
+
   fun id(): OrderHistoryId = historyId
 
   fun toUnsavedRow(
     previousStatus: Defaulted<String?> = Defaulted.Provided(this.previousStatus),
     changedBy: Defaulted<String?> = Defaulted.Provided(this.changedBy),
     changeReason: Defaulted<String?> = Defaulted.Provided(this.changeReason),
-    metadata: Defaulted<String?> = Defaulted.Provided(this.metadata),
+    metadata: Defaulted<Json?> = Defaulted.Provided(this.metadata),
     createdAt: Defaulted<LocalDateTime> = Defaulted.Provided(this.createdAt)
   ): OrderHistoryRowUnsaved = OrderHistoryRowUnsaved(orderId, newStatus, previousStatus, changedBy, changeReason, metadata, createdAt)
 
   companion object {
-    val _rowParser: RowParser<OrderHistoryRow> = RowParsers.of(OrderHistoryId.pgType, OrdersId.pgType, MariaTypes.text.nullable(), MariaTypes.text, MariaTypes.varchar.nullable(), MariaTypes.varchar.nullable(), MariaTypes.longtext.nullable(), MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7 -> OrderHistoryRow(t0, t1, t2, t3, t4, t5, t6, t7) }, { row -> arrayOf<Any?>(row.historyId, row.orderId, row.previousStatus, row.newStatus, row.changedBy, row.changeReason, row.metadata, row.createdAt) })
+    val _rowParser: RowParser<OrderHistoryRow> = RowParsers.of(OrderHistoryId.dbType, OrdersId.dbType, MariaTypes.text.nullable(), MariaTypes.text, MariaTypes.varchar.nullable(), MariaTypes.varchar.nullable(), MariaTypes.json.nullable(), MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7 -> OrderHistoryRow(t0, t1, t2, t3, t4, t5, t6, t7) }, { row -> arrayOf<Any?>(row.historyId, row.orderId, row.previousStatus, row.newStatus, row.changedBy, row.changeReason, row.metadata, row.createdAt) })
   }
 }

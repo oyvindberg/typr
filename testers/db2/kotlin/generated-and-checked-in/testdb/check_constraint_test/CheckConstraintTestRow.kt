@@ -7,6 +7,7 @@ package testdb.check_constraint_test
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -24,8 +25,16 @@ data class CheckConstraintTestRow(
   @JsonProperty("STATUS") val status: String,
   /** Constraint CHK_PRICE affecting columns PRICE: PRICE >= 0 */
   @JsonProperty("PRICE") val price: BigDecimal?
-) {
+) : Tuple4<CheckConstraintTestId, Int, String, BigDecimal?> {
+  override fun _1(): CheckConstraintTestId = id
+
+  override fun _2(): Int = age
+
+  override fun _3(): String = status
+
+  override fun _4(): BigDecimal? = price
+
   companion object {
-    val _rowParser: RowParser<CheckConstraintTestRow> = RowParsers.of(CheckConstraintTestId.pgType, KotlinDbTypes.Db2Types.integer, Db2Types.varchar, KotlinDbTypes.Db2Types.decimal.nullable(), { t0, t1, t2, t3 -> CheckConstraintTestRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.id, row.age, row.status, row.price) })
+    val _rowParser: RowParser<CheckConstraintTestRow> = RowParsers.of(CheckConstraintTestId.dbType, KotlinDbTypes.Db2Types.integer, Db2Types.varchar, KotlinDbTypes.Db2Types.decimal.nullable(), { t0, t1, t2, t3 -> CheckConstraintTestRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.id, row.age, row.status, row.price) })
   }
 }

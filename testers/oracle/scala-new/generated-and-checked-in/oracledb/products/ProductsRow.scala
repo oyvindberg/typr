@@ -7,6 +7,7 @@ package oracledb.products
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -24,7 +25,7 @@ case class ProductsRow(
   @JsonProperty("NAME") name: String,
   @JsonProperty("PRICE") price: MoneyT,
   @JsonProperty("TAGS") tags: Option[TagVarrayT]
-) {
+) extends Tuple5[ProductsId, String, String, MoneyT, Option[TagVarrayT]] {
   def id: ProductsId = productId
 
   def toUnsavedRow(productId: Defaulted[ProductsId]): ProductsRowUnsaved = {
@@ -36,6 +37,16 @@ case class ProductsRow(
       productId
     )
   }
+
+  override def `_1`: ProductsId = productId
+
+  override def `_2`: String = sku
+
+  override def `_3`: String = name
+
+  override def `_4`: MoneyT = price
+
+  override def `_5`: Option[TagVarrayT] = tags
 }
 
 object ProductsRow {

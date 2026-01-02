@@ -6,6 +6,9 @@
 package testdb.reviews
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint4
 import java.time.LocalDateTime
 import testdb.customers.CustomersId
 import testdb.customtypes.Defaulted
@@ -24,7 +27,7 @@ data class ReviewsRowUnsaved(
     */
   @JsonProperty("customer_id") val customerId: CustomersId,
   /**  */
-  val rating: Short,
+  val rating: Uint1,
   /** Default: NULL
     * Points to [testdb.order_items.OrderItemsRow.itemId]
     */
@@ -40,15 +43,15 @@ data class ReviewsRowUnsaved(
   /** Default: NULL
 
     */
-  val pros: Defaulted<String?> = UseDefault(),
+  val pros: Defaulted<Json?> = UseDefault(),
   /** Default: NULL
 
     */
-  val cons: Defaulted<String?> = UseDefault(),
+  val cons: Defaulted<Json?> = UseDefault(),
   /** Default: NULL
     * Array of image URLs
     */
-  val images: Defaulted<String?> = UseDefault(),
+  val images: Defaulted<Json?> = UseDefault(),
   /** Default: 0
 
     */
@@ -60,11 +63,11 @@ data class ReviewsRowUnsaved(
   /** Default: 0
 
     */
-  @JsonProperty("helpful_votes") val helpfulVotes: Defaulted<Long> = UseDefault(),
+  @JsonProperty("helpful_votes") val helpfulVotes: Defaulted<Uint4> = UseDefault(),
   /** Default: 0
 
     */
-  @JsonProperty("unhelpful_votes") val unhelpfulVotes: Defaulted<Long> = UseDefault(),
+  @JsonProperty("unhelpful_votes") val unhelpfulVotes: Defaulted<Uint4> = UseDefault(),
   /** Default: NULL
 
     */
@@ -86,13 +89,13 @@ data class ReviewsRowUnsaved(
     orderItemIdDefault: () -> OrderItemsId?,
     titleDefault: () -> String?,
     contentDefault: () -> String?,
-    prosDefault: () -> String?,
-    consDefault: () -> String?,
-    imagesDefault: () -> String?,
+    prosDefault: () -> Json?,
+    consDefault: () -> Json?,
+    imagesDefault: () -> Json?,
     isVerifiedPurchaseDefault: () -> Boolean,
     isApprovedDefault: () -> Boolean,
-    helpfulVotesDefault: () -> Long,
-    unhelpfulVotesDefault: () -> Long,
+    helpfulVotesDefault: () -> Uint4,
+    unhelpfulVotesDefault: () -> Uint4,
     adminResponseDefault: () -> String?,
     respondedAtDefault: () -> LocalDateTime?,
     createdAtDefault: () -> LocalDateTime,

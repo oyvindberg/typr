@@ -7,9 +7,11 @@ package testdb.customer_orders
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple6
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
+import dev.typr.foundations.kotlin.nullable
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -19,10 +21,22 @@ data class CustomerOrdersSqlRow(
   @JsonProperty("customer_name") val customerName: String,
   @JsonProperty("order_id") val orderId: Int,
   @JsonProperty("order_date") val orderDate: LocalDate,
-  @JsonProperty("total_amount") val totalAmount: BigDecimal,
-  val status: String
-) {
+  @JsonProperty("total_amount") val totalAmount: BigDecimal?,
+  val status: String?
+) : Tuple6<Int, String, Int, LocalDate, BigDecimal?, String?> {
+  override fun _1(): Int = customerId
+
+  override fun _2(): String = customerName
+
+  override fun _3(): Int = orderId
+
+  override fun _4(): LocalDate = orderDate
+
+  override fun _5(): BigDecimal? = totalAmount
+
+  override fun _6(): String? = status
+
   companion object {
-    val _rowParser: RowParser<CustomerOrdersSqlRow> = RowParsers.of(KotlinDbTypes.Db2Types.integer, Db2Types.varchar, KotlinDbTypes.Db2Types.integer, Db2Types.date, KotlinDbTypes.Db2Types.decimal, Db2Types.varchar, { t0, t1, t2, t3, t4, t5 -> CustomerOrdersSqlRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.customerId, row.customerName, row.orderId, row.orderDate, row.totalAmount, row.status) })
+    val _rowParser: RowParser<CustomerOrdersSqlRow> = RowParsers.of(KotlinDbTypes.Db2Types.integer, Db2Types.varchar, KotlinDbTypes.Db2Types.integer, Db2Types.date, KotlinDbTypes.Db2Types.decimal.nullable(), Db2Types.varchar.nullable(), { t0, t1, t2, t3, t4, t5 -> CustomerOrdersSqlRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.customerId, row.customerName, row.orderId, row.orderDate, row.totalAmount, row.status) })
   }
 }

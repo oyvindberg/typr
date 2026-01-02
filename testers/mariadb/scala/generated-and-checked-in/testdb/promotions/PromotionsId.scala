@@ -7,14 +7,15 @@ package testdb.promotions
 
 import com.fasterxml.jackson.annotation.JsonValue
 import dev.typr.foundations.MariaType
+import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.scala.Bijection
-import dev.typr.foundations.scala.ScalaDbTypes
 
 /** Type for the primary key of table `promotions` */
-case class PromotionsId(@JsonValue value: Long) extends scala.AnyVal
+case class PromotionsId(@JsonValue value: Uint4) extends scala.AnyVal
 
 object PromotionsId {
-  given bijection: Bijection[PromotionsId, Long] = Bijection.apply[PromotionsId, Long](_.value)(PromotionsId.apply)
+  given bijection: Bijection[PromotionsId, Uint4] = Bijection.apply[PromotionsId, Uint4](_.value)(PromotionsId.apply)
 
-  given pgType: MariaType[PromotionsId] = ScalaDbTypes.MariaTypes.intUnsigned.bimap(PromotionsId.apply, _.value)
+  given dbType: MariaType[PromotionsId] = MariaTypes.intUnsigned.bimap(PromotionsId.apply, _.value)
 }

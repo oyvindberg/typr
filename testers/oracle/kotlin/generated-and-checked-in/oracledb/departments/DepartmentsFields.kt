@@ -7,53 +7,49 @@ package oracledb.departments
 
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
-import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.RelationStructure
-import dev.typr.foundations.kotlin.SqlExpr.CompositeIn
-import dev.typr.foundations.kotlin.SqlExpr.CompositeIn.Part
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr
+import dev.typr.foundations.kotlin.TupleExpr4
 import kotlin.collections.List
 import oracledb.MoneyT
 
-interface DepartmentsFields : FieldsExpr<DepartmentsRow> {
-  abstract fun budget(): OptField<MoneyT, DepartmentsRow>
+data class DepartmentsFields(val _path: List<Path>) : TupleExpr4<String, String, String, MoneyT>, RelationStructure<DepartmentsFields, DepartmentsRow>, FieldsBase<DepartmentsRow> {
+  override fun _1(): SqlExpr<String> = deptCode()
 
-  abstract override fun columns(): List<FieldLike<*, DepartmentsRow>>
+  override fun _2(): SqlExpr<String> = deptRegion()
 
-  fun compositeIdIn(compositeIds: List<DepartmentsId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<String, DepartmentsId, DepartmentsRow>(deptCode(), DepartmentsId::deptCode, OracleTypes.varchar2), Part<String, DepartmentsId, DepartmentsRow>(deptRegion(), DepartmentsId::deptRegion, OracleTypes.varchar2)), compositeIds)
+  override fun _3(): SqlExpr<String> = deptName()
+
+  override fun _4(): SqlExpr<MoneyT> = budget()
+
+  override fun _path(): List<Path> = _path
+
+  fun budget(): OptField<MoneyT, DepartmentsRow> = OptField<MoneyT, DepartmentsRow>(_path, "BUDGET", DepartmentsRow::budget, null, null, { row, value -> row.copy(budget = value) }, MoneyT.oracleType)
+
+  override fun columns(): List<FieldLike<*, DepartmentsRow>> = listOf(this.deptCode().underlying, this.deptRegion().underlying, this.deptName().underlying, this.budget().underlying)
+
+  fun compositeIdIn(compositeIds: List<DepartmentsId>): SqlExpr<Boolean> = TupleExpr.of(deptCode(), deptRegion()).among(compositeIds)
 
   fun compositeIdIs(compositeId: DepartmentsId): SqlExpr<Boolean> = SqlExpr.all(deptCode().isEqual(compositeId.deptCode), deptRegion().isEqual(compositeId.deptRegion))
 
-  abstract fun deptCode(): IdField<String, DepartmentsRow>
+  fun deptCode(): IdField<String, DepartmentsRow> = IdField<String, DepartmentsRow>(_path, "DEPT_CODE", DepartmentsRow::deptCode, null, null, { row, value -> row.copy(deptCode = value) }, OracleTypes.varchar2)
 
-  abstract fun deptName(): Field<String, DepartmentsRow>
+  fun deptName(): Field<String, DepartmentsRow> = Field<String, DepartmentsRow>(_path, "DEPT_NAME", DepartmentsRow::deptName, null, null, { row, value -> row.copy(deptName = value) }, OracleTypes.varchar2)
 
-  abstract fun deptRegion(): IdField<String, DepartmentsRow>
+  fun deptRegion(): IdField<String, DepartmentsRow> = IdField<String, DepartmentsRow>(_path, "DEPT_REGION", DepartmentsRow::deptRegion, null, null, { row, value -> row.copy(deptRegion = value) }, OracleTypes.varchar2)
 
   override fun rowParser(): RowParser<DepartmentsRow> = DepartmentsRow._rowParser.underlying
 
+  override fun withPaths(_path: List<Path>): RelationStructure<DepartmentsFields, DepartmentsRow> = DepartmentsFields(_path)
+
   companion object {
-    data class Impl(val _path: List<Path>) : DepartmentsFields, RelationStructure<DepartmentsFields, DepartmentsRow> {
-      override fun deptCode(): IdField<String, DepartmentsRow> = IdField<String, DepartmentsRow>(_path, "DEPT_CODE", DepartmentsRow::deptCode, null, null, { row, value -> row.copy(deptCode = value) }, OracleTypes.varchar2)
-
-      override fun deptRegion(): IdField<String, DepartmentsRow> = IdField<String, DepartmentsRow>(_path, "DEPT_REGION", DepartmentsRow::deptRegion, null, null, { row, value -> row.copy(deptRegion = value) }, OracleTypes.varchar2)
-
-      override fun deptName(): Field<String, DepartmentsRow> = Field<String, DepartmentsRow>(_path, "DEPT_NAME", DepartmentsRow::deptName, null, null, { row, value -> row.copy(deptName = value) }, OracleTypes.varchar2)
-
-      override fun budget(): OptField<MoneyT, DepartmentsRow> = OptField<MoneyT, DepartmentsRow>(_path, "BUDGET", DepartmentsRow::budget, null, null, { row, value -> row.copy(budget = value) }, MoneyT.oracleType)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, DepartmentsRow>> = listOf(this.deptCode().underlying, this.deptRegion().underlying, this.deptName().underlying, this.budget().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<DepartmentsFields, DepartmentsRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: DepartmentsFields = DepartmentsFields(emptyList<Path>())
   }
 }

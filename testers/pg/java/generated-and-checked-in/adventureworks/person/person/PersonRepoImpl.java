@@ -29,32 +29,29 @@ import java.util.Optional;
 public class PersonRepoImpl implements PersonRepo {
   @Override
   public DeleteBuilder<PersonFields, PersonRow> delete() {
-    return DeleteBuilder.of("\"person\".\"person\"", PersonFields.structure(), Dialect.POSTGRESQL);
+    return DeleteBuilder.of("\"person\".\"person\"", PersonFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(BusinessentityId businessentityid, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"person\".\"person\" where \"businessentityid\" = "),
-                Fragment.encode(BusinessentityId.pgType, businessentityid),
+                Fragment.encode(BusinessentityId.dbType, businessentityid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(BusinessentityId[] businessentityids, Connection c) {
     return interpolate(
             Fragment.lit("delete\nfrom \"person\".\"person\"\nwhere \"businessentityid\" = ANY("),
-            Fragment.encode(BusinessentityId.pgTypeArray, businessentityids),
+            Fragment.encode(BusinessentityId.dbTypeArray, businessentityids),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public PersonRow insert(PersonRow unsaved, Connection c) {
@@ -65,19 +62,19 @@ public class PersonRepoImpl implements PersonRepo {
                     + " \"suffix\", \"emailpromotion\", \"additionalcontactinfo\","
                     + " \"demographics\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.bpchar, unsaved.persontype()),
             Fragment.lit("::bpchar, "),
-            Fragment.encode(NameStyle.pgType, unsaved.namestyle()),
+            Fragment.encode(NameStyle.dbType, unsaved.namestyle()),
             Fragment.lit("::bool, "),
             Fragment.encode(PgTypes.text.opt(), unsaved.title()),
             Fragment.lit(", "),
-            Fragment.encode(FirstName.pgType, unsaved.firstname()),
+            Fragment.encode(FirstName.dbType, unsaved.firstname()),
             Fragment.lit("::varchar, "),
-            Fragment.encode(Name.pgType.opt(), unsaved.middlename()),
+            Fragment.encode(Name.dbType.opt(), unsaved.middlename()),
             Fragment.lit("::varchar, "),
-            Fragment.encode(Name.pgType, unsaved.lastname()),
+            Fragment.encode(Name.dbType, unsaved.lastname()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.text.opt(), unsaved.suffix()),
             Fragment.lit(", "),
@@ -99,7 +96,6 @@ public class PersonRepoImpl implements PersonRepo {
         .updateReturning(PersonRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public PersonRow insert(PersonRowUnsaved unsaved, Connection c) {
@@ -110,7 +106,7 @@ public class PersonRepoImpl implements PersonRepo {
     columns.add(Fragment.lit("\"businessentityid\""));
     values.add(
         interpolate(
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"persontype\""));
     values.add(
@@ -121,14 +117,14 @@ public class PersonRepoImpl implements PersonRepo {
     columns.add(Fragment.lit("\"firstname\""));
     values.add(
         interpolate(
-            Fragment.encode(FirstName.pgType, unsaved.firstname()), Fragment.lit("::varchar")));
+            Fragment.encode(FirstName.dbType, unsaved.firstname()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"middlename\""));
     values.add(
         interpolate(
-            Fragment.encode(Name.pgType.opt(), unsaved.middlename()), Fragment.lit("::varchar")));
+            Fragment.encode(Name.dbType.opt(), unsaved.middlename()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"lastname\""));
     values.add(
-        interpolate(Fragment.encode(Name.pgType, unsaved.lastname()), Fragment.lit("::varchar")));
+        interpolate(Fragment.encode(Name.dbType, unsaved.lastname()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"suffix\""));
     values.add(
         interpolate(Fragment.encode(PgTypes.text.opt(), unsaved.suffix()), Fragment.lit("")));
@@ -148,7 +144,7 @@ public class PersonRepoImpl implements PersonRepo {
             value -> {
               columns.add(Fragment.lit("\"namestyle\""));
               values.add(
-                  interpolate(Fragment.encode(NameStyle.pgType, value), Fragment.lit("::bool")));
+                  interpolate(Fragment.encode(NameStyle.dbType, value), Fragment.lit("::bool")));
             });
     ;
     unsaved
@@ -195,7 +191,6 @@ public class PersonRepoImpl implements PersonRepo {
     ;
     return q.updateReturning(PersonRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<PersonRow> unsaved, Integer batchSize, Connection c) {
@@ -209,7 +204,6 @@ public class PersonRepoImpl implements PersonRepo {
         c,
         PersonRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -225,17 +219,12 @@ public class PersonRepoImpl implements PersonRepo {
         c,
         PersonRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<PersonFields, PersonRow> select() {
     return SelectBuilder.of(
-        "\"person\".\"person\"",
-        PersonFields.structure(),
-        PersonRow._rowParser,
-        Dialect.POSTGRESQL);
+        "\"person\".\"person\"", PersonFields.structure, PersonRow._rowParser, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<PersonRow> selectAll(Connection c) {
@@ -249,7 +238,6 @@ public class PersonRepoImpl implements PersonRepo {
         .query(PersonRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<PersonRow> selectById(BusinessentityId businessentityid, Connection c) {
@@ -261,12 +249,11 @@ public class PersonRepoImpl implements PersonRepo {
                     + " \"rowguid\", \"modifieddate\"\n"
                     + "from \"person\".\"person\"\n"
                     + "where \"businessentityid\" = "),
-            Fragment.encode(BusinessentityId.pgType, businessentityid),
+            Fragment.encode(BusinessentityId.dbType, businessentityid),
             Fragment.lit(""))
         .query(PersonRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<PersonRow> selectByIds(BusinessentityId[] businessentityids, Connection c) {
@@ -278,12 +265,11 @@ public class PersonRepoImpl implements PersonRepo {
                     + " \"rowguid\", \"modifieddate\"\n"
                     + "from \"person\".\"person\"\n"
                     + "where \"businessentityid\" = ANY("),
-            Fragment.encode(BusinessentityId.pgTypeArray, businessentityids),
+            Fragment.encode(BusinessentityId.dbTypeArray, businessentityids),
             Fragment.lit(")"))
         .query(PersonRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<BusinessentityId, PersonRow> selectByIdsTracked(
@@ -292,17 +278,12 @@ public class PersonRepoImpl implements PersonRepo {
     selectByIds(businessentityids, c).forEach(row -> ret.put(row.businessentityid(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<PersonFields, PersonRow> update() {
     return UpdateBuilder.of(
-        "\"person\".\"person\"",
-        PersonFields.structure(),
-        PersonRow._rowParser,
-        Dialect.POSTGRESQL);
+        "\"person\".\"person\"", PersonFields.structure, PersonRow._rowParser, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(PersonRow row, Connection c) {
@@ -312,15 +293,15 @@ public class PersonRepoImpl implements PersonRepo {
                 Fragment.lit("update \"person\".\"person\"\nset \"persontype\" = "),
                 Fragment.encode(PgTypes.bpchar, row.persontype()),
                 Fragment.lit("::bpchar,\n\"namestyle\" = "),
-                Fragment.encode(NameStyle.pgType, row.namestyle()),
+                Fragment.encode(NameStyle.dbType, row.namestyle()),
                 Fragment.lit("::bool,\n\"title\" = "),
                 Fragment.encode(PgTypes.text.opt(), row.title()),
                 Fragment.lit(",\n\"firstname\" = "),
-                Fragment.encode(FirstName.pgType, row.firstname()),
+                Fragment.encode(FirstName.dbType, row.firstname()),
                 Fragment.lit("::varchar,\n\"middlename\" = "),
-                Fragment.encode(Name.pgType.opt(), row.middlename()),
+                Fragment.encode(Name.dbType.opt(), row.middlename()),
                 Fragment.lit("::varchar,\n\"lastname\" = "),
-                Fragment.encode(Name.pgType, row.lastname()),
+                Fragment.encode(Name.dbType, row.lastname()),
                 Fragment.lit("::varchar,\n\"suffix\" = "),
                 Fragment.encode(PgTypes.text.opt(), row.suffix()),
                 Fragment.lit(",\n\"emailpromotion\" = "),
@@ -334,13 +315,12 @@ public class PersonRepoImpl implements PersonRepo {
                 Fragment.lit("::uuid,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"businessentityid\" = "),
-                Fragment.encode(BusinessentityId.pgType, businessentityid),
+                Fragment.encode(BusinessentityId.dbType, businessentityid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public PersonRow upsert(PersonRow unsaved, Connection c) {
@@ -351,19 +331,19 @@ public class PersonRepoImpl implements PersonRepo {
                     + " \"suffix\", \"emailpromotion\", \"additionalcontactinfo\","
                     + " \"demographics\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.bpchar, unsaved.persontype()),
             Fragment.lit("::bpchar, "),
-            Fragment.encode(NameStyle.pgType, unsaved.namestyle()),
+            Fragment.encode(NameStyle.dbType, unsaved.namestyle()),
             Fragment.lit("::bool, "),
             Fragment.encode(PgTypes.text.opt(), unsaved.title()),
             Fragment.lit(", "),
-            Fragment.encode(FirstName.pgType, unsaved.firstname()),
+            Fragment.encode(FirstName.dbType, unsaved.firstname()),
             Fragment.lit("::varchar, "),
-            Fragment.encode(Name.pgType.opt(), unsaved.middlename()),
+            Fragment.encode(Name.dbType.opt(), unsaved.middlename()),
             Fragment.lit("::varchar, "),
-            Fragment.encode(Name.pgType, unsaved.lastname()),
+            Fragment.encode(Name.dbType, unsaved.lastname()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.text.opt(), unsaved.suffix()),
             Fragment.lit(", "),
@@ -399,7 +379,6 @@ public class PersonRepoImpl implements PersonRepo {
         .updateReturning(PersonRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<PersonRow> upsertBatch(Iterator<PersonRow> unsaved, Connection c) {
@@ -432,7 +411,6 @@ public class PersonRepoImpl implements PersonRepo {
         .updateManyReturning(PersonRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -477,5 +455,4 @@ public class PersonRepoImpl implements PersonRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

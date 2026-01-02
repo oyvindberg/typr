@@ -48,7 +48,7 @@ public record CustomerStatusRepoMock(
   @Override
   public DeleteBuilder<CustomerStatusFields, CustomerStatusRow> delete() {
     return new DeleteBuilderMock<>(
-        CustomerStatusFields.structure(),
+        CustomerStatusFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.statusCode(),
@@ -97,9 +97,7 @@ public record CustomerStatusRepoMock(
   @Override
   public SelectBuilder<CustomerStatusFields, CustomerStatusRow> select() {
     return new SelectBuilderMock<>(
-        CustomerStatusFields.structure(),
-        () -> new ArrayList<>(map.values()),
-        SelectParams.empty());
+        CustomerStatusFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -142,7 +140,7 @@ public record CustomerStatusRepoMock(
   @Override
   public UpdateBuilder<CustomerStatusFields, CustomerStatusRow> update() {
     return new UpdateBuilderMock<>(
-        CustomerStatusFields.structure(),
+        CustomerStatusFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

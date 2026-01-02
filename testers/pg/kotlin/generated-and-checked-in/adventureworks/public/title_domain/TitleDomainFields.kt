@@ -6,31 +6,29 @@
 package adventureworks.public.title_domain
 
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.IdField
+import dev.typr.foundations.kotlin.TupleExpr1
 import kotlin.collections.List
 
-interface TitleDomainFields : FieldsExpr<TitleDomainRow> {
-  abstract fun code(): IdField<TitleDomainId, TitleDomainRow>
+data class TitleDomainFields(val _path: List<Path>) : TupleExpr1<TitleDomainId>, RelationStructure<TitleDomainFields, TitleDomainRow>, FieldsBase<TitleDomainRow> {
+  override fun _1(): SqlExpr<TitleDomainId> = code()
 
-  abstract override fun columns(): List<FieldLike<*, TitleDomainRow>>
+  override fun _path(): List<Path> = _path
+
+  fun code(): IdField<TitleDomainId, TitleDomainRow> = IdField<TitleDomainId, TitleDomainRow>(_path, "code", TitleDomainRow::code, null, "text", { row, value -> row.copy(code = value) }, TitleDomainId.dbType)
+
+  override fun columns(): List<FieldLike<*, TitleDomainRow>> = listOf(this.code().underlying)
 
   override fun rowParser(): RowParser<TitleDomainRow> = TitleDomainRow._rowParser.underlying
 
+  override fun withPaths(_path: List<Path>): RelationStructure<TitleDomainFields, TitleDomainRow> = TitleDomainFields(_path)
+
   companion object {
-    data class Impl(val _path: List<Path>) : TitleDomainFields, RelationStructure<TitleDomainFields, TitleDomainRow> {
-      override fun code(): IdField<TitleDomainId, TitleDomainRow> = IdField<TitleDomainId, TitleDomainRow>(_path, "code", TitleDomainRow::code, null, "text", { row, value -> row.copy(code = value) }, TitleDomainId.pgType)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, TitleDomainRow>> = listOf(this.code().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<TitleDomainFields, TitleDomainRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: TitleDomainFields = TitleDomainFields(emptyList<Path>())
   }
 }

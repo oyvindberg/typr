@@ -18,11 +18,10 @@ public class CustomerOrderSummaryViewRepoImpl implements CustomerOrderSummaryVie
   public SelectBuilder<CustomerOrderSummaryViewFields, CustomerOrderSummaryViewRow> select() {
     return SelectBuilder.of(
         "\"CUSTOMER_ORDER_SUMMARY\"",
-        CustomerOrderSummaryViewFields.structure(),
+        CustomerOrderSummaryViewFields.structure,
         CustomerOrderSummaryViewRow._rowParser,
         Dialect.DB2);
   }
-  ;
 
   @Override
   public List<CustomerOrderSummaryViewRow> selectAll(Connection c) {
@@ -33,5 +32,4 @@ public class CustomerOrderSummaryViewRepoImpl implements CustomerOrderSummaryVie
         .query(CustomerOrderSummaryViewRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

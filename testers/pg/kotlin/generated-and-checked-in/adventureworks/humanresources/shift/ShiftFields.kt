@@ -8,50 +8,48 @@ package adventureworks.humanresources.shift
 import adventureworks.public.Name
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
+import dev.typr.foundations.kotlin.TupleExpr5
 import java.time.LocalDateTime
 import java.time.LocalTime
 import kotlin.collections.List
 
-interface ShiftFields : FieldsExpr<ShiftRow> {
-  abstract override fun columns(): List<FieldLike<*, ShiftRow>>
+data class ShiftFields(val _path: List<Path>) : TupleExpr5<ShiftId, Name, LocalTime, LocalTime, LocalDateTime>, RelationStructure<ShiftFields, ShiftRow>, FieldsBase<ShiftRow> {
+  override fun _1(): SqlExpr<ShiftId> = shiftid()
 
-  abstract fun endtime(): Field<LocalTime, ShiftRow>
+  override fun _2(): SqlExpr<Name> = name()
 
-  abstract fun modifieddate(): Field<LocalDateTime, ShiftRow>
+  override fun _3(): SqlExpr<LocalTime> = starttime()
 
-  abstract fun name(): Field<Name, ShiftRow>
+  override fun _4(): SqlExpr<LocalTime> = endtime()
+
+  override fun _5(): SqlExpr<LocalDateTime> = modifieddate()
+
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, ShiftRow>> = listOf(this.shiftid().underlying, this.name().underlying, this.starttime().underlying, this.endtime().underlying, this.modifieddate().underlying)
+
+  fun endtime(): Field<LocalTime, ShiftRow> = Field<LocalTime, ShiftRow>(_path, "endtime", ShiftRow::endtime, null, "time", { row, value -> row.copy(endtime = value) }, PgTypes.time)
+
+  fun modifieddate(): Field<LocalDateTime, ShiftRow> = Field<LocalDateTime, ShiftRow>(_path, "modifieddate", ShiftRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
+
+  fun name(): Field<Name, ShiftRow> = Field<Name, ShiftRow>(_path, "name", ShiftRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.dbType)
 
   override fun rowParser(): RowParser<ShiftRow> = ShiftRow._rowParser.underlying
 
-  abstract fun shiftid(): IdField<ShiftId, ShiftRow>
+  fun shiftid(): IdField<ShiftId, ShiftRow> = IdField<ShiftId, ShiftRow>(_path, "shiftid", ShiftRow::shiftid, null, "int4", { row, value -> row.copy(shiftid = value) }, ShiftId.dbType)
 
-  abstract fun starttime(): Field<LocalTime, ShiftRow>
+  fun starttime(): Field<LocalTime, ShiftRow> = Field<LocalTime, ShiftRow>(_path, "starttime", ShiftRow::starttime, null, "time", { row, value -> row.copy(starttime = value) }, PgTypes.time)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<ShiftFields, ShiftRow> = ShiftFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : ShiftFields, RelationStructure<ShiftFields, ShiftRow> {
-      override fun shiftid(): IdField<ShiftId, ShiftRow> = IdField<ShiftId, ShiftRow>(_path, "shiftid", ShiftRow::shiftid, null, "int4", { row, value -> row.copy(shiftid = value) }, ShiftId.pgType)
-
-      override fun name(): Field<Name, ShiftRow> = Field<Name, ShiftRow>(_path, "name", ShiftRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.pgType)
-
-      override fun starttime(): Field<LocalTime, ShiftRow> = Field<LocalTime, ShiftRow>(_path, "starttime", ShiftRow::starttime, null, "time", { row, value -> row.copy(starttime = value) }, PgTypes.time)
-
-      override fun endtime(): Field<LocalTime, ShiftRow> = Field<LocalTime, ShiftRow>(_path, "endtime", ShiftRow::endtime, null, "time", { row, value -> row.copy(endtime = value) }, PgTypes.time)
-
-      override fun modifieddate(): Field<LocalDateTime, ShiftRow> = Field<LocalDateTime, ShiftRow>(_path, "modifieddate", ShiftRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, ShiftRow>> = listOf(this.shiftid().underlying, this.name().underlying, this.starttime().underlying, this.endtime().underlying, this.modifieddate().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<ShiftFields, ShiftRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: ShiftFields = ShiftFields(emptyList<Path>())
   }
 }

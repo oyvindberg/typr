@@ -7,6 +7,7 @@ package testdb.nullability_test
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -20,8 +21,16 @@ data class NullabilityTestRow(
   @JsonProperty("OPTIONAL_COL") val optionalCol: String?,
   /** Default: 'default_value' */
   @JsonProperty("DEFAULTED_COL") val defaultedCol: String?
-) {
-  fun toUnsavedRow(defaultedCol: Defaulted<String?>): NullabilityTestRowUnsaved = NullabilityTestRowUnsaved(id, requiredCol, optionalCol, defaultedCol)
+) : Tuple4<Int, String, String?, String?> {
+  override fun _1(): Int = id
+
+  override fun _2(): String = requiredCol
+
+  override fun _3(): String? = optionalCol
+
+  override fun _4(): String? = defaultedCol
+
+  fun toUnsavedRow(defaultedCol: Defaulted<String?> = Defaulted.Provided(this.defaultedCol)): NullabilityTestRowUnsaved = NullabilityTestRowUnsaved(id, requiredCol, optionalCol, defaultedCol)
 
   companion object {
     val _rowParser: RowParser<NullabilityTestRow> = RowParsers.of(KotlinDbTypes.Db2Types.integer, Db2Types.varchar, Db2Types.varchar.nullable(), Db2Types.varchar.nullable(), { t0, t1, t2, t3 -> NullabilityTestRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.id, row.requiredCol, row.optionalCol, row.defaultedCol) })

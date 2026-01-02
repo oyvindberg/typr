@@ -7,55 +7,53 @@ package testdb.customer_orders_view
 
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.SqlServerTypes
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr6
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import kotlin.collections.List
 
-interface CustomerOrdersViewViewFields : FieldsExpr<CustomerOrdersViewViewRow> {
-  abstract override fun columns(): List<FieldLike<*, CustomerOrdersViewViewRow>>
+data class CustomerOrdersViewViewFields(val _path: List<Path>) : TupleExpr6<Int, String, String, Int, LocalDateTime, BigDecimal>, RelationStructure<CustomerOrdersViewViewFields, CustomerOrdersViewViewRow>, FieldsBase<CustomerOrdersViewViewRow> {
+  override fun _1(): SqlExpr<Int> = customerId()
 
-  abstract fun customerEmail(): Field<String, CustomerOrdersViewViewRow>
+  override fun _2(): SqlExpr<String> = customerName()
 
-  abstract fun customerId(): Field<Int, CustomerOrdersViewViewRow>
+  override fun _3(): SqlExpr<String> = customerEmail()
 
-  abstract fun customerName(): Field<String, CustomerOrdersViewViewRow>
+  override fun _4(): SqlExpr<Int> = orderId()
 
-  abstract fun orderDate(): OptField<LocalDateTime, CustomerOrdersViewViewRow>
+  override fun _5(): SqlExpr<LocalDateTime> = orderDate()
 
-  abstract fun orderId(): Field<Int, CustomerOrdersViewViewRow>
+  override fun _6(): SqlExpr<BigDecimal> = orderTotal()
 
-  abstract fun orderTotal(): Field<BigDecimal, CustomerOrdersViewViewRow>
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, CustomerOrdersViewViewRow>> = listOf(this.customerId().underlying, this.customerName().underlying, this.customerEmail().underlying, this.orderId().underlying, this.orderDate().underlying, this.orderTotal().underlying)
+
+  fun customerEmail(): Field<String, CustomerOrdersViewViewRow> = Field<String, CustomerOrdersViewViewRow>(_path, "customer_email", CustomerOrdersViewViewRow::customerEmail, null, null, { row, value -> row.copy(customerEmail = value) }, SqlServerTypes.nvarchar)
+
+  fun customerId(): Field<Int, CustomerOrdersViewViewRow> = Field<Int, CustomerOrdersViewViewRow>(_path, "customer_id", CustomerOrdersViewViewRow::customerId, null, null, { row, value -> row.copy(customerId = value) }, KotlinDbTypes.SqlServerTypes.int_)
+
+  fun customerName(): Field<String, CustomerOrdersViewViewRow> = Field<String, CustomerOrdersViewViewRow>(_path, "customer_name", CustomerOrdersViewViewRow::customerName, null, null, { row, value -> row.copy(customerName = value) }, SqlServerTypes.nvarchar)
+
+  fun orderDate(): OptField<LocalDateTime, CustomerOrdersViewViewRow> = OptField<LocalDateTime, CustomerOrdersViewViewRow>(_path, "order_date", CustomerOrdersViewViewRow::orderDate, null, null, { row, value -> row.copy(orderDate = value) }, SqlServerTypes.datetime2)
+
+  fun orderId(): Field<Int, CustomerOrdersViewViewRow> = Field<Int, CustomerOrdersViewViewRow>(_path, "order_id", CustomerOrdersViewViewRow::orderId, null, null, { row, value -> row.copy(orderId = value) }, KotlinDbTypes.SqlServerTypes.int_)
+
+  fun orderTotal(): Field<BigDecimal, CustomerOrdersViewViewRow> = Field<BigDecimal, CustomerOrdersViewViewRow>(_path, "order_total", CustomerOrdersViewViewRow::orderTotal, null, null, { row, value -> row.copy(orderTotal = value) }, KotlinDbTypes.SqlServerTypes.money)
 
   override fun rowParser(): RowParser<CustomerOrdersViewViewRow> = CustomerOrdersViewViewRow._rowParser.underlying
 
+  override fun withPaths(_path: List<Path>): RelationStructure<CustomerOrdersViewViewFields, CustomerOrdersViewViewRow> = CustomerOrdersViewViewFields(_path)
+
   companion object {
-    data class Impl(val _path: List<Path>) : CustomerOrdersViewViewFields, RelationStructure<CustomerOrdersViewViewFields, CustomerOrdersViewViewRow> {
-      override fun customerId(): Field<Int, CustomerOrdersViewViewRow> = Field<Int, CustomerOrdersViewViewRow>(_path, "customer_id", CustomerOrdersViewViewRow::customerId, null, null, { row, value -> row.copy(customerId = value) }, KotlinDbTypes.SqlServerTypes.int_)
-
-      override fun customerName(): Field<String, CustomerOrdersViewViewRow> = Field<String, CustomerOrdersViewViewRow>(_path, "customer_name", CustomerOrdersViewViewRow::customerName, null, null, { row, value -> row.copy(customerName = value) }, SqlServerTypes.nvarchar)
-
-      override fun customerEmail(): Field<String, CustomerOrdersViewViewRow> = Field<String, CustomerOrdersViewViewRow>(_path, "customer_email", CustomerOrdersViewViewRow::customerEmail, null, null, { row, value -> row.copy(customerEmail = value) }, SqlServerTypes.nvarchar)
-
-      override fun orderId(): Field<Int, CustomerOrdersViewViewRow> = Field<Int, CustomerOrdersViewViewRow>(_path, "order_id", CustomerOrdersViewViewRow::orderId, null, null, { row, value -> row.copy(orderId = value) }, KotlinDbTypes.SqlServerTypes.int_)
-
-      override fun orderDate(): OptField<LocalDateTime, CustomerOrdersViewViewRow> = OptField<LocalDateTime, CustomerOrdersViewViewRow>(_path, "order_date", CustomerOrdersViewViewRow::orderDate, null, null, { row, value -> row.copy(orderDate = value) }, SqlServerTypes.datetime2)
-
-      override fun orderTotal(): Field<BigDecimal, CustomerOrdersViewViewRow> = Field<BigDecimal, CustomerOrdersViewViewRow>(_path, "order_total", CustomerOrdersViewViewRow::orderTotal, null, null, { row, value -> row.copy(orderTotal = value) }, KotlinDbTypes.SqlServerTypes.money)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, CustomerOrdersViewViewRow>> = listOf(this.customerId().underlying, this.customerName().underlying, this.customerEmail().underlying, this.orderId().underlying, this.orderDate().underlying, this.orderTotal().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<CustomerOrdersViewViewFields, CustomerOrdersViewViewRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: CustomerOrdersViewViewFields = CustomerOrdersViewViewFields(emptyList<Path>())
   }
 }

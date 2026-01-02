@@ -21,10 +21,10 @@ data class IdentityTestId(@JsonValue val value: String) {
     val bijection: Bijection<IdentityTestId, String> =
       Bijection.of(IdentityTestId::value, ::IdentityTestId)
 
-    val pgType: PgType<IdentityTestId> =
+    val dbType: PgType<IdentityTestId> =
       PgTypes.text.bimap(::IdentityTestId, IdentityTestId::value)
 
-    val pgTypeArray: PgType<Array<IdentityTestId>> =
+    val dbTypeArray: PgType<Array<IdentityTestId>> =
       PgTypes.textArray.bimap({ xs -> arrayMap.map(xs, ::IdentityTestId, IdentityTestId::class.java) }, { xs -> arrayMap.map(xs, IdentityTestId::value, String::class.java) })
   }
 }

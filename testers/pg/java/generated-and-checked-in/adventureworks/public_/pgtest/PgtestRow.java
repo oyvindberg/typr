@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple70;
 import dev.typr.foundations.data.Inet;
 import dev.typr.foundations.data.Int2Vector;
 import dev.typr.foundations.data.Json;
@@ -106,7 +107,78 @@ public record PgtestRow(
     OffsetTime[] timezes,
     UUID[] uuides,
     String[] varchares,
-    Xml[] xmles) {
+    Xml[] xmles)
+    implements Tuple70<
+        Boolean,
+        PGbox,
+        String,
+        byte[],
+        String,
+        PGcircle,
+        LocalDate,
+        Float,
+        Double,
+        Map<String, String>,
+        Inet,
+        Short,
+        Int2Vector,
+        Integer,
+        Long,
+        PGInterval,
+        Json,
+        Jsonb,
+        PGline,
+        PGlseg,
+        Money,
+        Mydomain,
+        Myenum,
+        String,
+        BigDecimal,
+        PGpath,
+        PGpoint,
+        PGpolygon,
+        String,
+        LocalTime,
+        LocalDateTime,
+        Instant,
+        OffsetTime,
+        UUID,
+        String,
+        Vector,
+        Xml,
+        PGbox[], /* bpchar */
+        String[], /* bpchar */
+        String[],
+        PGcircle[],
+        LocalDate[],
+        Float[],
+        Double[],
+        Inet[],
+        Short[],
+        Int2Vector[],
+        Integer[],
+        Long[],
+        PGInterval[],
+        Json[],
+        Jsonb[],
+        PGline[],
+        PGlseg[],
+        Money[],
+        Mydomain[],
+        Myenum[],
+        String[],
+        BigDecimal[],
+        PGpath[],
+        PGpoint[],
+        PGpolygon[],
+        String[],
+        LocalTime[],
+        LocalDateTime[],
+        Instant[],
+        OffsetTime[],
+        UUID[],
+        String[],
+        Xml[]> {
   public PgtestRow withBool(Boolean bool) {
     return new PgtestRow(
         bool,
@@ -5380,8 +5452,8 @@ public record PgtestRow(
           PgTypes.line,
           PgTypes.lseg,
           PgTypes.money,
-          Mydomain.pgType,
-          Myenum.pgType,
+          Mydomain.dbType,
+          Myenum.dbType,
           PgTypes.name,
           PgTypes.numeric,
           PgTypes.path,
@@ -5414,8 +5486,8 @@ public record PgtestRow(
           PgTypes.lineArray,
           PgTypes.lsegArray,
           PgTypes.moneyArray,
-          Mydomain.pgTypeArray,
-          Myenum.pgTypeArray,
+          Mydomain.dbTypeArray,
+          Myenum.dbTypeArray,
           PgTypes.nameArray,
           PgTypes.numericArray,
           PgTypes.pathArray,
@@ -5506,4 +5578,424 @@ public record PgtestRow(
   ;
 
   public static PgText<PgtestRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public Boolean _1() {
+    return bool;
+  }
+  ;
+
+  @Override
+  public Map<String, String> _10() {
+    return hstore;
+  }
+  ;
+
+  @Override
+  public Inet _11() {
+    return inet;
+  }
+  ;
+
+  @Override
+  public Short _12() {
+    return int2;
+  }
+  ;
+
+  @Override
+  public Int2Vector _13() {
+    return int2vector;
+  }
+  ;
+
+  @Override
+  public Integer _14() {
+    return int4;
+  }
+  ;
+
+  @Override
+  public Long _15() {
+    return int8;
+  }
+  ;
+
+  @Override
+  public PGInterval _16() {
+    return interval;
+  }
+  ;
+
+  @Override
+  public Json _17() {
+    return json;
+  }
+  ;
+
+  @Override
+  public Jsonb _18() {
+    return jsonb;
+  }
+  ;
+
+  @Override
+  public PGline _19() {
+    return line;
+  }
+  ;
+
+  @Override
+  public PGbox _2() {
+    return box;
+  }
+  ;
+
+  @Override
+  public PGlseg _20() {
+    return lseg;
+  }
+  ;
+
+  @Override
+  public Money _21() {
+    return money;
+  }
+  ;
+
+  @Override
+  public Mydomain _22() {
+    return mydomain;
+  }
+  ;
+
+  @Override
+  public Myenum _23() {
+    return myenum;
+  }
+  ;
+
+  @Override
+  public String _24() {
+    return name;
+  }
+  ;
+
+  @Override
+  public BigDecimal _25() {
+    return numeric;
+  }
+  ;
+
+  @Override
+  public PGpath _26() {
+    return path;
+  }
+  ;
+
+  @Override
+  public PGpoint _27() {
+    return point;
+  }
+  ;
+
+  @Override
+  public PGpolygon _28() {
+    return polygon;
+  }
+  ;
+
+  @Override
+  public String _29() {
+    return text;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return bpchar;
+  }
+  ;
+
+  @Override
+  public LocalTime _30() {
+    return time;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _31() {
+    return timestamp;
+  }
+  ;
+
+  @Override
+  public Instant _32() {
+    return timestampz;
+  }
+  ;
+
+  @Override
+  public OffsetTime _33() {
+    return timez;
+  }
+  ;
+
+  @Override
+  public UUID _34() {
+    return uuid;
+  }
+  ;
+
+  @Override
+  public String _35() {
+    return varchar;
+  }
+  ;
+
+  @Override
+  public Vector _36() {
+    return vector;
+  }
+  ;
+
+  @Override
+  public Xml _37() {
+    return xml;
+  }
+  ;
+
+  @Override
+  public PGbox[] _38() {
+    return boxes;
+  }
+  ;
+
+  @Override
+  public /* bpchar */ String[] _39() {
+    return bpchares;
+  }
+  ;
+
+  @Override
+  public byte[] _4() {
+    return bytea;
+  }
+  ;
+
+  @Override
+  public /* bpchar */ String[] _40() {
+    return chares;
+  }
+  ;
+
+  @Override
+  public PGcircle[] _41() {
+    return circlees;
+  }
+  ;
+
+  @Override
+  public LocalDate[] _42() {
+    return datees;
+  }
+  ;
+
+  @Override
+  public Float[] _43() {
+    return float4es;
+  }
+  ;
+
+  @Override
+  public Double[] _44() {
+    return float8es;
+  }
+  ;
+
+  @Override
+  public Inet[] _45() {
+    return inetes;
+  }
+  ;
+
+  @Override
+  public Short[] _46() {
+    return int2es;
+  }
+  ;
+
+  @Override
+  public Int2Vector[] _47() {
+    return int2vectores;
+  }
+  ;
+
+  @Override
+  public Integer[] _48() {
+    return int4es;
+  }
+  ;
+
+  @Override
+  public Long[] _49() {
+    return int8es;
+  }
+  ;
+
+  @Override
+  public String _5() {
+    return char_;
+  }
+  ;
+
+  @Override
+  public PGInterval[] _50() {
+    return intervales;
+  }
+  ;
+
+  @Override
+  public Json[] _51() {
+    return jsones;
+  }
+  ;
+
+  @Override
+  public Jsonb[] _52() {
+    return jsonbes;
+  }
+  ;
+
+  @Override
+  public PGline[] _53() {
+    return linees;
+  }
+  ;
+
+  @Override
+  public PGlseg[] _54() {
+    return lseges;
+  }
+  ;
+
+  @Override
+  public Money[] _55() {
+    return moneyes;
+  }
+  ;
+
+  @Override
+  public Mydomain[] _56() {
+    return mydomaines;
+  }
+  ;
+
+  @Override
+  public Myenum[] _57() {
+    return myenumes;
+  }
+  ;
+
+  @Override
+  public String[] _58() {
+    return namees;
+  }
+  ;
+
+  @Override
+  public BigDecimal[] _59() {
+    return numerices;
+  }
+  ;
+
+  @Override
+  public PGcircle _6() {
+    return circle;
+  }
+  ;
+
+  @Override
+  public PGpath[] _60() {
+    return pathes;
+  }
+  ;
+
+  @Override
+  public PGpoint[] _61() {
+    return pointes;
+  }
+  ;
+
+  @Override
+  public PGpolygon[] _62() {
+    return polygones;
+  }
+  ;
+
+  @Override
+  public String[] _63() {
+    return textes;
+  }
+  ;
+
+  @Override
+  public LocalTime[] _64() {
+    return timees;
+  }
+  ;
+
+  @Override
+  public LocalDateTime[] _65() {
+    return timestampes;
+  }
+  ;
+
+  @Override
+  public Instant[] _66() {
+    return timestampzes;
+  }
+  ;
+
+  @Override
+  public OffsetTime[] _67() {
+    return timezes;
+  }
+  ;
+
+  @Override
+  public UUID[] _68() {
+    return uuides;
+  }
+  ;
+
+  @Override
+  public String[] _69() {
+    return varchares;
+  }
+  ;
+
+  @Override
+  public LocalDate _7() {
+    return date;
+  }
+  ;
+
+  @Override
+  public Xml[] _70() {
+    return xmles;
+  }
+  ;
+
+  @Override
+  public Float _8() {
+    return float4;
+  }
+  ;
+
+  @Override
+  public Double _9() {
+    return float8;
+  }
+  ;
 }

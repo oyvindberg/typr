@@ -8,14 +8,20 @@ package testdb.all_scalar_types
 import dev.typr.foundations.DuckDbTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.data.Json
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint2
+import dev.typr.foundations.data.Uint4
+import dev.typr.foundations.data.Uint8
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr26
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.Duration
@@ -27,124 +33,120 @@ import java.util.UUID
 import kotlin.collections.List
 import testdb.Mood
 
-interface AllScalarTypesFields : FieldsExpr<AllScalarTypesRow> {
-  abstract fun colBigint(): OptField<Long, AllScalarTypesRow>
+data class AllScalarTypesFields(val _path: List<Path>) : TupleExpr26<AllScalarTypesId, Byte, Short, Int, Long, BigInteger, Uint1, Uint2, Uint4, Uint8, Float, Double, BigDecimal, Boolean, String, String, ByteArray, LocalDate, LocalTime, LocalDateTime, OffsetDateTime, Duration, UUID, Json, Mood, String>, RelationStructure<AllScalarTypesFields, AllScalarTypesRow>, FieldsBase<AllScalarTypesRow> {
+  override fun _1(): SqlExpr<AllScalarTypesId> = id()
 
-  abstract fun colBlob(): OptField<ByteArray, AllScalarTypesRow>
+  override fun _10(): SqlExpr<Uint8> = colUbigint()
 
-  abstract fun colBoolean(): OptField<Boolean, AllScalarTypesRow>
+  override fun _11(): SqlExpr<Float> = colFloat()
 
-  abstract fun colDate(): OptField<LocalDate, AllScalarTypesRow>
+  override fun _12(): SqlExpr<Double> = colDouble()
 
-  abstract fun colDecimal(): OptField<BigDecimal, AllScalarTypesRow>
+  override fun _13(): SqlExpr<BigDecimal> = colDecimal()
 
-  abstract fun colDouble(): OptField<Double, AllScalarTypesRow>
+  override fun _14(): SqlExpr<Boolean> = colBoolean()
 
-  abstract fun colFloat(): OptField<Float, AllScalarTypesRow>
+  override fun _15(): SqlExpr<String> = colVarchar()
 
-  abstract fun colHugeint(): OptField<BigInteger, AllScalarTypesRow>
+  override fun _16(): SqlExpr<String> = colText()
 
-  abstract fun colInteger(): OptField<Int, AllScalarTypesRow>
+  override fun _17(): SqlExpr<ByteArray> = colBlob()
 
-  abstract fun colInterval(): OptField<Duration, AllScalarTypesRow>
+  override fun _18(): SqlExpr<LocalDate> = colDate()
 
-  abstract fun colJson(): OptField<Json, AllScalarTypesRow>
+  override fun _19(): SqlExpr<LocalTime> = colTime()
 
-  abstract fun colMood(): OptField<Mood, AllScalarTypesRow>
+  override fun _2(): SqlExpr<Byte> = colTinyint()
 
-  abstract fun colNotNull(): Field<String, AllScalarTypesRow>
+  override fun _20(): SqlExpr<LocalDateTime> = colTimestamp()
 
-  abstract fun colSmallint(): OptField<Short, AllScalarTypesRow>
+  override fun _21(): SqlExpr<OffsetDateTime> = colTimestamptz()
 
-  abstract fun colText(): OptField<String, AllScalarTypesRow>
+  override fun _22(): SqlExpr<Duration> = colInterval()
 
-  abstract fun colTime(): OptField<LocalTime, AllScalarTypesRow>
+  override fun _23(): SqlExpr<UUID> = colUuid()
 
-  abstract fun colTimestamp(): OptField<LocalDateTime, AllScalarTypesRow>
+  override fun _24(): SqlExpr<Json> = colJson()
 
-  abstract fun colTimestamptz(): OptField<OffsetDateTime, AllScalarTypesRow>
+  override fun _25(): SqlExpr<Mood> = colMood()
 
-  abstract fun colTinyint(): OptField<Byte, AllScalarTypesRow>
+  override fun _26(): SqlExpr<String> = colNotNull()
 
-  abstract fun colUbigint(): OptField<BigInteger, AllScalarTypesRow>
+  override fun _3(): SqlExpr<Short> = colSmallint()
 
-  abstract fun colUinteger(): OptField<Long, AllScalarTypesRow>
+  override fun _4(): SqlExpr<Int> = colInteger()
 
-  abstract fun colUsmallint(): OptField<Int, AllScalarTypesRow>
+  override fun _5(): SqlExpr<Long> = colBigint()
 
-  abstract fun colUtinyint(): OptField<Short, AllScalarTypesRow>
+  override fun _6(): SqlExpr<BigInteger> = colHugeint()
 
-  abstract fun colUuid(): OptField<UUID, AllScalarTypesRow>
+  override fun _7(): SqlExpr<Uint1> = colUtinyint()
 
-  abstract fun colVarchar(): OptField<String, AllScalarTypesRow>
+  override fun _8(): SqlExpr<Uint2> = colUsmallint()
 
-  abstract override fun columns(): List<FieldLike<*, AllScalarTypesRow>>
+  override fun _9(): SqlExpr<Uint4> = colUinteger()
 
-  abstract fun id(): IdField<AllScalarTypesId, AllScalarTypesRow>
+  override fun _path(): List<Path> = _path
+
+  fun colBigint(): OptField<Long, AllScalarTypesRow> = OptField<Long, AllScalarTypesRow>(_path, "col_bigint", AllScalarTypesRow::colBigint, null, "BIGINT", { row, value -> row.copy(colBigint = value) }, KotlinDbTypes.DuckDbTypes.bigint)
+
+  fun colBlob(): OptField<ByteArray, AllScalarTypesRow> = OptField<ByteArray, AllScalarTypesRow>(_path, "col_blob", AllScalarTypesRow::colBlob, null, "BLOB", { row, value -> row.copy(colBlob = value) }, DuckDbTypes.blob)
+
+  fun colBoolean(): OptField<Boolean, AllScalarTypesRow> = OptField<Boolean, AllScalarTypesRow>(_path, "col_boolean", AllScalarTypesRow::colBoolean, null, null, { row, value -> row.copy(colBoolean = value) }, KotlinDbTypes.DuckDbTypes.boolean_)
+
+  fun colDate(): OptField<LocalDate, AllScalarTypesRow> = OptField<LocalDate, AllScalarTypesRow>(_path, "col_date", AllScalarTypesRow::colDate, null, "DATE", { row, value -> row.copy(colDate = value) }, DuckDbTypes.date)
+
+  fun colDecimal(): OptField<BigDecimal, AllScalarTypesRow> = OptField<BigDecimal, AllScalarTypesRow>(_path, "col_decimal", AllScalarTypesRow::colDecimal, null, "DECIMAL(10,2)", { row, value -> row.copy(colDecimal = value) }, DuckDbTypes.numeric)
+
+  fun colDouble(): OptField<Double, AllScalarTypesRow> = OptField<Double, AllScalarTypesRow>(_path, "col_double", AllScalarTypesRow::colDouble, null, "DOUBLE", { row, value -> row.copy(colDouble = value) }, KotlinDbTypes.DuckDbTypes.double_)
+
+  fun colFloat(): OptField<Float, AllScalarTypesRow> = OptField<Float, AllScalarTypesRow>(_path, "col_float", AllScalarTypesRow::colFloat, null, "FLOAT", { row, value -> row.copy(colFloat = value) }, KotlinDbTypes.DuckDbTypes.float_)
+
+  fun colHugeint(): OptField<BigInteger, AllScalarTypesRow> = OptField<BigInteger, AllScalarTypesRow>(_path, "col_hugeint", AllScalarTypesRow::colHugeint, null, "HUGEINT", { row, value -> row.copy(colHugeint = value) }, DuckDbTypes.hugeint)
+
+  fun colInteger(): OptField<Int, AllScalarTypesRow> = OptField<Int, AllScalarTypesRow>(_path, "col_integer", AllScalarTypesRow::colInteger, null, "INTEGER", { row, value -> row.copy(colInteger = value) }, KotlinDbTypes.DuckDbTypes.integer)
+
+  fun colInterval(): OptField<Duration, AllScalarTypesRow> = OptField<Duration, AllScalarTypesRow>(_path, "col_interval", AllScalarTypesRow::colInterval, null, "INTERVAL", { row, value -> row.copy(colInterval = value) }, DuckDbTypes.interval)
+
+  fun colJson(): OptField<Json, AllScalarTypesRow> = OptField<Json, AllScalarTypesRow>(_path, "col_json", AllScalarTypesRow::colJson, null, "JSON", { row, value -> row.copy(colJson = value) }, DuckDbTypes.json)
+
+  fun colMood(): OptField<Mood, AllScalarTypesRow> = OptField<Mood, AllScalarTypesRow>(_path, "col_mood", AllScalarTypesRow::colMood, null, "mood", { row, value -> row.copy(colMood = value) }, Mood.duckDbType)
+
+  fun colNotNull(): Field<String, AllScalarTypesRow> = Field<String, AllScalarTypesRow>(_path, "col_not_null", AllScalarTypesRow::colNotNull, null, null, { row, value -> row.copy(colNotNull = value) }, DuckDbTypes.varchar)
+
+  fun colSmallint(): OptField<Short, AllScalarTypesRow> = OptField<Short, AllScalarTypesRow>(_path, "col_smallint", AllScalarTypesRow::colSmallint, null, "SMALLINT", { row, value -> row.copy(colSmallint = value) }, KotlinDbTypes.DuckDbTypes.smallint)
+
+  fun colText(): OptField<String, AllScalarTypesRow> = OptField<String, AllScalarTypesRow>(_path, "col_text", AllScalarTypesRow::colText, null, null, { row, value -> row.copy(colText = value) }, DuckDbTypes.varchar)
+
+  fun colTime(): OptField<LocalTime, AllScalarTypesRow> = OptField<LocalTime, AllScalarTypesRow>(_path, "col_time", AllScalarTypesRow::colTime, null, "TIME", { row, value -> row.copy(colTime = value) }, DuckDbTypes.time)
+
+  fun colTimestamp(): OptField<LocalDateTime, AllScalarTypesRow> = OptField<LocalDateTime, AllScalarTypesRow>(_path, "col_timestamp", AllScalarTypesRow::colTimestamp, null, "TIMESTAMP", { row, value -> row.copy(colTimestamp = value) }, DuckDbTypes.timestamp)
+
+  fun colTimestamptz(): OptField<OffsetDateTime, AllScalarTypesRow> = OptField<OffsetDateTime, AllScalarTypesRow>(_path, "col_timestamptz", AllScalarTypesRow::colTimestamptz, null, "TIMESTAMP WITH TIME ZONE", { row, value -> row.copy(colTimestamptz = value) }, DuckDbTypes.timestamptz)
+
+  fun colTinyint(): OptField<Byte, AllScalarTypesRow> = OptField<Byte, AllScalarTypesRow>(_path, "col_tinyint", AllScalarTypesRow::colTinyint, null, "TINYINT", { row, value -> row.copy(colTinyint = value) }, KotlinDbTypes.DuckDbTypes.tinyint)
+
+  fun colUbigint(): OptField<Uint8, AllScalarTypesRow> = OptField<Uint8, AllScalarTypesRow>(_path, "col_ubigint", AllScalarTypesRow::colUbigint, null, "UBIGINT", { row, value -> row.copy(colUbigint = value) }, DuckDbTypes.ubigint)
+
+  fun colUinteger(): OptField<Uint4, AllScalarTypesRow> = OptField<Uint4, AllScalarTypesRow>(_path, "col_uinteger", AllScalarTypesRow::colUinteger, null, "UINTEGER", { row, value -> row.copy(colUinteger = value) }, DuckDbTypes.uinteger)
+
+  fun colUsmallint(): OptField<Uint2, AllScalarTypesRow> = OptField<Uint2, AllScalarTypesRow>(_path, "col_usmallint", AllScalarTypesRow::colUsmallint, null, "USMALLINT", { row, value -> row.copy(colUsmallint = value) }, DuckDbTypes.usmallint)
+
+  fun colUtinyint(): OptField<Uint1, AllScalarTypesRow> = OptField<Uint1, AllScalarTypesRow>(_path, "col_utinyint", AllScalarTypesRow::colUtinyint, null, "UTINYINT", { row, value -> row.copy(colUtinyint = value) }, DuckDbTypes.utinyint)
+
+  fun colUuid(): OptField<UUID, AllScalarTypesRow> = OptField<UUID, AllScalarTypesRow>(_path, "col_uuid", AllScalarTypesRow::colUuid, null, "UUID", { row, value -> row.copy(colUuid = value) }, DuckDbTypes.uuid)
+
+  fun colVarchar(): OptField<String, AllScalarTypesRow> = OptField<String, AllScalarTypesRow>(_path, "col_varchar", AllScalarTypesRow::colVarchar, null, null, { row, value -> row.copy(colVarchar = value) }, DuckDbTypes.varchar)
+
+  override fun columns(): List<FieldLike<*, AllScalarTypesRow>> = listOf(this.id().underlying, this.colTinyint().underlying, this.colSmallint().underlying, this.colInteger().underlying, this.colBigint().underlying, this.colHugeint().underlying, this.colUtinyint().underlying, this.colUsmallint().underlying, this.colUinteger().underlying, this.colUbigint().underlying, this.colFloat().underlying, this.colDouble().underlying, this.colDecimal().underlying, this.colBoolean().underlying, this.colVarchar().underlying, this.colText().underlying, this.colBlob().underlying, this.colDate().underlying, this.colTime().underlying, this.colTimestamp().underlying, this.colTimestamptz().underlying, this.colInterval().underlying, this.colUuid().underlying, this.colJson().underlying, this.colMood().underlying, this.colNotNull().underlying)
+
+  fun id(): IdField<AllScalarTypesId, AllScalarTypesRow> = IdField<AllScalarTypesId, AllScalarTypesRow>(_path, "id", AllScalarTypesRow::id, null, "INTEGER", { row, value -> row.copy(id = value) }, AllScalarTypesId.duckDbType)
 
   override fun rowParser(): RowParser<AllScalarTypesRow> = AllScalarTypesRow._rowParser.underlying
 
+  override fun withPaths(_path: List<Path>): RelationStructure<AllScalarTypesFields, AllScalarTypesRow> = AllScalarTypesFields(_path)
+
   companion object {
-    data class Impl(val _path: List<Path>) : AllScalarTypesFields, RelationStructure<AllScalarTypesFields, AllScalarTypesRow> {
-      override fun id(): IdField<AllScalarTypesId, AllScalarTypesRow> = IdField<AllScalarTypesId, AllScalarTypesRow>(_path, "id", AllScalarTypesRow::id, null, "INTEGER", { row, value -> row.copy(id = value) }, AllScalarTypesId.duckDbType)
-
-      override fun colTinyint(): OptField<Byte, AllScalarTypesRow> = OptField<Byte, AllScalarTypesRow>(_path, "col_tinyint", AllScalarTypesRow::colTinyint, null, "TINYINT", { row, value -> row.copy(colTinyint = value) }, KotlinDbTypes.DuckDbTypes.tinyint)
-
-      override fun colSmallint(): OptField<Short, AllScalarTypesRow> = OptField<Short, AllScalarTypesRow>(_path, "col_smallint", AllScalarTypesRow::colSmallint, null, "SMALLINT", { row, value -> row.copy(colSmallint = value) }, KotlinDbTypes.DuckDbTypes.smallint)
-
-      override fun colInteger(): OptField<Int, AllScalarTypesRow> = OptField<Int, AllScalarTypesRow>(_path, "col_integer", AllScalarTypesRow::colInteger, null, "INTEGER", { row, value -> row.copy(colInteger = value) }, KotlinDbTypes.DuckDbTypes.integer)
-
-      override fun colBigint(): OptField<Long, AllScalarTypesRow> = OptField<Long, AllScalarTypesRow>(_path, "col_bigint", AllScalarTypesRow::colBigint, null, "BIGINT", { row, value -> row.copy(colBigint = value) }, KotlinDbTypes.DuckDbTypes.bigint)
-
-      override fun colHugeint(): OptField<BigInteger, AllScalarTypesRow> = OptField<BigInteger, AllScalarTypesRow>(_path, "col_hugeint", AllScalarTypesRow::colHugeint, null, "HUGEINT", { row, value -> row.copy(colHugeint = value) }, DuckDbTypes.hugeint)
-
-      override fun colUtinyint(): OptField<Short, AllScalarTypesRow> = OptField<Short, AllScalarTypesRow>(_path, "col_utinyint", AllScalarTypesRow::colUtinyint, null, "UTINYINT", { row, value -> row.copy(colUtinyint = value) }, KotlinDbTypes.DuckDbTypes.smallint)
-
-      override fun colUsmallint(): OptField<Int, AllScalarTypesRow> = OptField<Int, AllScalarTypesRow>(_path, "col_usmallint", AllScalarTypesRow::colUsmallint, null, "USMALLINT", { row, value -> row.copy(colUsmallint = value) }, KotlinDbTypes.DuckDbTypes.integer)
-
-      override fun colUinteger(): OptField<Long, AllScalarTypesRow> = OptField<Long, AllScalarTypesRow>(_path, "col_uinteger", AllScalarTypesRow::colUinteger, null, "UINTEGER", { row, value -> row.copy(colUinteger = value) }, KotlinDbTypes.DuckDbTypes.bigint)
-
-      override fun colUbigint(): OptField<BigInteger, AllScalarTypesRow> = OptField<BigInteger, AllScalarTypesRow>(_path, "col_ubigint", AllScalarTypesRow::colUbigint, null, "UBIGINT", { row, value -> row.copy(colUbigint = value) }, DuckDbTypes.ubigint)
-
-      override fun colFloat(): OptField<Float, AllScalarTypesRow> = OptField<Float, AllScalarTypesRow>(_path, "col_float", AllScalarTypesRow::colFloat, null, "FLOAT", { row, value -> row.copy(colFloat = value) }, KotlinDbTypes.DuckDbTypes.float_)
-
-      override fun colDouble(): OptField<Double, AllScalarTypesRow> = OptField<Double, AllScalarTypesRow>(_path, "col_double", AllScalarTypesRow::colDouble, null, "DOUBLE", { row, value -> row.copy(colDouble = value) }, KotlinDbTypes.DuckDbTypes.double_)
-
-      override fun colDecimal(): OptField<BigDecimal, AllScalarTypesRow> = OptField<BigDecimal, AllScalarTypesRow>(_path, "col_decimal", AllScalarTypesRow::colDecimal, null, "DECIMAL(10,2)", { row, value -> row.copy(colDecimal = value) }, DuckDbTypes.numeric)
-
-      override fun colBoolean(): OptField<Boolean, AllScalarTypesRow> = OptField<Boolean, AllScalarTypesRow>(_path, "col_boolean", AllScalarTypesRow::colBoolean, null, null, { row, value -> row.copy(colBoolean = value) }, KotlinDbTypes.DuckDbTypes.boolean_)
-
-      override fun colVarchar(): OptField<String, AllScalarTypesRow> = OptField<String, AllScalarTypesRow>(_path, "col_varchar", AllScalarTypesRow::colVarchar, null, null, { row, value -> row.copy(colVarchar = value) }, DuckDbTypes.varchar)
-
-      override fun colText(): OptField<String, AllScalarTypesRow> = OptField<String, AllScalarTypesRow>(_path, "col_text", AllScalarTypesRow::colText, null, null, { row, value -> row.copy(colText = value) }, DuckDbTypes.varchar)
-
-      override fun colBlob(): OptField<ByteArray, AllScalarTypesRow> = OptField<ByteArray, AllScalarTypesRow>(_path, "col_blob", AllScalarTypesRow::colBlob, null, "BLOB", { row, value -> row.copy(colBlob = value) }, DuckDbTypes.blob)
-
-      override fun colDate(): OptField<LocalDate, AllScalarTypesRow> = OptField<LocalDate, AllScalarTypesRow>(_path, "col_date", AllScalarTypesRow::colDate, null, "DATE", { row, value -> row.copy(colDate = value) }, DuckDbTypes.date)
-
-      override fun colTime(): OptField<LocalTime, AllScalarTypesRow> = OptField<LocalTime, AllScalarTypesRow>(_path, "col_time", AllScalarTypesRow::colTime, null, "TIME", { row, value -> row.copy(colTime = value) }, DuckDbTypes.time)
-
-      override fun colTimestamp(): OptField<LocalDateTime, AllScalarTypesRow> = OptField<LocalDateTime, AllScalarTypesRow>(_path, "col_timestamp", AllScalarTypesRow::colTimestamp, null, "TIMESTAMP", { row, value -> row.copy(colTimestamp = value) }, DuckDbTypes.timestamp)
-
-      override fun colTimestamptz(): OptField<OffsetDateTime, AllScalarTypesRow> = OptField<OffsetDateTime, AllScalarTypesRow>(_path, "col_timestamptz", AllScalarTypesRow::colTimestamptz, null, "TIMESTAMP WITH TIME ZONE", { row, value -> row.copy(colTimestamptz = value) }, DuckDbTypes.timestamptz)
-
-      override fun colInterval(): OptField<Duration, AllScalarTypesRow> = OptField<Duration, AllScalarTypesRow>(_path, "col_interval", AllScalarTypesRow::colInterval, null, "INTERVAL", { row, value -> row.copy(colInterval = value) }, DuckDbTypes.interval)
-
-      override fun colUuid(): OptField<UUID, AllScalarTypesRow> = OptField<UUID, AllScalarTypesRow>(_path, "col_uuid", AllScalarTypesRow::colUuid, null, "UUID", { row, value -> row.copy(colUuid = value) }, DuckDbTypes.uuid)
-
-      override fun colJson(): OptField<Json, AllScalarTypesRow> = OptField<Json, AllScalarTypesRow>(_path, "col_json", AllScalarTypesRow::colJson, null, "JSON", { row, value -> row.copy(colJson = value) }, DuckDbTypes.json)
-
-      override fun colMood(): OptField<Mood, AllScalarTypesRow> = OptField<Mood, AllScalarTypesRow>(_path, "col_mood", AllScalarTypesRow::colMood, null, "mood", { row, value -> row.copy(colMood = value) }, Mood.duckDbType)
-
-      override fun colNotNull(): Field<String, AllScalarTypesRow> = Field<String, AllScalarTypesRow>(_path, "col_not_null", AllScalarTypesRow::colNotNull, null, null, { row, value -> row.copy(colNotNull = value) }, DuckDbTypes.varchar)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, AllScalarTypesRow>> = listOf(this.id().underlying, this.colTinyint().underlying, this.colSmallint().underlying, this.colInteger().underlying, this.colBigint().underlying, this.colHugeint().underlying, this.colUtinyint().underlying, this.colUsmallint().underlying, this.colUinteger().underlying, this.colUbigint().underlying, this.colFloat().underlying, this.colDouble().underlying, this.colDecimal().underlying, this.colBoolean().underlying, this.colVarchar().underlying, this.colText().underlying, this.colBlob().underlying, this.colDate().underlying, this.colTime().underlying, this.colTimestamp().underlying, this.colTimestamptz().underlying, this.colInterval().underlying, this.colUuid().underlying, this.colJson().underlying, this.colMood().underlying, this.colNotNull().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<AllScalarTypesFields, AllScalarTypesRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: AllScalarTypesFields = AllScalarTypesFields(emptyList<Path>())
   }
 }

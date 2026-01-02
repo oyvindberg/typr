@@ -8,6 +8,7 @@ package adventureworks.public.flaff
 import adventureworks.public.ShortText
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -18,8 +19,16 @@ data class FlaffId(
   @JsonProperty("another_code") val anotherCode: String,
   @JsonProperty("some_number") val someNumber: Int,
   val specifier: ShortText
-) {
+) : Tuple4<ShortText, String, Int, ShortText> {
+  override fun _1(): ShortText = code
+
+  override fun _2(): String = anotherCode
+
+  override fun _3(): Int = someNumber
+
+  override fun _4(): ShortText = specifier
+
   companion object {
-    val _rowParser: RowParser<FlaffId> = RowParsers.of(ShortText.pgType, PgTypes.text, KotlinDbTypes.PgTypes.int4, ShortText.pgType, { t0, t1, t2, t3 -> FlaffId(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.code, row.anotherCode, row.someNumber, row.specifier) })
+    val _rowParser: RowParser<FlaffId> = RowParsers.of(ShortText.dbType, PgTypes.text, KotlinDbTypes.PgTypes.int4, ShortText.dbType, { t0, t1, t2, t3 -> FlaffId(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.code, row.anotherCode, row.someNumber, row.specifier) })
   }
 }

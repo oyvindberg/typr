@@ -7,125 +7,121 @@ package testdb.departments;
 
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
 import dev.typr.foundations.dsl.SqlExpr;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn.Part;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr4;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-public interface DepartmentsFields extends FieldsExpr<DepartmentsRow> {
-  record Impl(List<Path> _path)
-      implements DepartmentsFields, RelationStructure<DepartmentsFields, DepartmentsRow> {
-    @Override
-    public IdField<String, DepartmentsRow> deptCode() {
-      return new IdField<String, DepartmentsRow>(
-          _path,
-          "dept_code",
-          DepartmentsRow::deptCode,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDeptCode(value),
-          DuckDbTypes.varchar);
-    }
-    ;
+public class DepartmentsFields extends TupleExpr4<String, String, String, BigDecimal>
+    implements RelationStructure<DepartmentsFields, DepartmentsRow>, FieldsBase<DepartmentsRow> {
+  List<Path> _path;
 
-    @Override
-    public IdField<String, DepartmentsRow> deptRegion() {
-      return new IdField<String, DepartmentsRow>(
-          _path,
-          "dept_region",
-          DepartmentsRow::deptRegion,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDeptRegion(value),
-          DuckDbTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, DepartmentsRow> deptName() {
-      return new Field<String, DepartmentsRow>(
-          _path,
-          "dept_name",
-          DepartmentsRow::deptName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDeptName(value),
-          DuckDbTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, DepartmentsRow> budget() {
-      return new OptField<BigDecimal, DepartmentsRow>(
-          _path,
-          "budget",
-          DepartmentsRow::budget,
-          Optional.empty(),
-          Optional.of("DECIMAL(15,2)"),
-          (row, value) -> row.withBudget(value),
-          DuckDbTypes.numeric);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, DepartmentsRow>> columns() {
-      return java.util.List.of(this.deptCode(), this.deptRegion(), this.deptName(), this.budget());
-    }
-    ;
-
-    @Override
-    public RelationStructure<DepartmentsFields, DepartmentsRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public DepartmentsFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static DepartmentsFields structure =
+      new DepartmentsFields(java.util.Collections.emptyList());
+
+  public IdField<String, DepartmentsRow> deptCode() {
+    return new IdField<String, DepartmentsRow>(
+        _path,
+        "dept_code",
+        DepartmentsRow::deptCode,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDeptCode(value),
+        DuckDbTypes.varchar);
   }
-  ;
 
-  IdField<String, DepartmentsRow> deptCode();
+  public IdField<String, DepartmentsRow> deptRegion() {
+    return new IdField<String, DepartmentsRow>(
+        _path,
+        "dept_region",
+        DepartmentsRow::deptRegion,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDeptRegion(value),
+        DuckDbTypes.varchar);
+  }
 
-  IdField<String, DepartmentsRow> deptRegion();
+  public Field<String, DepartmentsRow> deptName() {
+    return new Field<String, DepartmentsRow>(
+        _path,
+        "dept_name",
+        DepartmentsRow::deptName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDeptName(value),
+        DuckDbTypes.varchar);
+  }
 
-  Field<String, DepartmentsRow> deptName();
+  public OptField<BigDecimal, DepartmentsRow> budget() {
+    return new OptField<BigDecimal, DepartmentsRow>(
+        _path,
+        "budget",
+        DepartmentsRow::budget,
+        Optional.empty(),
+        Optional.of("DECIMAL(15,2)"),
+        (row, value) -> row.withBudget(value),
+        DuckDbTypes.numeric);
+  }
 
-  OptField<BigDecimal, DepartmentsRow> budget();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default SqlExpr<Boolean> compositeIdIs(DepartmentsId compositeId) {
+  public SqlExpr<Boolean> compositeIdIs(DepartmentsId compositeId) {
     return SqlExpr.all(
         deptCode().isEqual(compositeId.deptCode()), deptRegion().isEqual(compositeId.deptRegion()));
   }
-  ;
 
-  default SqlExpr<Boolean> compositeIdIn(List<DepartmentsId> compositeIds) {
-    return new CompositeIn(
-        List.of(
-            new Part<String, DepartmentsId, DepartmentsRow>(
-                deptCode(), DepartmentsId::deptCode, DuckDbTypes.varchar),
-            new Part<String, DepartmentsId, DepartmentsRow>(
-                deptRegion(), DepartmentsId::deptRegion, DuckDbTypes.varchar)),
-        compositeIds);
+  public SqlExpr<Boolean> compositeIdIn(List<DepartmentsId> compositeIds) {
+    return TupleExpr.of(deptCode(), deptRegion()).among(compositeIds);
   }
-  ;
 
   @Override
-  List<FieldLike<?, DepartmentsRow>> columns();
+  public List<FieldLike<?, DepartmentsRow>> columns() {
+    return java.util.List.of(this.deptCode(), this.deptRegion(), this.deptName(), this.budget());
+  }
 
   @Override
-  default RowParser<DepartmentsRow> rowParser() {
+  public RowParser<DepartmentsRow> rowParser() {
     return DepartmentsRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<DepartmentsFields, DepartmentsRow> withPaths(List<Path> _path) {
+    return new DepartmentsFields(_path);
+  }
+
+  @Override
+  public SqlExpr<String> _1() {
+    return deptCode();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return deptRegion();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return deptName();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _4() {
+    return budget();
+  }
 }

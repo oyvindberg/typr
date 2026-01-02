@@ -7,75 +7,79 @@ package testdb.db2test_identity_always;
 
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr2;
 import java.util.List;
 import java.util.Optional;
 
-public interface Db2testIdentityAlwaysFields extends FieldsExpr<Db2testIdentityAlwaysRow> {
-  record Impl(List<Path> _path)
-      implements Db2testIdentityAlwaysFields,
-          RelationStructure<Db2testIdentityAlwaysFields, Db2testIdentityAlwaysRow> {
-    @Override
-    public IdField<Db2testIdentityAlwaysId, Db2testIdentityAlwaysRow> id() {
-      return new IdField<Db2testIdentityAlwaysId, Db2testIdentityAlwaysRow>(
-          _path,
-          "ID",
-          Db2testIdentityAlwaysRow::id,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withId(value),
-          Db2testIdentityAlwaysId.pgType);
-    }
-    ;
+public class Db2testIdentityAlwaysFields extends TupleExpr2<Db2testIdentityAlwaysId, String>
+    implements RelationStructure<Db2testIdentityAlwaysFields, Db2testIdentityAlwaysRow>,
+        FieldsBase<Db2testIdentityAlwaysRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, Db2testIdentityAlwaysRow> name() {
-      return new Field<String, Db2testIdentityAlwaysRow>(
-          _path,
-          "NAME",
-          Db2testIdentityAlwaysRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          Db2Types.varchar);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, Db2testIdentityAlwaysRow>> columns() {
-      return java.util.List.of(this.id(), this.name());
-    }
-    ;
-
-    @Override
-    public RelationStructure<Db2testIdentityAlwaysFields, Db2testIdentityAlwaysRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public Db2testIdentityAlwaysFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static Db2testIdentityAlwaysFields structure =
+      new Db2testIdentityAlwaysFields(java.util.Collections.emptyList());
+
+  public IdField<Db2testIdentityAlwaysId, Db2testIdentityAlwaysRow> id() {
+    return new IdField<Db2testIdentityAlwaysId, Db2testIdentityAlwaysRow>(
+        _path,
+        "ID",
+        Db2testIdentityAlwaysRow::id,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withId(value),
+        Db2testIdentityAlwaysId.dbType);
   }
-  ;
 
-  IdField<Db2testIdentityAlwaysId, Db2testIdentityAlwaysRow> id();
-
-  Field<String, Db2testIdentityAlwaysRow> name();
+  public Field<String, Db2testIdentityAlwaysRow> name() {
+    return new Field<String, Db2testIdentityAlwaysRow>(
+        _path,
+        "NAME",
+        Db2testIdentityAlwaysRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        Db2Types.varchar);
+  }
 
   @Override
-  List<FieldLike<?, Db2testIdentityAlwaysRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<Db2testIdentityAlwaysRow> rowParser() {
+  public List<FieldLike<?, Db2testIdentityAlwaysRow>> columns() {
+    return java.util.List.of(this.id(), this.name());
+  }
+
+  @Override
+  public RowParser<Db2testIdentityAlwaysRow> rowParser() {
     return Db2testIdentityAlwaysRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<Db2testIdentityAlwaysFields, Db2testIdentityAlwaysRow> withPaths(
+      List<Path> _path) {
+    return new Db2testIdentityAlwaysFields(_path);
+  }
+
+  @Override
+  public SqlExpr<Db2testIdentityAlwaysId> _1() {
+    return id();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return name();
+  }
 }

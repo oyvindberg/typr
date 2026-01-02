@@ -15,7 +15,7 @@ class UpdateCustomerPrioritySqlRepoImpl extends UpdateCustomerPrioritySqlRepo {
   override def apply(
     newPriority: /* user-picked */ Priority,
     customerId: /* user-picked */ CustomersId
-  )(using c: Connection): Int = {
+  )(using c: Connection): List[UpdateCustomerPrioritySqlRow] = {
     sql"""-- Update customer priority based on spending and return updated rows
     -- Tests: UPDATE with RETURNING, enum parameters
   
@@ -27,6 +27,6 @@ class UpdateCustomerPrioritySqlRepoImpl extends UpdateCustomerPrioritySqlRepo {
         name,
         email,
         created_at,
-        priority""".update().runUnchecked(c)
+        priority""".query(UpdateCustomerPrioritySqlRow.`_rowParser`.all()).runUnchecked(c)
   }
 }

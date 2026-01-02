@@ -10,6 +10,7 @@ import adventureworks.production.productcategory.ProductcategoryId
 import adventureworks.public.Name
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import java.time.LocalDateTime
@@ -34,7 +35,17 @@ data class ProductsubcategoryRow(
   val rowguid: UUID,
   /** Default: now() */
   val modifieddate: LocalDateTime
-) {
+) : Tuple5<ProductsubcategoryId, ProductcategoryId, Name, UUID, LocalDateTime> {
+  override fun _1(): ProductsubcategoryId = productsubcategoryid
+
+  override fun _2(): ProductcategoryId = productcategoryid
+
+  override fun _3(): Name = name
+
+  override fun _4(): UUID = rowguid
+
+  override fun _5(): LocalDateTime = modifieddate
+
   fun id(): ProductsubcategoryId = productsubcategoryid
 
   fun toUnsavedRow(
@@ -44,7 +55,7 @@ data class ProductsubcategoryRow(
   ): ProductsubcategoryRowUnsaved = ProductsubcategoryRowUnsaved(productcategoryid, name, productsubcategoryid, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ProductsubcategoryRow> = RowParsers.of(ProductsubcategoryId.pgType, ProductcategoryId.pgType, Name.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> ProductsubcategoryRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.productsubcategoryid, row.productcategoryid, row.name, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<ProductsubcategoryRow> = RowParsers.of(ProductsubcategoryId.dbType, ProductcategoryId.dbType, Name.dbType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> ProductsubcategoryRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.productsubcategoryid, row.productcategoryid, row.name, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<ProductsubcategoryRow> =
       PgText.from(_rowParser.underlying)

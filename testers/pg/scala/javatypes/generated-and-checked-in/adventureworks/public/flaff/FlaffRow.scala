@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple5
 import java.util.Optional
 
 /** Table: public.flaff
@@ -26,7 +27,7 @@ case class FlaffRow(
   specifier: ShortText,
   /** Points to [[adventureworks.public.flaff.FlaffRow.specifier]] */
   parentspecifier: Optional[ShortText]
-) {
+) extends Tuple5[ShortText, String, Integer, ShortText, Optional[ShortText]] {
   def compositeId: FlaffId = {
     new FlaffId(
       code,
@@ -37,10 +38,20 @@ case class FlaffRow(
   }
 
   def id: FlaffId = this.compositeId
+
+  override def `_1`: ShortText = code
+
+  override def `_2`: String = anotherCode
+
+  override def `_3`: Integer = someNumber
+
+  override def `_4`: ShortText = specifier
+
+  override def `_5`: Optional[ShortText] = parentspecifier
 }
 
 object FlaffRow {
-  val `_rowParser`: RowParser[FlaffRow] = RowParsers.of(ShortText.pgType, PgTypes.text, PgTypes.int4, ShortText.pgType, ShortText.pgType.opt(), FlaffRow.apply, row => Array[Any](row.code, row.anotherCode, row.someNumber, row.specifier, row.parentspecifier))
+  val `_rowParser`: RowParser[FlaffRow] = RowParsers.of(ShortText.dbType, PgTypes.text, PgTypes.int4, ShortText.dbType, ShortText.dbType.opt(), FlaffRow.apply, row => Array[Any](row.code, row.anotherCode, row.someNumber, row.specifier, row.parentspecifier))
 
   def apply(
     compositeId: FlaffId,

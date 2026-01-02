@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple9;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -34,7 +35,17 @@ public record OrderSummaryByCustomerSqlRow(
     /** Points to {@link testdb.orders.OrdersRow#orderDate()} */
     @JsonProperty("first_order_date") Optional<LocalDate> firstOrderDate,
     /** Points to {@link testdb.orders.OrdersRow#totalAmount()} */
-    @JsonProperty("avg_order_amount") Optional<Double> avgOrderAmount) {
+    @JsonProperty("avg_order_amount") Optional<Double> avgOrderAmount)
+    implements Tuple9<
+        CustomersId,
+        String,
+        Optional<String>,
+        Optional<Priority>,
+        Optional<Long>,
+        Optional<BigDecimal>,
+        Optional<LocalDate>,
+        Optional<LocalDate>,
+        Optional<Double>> {
   /** Points to {@link testdb.customers.CustomersRow#customerId()} */
   public OrderSummaryByCustomerSqlRow withCustomerId(CustomersId customerId) {
     return new OrderSummaryByCustomerSqlRow(
@@ -194,5 +205,59 @@ public record OrderSummaryByCustomerSqlRow(
                 row.firstOrderDate(),
                 row.avgOrderAmount()
               });
+  ;
+
+  @Override
+  public CustomersId _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return customerName;
+  }
+  ;
+
+  @Override
+  public Optional<String> _3() {
+    return email;
+  }
+  ;
+
+  @Override
+  public Optional<Priority> _4() {
+    return priority;
+  }
+  ;
+
+  @Override
+  public Optional<Long> _5() {
+    return orderCount;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _6() {
+    return totalSpent;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDate> _7() {
+    return lastOrderDate;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDate> _8() {
+    return firstOrderDate;
+  }
+  ;
+
+  @Override
+  public Optional<Double> _9() {
+    return avgOrderAmount;
+  }
   ;
 }

@@ -18,11 +18,10 @@ public class VDailySalesViewRepoImpl implements VDailySalesViewRepo {
   public SelectBuilder<VDailySalesViewFields, VDailySalesViewRow> select() {
     return SelectBuilder.of(
         "`v_daily_sales`",
-        VDailySalesViewFields.structure(),
+        VDailySalesViewFields.structure,
         VDailySalesViewRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<VDailySalesViewRow> selectAll(Connection c) {
@@ -35,5 +34,4 @@ public class VDailySalesViewRepoImpl implements VDailySalesViewRepo {
         .query(VDailySalesViewRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

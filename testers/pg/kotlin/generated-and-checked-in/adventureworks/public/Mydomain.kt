@@ -19,10 +19,10 @@ data class Mydomain(@JsonValue val value: String) {
     val bijection: Bijection<Mydomain, String> =
       Bijection.of(Mydomain::value, ::Mydomain)
 
-    val pgType: PgType<Mydomain> =
+    val dbType: PgType<Mydomain> =
       PgTypes.text.bimap(::Mydomain, Mydomain::value).renamed("\"public\".\"mydomain\"")
 
-    val pgTypeArray: PgType<Array<Mydomain>> =
+    val dbTypeArray: PgType<Array<Mydomain>> =
       PgTypes.textArray.bimap({ xs -> arrayMap.map(xs, ::Mydomain, Mydomain::class.java) }, { xs -> arrayMap.map(xs, Mydomain::value, String::class.java) }).renamed("\"public\".\"mydomain\"[]")
   }
 }

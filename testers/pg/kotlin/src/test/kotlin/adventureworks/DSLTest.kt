@@ -56,13 +56,13 @@ class DSLTest {
                 .joinFk({ it._2().fkPersonPerson() }, personRepoImpl.select())
                 .joinFk({ it._2().fkBusinessentity() }, businessentityRepoImpl.select())
                 .join(emailaddressRepoImpl.select().orderBy { it.rowguid().asc() })
-                .on { sp_e_p_b_email -> sp_e_p_b_email._2().businessentityid().underlying.isEqual(sp_e_p_b_email._1()._2().businessentityid().underlying) }
+                .on { sp_e_p_b_email -> sp_e_p_b_email._2().businessentityid().isEqual(sp_e_p_b_email._1()._2().businessentityid()) }
                 .joinOn(salespersonRepoImpl.select()) { sp_e_p_b_email_s2 ->
-                    sp_e_p_b_email_s2._1()._1()._1()._2().businessentityid().underlying.isEqual(sp_e_p_b_email_s2._2().businessentityid().underlying)
+                    sp_e_p_b_email_s2._1()._1()._1()._2().businessentityid().isEqual(sp_e_p_b_email_s2._2().businessentityid())
                 }
 
             val doubled = q.join(q).on { left_right ->
-                left_right._1()._1()._1()._1()._2().businessentityid().underlying.isEqual(left_right._2()._1()._1()._1()._2().businessentityid().underlying)
+                left_right._1()._1()._1()._1()._2().businessentityid().isEqual(left_right._2()._1()._1()._1()._2().businessentityid())
             }
 
             doubled.toList(c).forEach { println(it) }

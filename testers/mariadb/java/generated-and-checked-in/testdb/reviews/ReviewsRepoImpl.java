@@ -27,27 +27,25 @@ import testdb.products.ProductsId;
 public class ReviewsRepoImpl implements ReviewsRepo {
   @Override
   public DeleteBuilder<ReviewsFields, ReviewsRow> delete() {
-    return DeleteBuilder.of("`reviews`", ReviewsFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`reviews`", ReviewsFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(ReviewsId reviewId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `reviews` where `review_id` = "),
-                Fragment.encode(ReviewsId.pgType, reviewId),
+                Fragment.encode(ReviewsId.dbType, reviewId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(ReviewsId[] reviewIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : reviewIds) {
-      fragments.add(Fragment.encode(ReviewsId.pgType, id));
+      fragments.add(Fragment.encode(ReviewsId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -57,7 +55,6 @@ public class ReviewsRepoImpl implements ReviewsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ReviewsRow insert(ReviewsRow unsaved, Connection c) {
@@ -68,11 +65,11 @@ public class ReviewsRepoImpl implements ReviewsRepo {
                     + " `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`,"
                     + " `responded_at`, `created_at`, `updated_at`)\n"
                     + "values ("),
-            Fragment.encode(ProductsId.pgType, unsaved.productId()),
+            Fragment.encode(ProductsId.dbType, unsaved.productId()),
             Fragment.lit(", "),
-            Fragment.encode(CustomersId.pgType, unsaved.customerId()),
+            Fragment.encode(CustomersId.dbType, unsaved.customerId()),
             Fragment.lit(", "),
-            Fragment.encode(OrderItemsId.pgType.opt(), unsaved.orderItemId()),
+            Fragment.encode(OrderItemsId.dbType.opt(), unsaved.orderItemId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.tinyintUnsigned, unsaved.rating()),
             Fragment.lit(", "),
@@ -80,11 +77,11 @@ public class ReviewsRepoImpl implements ReviewsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text.opt(), unsaved.content()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.pros()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.pros()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.cons()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.cons()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.images()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.images()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.bool, unsaved.isVerifiedPurchase()),
             Fragment.lit(", "),
@@ -110,7 +107,6 @@ public class ReviewsRepoImpl implements ReviewsRepo {
         .updateReturning(ReviewsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ReviewsRow insert(ReviewsRowUnsaved unsaved, Connection c) {
@@ -120,10 +116,10 @@ public class ReviewsRepoImpl implements ReviewsRepo {
     ;
     columns.add(Fragment.lit("`product_id`"));
     values.add(
-        interpolate(Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit("")));
+        interpolate(Fragment.encode(ProductsId.dbType, unsaved.productId()), Fragment.lit("")));
     columns.add(Fragment.lit("`customer_id`"));
     values.add(
-        interpolate(Fragment.encode(CustomersId.pgType, unsaved.customerId()), Fragment.lit("")));
+        interpolate(Fragment.encode(CustomersId.dbType, unsaved.customerId()), Fragment.lit("")));
     columns.add(Fragment.lit("`rating`"));
     values.add(
         interpolate(
@@ -135,7 +131,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
             value -> {
               columns.add(Fragment.lit("`order_item_id`"));
               values.add(
-                  interpolate(Fragment.encode(OrderItemsId.pgType.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(OrderItemsId.dbType.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -165,7 +161,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
             value -> {
               columns.add(Fragment.lit("`pros`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(MariaTypes.json.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -175,7 +171,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
             value -> {
               columns.add(Fragment.lit("`cons`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(MariaTypes.json.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -185,7 +181,7 @@ public class ReviewsRepoImpl implements ReviewsRepo {
             value -> {
               columns.add(Fragment.lit("`images`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(MariaTypes.json.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -281,14 +277,12 @@ public class ReviewsRepoImpl implements ReviewsRepo {
     ;
     return q.updateReturning(ReviewsRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<ReviewsFields, ReviewsRow> select() {
     return SelectBuilder.of(
-        "`reviews`", ReviewsFields.structure(), ReviewsRow._rowParser, Dialect.MARIADB);
+        "`reviews`", ReviewsFields.structure, ReviewsRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<ReviewsRow> selectAll(Connection c) {
@@ -302,7 +296,6 @@ public class ReviewsRepoImpl implements ReviewsRepo {
         .query(ReviewsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<ReviewsRow> selectById(ReviewsId reviewId, Connection c) {
@@ -314,18 +307,17 @@ public class ReviewsRepoImpl implements ReviewsRepo {
                     + " `responded_at`, `created_at`, `updated_at`\n"
                     + "from `reviews`\n"
                     + "where `review_id` = "),
-            Fragment.encode(ReviewsId.pgType, reviewId),
+            Fragment.encode(ReviewsId.dbType, reviewId),
             Fragment.lit(""))
         .query(ReviewsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ReviewsRow> selectByIds(ReviewsId[] reviewIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : reviewIds) {
-      fragments.add(Fragment.encode(ReviewsId.pgType, id));
+      fragments.add(Fragment.encode(ReviewsId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -340,7 +332,6 @@ public class ReviewsRepoImpl implements ReviewsRepo {
         .query(ReviewsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<ReviewsId, ReviewsRow> selectByIdsTracked(ReviewsId[] reviewIds, Connection c) {
@@ -348,14 +339,12 @@ public class ReviewsRepoImpl implements ReviewsRepo {
     selectByIds(reviewIds, c).forEach(row -> ret.put(row.reviewId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<ReviewsFields, ReviewsRow> update() {
     return UpdateBuilder.of(
-        "`reviews`", ReviewsFields.structure(), ReviewsRow._rowParser, Dialect.MARIADB);
+        "`reviews`", ReviewsFields.structure, ReviewsRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(ReviewsRow row, Connection c) {
@@ -363,11 +352,11 @@ public class ReviewsRepoImpl implements ReviewsRepo {
     ;
     return interpolate(
                 Fragment.lit("update `reviews`\nset `product_id` = "),
-                Fragment.encode(ProductsId.pgType, row.productId()),
+                Fragment.encode(ProductsId.dbType, row.productId()),
                 Fragment.lit(",\n`customer_id` = "),
-                Fragment.encode(CustomersId.pgType, row.customerId()),
+                Fragment.encode(CustomersId.dbType, row.customerId()),
                 Fragment.lit(",\n`order_item_id` = "),
-                Fragment.encode(OrderItemsId.pgType.opt(), row.orderItemId()),
+                Fragment.encode(OrderItemsId.dbType.opt(), row.orderItemId()),
                 Fragment.lit(",\n`rating` = "),
                 Fragment.encode(MariaTypes.tinyintUnsigned, row.rating()),
                 Fragment.lit(",\n`title` = "),
@@ -375,11 +364,11 @@ public class ReviewsRepoImpl implements ReviewsRepo {
                 Fragment.lit(",\n`content` = "),
                 Fragment.encode(MariaTypes.text.opt(), row.content()),
                 Fragment.lit(",\n`pros` = "),
-                Fragment.encode(MariaTypes.longtext.opt(), row.pros()),
+                Fragment.encode(MariaTypes.json.opt(), row.pros()),
                 Fragment.lit(",\n`cons` = "),
-                Fragment.encode(MariaTypes.longtext.opt(), row.cons()),
+                Fragment.encode(MariaTypes.json.opt(), row.cons()),
                 Fragment.lit(",\n`images` = "),
-                Fragment.encode(MariaTypes.longtext.opt(), row.images()),
+                Fragment.encode(MariaTypes.json.opt(), row.images()),
                 Fragment.lit(",\n`is_verified_purchase` = "),
                 Fragment.encode(MariaTypes.bool, row.isVerifiedPurchase()),
                 Fragment.lit(",\n`is_approved` = "),
@@ -397,28 +386,29 @@ public class ReviewsRepoImpl implements ReviewsRepo {
                 Fragment.lit(",\n`updated_at` = "),
                 Fragment.encode(MariaTypes.datetime, row.updatedAt()),
                 Fragment.lit("\nwhere `review_id` = "),
-                Fragment.encode(ReviewsId.pgType, reviewId),
+                Fragment.encode(ReviewsId.dbType, reviewId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public ReviewsRow upsert(ReviewsRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `reviews`(`product_id`, `customer_id`, `order_item_id`, `rating`,"
-                    + " `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`,"
-                    + " `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`,"
-                    + " `responded_at`, `created_at`, `updated_at`)\n"
+                "INSERT INTO `reviews`(`review_id`, `product_id`, `customer_id`, `order_item_id`,"
+                    + " `rating`, `title`, `content`, `pros`, `cons`, `images`,"
+                    + " `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`,"
+                    + " `admin_response`, `responded_at`, `created_at`, `updated_at`)\n"
                     + "VALUES ("),
-            Fragment.encode(ProductsId.pgType, unsaved.productId()),
+            Fragment.encode(ReviewsId.dbType, unsaved.reviewId()),
             Fragment.lit(", "),
-            Fragment.encode(CustomersId.pgType, unsaved.customerId()),
+            Fragment.encode(ProductsId.dbType, unsaved.productId()),
             Fragment.lit(", "),
-            Fragment.encode(OrderItemsId.pgType.opt(), unsaved.orderItemId()),
+            Fragment.encode(CustomersId.dbType, unsaved.customerId()),
+            Fragment.lit(", "),
+            Fragment.encode(OrderItemsId.dbType.opt(), unsaved.orderItemId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.tinyintUnsigned, unsaved.rating()),
             Fragment.lit(", "),
@@ -426,11 +416,11 @@ public class ReviewsRepoImpl implements ReviewsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text.opt(), unsaved.content()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.pros()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.pros()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.cons()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.cons()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.images()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.images()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.bool, unsaved.isVerifiedPurchase()),
             Fragment.lit(", "),
@@ -473,7 +463,6 @@ public class ReviewsRepoImpl implements ReviewsRepo {
         .updateReturning(ReviewsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ReviewsRow> upsertBatch(Iterator<ReviewsRow> unsaved, Connection c) {
@@ -508,5 +497,4 @@ public class ReviewsRepoImpl implements ReviewsRepo {
         .updateReturningEach(ReviewsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

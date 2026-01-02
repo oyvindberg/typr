@@ -51,7 +51,7 @@ public record BusinessentityaddressRepoMock(
   @Override
   public DeleteBuilder<BusinessentityaddressFields, BusinessentityaddressRow> delete() {
     return new DeleteBuilderMock<>(
-        BusinessentityaddressFields.structure(),
+        BusinessentityaddressFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.compositeId(),
@@ -130,7 +130,7 @@ public record BusinessentityaddressRepoMock(
   @Override
   public SelectBuilder<BusinessentityaddressFields, BusinessentityaddressRow> select() {
     return new SelectBuilderMock<>(
-        BusinessentityaddressFields.structure(),
+        BusinessentityaddressFields.structure,
         () -> new ArrayList<>(map.values()),
         SelectParams.empty());
   }
@@ -178,7 +178,7 @@ public record BusinessentityaddressRepoMock(
   @Override
   public UpdateBuilder<BusinessentityaddressFields, BusinessentityaddressRow> update() {
     return new UpdateBuilderMock<>(
-        BusinessentityaddressFields.structure(),
+        BusinessentityaddressFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

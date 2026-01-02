@@ -19,13 +19,13 @@ public interface SqlServerTypes {
   // ==================== Integer Types ====================
 
   // TINYINT - UNSIGNED in SQL Server! (0-255)
-  SqlServerType<Short> tinyint =
+  SqlServerType<dev.typr.foundations.data.Uint1> tinyint =
       SqlServerType.of(
           "TINYINT",
-          SqlServerRead.readShort,
-          SqlServerWrite.writeShort,
-          SqlServerText.textShort,
-          SqlServerJson.int2);
+          SqlServerRead.readUint1,
+          SqlServerWrite.writeUint1,
+          SqlServerText.textShort.contramap(dev.typr.foundations.data.Uint1::value),
+          SqlServerJson.int2.bimap(dev.typr.foundations.data.Uint1::new, u -> (short) u.value()));
 
   SqlServerType<Short> smallint =
       SqlServerType.of(
@@ -342,22 +342,23 @@ public interface SqlServerTypes {
           SqlServerJson.uuid);
 
   // XML
-  SqlServerType<String> xml =
+  SqlServerType<dev.typr.foundations.data.Xml> xml =
       SqlServerType.of(
           "XML",
           SqlServerRead.readXml,
           SqlServerWrite.writeXml,
-          SqlServerText.textString,
-          SqlServerJson.text);
+          SqlServerText.textString.contramap(dev.typr.foundations.data.Xml::value),
+          SqlServerJson.text.bimap(
+              dev.typr.foundations.data.Xml::new, dev.typr.foundations.data.Xml::value));
 
   // JSON - SQL Server 2016+, stored as NVARCHAR
-  SqlServerType<String> json =
+  SqlServerType<dev.typr.foundations.data.Json> json =
       SqlServerType.of(
           "NVARCHAR(MAX)", // JSON is stored as NVARCHAR(MAX)
           SqlServerRead.readJson,
           SqlServerWrite.writeJson,
-          SqlServerText.textString,
-          SqlServerJson.text);
+          SqlServerText.textString.contramap(dev.typr.foundations.data.Json::value),
+          SqlServerJson.text.contramap(dev.typr.foundations.data.Json::value));
 
   // VECTOR - SQL Server 2025 (stored as binary for now)
   SqlServerType<byte[]> vector =
@@ -382,13 +383,15 @@ public interface SqlServerTypes {
   SqlServerType<byte[]> timestamp = rowversion.renamed("TIMESTAMP");
 
   // HIERARCHYID - hierarchical data (tree structures)
-  SqlServerType<String> hierarchyid =
+  SqlServerType<dev.typr.foundations.data.HierarchyId> hierarchyid =
       SqlServerType.of(
           "HIERARCHYID",
           SqlServerRead.readHierarchyId,
           SqlServerWrite.writeHierarchyId,
-          SqlServerText.textString,
-          SqlServerJson.text);
+          SqlServerText.textString.contramap(dev.typr.foundations.data.HierarchyId::toString),
+          SqlServerJson.text.bimap(
+              dev.typr.foundations.data.HierarchyId::parse,
+              dev.typr.foundations.data.HierarchyId::toString));
 
   // SQL_VARIANT - can store values of various types
   SqlServerType<Object> sqlVariant =
@@ -417,4 +420,15 @@ public interface SqlServerTypes {
           SqlServerWrite.writeGeometry,
           SqlServerText.textGeometry,
           SqlServerJson.jsonGeometry);
+
+  // ==================== Unknown Type ====================
+  // For columns whose type typr doesn't know how to handle - cast to/from string
+  SqlServerType<dev.typr.foundations.data.Unknown> unknown =
+      SqlServerType.of(
+              "VARCHAR(MAX)",
+              SqlServerRead.readString,
+              SqlServerWrite.writeString,
+              SqlServerText.textString,
+              SqlServerJson.text)
+          .bimap(dev.typr.foundations.data.Unknown::new, dev.typr.foundations.data.Unknown::value);
 }

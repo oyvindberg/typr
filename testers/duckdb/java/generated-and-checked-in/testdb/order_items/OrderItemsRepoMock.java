@@ -48,7 +48,7 @@ public record OrderItemsRepoMock(
   @Override
   public DeleteBuilder<OrderItemsFields, OrderItemsRow> delete() {
     return new DeleteBuilderMock<>(
-        OrderItemsFields.structure(),
+        OrderItemsFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.compositeId(),
@@ -97,7 +97,7 @@ public record OrderItemsRepoMock(
   @Override
   public SelectBuilder<OrderItemsFields, OrderItemsRow> select() {
     return new SelectBuilderMock<>(
-        OrderItemsFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        OrderItemsFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -139,7 +139,7 @@ public record OrderItemsRepoMock(
   @Override
   public UpdateBuilder<OrderItemsFields, OrderItemsRow> update() {
     return new UpdateBuilderMock<>(
-        OrderItemsFields.structure(),
+        OrderItemsFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

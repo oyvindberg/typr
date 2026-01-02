@@ -7,105 +7,110 @@ package testdb.mariatest_unique;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr4;
 import java.util.List;
 import java.util.Optional;
 
-public interface MariatestUniqueFields extends FieldsExpr<MariatestUniqueRow> {
-  record Impl(List<Path> _path)
-      implements MariatestUniqueFields,
-          RelationStructure<MariatestUniqueFields, MariatestUniqueRow> {
-    @Override
-    public IdField<MariatestUniqueId, MariatestUniqueRow> id() {
-      return new IdField<MariatestUniqueId, MariatestUniqueRow>(
-          _path,
-          "id",
-          MariatestUniqueRow::id,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withId(value),
-          MariatestUniqueId.pgType);
-    }
-    ;
+public class MariatestUniqueFields extends TupleExpr4<MariatestUniqueId, String, String, String>
+    implements RelationStructure<MariatestUniqueFields, MariatestUniqueRow>,
+        FieldsBase<MariatestUniqueRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, MariatestUniqueRow> email() {
-      return new Field<String, MariatestUniqueRow>(
-          _path,
-          "email",
-          MariatestUniqueRow::email,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withEmail(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, MariatestUniqueRow> code() {
-      return new Field<String, MariatestUniqueRow>(
-          _path,
-          "code",
-          MariatestUniqueRow::code,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCode(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, MariatestUniqueRow> category() {
-      return new Field<String, MariatestUniqueRow>(
-          _path,
-          "category",
-          MariatestUniqueRow::category,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCategory(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, MariatestUniqueRow>> columns() {
-      return java.util.List.of(this.id(), this.email(), this.code(), this.category());
-    }
-    ;
-
-    @Override
-    public RelationStructure<MariatestUniqueFields, MariatestUniqueRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public MariatestUniqueFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static MariatestUniqueFields structure =
+      new MariatestUniqueFields(java.util.Collections.emptyList());
+
+  public IdField<MariatestUniqueId, MariatestUniqueRow> id() {
+    return new IdField<MariatestUniqueId, MariatestUniqueRow>(
+        _path,
+        "id",
+        MariatestUniqueRow::id,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withId(value),
+        MariatestUniqueId.dbType);
   }
-  ;
 
-  IdField<MariatestUniqueId, MariatestUniqueRow> id();
+  public Field<String, MariatestUniqueRow> email() {
+    return new Field<String, MariatestUniqueRow>(
+        _path,
+        "email",
+        MariatestUniqueRow::email,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withEmail(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, MariatestUniqueRow> email();
+  public Field<String, MariatestUniqueRow> code() {
+    return new Field<String, MariatestUniqueRow>(
+        _path,
+        "code",
+        MariatestUniqueRow::code,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCode(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, MariatestUniqueRow> code();
-
-  Field<String, MariatestUniqueRow> category();
+  public Field<String, MariatestUniqueRow> category() {
+    return new Field<String, MariatestUniqueRow>(
+        _path,
+        "category",
+        MariatestUniqueRow::category,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCategory(value),
+        MariaTypes.varchar);
+  }
 
   @Override
-  List<FieldLike<?, MariatestUniqueRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<MariatestUniqueRow> rowParser() {
+  public List<FieldLike<?, MariatestUniqueRow>> columns() {
+    return java.util.List.of(this.id(), this.email(), this.code(), this.category());
+  }
+
+  @Override
+  public RowParser<MariatestUniqueRow> rowParser() {
     return MariatestUniqueRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<MariatestUniqueFields, MariatestUniqueRow> withPaths(List<Path> _path) {
+    return new MariatestUniqueFields(_path);
+  }
+
+  @Override
+  public SqlExpr<MariatestUniqueId> _1() {
+    return id();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return email();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return code();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return category();
+  }
 }

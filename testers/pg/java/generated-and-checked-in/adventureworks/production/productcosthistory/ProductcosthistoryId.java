@@ -9,10 +9,12 @@ import adventureworks.production.product.ProductId;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple2;
 import java.time.LocalDateTime;
 
 /** Type for the composite primary key of table `production.productcosthistory` */
-public record ProductcosthistoryId(ProductId productid, LocalDateTime startdate) {
+public record ProductcosthistoryId(ProductId productid, LocalDateTime startdate)
+    implements Tuple2<ProductId, LocalDateTime> {
   public ProductcosthistoryId withProductid(ProductId productid) {
     return new ProductcosthistoryId(productid, startdate);
   }
@@ -25,9 +27,21 @@ public record ProductcosthistoryId(ProductId productid, LocalDateTime startdate)
 
   public static RowParser<ProductcosthistoryId> _rowParser =
       RowParsers.of(
-          ProductId.pgType,
+          ProductId.dbType,
           PgTypes.timestamp,
           ProductcosthistoryId::new,
           row -> new Object[] {row.productid(), row.startdate()});
+  ;
+
+  @Override
+  public ProductId _1() {
+    return productid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _2() {
+    return startdate;
+  }
   ;
 }

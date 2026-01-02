@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -22,7 +23,8 @@ public record OrdersRow(
     @JsonProperty("order_date") LocalDate orderDate,
     @JsonProperty("total_amount") Optional<BigDecimal> totalAmount,
     /** Default: 'pending' */
-    Optional<String> status) {
+    Optional<String> status)
+    implements Tuple5<OrdersId, Integer, LocalDate, Optional<BigDecimal>, Optional<String>> {
   public OrdersRow withOrderId(OrdersId orderId) {
     return new OrdersRow(orderId, customerId, orderDate, totalAmount, status);
   }
@@ -62,6 +64,36 @@ public record OrdersRow(
               new Object[] {
                 row.orderId(), row.customerId(), row.orderDate(), row.totalAmount(), row.status()
               });
+  ;
+
+  @Override
+  public OrdersId _1() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public Integer _2() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public LocalDate _3() {
+    return orderDate;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _4() {
+    return totalAmount;
+  }
+  ;
+
+  @Override
+  public Optional<String> _5() {
+    return status;
+  }
   ;
 
   public OrdersId id() {

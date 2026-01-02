@@ -7,16 +7,17 @@ package oracledb.employees
 
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.ForeignKey
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
 import dev.typr.foundations.dsl.SqlExpr
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
 import dev.typr.foundations.dsl.SqlExpr.OptField
+import dev.typr.foundations.dsl.TupleExpr
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr7
 import java.time.LocalDateTime
 import java.util.Optional
 import oracledb.MoneyT
@@ -24,127 +25,122 @@ import oracledb.departments.DepartmentsFields
 import oracledb.departments.DepartmentsId
 import oracledb.departments.DepartmentsRow
 
-trait EmployeesFields extends FieldsExpr0[EmployeesRow] {
-  def empNumber: IdField[java.math.BigDecimal, EmployeesRow]
+class EmployeesFields(val `_path`: java.util.List[Path]) extends TupleExpr7[java.math.BigDecimal, String, String, String, String, MoneyT, LocalDateTime] with RelationStructure[EmployeesFields, EmployeesRow]  with FieldsBase[EmployeesRow] {
+  def empNumber: IdField[java.math.BigDecimal, EmployeesRow] = {
+    new IdField[java.math.BigDecimal, EmployeesRow](
+      _path,
+      "EMP_NUMBER",
+      _.empNumber,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(empNumber = value),
+      OracleTypes.number
+    )
+  }
 
-  def empSuffix: IdField[String, EmployeesRow]
+  def empSuffix: IdField[String, EmployeesRow] = {
+    new IdField[String, EmployeesRow](
+      _path,
+      "EMP_SUFFIX",
+      _.empSuffix,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(empSuffix = value),
+      OracleTypes.varchar2
+    )
+  }
 
-  def deptCode: Field[String, EmployeesRow]
+  def deptCode: Field[String, EmployeesRow] = {
+    new Field[String, EmployeesRow](
+      _path,
+      "DEPT_CODE",
+      _.deptCode,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(deptCode = value),
+      OracleTypes.varchar2
+    )
+  }
 
-  def deptRegion: Field[String, EmployeesRow]
+  def deptRegion: Field[String, EmployeesRow] = {
+    new Field[String, EmployeesRow](
+      _path,
+      "DEPT_REGION",
+      _.deptRegion,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(deptRegion = value),
+      OracleTypes.varchar2
+    )
+  }
 
-  def empName: Field[String, EmployeesRow]
+  def empName: Field[String, EmployeesRow] = {
+    new Field[String, EmployeesRow](
+      _path,
+      "EMP_NAME",
+      _.empName,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(empName = value),
+      OracleTypes.varchar2
+    )
+  }
 
-  def salary: OptField[MoneyT, EmployeesRow]
+  def salary: OptField[MoneyT, EmployeesRow] = {
+    new OptField[MoneyT, EmployeesRow](
+      _path,
+      "SALARY",
+      _.salary,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(salary = value),
+      MoneyT.oracleType
+    )
+  }
 
-  def hireDate: Field[LocalDateTime, EmployeesRow]
+  def hireDate: Field[LocalDateTime, EmployeesRow] = {
+    new Field[LocalDateTime, EmployeesRow](
+      _path,
+      "HIRE_DATE",
+      _.hireDate,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(hireDate = value),
+      OracleTypes.date
+    )
+  }
 
   def fkDepartments: ForeignKey[DepartmentsFields, DepartmentsRow] = ForeignKey.of[DepartmentsFields, DepartmentsRow]("FK_EMPLOYEES_DEPARTMENTS").withColumnPair[String](deptCode, _.deptCode).withColumnPair[String](deptRegion, _.deptRegion)
 
   def `extractIdent(DepartmentsId)Is`(id: DepartmentsId): SqlExpr[java.lang.Boolean] = SqlExpr.all(deptCode.isEqual(id.deptCode), deptRegion.isEqual(id.deptRegion))
 
-  def `extractIdent(DepartmentsId)In`(ids: java.util.List[DepartmentsId]): SqlExpr[java.lang.Boolean] = CompositeIn(java.util.List.of(CompositeIn.Part[String, DepartmentsId, EmployeesRow](deptCode, _.deptCode, OracleTypes.varchar2), CompositeIn.Part[String, DepartmentsId, EmployeesRow](deptRegion, _.deptRegion, OracleTypes.varchar2)), ids)
+  def `extractIdent(DepartmentsId)In`(ids: java.util.List[DepartmentsId]): SqlExpr[java.lang.Boolean] = TupleExpr.of(deptCode, deptRegion).among(ids)
 
   def compositeIdIs(compositeId: EmployeesId): SqlExpr[java.lang.Boolean] = SqlExpr.all(empNumber.isEqual(compositeId.empNumber), empSuffix.isEqual(compositeId.empSuffix))
 
-  def compositeIdIn(compositeIds: java.util.List[EmployeesId]): SqlExpr[java.lang.Boolean] = CompositeIn(java.util.List.of(CompositeIn.Part[java.math.BigDecimal, EmployeesId, EmployeesRow](empNumber, _.empNumber, OracleTypes.number), CompositeIn.Part[String, EmployeesId, EmployeesRow](empSuffix, _.empSuffix, OracleTypes.varchar2)), compositeIds)
+  def compositeIdIn(compositeIds: java.util.List[EmployeesId]): SqlExpr[java.lang.Boolean] = TupleExpr.of(empNumber, empSuffix).among(compositeIds)
 
-  override def columns: java.util.List[FieldLike[?, EmployeesRow]]
+  override def columns: java.util.List[FieldLike[?, EmployeesRow]] = java.util.List.of(this.empNumber, this.empSuffix, this.deptCode, this.deptRegion, this.empName, this.salary, this.hireDate)
 
   override def rowParser: RowParser[EmployeesRow] = EmployeesRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[EmployeesFields, EmployeesRow] = new EmployeesFields(`_path`)
+
+  override def `_1`: SqlExpr[java.math.BigDecimal] = empNumber
+
+  override def `_2`: SqlExpr[String] = empSuffix
+
+  override def `_3`: SqlExpr[String] = deptCode
+
+  override def `_4`: SqlExpr[String] = deptRegion
+
+  override def `_5`: SqlExpr[String] = empName
+
+  override def `_6`: SqlExpr[MoneyT] = salary
+
+  override def `_7`: SqlExpr[LocalDateTime] = hireDate
 }
 
 object EmployeesFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends EmployeesFields with RelationStructure[EmployeesFields, EmployeesRow] {
-
-    override def empNumber: IdField[java.math.BigDecimal, EmployeesRow] = {
-      new IdField[java.math.BigDecimal, EmployeesRow](
-        _path,
-        "EMP_NUMBER",
-        _.empNumber,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(empNumber = value),
-        OracleTypes.number
-      )
-    }
-
-    override def empSuffix: IdField[String, EmployeesRow] = {
-      new IdField[String, EmployeesRow](
-        _path,
-        "EMP_SUFFIX",
-        _.empSuffix,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(empSuffix = value),
-        OracleTypes.varchar2
-      )
-    }
-
-    override def deptCode: Field[String, EmployeesRow] = {
-      new Field[String, EmployeesRow](
-        _path,
-        "DEPT_CODE",
-        _.deptCode,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(deptCode = value),
-        OracleTypes.varchar2
-      )
-    }
-
-    override def deptRegion: Field[String, EmployeesRow] = {
-      new Field[String, EmployeesRow](
-        _path,
-        "DEPT_REGION",
-        _.deptRegion,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(deptRegion = value),
-        OracleTypes.varchar2
-      )
-    }
-
-    override def empName: Field[String, EmployeesRow] = {
-      new Field[String, EmployeesRow](
-        _path,
-        "EMP_NAME",
-        _.empName,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(empName = value),
-        OracleTypes.varchar2
-      )
-    }
-
-    override def salary: OptField[MoneyT, EmployeesRow] = {
-      new OptField[MoneyT, EmployeesRow](
-        _path,
-        "SALARY",
-        _.salary,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(salary = value),
-        MoneyT.oracleType
-      )
-    }
-
-    override def hireDate: Field[LocalDateTime, EmployeesRow] = {
-      new Field[LocalDateTime, EmployeesRow](
-        _path,
-        "HIRE_DATE",
-        _.hireDate,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(hireDate = value),
-        OracleTypes.date
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, EmployeesRow]] = java.util.List.of(this.empNumber, this.empSuffix, this.deptCode, this.deptRegion, this.empName, this.salary, this.hireDate)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[EmployeesFields, EmployeesRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: EmployeesFields = new EmployeesFields(java.util.Collections.emptyList())
 }

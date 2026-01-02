@@ -5,10 +5,15 @@
  */
 package testdb
 
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint2
+import dev.typr.foundations.data.Uint4
+import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.data.maria.Inet4
 import dev.typr.foundations.data.maria.Inet6
 import dev.typr.foundations.data.maria.MariaSet
-import java.math.BigInteger
+import java.lang.Math
 import java.sql.Connection
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -130,8 +135,8 @@ case class TestInsert(random: Random) {
     tableName: String = random.alphanumeric.take(20).mkString,
     recordId: String = random.alphanumeric.take(20).mkString,
     action: String = random.alphanumeric.take(20).mkString,
-    oldValues: Defaulted[Option[String]] = new UseDefault(),
-    newValues: Defaulted[Option[String]] = new UseDefault(),
+    oldValues: Defaulted[Option[Json]] = new UseDefault(),
+    newValues: Defaulted[Option[Json]] = new UseDefault(),
     changedBy: Defaulted[Option[String]] = new UseDefault(),
     changedAt: Defaulted[LocalDateTime] = new UseDefault(),
     clientIp: Defaulted[Option[Inet6]] = new UseDefault(),
@@ -176,7 +181,7 @@ case class TestInsert(random: Random) {
     imageUrl: Defaulted[Option[String]] = new UseDefault(),
     sortOrder: Defaulted[Short] = new UseDefault(),
     isVisible: Defaulted[Boolean] = new UseDefault(),
-    metadata: Defaulted[Option[String]] = new UseDefault()
+    metadata: Defaulted[Option[Json]] = new UseDefault()
   )(using c: Connection): CategoriesRow = {
     (new CategoriesRepoImpl()).insert(new CategoriesRowUnsaved(
       name = name,
@@ -197,7 +202,7 @@ case class TestInsert(random: Random) {
     streetLine1: String = random.alphanumeric.take(20).mkString,
     city: String = random.alphanumeric.take(20).mkString,
     postalCode: String = random.alphanumeric.take(20).mkString,
-    countryCode: String = random.alphanumeric.take(20).mkString,
+    countryCode: String = random.alphanumeric.take(2).mkString,
     isDefault: Defaulted[Boolean] = new UseDefault(),
     streetLine2: Defaulted[Option[String]] = new UseDefault(),
     stateProvince: Defaulted[Option[String]] = new UseDefault(),
@@ -236,7 +241,7 @@ case class TestInsert(random: Random) {
     phone: Defaulted[Option[String]] = new UseDefault(),
     status: Defaulted[CustomerStatusId] = new UseDefault(),
     tier: Defaulted[String] = new UseDefault(),
-    preferences: Defaulted[Option[String]] = new UseDefault(),
+    preferences: Defaulted[Option[Json]] = new UseDefault(),
     marketingFlags: Defaulted[Option[MariaSet]] = new UseDefault(),
     notes: Defaulted[Option[String]] = new UseDefault(),
     createdAt: Defaulted[LocalDateTime] = new UseDefault(),
@@ -287,7 +292,6 @@ case class TestInsert(random: Random) {
   }
 
   def Mariatest(
-    bigintUCol: BigInteger,
     bitCol: Array[Byte],
     bit1Col: Array[Byte],
     binaryCol: Array[Byte],
@@ -302,19 +306,20 @@ case class TestInsert(random: Random) {
     inet6Col: Inet6,
     tinyintCol: Byte = random.nextInt(Byte.MaxValue).toByte,
     smallintCol: Short = random.nextInt(Short.MaxValue).toShort,
-    mediumintCol: Int = random.nextInt(),
+    mediumintCol: Int = random.nextInt(8388607),
     intCol: MariatestId = new MariatestId(random.nextInt()),
     bigintCol: Long = random.nextLong(),
-    tinyintUCol: Short = random.nextInt(Short.MaxValue).toShort,
-    smallintUCol: Int = random.nextInt(),
-    mediumintUCol: Int = random.nextInt(),
-    intUCol: Long = random.nextLong(),
+    tinyintUCol: Uint1 = Uint1.of(random.nextInt(256)),
+    smallintUCol: Uint2 = Uint2.of(random.nextInt(65536)),
+    mediumintUCol: Uint4 = Uint4.of(random.nextInt(16777216).toLong),
+    intUCol: Uint4 = Uint4.of(Math.abs(random.nextInt()).toLong),
+    bigintUCol: Uint8 = Uint8.of(Math.abs(random.nextLong())),
     decimalCol: BigDecimal = BigDecimal.decimal(random.nextDouble()),
     numericCol: BigDecimal = BigDecimal.decimal(random.nextDouble()),
     floatCol: Float = random.nextFloat(),
     doubleCol: Double = random.nextDouble(),
     boolCol: Boolean = random.nextBoolean(),
-    charCol: String = random.alphanumeric.take(20).mkString,
+    charCol: String = random.alphanumeric.take(10).mkString,
     varcharCol: String = random.alphanumeric.take(20).mkString,
     tinytextCol: String = random.alphanumeric.take(20).mkString,
     textCol: String = random.alphanumeric.take(20).mkString,
@@ -325,8 +330,7 @@ case class TestInsert(random: Random) {
     timeFspCol: LocalTime = LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong),
     datetimeCol: LocalDateTime = LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)),
     datetimeFspCol: LocalDateTime = LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)),
-    enumCol: String = random.alphanumeric.take(20).mkString,
-    jsonCol: String = random.alphanumeric.take(20).mkString,
+    jsonCol: Json = new Json("{}"),
     timestampCol: Defaulted[LocalDateTime] = new UseDefault(),
     timestampFspCol: Defaulted[LocalDateTime] = new UseDefault()
   )(using c: Connection): MariatestRow = {
@@ -366,7 +370,6 @@ case class TestInsert(random: Random) {
       datetimeCol = datetimeCol,
       datetimeFspCol = datetimeFspCol,
       yearCol = yearCol,
-      enumCol = enumCol,
       setCol = setCol,
       jsonCol = jsonCol,
       inet4Col = inet4Col,
@@ -434,11 +437,11 @@ case class TestInsert(random: Random) {
     mediumintCol: Defaulted[Option[Int]] = new UseDefault(),
     intCol: Defaulted[Option[Int]] = new UseDefault(),
     bigintCol: Defaulted[Option[Long]] = new UseDefault(),
-    tinyintUCol: Defaulted[Option[Short]] = new UseDefault(),
-    smallintUCol: Defaulted[Option[Int]] = new UseDefault(),
-    mediumintUCol: Defaulted[Option[Int]] = new UseDefault(),
-    intUCol: Defaulted[Option[Long]] = new UseDefault(),
-    bigintUCol: Defaulted[Option[BigInteger]] = new UseDefault(),
+    tinyintUCol: Defaulted[Option[Uint1]] = new UseDefault(),
+    smallintUCol: Defaulted[Option[Uint2]] = new UseDefault(),
+    mediumintUCol: Defaulted[Option[Uint4]] = new UseDefault(),
+    intUCol: Defaulted[Option[Uint4]] = new UseDefault(),
+    bigintUCol: Defaulted[Option[Uint8]] = new UseDefault(),
     decimalCol: Defaulted[Option[BigDecimal]] = new UseDefault(),
     numericCol: Defaulted[Option[BigDecimal]] = new UseDefault(),
     floatCol: Defaulted[Option[Float]] = new UseDefault(),
@@ -466,9 +469,8 @@ case class TestInsert(random: Random) {
     timestampCol: Defaulted[Option[LocalDateTime]] = new UseDefault(),
     timestampFspCol: Defaulted[Option[LocalDateTime]] = new UseDefault(),
     yearCol: Defaulted[Option[Year]] = new UseDefault(),
-    enumCol: Defaulted[Option[String]] = new UseDefault(),
     setCol: Defaulted[Option[MariaSet]] = new UseDefault(),
-    jsonCol: Defaulted[Option[String]] = new UseDefault(),
+    jsonCol: Defaulted[Option[Json]] = new UseDefault(),
     inet4Col: Defaulted[Option[Inet4]] = new UseDefault(),
     inet6Col: Defaulted[Option[Inet6]] = new UseDefault()
   )(using c: Connection): MariatestnullRow = {
@@ -510,7 +512,6 @@ case class TestInsert(random: Random) {
       timestampCol = timestampCol,
       timestampFspCol = timestampFspCol,
       yearCol = yearCol,
-      enumCol = enumCol,
       setCol = setCol,
       jsonCol = jsonCol,
       inet4Col = inet4Col,
@@ -524,7 +525,7 @@ case class TestInsert(random: Random) {
     previousStatus: Defaulted[Option[String]] = new UseDefault(),
     changedBy: Defaulted[Option[String]] = new UseDefault(),
     changeReason: Defaulted[Option[String]] = new UseDefault(),
-    metadata: Defaulted[Option[String]] = new UseDefault(),
+    metadata: Defaulted[Option[Json]] = new UseDefault(),
     createdAt: Defaulted[LocalDateTime] = new UseDefault()
   )(using c: Connection): OrderHistoryRow = {
     (new OrderHistoryRepoImpl()).insert(new OrderHistoryRowUnsaved(
@@ -543,7 +544,7 @@ case class TestInsert(random: Random) {
     productId: ProductsId,
     sku: String = random.alphanumeric.take(20).mkString,
     productName: String = random.alphanumeric.take(20).mkString,
-    quantity: Int = random.nextInt(),
+    quantity: Uint2 = Uint2.of(random.nextInt(65536)),
     unitPrice: BigDecimal = BigDecimal.decimal(random.nextDouble()),
     lineTotal: BigDecimal = BigDecimal.decimal(random.nextDouble()),
     discountAmount: Defaulted[BigDecimal] = new UseDefault(),
@@ -620,7 +621,7 @@ case class TestInsert(random: Random) {
     code: String = random.alphanumeric.take(20).mkString,
     name: String = random.alphanumeric.take(20).mkString,
     methodType: String = random.alphanumeric.take(20).mkString,
-    processorConfig: Defaulted[Option[String]] = new UseDefault(),
+    processorConfig: Defaulted[Option[Json]] = new UseDefault(),
     isActive: Defaulted[Boolean] = new UseDefault(),
     sortOrder: Defaulted[Byte] = new UseDefault()
   )(using c: Connection): PaymentMethodsRow = {
@@ -641,7 +642,7 @@ case class TestInsert(random: Random) {
     transactionId: Defaulted[Option[String]] = new UseDefault(),
     currencyCode: Defaulted[String] = new UseDefault(),
     status: Defaulted[String] = new UseDefault(),
-    processorResponse: Defaulted[Option[String]] = new UseDefault(),
+    processorResponse: Defaulted[Option[Json]] = new UseDefault(),
     errorMessage: Defaulted[Option[String]] = new UseDefault(),
     ipAddress: Defaulted[Option[Inet6]] = new UseDefault(),
     createdAt: Defaulted[LocalDateTime] = new UseDefault(),
@@ -666,7 +667,7 @@ case class TestInsert(random: Random) {
     name: String = random.alphanumeric.take(20).mkString,
     discountType: String = random.alphanumeric.take(20).mkString,
     discountValue: BigDecimal = BigDecimal.decimal(random.nextDouble()),
-    minQuantity: Defaulted[Long] = new UseDefault()
+    minQuantity: Defaulted[Uint4] = new UseDefault()
   )(using c: Connection): PriceTiersRow = {
     (new PriceTiersRepoImpl()).insert(new PriceTiersRowUnsaved(
       name = name,
@@ -695,7 +696,7 @@ case class TestInsert(random: Random) {
     imageUrl: String = random.alphanumeric.take(20).mkString,
     thumbnailUrl: Defaulted[Option[String]] = new UseDefault(),
     altText: Defaulted[Option[String]] = new UseDefault(),
-    sortOrder: Defaulted[Short] = new UseDefault(),
+    sortOrder: Defaulted[Uint1] = new UseDefault(),
     isPrimary: Defaulted[Boolean] = new UseDefault(),
     imageData: Defaulted[Option[Array[Byte]]] = new UseDefault()
   )(using c: Connection): ProductImagesRow = {
@@ -737,12 +738,12 @@ case class TestInsert(random: Random) {
     fullDescription: Defaulted[Option[String]] = new UseDefault(),
     costPrice: Defaulted[Option[BigDecimal]] = new UseDefault(),
     weightKg: Defaulted[Option[BigDecimal]] = new UseDefault(),
-    dimensionsJson: Defaulted[Option[String]] = new UseDefault(),
+    dimensionsJson: Defaulted[Option[Json]] = new UseDefault(),
     status: Defaulted[String] = new UseDefault(),
     taxClass: Defaulted[String] = new UseDefault(),
     tags: Defaulted[Option[MariaSet]] = new UseDefault(),
-    attributes: Defaulted[Option[String]] = new UseDefault(),
-    seoMetadata: Defaulted[Option[String]] = new UseDefault(),
+    attributes: Defaulted[Option[Json]] = new UseDefault(),
+    seoMetadata: Defaulted[Option[Json]] = new UseDefault(),
     createdAt: Defaulted[LocalDateTime] = new UseDefault(),
     updatedAt: Defaulted[LocalDateTime] = new UseDefault(),
     publishedAt: Defaulted[Option[LocalDateTime]] = new UseDefault()
@@ -777,11 +778,11 @@ case class TestInsert(random: Random) {
     validTo: LocalDateTime = LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)),
     description: Defaulted[Option[String]] = new UseDefault(),
     minOrderAmount: Defaulted[Option[BigDecimal]] = new UseDefault(),
-    maxUses: Defaulted[Option[Long]] = new UseDefault(),
-    usesCount: Defaulted[Long] = new UseDefault(),
-    maxUsesPerCustomer: Defaulted[Option[Short]] = new UseDefault(),
+    maxUses: Defaulted[Option[Uint4]] = new UseDefault(),
+    usesCount: Defaulted[Uint4] = new UseDefault(),
+    maxUsesPerCustomer: Defaulted[Option[Uint1]] = new UseDefault(),
     applicableTo: Defaulted[Option[MariaSet]] = new UseDefault(),
-    rulesJson: Defaulted[Option[String]] = new UseDefault(),
+    rulesJson: Defaulted[Option[Json]] = new UseDefault(),
     isActive: Defaulted[Boolean] = new UseDefault(),
     createdAt: Defaulted[LocalDateTime] = new UseDefault()
   )(using c: Connection): PromotionsRow = {
@@ -807,17 +808,17 @@ case class TestInsert(random: Random) {
   def Reviews(
     productId: ProductsId,
     customerId: CustomersId,
-    rating: Short = random.nextInt(Short.MaxValue).toShort,
+    rating: Uint1 = Uint1.of(random.nextInt(256)),
     orderItemId: Defaulted[Option[OrderItemsId]] = new UseDefault(),
     title: Defaulted[Option[String]] = new UseDefault(),
     content: Defaulted[Option[String]] = new UseDefault(),
-    pros: Defaulted[Option[String]] = new UseDefault(),
-    cons: Defaulted[Option[String]] = new UseDefault(),
-    images: Defaulted[Option[String]] = new UseDefault(),
+    pros: Defaulted[Option[Json]] = new UseDefault(),
+    cons: Defaulted[Option[Json]] = new UseDefault(),
+    images: Defaulted[Option[Json]] = new UseDefault(),
     isVerifiedPurchase: Defaulted[Boolean] = new UseDefault(),
     isApproved: Defaulted[Boolean] = new UseDefault(),
-    helpfulVotes: Defaulted[Long] = new UseDefault(),
-    unhelpfulVotes: Defaulted[Long] = new UseDefault(),
+    helpfulVotes: Defaulted[Uint4] = new UseDefault(),
+    unhelpfulVotes: Defaulted[Uint4] = new UseDefault(),
     adminResponse: Defaulted[Option[String]] = new UseDefault(),
     respondedAt: Defaulted[Option[LocalDateTime]] = new UseDefault(),
     createdAt: Defaulted[LocalDateTime] = new UseDefault(),
@@ -851,7 +852,7 @@ case class TestInsert(random: Random) {
     shippingCost: BigDecimal = BigDecimal.decimal(random.nextDouble()),
     trackingNumber: Defaulted[Option[String]] = new UseDefault(),
     weightKg: Defaulted[Option[BigDecimal]] = new UseDefault(),
-    dimensionsJson: Defaulted[Option[String]] = new UseDefault(),
+    dimensionsJson: Defaulted[Option[Json]] = new UseDefault(),
     labelData: Defaulted[Option[Array[Byte]]] = new UseDefault(),
     status: Defaulted[String] = new UseDefault(),
     estimatedDeliveryDate: Defaulted[Option[LocalDate]] = new UseDefault(),
@@ -886,7 +887,7 @@ case class TestInsert(random: Random) {
     code: String = random.alphanumeric.take(20).mkString,
     name: String = random.alphanumeric.take(20).mkString,
     trackingUrlTemplate: Defaulted[Option[String]] = new UseDefault(),
-    apiConfig: Defaulted[Option[String]] = new UseDefault(),
+    apiConfig: Defaulted[Option[Json]] = new UseDefault(),
     isActive: Defaulted[Boolean] = new UseDefault()
   )(using c: Connection): ShippingCarriersRow = {
     (new ShippingCarriersRepoImpl()).insert(new ShippingCarriersRowUnsaved(
@@ -900,7 +901,7 @@ case class TestInsert(random: Random) {
 
   def Warehouses(
     location: Point,
-    code: String = random.alphanumeric.take(20).mkString,
+    code: String = random.alphanumeric.take(5).mkString,
     name: String = random.alphanumeric.take(20).mkString,
     address: String = random.alphanumeric.take(20).mkString,
     serviceArea: Defaulted[Option[Polygon]] = new UseDefault(),

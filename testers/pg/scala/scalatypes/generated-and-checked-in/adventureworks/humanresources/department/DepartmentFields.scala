@@ -8,83 +8,80 @@ package adventureworks.humanresources.department
 import adventureworks.public.Name
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
+import dev.typr.foundations.scala.TupleExpr4
 import java.time.LocalDateTime
 
-trait DepartmentFields extends FieldsExpr0[DepartmentRow] {
-  def departmentid: IdField[DepartmentId, DepartmentRow]
+class DepartmentFields(val `_path`: java.util.List[Path]) extends TupleExpr4[DepartmentId, Name, Name, LocalDateTime] with RelationStructure[DepartmentFields, DepartmentRow]  with FieldsBase[DepartmentRow] {
+  def departmentid: IdField[DepartmentId, DepartmentRow] = {
+    new IdField[DepartmentId, DepartmentRow](
+      _path,
+      "departmentid",
+      _.departmentid,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(departmentid = value),
+      DepartmentId.dbType
+    )
+  }
 
-  def name: Field[Name, DepartmentRow]
+  def name: Field[Name, DepartmentRow] = {
+    new Field[Name, DepartmentRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      Some("varchar"),
+      (row, value) => row.copy(name = value),
+      Name.dbType
+    )
+  }
 
-  def groupname: Field[Name, DepartmentRow]
+  def groupname: Field[Name, DepartmentRow] = {
+    new Field[Name, DepartmentRow](
+      _path,
+      "groupname",
+      _.groupname,
+      None,
+      Some("varchar"),
+      (row, value) => row.copy(groupname = value),
+      Name.dbType
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, DepartmentRow]
+  def modifieddate: Field[LocalDateTime, DepartmentRow] = {
+    new Field[LocalDateTime, DepartmentRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      None,
+      Some("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, DepartmentRow]]
+  override def columns: java.util.List[FieldLike[?, DepartmentRow]] = java.util.List.of(this.departmentid.underlying, this.name.underlying, this.groupname.underlying, this.modifieddate.underlying)
 
   override def rowParser: RowParser[DepartmentRow] = DepartmentRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[DepartmentFields, DepartmentRow] = new DepartmentFields(`_path`)
+
+  override def `_1`: SqlExpr[DepartmentId] = departmentid
+
+  override def `_2`: SqlExpr[Name] = name
+
+  override def `_3`: SqlExpr[Name] = groupname
+
+  override def `_4`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object DepartmentFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends DepartmentFields with RelationStructure[DepartmentFields, DepartmentRow] {
-
-    override def departmentid: IdField[DepartmentId, DepartmentRow] = {
-      new IdField[DepartmentId, DepartmentRow](
-        _path,
-        "departmentid",
-        _.departmentid,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(departmentid = value),
-        DepartmentId.pgType
-      )
-    }
-
-    override def name: Field[Name, DepartmentRow] = {
-      new Field[Name, DepartmentRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        Some("varchar"),
-        (row, value) => row.copy(name = value),
-        Name.pgType
-      )
-    }
-
-    override def groupname: Field[Name, DepartmentRow] = {
-      new Field[Name, DepartmentRow](
-        _path,
-        "groupname",
-        _.groupname,
-        None,
-        Some("varchar"),
-        (row, value) => row.copy(groupname = value),
-        Name.pgType
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, DepartmentRow] = {
-      new Field[LocalDateTime, DepartmentRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        None,
-        Some("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, DepartmentRow]] = java.util.List.of(this.departmentid.underlying, this.name.underlying, this.groupname.underlying, this.modifieddate.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[DepartmentFields, DepartmentRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: DepartmentFields = new DepartmentFields(java.util.Collections.emptyList())
 }

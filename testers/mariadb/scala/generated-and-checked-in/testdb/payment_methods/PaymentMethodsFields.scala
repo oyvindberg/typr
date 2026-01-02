@@ -7,126 +7,124 @@ package testdb.payment_methods
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr7
 
-trait PaymentMethodsFields extends FieldsExpr0[PaymentMethodsRow] {
-  def methodId: IdField[PaymentMethodsId, PaymentMethodsRow]
+class PaymentMethodsFields(val `_path`: java.util.List[Path]) extends TupleExpr7[PaymentMethodsId, String, String, String, Json, Boolean, Byte] with RelationStructure[PaymentMethodsFields, PaymentMethodsRow]  with FieldsBase[PaymentMethodsRow] {
+  def methodId: IdField[PaymentMethodsId, PaymentMethodsRow] = {
+    new IdField[PaymentMethodsId, PaymentMethodsRow](
+      _path,
+      "method_id",
+      _.methodId,
+      None,
+      None,
+      (row, value) => row.copy(methodId = value),
+      PaymentMethodsId.dbType
+    )
+  }
 
-  def code: Field[String, PaymentMethodsRow]
+  def code: Field[String, PaymentMethodsRow] = {
+    new Field[String, PaymentMethodsRow](
+      _path,
+      "code",
+      _.code,
+      None,
+      None,
+      (row, value) => row.copy(code = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def name: Field[String, PaymentMethodsRow]
+  def name: Field[String, PaymentMethodsRow] = {
+    new Field[String, PaymentMethodsRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      None,
+      (row, value) => row.copy(name = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def methodType: Field[String, PaymentMethodsRow]
+  def methodType: Field[String, PaymentMethodsRow] = {
+    new Field[String, PaymentMethodsRow](
+      _path,
+      "method_type",
+      _.methodType,
+      None,
+      None,
+      (row, value) => row.copy(methodType = value),
+      MariaTypes.text
+    )
+  }
 
-  def processorConfig: OptField[String, PaymentMethodsRow]
+  def processorConfig: OptField[Json, PaymentMethodsRow] = {
+    new OptField[Json, PaymentMethodsRow](
+      _path,
+      "processor_config",
+      _.processorConfig,
+      None,
+      None,
+      (row, value) => row.copy(processorConfig = value),
+      MariaTypes.json
+    )
+  }
 
-  def isActive: Field[Boolean, PaymentMethodsRow]
+  def isActive: Field[Boolean, PaymentMethodsRow] = {
+    new Field[Boolean, PaymentMethodsRow](
+      _path,
+      "is_active",
+      _.isActive,
+      None,
+      None,
+      (row, value) => row.copy(isActive = value),
+      ScalaDbTypes.MariaTypes.bool
+    )
+  }
 
-  def sortOrder: Field[Byte, PaymentMethodsRow]
+  def sortOrder: Field[Byte, PaymentMethodsRow] = {
+    new Field[Byte, PaymentMethodsRow](
+      _path,
+      "sort_order",
+      _.sortOrder,
+      None,
+      None,
+      (row, value) => row.copy(sortOrder = value),
+      ScalaDbTypes.MariaTypes.tinyint
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, PaymentMethodsRow]]
+  override def columns: java.util.List[FieldLike[?, PaymentMethodsRow]] = java.util.List.of(this.methodId.underlying, this.code.underlying, this.name.underlying, this.methodType.underlying, this.processorConfig.underlying, this.isActive.underlying, this.sortOrder.underlying)
 
   override def rowParser: RowParser[PaymentMethodsRow] = PaymentMethodsRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[PaymentMethodsFields, PaymentMethodsRow] = new PaymentMethodsFields(`_path`)
+
+  override def `_1`: SqlExpr[PaymentMethodsId] = methodId
+
+  override def `_2`: SqlExpr[String] = code
+
+  override def `_3`: SqlExpr[String] = name
+
+  override def `_4`: SqlExpr[String] = methodType
+
+  override def `_5`: SqlExpr[Json] = processorConfig
+
+  override def `_6`: SqlExpr[Boolean] = isActive
+
+  override def `_7`: SqlExpr[Byte] = sortOrder
 }
 
 object PaymentMethodsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends PaymentMethodsFields with RelationStructure[PaymentMethodsFields, PaymentMethodsRow] {
-
-    override def methodId: IdField[PaymentMethodsId, PaymentMethodsRow] = {
-      new IdField[PaymentMethodsId, PaymentMethodsRow](
-        _path,
-        "method_id",
-        _.methodId,
-        None,
-        None,
-        (row, value) => row.copy(methodId = value),
-        PaymentMethodsId.pgType
-      )
-    }
-
-    override def code: Field[String, PaymentMethodsRow] = {
-      new Field[String, PaymentMethodsRow](
-        _path,
-        "code",
-        _.code,
-        None,
-        None,
-        (row, value) => row.copy(code = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def name: Field[String, PaymentMethodsRow] = {
-      new Field[String, PaymentMethodsRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        None,
-        (row, value) => row.copy(name = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def methodType: Field[String, PaymentMethodsRow] = {
-      new Field[String, PaymentMethodsRow](
-        _path,
-        "method_type",
-        _.methodType,
-        None,
-        None,
-        (row, value) => row.copy(methodType = value),
-        MariaTypes.text
-      )
-    }
-
-    override def processorConfig: OptField[String, PaymentMethodsRow] = {
-      new OptField[String, PaymentMethodsRow](
-        _path,
-        "processor_config",
-        _.processorConfig,
-        None,
-        None,
-        (row, value) => row.copy(processorConfig = value),
-        MariaTypes.longtext
-      )
-    }
-
-    override def isActive: Field[Boolean, PaymentMethodsRow] = {
-      new Field[Boolean, PaymentMethodsRow](
-        _path,
-        "is_active",
-        _.isActive,
-        None,
-        None,
-        (row, value) => row.copy(isActive = value),
-        ScalaDbTypes.MariaTypes.bool
-      )
-    }
-
-    override def sortOrder: Field[Byte, PaymentMethodsRow] = {
-      new Field[Byte, PaymentMethodsRow](
-        _path,
-        "sort_order",
-        _.sortOrder,
-        None,
-        None,
-        (row, value) => row.copy(sortOrder = value),
-        ScalaDbTypes.MariaTypes.tinyint
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, PaymentMethodsRow]] = java.util.List.of(this.methodId.underlying, this.code.underlying, this.name.underlying, this.methodType.underlying, this.processorConfig.underlying, this.isActive.underlying, this.sortOrder.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[PaymentMethodsFields, PaymentMethodsRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: PaymentMethodsFields = new PaymentMethodsFields(java.util.Collections.emptyList())
 }

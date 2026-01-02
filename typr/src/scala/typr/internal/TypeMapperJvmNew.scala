@@ -5,7 +5,8 @@ case class TypeMapperJvmNew(
     lang: Lang,
     typeOverride: TypeOverride,
     nullabilityOverride: NullabilityOverride,
-    naming: Naming
+    naming: Naming,
+    duckDbStructLookup: Map[db.DuckDbType.StructType, String]
 ) extends TypeMapperJvm(lang, typeOverride, nullabilityOverride) {
 
   override def needsTimestampCasts: Boolean = false
@@ -29,6 +30,9 @@ case class TypeMapperJvmNew(
           case db.PgType.Float8                => lang.Double
           case db.PgType.Hstore                => lang.MapOps.tpe.of(lang.String, lang.String)
           case db.PgType.Inet                  => TypesJava.runtime.Inet
+          case db.PgType.Cidr                  => TypesJava.runtime.Cidr
+          case db.PgType.MacAddr               => TypesJava.runtime.MacAddr
+          case db.PgType.MacAddr8              => TypesJava.runtime.MacAddr8
           case db.PgType.Int2                  => lang.Short
           case db.PgType.Int4                  => lang.Int
           case db.PgType.Int8                  => lang.Long
@@ -87,11 +91,11 @@ case class TypeMapperJvmNew(
           case db.MariaType.MediumInt          => lang.Int
           case db.MariaType.Int                => lang.Int
           case db.MariaType.BigInt             => lang.Long
-          case db.MariaType.TinyIntUnsigned    => lang.Short
-          case db.MariaType.SmallIntUnsigned   => lang.Int
-          case db.MariaType.MediumIntUnsigned  => lang.Int
-          case db.MariaType.IntUnsigned        => lang.Long
-          case db.MariaType.BigIntUnsigned     => TypesJava.BigInteger
+          case db.MariaType.TinyIntUnsigned    => TypesJava.unsigned.Uint1
+          case db.MariaType.SmallIntUnsigned   => TypesJava.unsigned.Uint2
+          case db.MariaType.MediumIntUnsigned  => TypesJava.unsigned.Uint4
+          case db.MariaType.IntUnsigned        => TypesJava.unsigned.Uint4
+          case db.MariaType.BigIntUnsigned     => TypesJava.unsigned.Uint8
           case db.MariaType.Decimal(_, _)      => lang.BigDecimal
           case db.MariaType.Float              => lang.Float
           case db.MariaType.Double             => lang.Double
@@ -137,10 +141,10 @@ case class TypeMapperJvmNew(
           case db.DuckDbType.Integer         => lang.Int
           case db.DuckDbType.BigInt          => lang.Long
           case db.DuckDbType.HugeInt         => TypesJava.BigInteger
-          case db.DuckDbType.UTinyInt        => lang.Short
-          case db.DuckDbType.USmallInt       => lang.Int
-          case db.DuckDbType.UInteger        => lang.Long
-          case db.DuckDbType.UBigInt         => TypesJava.BigInteger
+          case db.DuckDbType.UTinyInt        => TypesJava.unsigned.Uint1
+          case db.DuckDbType.USmallInt       => TypesJava.unsigned.Uint2
+          case db.DuckDbType.UInteger        => TypesJava.unsigned.Uint4
+          case db.DuckDbType.UBigInt         => TypesJava.unsigned.Uint8
           case db.DuckDbType.UHugeInt        => TypesJava.BigInteger
           case db.DuckDbType.Float           => lang.Float
           case db.DuckDbType.Double          => lang.Double
@@ -166,9 +170,13 @@ case class TypeMapperJvmNew(
           case db.DuckDbType.ListType(_)     => lang.String.withComment("LIST type - mapped to String")
           case db.DuckDbType.ArrayType(_, _) => lang.String.withComment("ARRAY type - mapped to String")
           case db.DuckDbType.MapType(_, _)   => lang.String.withComment("MAP type - mapped to String")
-          case db.DuckDbType.StructType(_)   => lang.String.withComment("STRUCT type - mapped to String")
-          case db.DuckDbType.UnionType(_)    => lang.String.withComment("UNION type - mapped to String")
-          case db.Unknown(_)                 => TypesJava.runtime.Unknown
+          case s: db.DuckDbType.StructType =>
+            duckDbStructLookup.get(s) match {
+              case Some(name) => jvm.Type.Qualified(naming.structTypeName(name))
+              case None       => sys.error(s"STRUCT type not found in lookup: $s")
+            }
+          case db.DuckDbType.UnionType(_) => lang.String.withComment("UNION type - mapped to String")
+          case db.Unknown(_)              => TypesJava.runtime.Unknown
         }
       case x: db.OracleType =>
         x match {
@@ -208,7 +216,7 @@ case class TypeMapperJvmNew(
         }
       case x: db.SqlServerType =>
         x match {
-          case db.SqlServerType.TinyInt                     => lang.Short // SQL Server TINYINT is UNSIGNED (0-255)
+          case db.SqlServerType.TinyInt                     => TypesJava.unsigned.Uint1 // SQL Server TINYINT is UNSIGNED (0-255)
           case db.SqlServerType.SmallInt                    => lang.Short
           case db.SqlServerType.Int                         => lang.Int
           case db.SqlServerType.BigInt                      => lang.Long
@@ -235,11 +243,11 @@ case class TypeMapperJvmNew(
           case db.SqlServerType.DateTime2(_)                => TypesJava.LocalDateTime
           case db.SqlServerType.DateTimeOffset(_)           => TypesJava.OffsetDateTime
           case db.SqlServerType.UniqueIdentifier            => TypesJava.UUID
-          case db.SqlServerType.Xml                         => lang.String.withComment("XML")
+          case db.SqlServerType.Xml                         => TypesJava.runtime.Xml
           case db.SqlServerType.Json                        => TypesJava.runtime.Json
           case db.SqlServerType.Vector                      => lang.String.withComment("VECTOR type")
           case db.SqlServerType.RowVersion                  => lang.ByteArrayType.withComment("ROWVERSION/TIMESTAMP")
-          case db.SqlServerType.HierarchyId                 => lang.String.withComment("HIERARCHYID")
+          case db.SqlServerType.HierarchyId                 => TypesJava.runtime.HierarchyId
           case db.SqlServerType.SqlVariant                  => lang.String.withComment("SQL_VARIANT")
           case db.SqlServerType.Geography                   => jvm.Type.Qualified("com.microsoft.sqlserver.jdbc.Geography")
           case db.SqlServerType.Geometry                    => jvm.Type.Qualified("com.microsoft.sqlserver.jdbc.Geometry")
@@ -272,7 +280,7 @@ case class TypeMapperJvmNew(
           case db.DB2Type.Date                  => TypesJava.LocalDate
           case db.DB2Type.Time                  => TypesJava.LocalTime
           case db.DB2Type.Timestamp(_)          => TypesJava.LocalDateTime
-          case db.DB2Type.Xml                   => lang.String.withComment("XML")
+          case db.DB2Type.Xml                   => TypesJava.runtime.Xml
           case db.DB2Type.RowId                 => lang.String.withComment("ROWID")
           case db.DB2Type.DistinctType(name, _) => jvm.Type.Qualified(naming.domainName(name))
           case db.Unknown(_)                    => TypesJava.runtime.Unknown

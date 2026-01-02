@@ -25,43 +25,39 @@ public class Issue1422RepoImpl implements Issue1422Repo {
   @Override
   public DeleteBuilder<Issue1422Fields, Issue1422Row> delete() {
     return DeleteBuilder.of(
-        "\"public\".\"issue142_2\"", Issue1422Fields.structure(), Dialect.POSTGRESQL);
+        "\"public\".\"issue142_2\"", Issue1422Fields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(Issue142Id tabellkode, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"public\".\"issue142_2\" where \"tabellkode\" = "),
-                Fragment.encode(Issue142Id.pgType, tabellkode),
+                Fragment.encode(Issue142Id.dbType, tabellkode),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(Issue142Id[] tabellkodes, Connection c) {
     return interpolate(
             Fragment.lit("delete\nfrom \"public\".\"issue142_2\"\nwhere \"tabellkode\" = ANY("),
-            Fragment.encode(Issue142Id.pgTypeArray, tabellkodes),
+            Fragment.encode(Issue142Id.dbTypeArray, tabellkodes),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Issue1422Row insert(Issue1422Row unsaved, Connection c) {
     return interpolate(
             Fragment.lit("insert into \"public\".\"issue142_2\"(\"tabellkode\")\nvalues ("),
-            Fragment.encode(Issue142Id.pgType, unsaved.tabellkode()),
+            Fragment.encode(Issue142Id.dbType, unsaved.tabellkode()),
             Fragment.lit(")\nRETURNING \"tabellkode\"\n"))
         .updateReturning(Issue1422Row._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<Issue1422Row> unsaved, Integer batchSize, Connection c) {
@@ -72,17 +68,15 @@ public class Issue1422RepoImpl implements Issue1422Repo {
         c,
         Issue1422Row.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<Issue1422Fields, Issue1422Row> select() {
     return SelectBuilder.of(
         "\"public\".\"issue142_2\"",
-        Issue1422Fields.structure(),
+        Issue1422Fields.structure,
         Issue1422Row._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<Issue1422Row> selectAll(Connection c) {
@@ -90,19 +84,17 @@ public class Issue1422RepoImpl implements Issue1422Repo {
         .query(Issue1422Row._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<Issue1422Row> selectById(Issue142Id tabellkode, Connection c) {
     return interpolate(
             Fragment.lit(
                 "select \"tabellkode\"\nfrom \"public\".\"issue142_2\"\nwhere \"tabellkode\" = "),
-            Fragment.encode(Issue142Id.pgType, tabellkode),
+            Fragment.encode(Issue142Id.dbType, tabellkode),
             Fragment.lit(""))
         .query(Issue1422Row._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<Issue1422Row> selectByIds(Issue142Id[] tabellkodes, Connection c) {
@@ -111,12 +103,11 @@ public class Issue1422RepoImpl implements Issue1422Repo {
                 "select \"tabellkode\"\n"
                     + "from \"public\".\"issue142_2\"\n"
                     + "where \"tabellkode\" = ANY("),
-            Fragment.encode(Issue142Id.pgTypeArray, tabellkodes),
+            Fragment.encode(Issue142Id.dbTypeArray, tabellkodes),
             Fragment.lit(")"))
         .query(Issue1422Row._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<Issue142Id, Issue1422Row> selectByIdsTracked(Issue142Id[] tabellkodes, Connection c) {
@@ -124,23 +115,21 @@ public class Issue1422RepoImpl implements Issue1422Repo {
     selectByIds(tabellkodes, c).forEach(row -> ret.put(row.tabellkode(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<Issue1422Fields, Issue1422Row> update() {
     return UpdateBuilder.of(
         "\"public\".\"issue142_2\"",
-        Issue1422Fields.structure(),
+        Issue1422Fields.structure,
         Issue1422Row._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Issue1422Row upsert(Issue1422Row unsaved, Connection c) {
     return interpolate(
             Fragment.lit("insert into \"public\".\"issue142_2\"(\"tabellkode\")\nvalues ("),
-            Fragment.encode(Issue142Id.pgType, unsaved.tabellkode()),
+            Fragment.encode(Issue142Id.dbType, unsaved.tabellkode()),
             Fragment.lit(
                 ")\n"
                     + "on conflict (\"tabellkode\")\n"
@@ -149,7 +138,6 @@ public class Issue1422RepoImpl implements Issue1422Repo {
         .updateReturning(Issue1422Row._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<Issue1422Row> upsertBatch(Iterator<Issue1422Row> unsaved, Connection c) {
@@ -163,7 +151,6 @@ public class Issue1422RepoImpl implements Issue1422Repo {
         .updateManyReturning(Issue1422Row._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -191,5 +178,4 @@ public class Issue1422RepoImpl implements Issue1422Repo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

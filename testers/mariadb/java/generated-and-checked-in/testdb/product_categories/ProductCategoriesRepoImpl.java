@@ -27,23 +27,21 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
   @Override
   public DeleteBuilder<ProductCategoriesFields, ProductCategoriesRow> delete() {
     return DeleteBuilder.of(
-        "`product_categories`", ProductCategoriesFields.structure(), Dialect.MARIADB);
+        "`product_categories`", ProductCategoriesFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(ProductCategoriesId compositeId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `product_categories` where `product_id` = "),
-                Fragment.encode(ProductsId.pgType, compositeId.productId()),
+                Fragment.encode(ProductsId.dbType, compositeId.productId()),
                 Fragment.lit(" AND `category_id` = "),
-                Fragment.encode(CategoriesId.pgType, compositeId.categoryId()),
+                Fragment.encode(CategoriesId.dbType, compositeId.categoryId()),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(ProductCategoriesId[] compositeIds, Connection c) {
@@ -52,9 +50,9 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
       fragments.add(
           Fragment.interpolate(
               Fragment.lit("("),
-              Fragment.encode(ProductsId.pgType, id.productId()),
+              Fragment.encode(ProductsId.dbType, id.productId()),
               Fragment.lit(", "),
-              Fragment.encode(CategoriesId.pgType, id.categoryId()),
+              Fragment.encode(CategoriesId.dbType, id.categoryId()),
               Fragment.lit(")")));
     }
     ;
@@ -66,7 +64,6 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductCategoriesRow insert(ProductCategoriesRow unsaved, Connection c) {
@@ -75,9 +72,9 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
                 "insert into `product_categories`(`product_id`, `category_id`, `is_primary`,"
                     + " `sort_order`)\n"
                     + "values ("),
-            Fragment.encode(ProductsId.pgType, unsaved.productId()),
+            Fragment.encode(ProductsId.dbType, unsaved.productId()),
             Fragment.lit(", "),
-            Fragment.encode(CategoriesId.pgType, unsaved.categoryId()),
+            Fragment.encode(CategoriesId.dbType, unsaved.categoryId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.bool, unsaved.isPrimary()),
             Fragment.lit(", "),
@@ -86,7 +83,6 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
         .updateReturning(ProductCategoriesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductCategoriesRow insert(ProductCategoriesRowUnsaved unsaved, Connection c) {
@@ -96,10 +92,10 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
     ;
     columns.add(Fragment.lit("`product_id`"));
     values.add(
-        interpolate(Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit("")));
+        interpolate(Fragment.encode(ProductsId.dbType, unsaved.productId()), Fragment.lit("")));
     columns.add(Fragment.lit("`category_id`"));
     values.add(
-        interpolate(Fragment.encode(CategoriesId.pgType, unsaved.categoryId()), Fragment.lit("")));
+        interpolate(Fragment.encode(CategoriesId.dbType, unsaved.categoryId()), Fragment.lit("")));
     unsaved
         .isPrimary()
         .visit(
@@ -129,17 +125,15 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
     ;
     return q.updateReturning(ProductCategoriesRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<ProductCategoriesFields, ProductCategoriesRow> select() {
     return SelectBuilder.of(
         "`product_categories`",
-        ProductCategoriesFields.structure(),
+        ProductCategoriesFields.structure,
         ProductCategoriesRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<ProductCategoriesRow> selectAll(Connection c) {
@@ -150,7 +144,6 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
         .query(ProductCategoriesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<ProductCategoriesRow> selectById(ProductCategoriesId compositeId, Connection c) {
@@ -159,14 +152,13 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
                 "select `product_id`, `category_id`, `is_primary`, `sort_order`\n"
                     + "from `product_categories`\n"
                     + "where `product_id` = "),
-            Fragment.encode(ProductsId.pgType, compositeId.productId()),
+            Fragment.encode(ProductsId.dbType, compositeId.productId()),
             Fragment.lit(" AND `category_id` = "),
-            Fragment.encode(CategoriesId.pgType, compositeId.categoryId()),
+            Fragment.encode(CategoriesId.dbType, compositeId.categoryId()),
             Fragment.lit(""))
         .query(ProductCategoriesRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductCategoriesRow> selectByIds(ProductCategoriesId[] compositeIds, Connection c) {
@@ -175,9 +167,9 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
       fragments.add(
           Fragment.interpolate(
               Fragment.lit("("),
-              Fragment.encode(ProductsId.pgType, id.productId()),
+              Fragment.encode(ProductsId.dbType, id.productId()),
               Fragment.lit(", "),
-              Fragment.encode(CategoriesId.pgType, id.categoryId()),
+              Fragment.encode(CategoriesId.dbType, id.categoryId()),
               Fragment.lit(")")));
     }
     ;
@@ -190,7 +182,6 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
         .query(ProductCategoriesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<ProductCategoriesId, ProductCategoriesRow> selectByIdsTracked(
@@ -200,17 +191,15 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
     selectByIds(compositeIds, c).forEach(row -> ret.put(row.compositeId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<ProductCategoriesFields, ProductCategoriesRow> update() {
     return UpdateBuilder.of(
         "`product_categories`",
-        ProductCategoriesFields.structure(),
+        ProductCategoriesFields.structure,
         ProductCategoriesRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(ProductCategoriesRow row, Connection c) {
@@ -222,15 +211,14 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
                 Fragment.lit(",\n`sort_order` = "),
                 Fragment.encode(MariaTypes.smallint, row.sortOrder()),
                 Fragment.lit("\nwhere `product_id` = "),
-                Fragment.encode(ProductsId.pgType, compositeId.productId()),
+                Fragment.encode(ProductsId.dbType, compositeId.productId()),
                 Fragment.lit(" AND `category_id` = "),
-                Fragment.encode(CategoriesId.pgType, compositeId.categoryId()),
+                Fragment.encode(CategoriesId.dbType, compositeId.categoryId()),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public ProductCategoriesRow upsert(ProductCategoriesRow unsaved, Connection c) {
@@ -239,9 +227,9 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
                 "INSERT INTO `product_categories`(`product_id`, `category_id`, `is_primary`,"
                     + " `sort_order`)\n"
                     + "VALUES ("),
-            Fragment.encode(ProductsId.pgType, unsaved.productId()),
+            Fragment.encode(ProductsId.dbType, unsaved.productId()),
             Fragment.lit(", "),
-            Fragment.encode(CategoriesId.pgType, unsaved.categoryId()),
+            Fragment.encode(CategoriesId.dbType, unsaved.categoryId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.bool, unsaved.isPrimary()),
             Fragment.lit(", "),
@@ -254,7 +242,6 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
         .updateReturning(ProductCategoriesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductCategoriesRow> upsertBatch(
@@ -270,5 +257,4 @@ public class ProductCategoriesRepoImpl implements ProductCategoriesRepo {
         .updateReturningEach(ProductCategoriesRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

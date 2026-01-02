@@ -25,27 +25,25 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
   @Override
   public DeleteBuilder<MariatestIdentityFields, MariatestIdentityRow> delete() {
     return DeleteBuilder.of(
-        "`mariatest_identity`", MariatestIdentityFields.structure(), Dialect.MARIADB);
+        "`mariatest_identity`", MariatestIdentityFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(MariatestIdentityId id, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `mariatest_identity` where `id` = "),
-                Fragment.encode(MariatestIdentityId.pgType, id),
+                Fragment.encode(MariatestIdentityId.dbType, id),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(MariatestIdentityId[] ids, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : ids) {
-      fragments.add(Fragment.encode(MariatestIdentityId.pgType, id));
+      fragments.add(Fragment.encode(MariatestIdentityId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -55,7 +53,6 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public MariatestIdentityRow insert(MariatestIdentityRow unsaved, Connection c) {
@@ -66,7 +63,6 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
         .updateReturning(MariatestIdentityRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public MariatestIdentityRow insert(MariatestIdentityRowUnsaved unsaved, Connection c) {
@@ -86,17 +82,15 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
     ;
     return q.updateReturning(MariatestIdentityRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<MariatestIdentityFields, MariatestIdentityRow> select() {
     return SelectBuilder.of(
         "`mariatest_identity`",
-        MariatestIdentityFields.structure(),
+        MariatestIdentityFields.structure,
         MariatestIdentityRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<MariatestIdentityRow> selectAll(Connection c) {
@@ -104,24 +98,22 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
         .query(MariatestIdentityRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<MariatestIdentityRow> selectById(MariatestIdentityId id, Connection c) {
     return interpolate(
             Fragment.lit("select `id`, `name`\nfrom `mariatest_identity`\nwhere `id` = "),
-            Fragment.encode(MariatestIdentityId.pgType, id),
+            Fragment.encode(MariatestIdentityId.dbType, id),
             Fragment.lit(""))
         .query(MariatestIdentityRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<MariatestIdentityRow> selectByIds(MariatestIdentityId[] ids, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : ids) {
-      fragments.add(Fragment.encode(MariatestIdentityId.pgType, id));
+      fragments.add(Fragment.encode(MariatestIdentityId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -131,7 +123,6 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
         .query(MariatestIdentityRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<MariatestIdentityId, MariatestIdentityRow> selectByIdsTracked(
@@ -141,17 +132,15 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
     selectByIds(ids, c).forEach(row -> ret.put(row.id(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<MariatestIdentityFields, MariatestIdentityRow> update() {
     return UpdateBuilder.of(
         "`mariatest_identity`",
-        MariatestIdentityFields.structure(),
+        MariatestIdentityFields.structure,
         MariatestIdentityRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(MariatestIdentityRow row, Connection c) {
@@ -161,25 +150,25 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
                 Fragment.lit("update `mariatest_identity`\nset `name` = "),
                 Fragment.encode(MariaTypes.varchar, row.name()),
                 Fragment.lit("\nwhere `id` = "),
-                Fragment.encode(MariatestIdentityId.pgType, id),
+                Fragment.encode(MariatestIdentityId.dbType, id),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public MariatestIdentityRow upsert(MariatestIdentityRow unsaved, Connection c) {
     return interpolate(
-            Fragment.lit("INSERT INTO `mariatest_identity`(`name`)\nVALUES ("),
+            Fragment.lit("INSERT INTO `mariatest_identity`(`id`, `name`)\nVALUES ("),
+            Fragment.encode(MariatestIdentityId.dbType, unsaved.id()),
+            Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.name()),
             Fragment.lit(
                 ")\nON DUPLICATE KEY UPDATE `name` = VALUES(`name`)\nRETURNING `id`, `name`"))
         .updateReturning(MariatestIdentityRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<MariatestIdentityRow> upsertBatch(
@@ -193,5 +182,4 @@ public class MariatestIdentityRepoImpl implements MariatestIdentityRepo {
         .updateReturningEach(MariatestIdentityRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

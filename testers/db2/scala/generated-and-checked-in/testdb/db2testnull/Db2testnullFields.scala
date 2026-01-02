@@ -7,365 +7,363 @@ package testdb.db2testnull
 
 import dev.typr.foundations.Db2Types
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.data.Xml
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr24
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-trait Db2testnullFields extends FieldsExpr0[Db2testnullRow] {
-  def smallintCol: OptField[Short, Db2testnullRow]
+class Db2testnullFields(val `_path`: java.util.List[Path]) extends TupleExpr24[Short, Int, Long, BigDecimal, BigDecimal, BigDecimal, BigDecimal, Float, Double, Boolean, String, String, String, String, String, Array[Byte], Array[Byte], Array[Byte], LocalDate, LocalTime, LocalDateTime, LocalDateTime, LocalDateTime, Xml] with RelationStructure[Db2testnullFields, Db2testnullRow]  with FieldsBase[Db2testnullRow] {
+  def smallintCol: OptField[Short, Db2testnullRow] = {
+    new OptField[Short, Db2testnullRow](
+      _path,
+      "SMALLINT_COL",
+      _.smallintCol,
+      None,
+      None,
+      (row, value) => row.copy(smallintCol = value),
+      ScalaDbTypes.Db2Types.smallint
+    )
+  }
 
-  def intCol: OptField[Int, Db2testnullRow]
+  def intCol: OptField[Int, Db2testnullRow] = {
+    new OptField[Int, Db2testnullRow](
+      _path,
+      "INT_COL",
+      _.intCol,
+      None,
+      None,
+      (row, value) => row.copy(intCol = value),
+      ScalaDbTypes.Db2Types.integer
+    )
+  }
 
-  def bigintCol: OptField[Long, Db2testnullRow]
+  def bigintCol: OptField[Long, Db2testnullRow] = {
+    new OptField[Long, Db2testnullRow](
+      _path,
+      "BIGINT_COL",
+      _.bigintCol,
+      None,
+      None,
+      (row, value) => row.copy(bigintCol = value),
+      ScalaDbTypes.Db2Types.bigint
+    )
+  }
 
-  def decimalCol: OptField[BigDecimal, Db2testnullRow]
+  def decimalCol: OptField[BigDecimal, Db2testnullRow] = {
+    new OptField[BigDecimal, Db2testnullRow](
+      _path,
+      "DECIMAL_COL",
+      _.decimalCol,
+      None,
+      None,
+      (row, value) => row.copy(decimalCol = value),
+      ScalaDbTypes.Db2Types.decimal
+    )
+  }
 
-  def numericCol: OptField[BigDecimal, Db2testnullRow]
+  def numericCol: OptField[BigDecimal, Db2testnullRow] = {
+    new OptField[BigDecimal, Db2testnullRow](
+      _path,
+      "NUMERIC_COL",
+      _.numericCol,
+      None,
+      None,
+      (row, value) => row.copy(numericCol = value),
+      ScalaDbTypes.Db2Types.decimal
+    )
+  }
 
-  def decfloat16Col: OptField[BigDecimal, Db2testnullRow]
+  def decfloat16Col: OptField[BigDecimal, Db2testnullRow] = {
+    new OptField[BigDecimal, Db2testnullRow](
+      _path,
+      "DECFLOAT16_COL",
+      _.decfloat16Col,
+      None,
+      None,
+      (row, value) => row.copy(decfloat16Col = value),
+      ScalaDbTypes.Db2Types.decfloat
+    )
+  }
 
-  def decfloat34Col: OptField[BigDecimal, Db2testnullRow]
+  def decfloat34Col: OptField[BigDecimal, Db2testnullRow] = {
+    new OptField[BigDecimal, Db2testnullRow](
+      _path,
+      "DECFLOAT34_COL",
+      _.decfloat34Col,
+      None,
+      None,
+      (row, value) => row.copy(decfloat34Col = value),
+      ScalaDbTypes.Db2Types.decfloat
+    )
+  }
 
-  def realCol: OptField[Float, Db2testnullRow]
+  def realCol: OptField[Float, Db2testnullRow] = {
+    new OptField[Float, Db2testnullRow](
+      _path,
+      "REAL_COL",
+      _.realCol,
+      None,
+      None,
+      (row, value) => row.copy(realCol = value),
+      ScalaDbTypes.Db2Types.real
+    )
+  }
 
-  def doubleCol: OptField[Double, Db2testnullRow]
+  def doubleCol: OptField[Double, Db2testnullRow] = {
+    new OptField[Double, Db2testnullRow](
+      _path,
+      "DOUBLE_COL",
+      _.doubleCol,
+      None,
+      None,
+      (row, value) => row.copy(doubleCol = value),
+      ScalaDbTypes.Db2Types.double_
+    )
+  }
 
-  def boolCol: OptField[Boolean, Db2testnullRow]
+  def boolCol: OptField[Boolean, Db2testnullRow] = {
+    new OptField[Boolean, Db2testnullRow](
+      _path,
+      "BOOL_COL",
+      _.boolCol,
+      None,
+      None,
+      (row, value) => row.copy(boolCol = value),
+      ScalaDbTypes.Db2Types.boolean_
+    )
+  }
 
-  def charCol: OptField[String, Db2testnullRow]
+  def charCol: OptField[String, Db2testnullRow] = {
+    new OptField[String, Db2testnullRow](
+      _path,
+      "CHAR_COL",
+      _.charCol,
+      None,
+      None,
+      (row, value) => row.copy(charCol = value),
+      Db2Types.char_
+    )
+  }
 
-  def varcharCol: OptField[String, Db2testnullRow]
+  def varcharCol: OptField[String, Db2testnullRow] = {
+    new OptField[String, Db2testnullRow](
+      _path,
+      "VARCHAR_COL",
+      _.varcharCol,
+      None,
+      None,
+      (row, value) => row.copy(varcharCol = value),
+      Db2Types.varchar
+    )
+  }
 
-  def clobCol: OptField[String, Db2testnullRow]
+  def clobCol: OptField[String, Db2testnullRow] = {
+    new OptField[String, Db2testnullRow](
+      _path,
+      "CLOB_COL",
+      _.clobCol,
+      None,
+      None,
+      (row, value) => row.copy(clobCol = value),
+      Db2Types.clob
+    )
+  }
 
-  def graphicCol: OptField[String, Db2testnullRow]
+  def graphicCol: OptField[String, Db2testnullRow] = {
+    new OptField[String, Db2testnullRow](
+      _path,
+      "GRAPHIC_COL",
+      _.graphicCol,
+      None,
+      None,
+      (row, value) => row.copy(graphicCol = value),
+      Db2Types.graphic
+    )
+  }
 
-  def vargraphicCol: OptField[String, Db2testnullRow]
+  def vargraphicCol: OptField[String, Db2testnullRow] = {
+    new OptField[String, Db2testnullRow](
+      _path,
+      "VARGRAPHIC_COL",
+      _.vargraphicCol,
+      None,
+      None,
+      (row, value) => row.copy(vargraphicCol = value),
+      Db2Types.vargraphic
+    )
+  }
 
-  def binaryCol: OptField[Array[Byte], Db2testnullRow]
+  def binaryCol: OptField[Array[Byte], Db2testnullRow] = {
+    new OptField[Array[Byte], Db2testnullRow](
+      _path,
+      "BINARY_COL",
+      _.binaryCol,
+      None,
+      None,
+      (row, value) => row.copy(binaryCol = value),
+      Db2Types.binary
+    )
+  }
 
-  def varbinaryCol: OptField[Array[Byte], Db2testnullRow]
+  def varbinaryCol: OptField[Array[Byte], Db2testnullRow] = {
+    new OptField[Array[Byte], Db2testnullRow](
+      _path,
+      "VARBINARY_COL",
+      _.varbinaryCol,
+      None,
+      None,
+      (row, value) => row.copy(varbinaryCol = value),
+      Db2Types.varbinary
+    )
+  }
 
-  def blobCol: OptField[Array[Byte], Db2testnullRow]
+  def blobCol: OptField[Array[Byte], Db2testnullRow] = {
+    new OptField[Array[Byte], Db2testnullRow](
+      _path,
+      "BLOB_COL",
+      _.blobCol,
+      None,
+      None,
+      (row, value) => row.copy(blobCol = value),
+      Db2Types.blob
+    )
+  }
 
-  def dateCol: OptField[LocalDate, Db2testnullRow]
+  def dateCol: OptField[LocalDate, Db2testnullRow] = {
+    new OptField[LocalDate, Db2testnullRow](
+      _path,
+      "DATE_COL",
+      _.dateCol,
+      None,
+      None,
+      (row, value) => row.copy(dateCol = value),
+      Db2Types.date
+    )
+  }
 
-  def timeCol: OptField[LocalTime, Db2testnullRow]
+  def timeCol: OptField[LocalTime, Db2testnullRow] = {
+    new OptField[LocalTime, Db2testnullRow](
+      _path,
+      "TIME_COL",
+      _.timeCol,
+      None,
+      None,
+      (row, value) => row.copy(timeCol = value),
+      Db2Types.time
+    )
+  }
 
-  def timestampCol: OptField[LocalDateTime, Db2testnullRow]
+  def timestampCol: OptField[LocalDateTime, Db2testnullRow] = {
+    new OptField[LocalDateTime, Db2testnullRow](
+      _path,
+      "TIMESTAMP_COL",
+      _.timestampCol,
+      None,
+      None,
+      (row, value) => row.copy(timestampCol = value),
+      Db2Types.timestamp
+    )
+  }
 
-  def timestamp6Col: OptField[LocalDateTime, Db2testnullRow]
+  def timestamp6Col: OptField[LocalDateTime, Db2testnullRow] = {
+    new OptField[LocalDateTime, Db2testnullRow](
+      _path,
+      "TIMESTAMP6_COL",
+      _.timestamp6Col,
+      None,
+      None,
+      (row, value) => row.copy(timestamp6Col = value),
+      Db2Types.timestamp
+    )
+  }
 
-  def timestamp12Col: OptField[LocalDateTime, Db2testnullRow]
+  def timestamp12Col: OptField[LocalDateTime, Db2testnullRow] = {
+    new OptField[LocalDateTime, Db2testnullRow](
+      _path,
+      "TIMESTAMP12_COL",
+      _.timestamp12Col,
+      None,
+      None,
+      (row, value) => row.copy(timestamp12Col = value),
+      Db2Types.timestamp
+    )
+  }
 
-  def xmlCol: OptField[/* XML */ String, Db2testnullRow]
+  def xmlCol: OptField[Xml, Db2testnullRow] = {
+    new OptField[Xml, Db2testnullRow](
+      _path,
+      "XML_COL",
+      _.xmlCol,
+      None,
+      None,
+      (row, value) => row.copy(xmlCol = value),
+      Db2Types.xml
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, Db2testnullRow]]
+  override def columns: java.util.List[FieldLike[?, Db2testnullRow]] = java.util.List.of(this.smallintCol.underlying, this.intCol.underlying, this.bigintCol.underlying, this.decimalCol.underlying, this.numericCol.underlying, this.decfloat16Col.underlying, this.decfloat34Col.underlying, this.realCol.underlying, this.doubleCol.underlying, this.boolCol.underlying, this.charCol.underlying, this.varcharCol.underlying, this.clobCol.underlying, this.graphicCol.underlying, this.vargraphicCol.underlying, this.binaryCol.underlying, this.varbinaryCol.underlying, this.blobCol.underlying, this.dateCol.underlying, this.timeCol.underlying, this.timestampCol.underlying, this.timestamp6Col.underlying, this.timestamp12Col.underlying, this.xmlCol.underlying)
 
   override def rowParser: RowParser[Db2testnullRow] = Db2testnullRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[Db2testnullFields, Db2testnullRow] = new Db2testnullFields(`_path`)
+
+  override def `_1`: SqlExpr[Short] = smallintCol
+
+  override def `_2`: SqlExpr[Int] = intCol
+
+  override def `_3`: SqlExpr[Long] = bigintCol
+
+  override def `_4`: SqlExpr[BigDecimal] = decimalCol
+
+  override def `_5`: SqlExpr[BigDecimal] = numericCol
+
+  override def `_6`: SqlExpr[BigDecimal] = decfloat16Col
+
+  override def `_7`: SqlExpr[BigDecimal] = decfloat34Col
+
+  override def `_8`: SqlExpr[Float] = realCol
+
+  override def `_9`: SqlExpr[Double] = doubleCol
+
+  override def `_10`: SqlExpr[Boolean] = boolCol
+
+  override def `_11`: SqlExpr[String] = charCol
+
+  override def `_12`: SqlExpr[String] = varcharCol
+
+  override def `_13`: SqlExpr[String] = clobCol
+
+  override def `_14`: SqlExpr[String] = graphicCol
+
+  override def `_15`: SqlExpr[String] = vargraphicCol
+
+  override def `_16`: SqlExpr[Array[Byte]] = binaryCol
+
+  override def `_17`: SqlExpr[Array[Byte]] = varbinaryCol
+
+  override def `_18`: SqlExpr[Array[Byte]] = blobCol
+
+  override def `_19`: SqlExpr[LocalDate] = dateCol
+
+  override def `_20`: SqlExpr[LocalTime] = timeCol
+
+  override def `_21`: SqlExpr[LocalDateTime] = timestampCol
+
+  override def `_22`: SqlExpr[LocalDateTime] = timestamp6Col
+
+  override def `_23`: SqlExpr[LocalDateTime] = timestamp12Col
+
+  override def `_24`: SqlExpr[Xml] = xmlCol
 }
 
 object Db2testnullFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends Db2testnullFields with RelationStructure[Db2testnullFields, Db2testnullRow] {
-
-    override def smallintCol: OptField[Short, Db2testnullRow] = {
-      new OptField[Short, Db2testnullRow](
-        _path,
-        "SMALLINT_COL",
-        _.smallintCol,
-        None,
-        None,
-        (row, value) => row.copy(smallintCol = value),
-        ScalaDbTypes.Db2Types.smallint
-      )
-    }
-
-    override def intCol: OptField[Int, Db2testnullRow] = {
-      new OptField[Int, Db2testnullRow](
-        _path,
-        "INT_COL",
-        _.intCol,
-        None,
-        None,
-        (row, value) => row.copy(intCol = value),
-        ScalaDbTypes.Db2Types.integer
-      )
-    }
-
-    override def bigintCol: OptField[Long, Db2testnullRow] = {
-      new OptField[Long, Db2testnullRow](
-        _path,
-        "BIGINT_COL",
-        _.bigintCol,
-        None,
-        None,
-        (row, value) => row.copy(bigintCol = value),
-        ScalaDbTypes.Db2Types.bigint
-      )
-    }
-
-    override def decimalCol: OptField[BigDecimal, Db2testnullRow] = {
-      new OptField[BigDecimal, Db2testnullRow](
-        _path,
-        "DECIMAL_COL",
-        _.decimalCol,
-        None,
-        None,
-        (row, value) => row.copy(decimalCol = value),
-        ScalaDbTypes.Db2Types.decimal
-      )
-    }
-
-    override def numericCol: OptField[BigDecimal, Db2testnullRow] = {
-      new OptField[BigDecimal, Db2testnullRow](
-        _path,
-        "NUMERIC_COL",
-        _.numericCol,
-        None,
-        None,
-        (row, value) => row.copy(numericCol = value),
-        ScalaDbTypes.Db2Types.decimal
-      )
-    }
-
-    override def decfloat16Col: OptField[BigDecimal, Db2testnullRow] = {
-      new OptField[BigDecimal, Db2testnullRow](
-        _path,
-        "DECFLOAT16_COL",
-        _.decfloat16Col,
-        None,
-        None,
-        (row, value) => row.copy(decfloat16Col = value),
-        ScalaDbTypes.Db2Types.decfloat
-      )
-    }
-
-    override def decfloat34Col: OptField[BigDecimal, Db2testnullRow] = {
-      new OptField[BigDecimal, Db2testnullRow](
-        _path,
-        "DECFLOAT34_COL",
-        _.decfloat34Col,
-        None,
-        None,
-        (row, value) => row.copy(decfloat34Col = value),
-        ScalaDbTypes.Db2Types.decfloat
-      )
-    }
-
-    override def realCol: OptField[Float, Db2testnullRow] = {
-      new OptField[Float, Db2testnullRow](
-        _path,
-        "REAL_COL",
-        _.realCol,
-        None,
-        None,
-        (row, value) => row.copy(realCol = value),
-        ScalaDbTypes.Db2Types.real
-      )
-    }
-
-    override def doubleCol: OptField[Double, Db2testnullRow] = {
-      new OptField[Double, Db2testnullRow](
-        _path,
-        "DOUBLE_COL",
-        _.doubleCol,
-        None,
-        None,
-        (row, value) => row.copy(doubleCol = value),
-        ScalaDbTypes.Db2Types.double_
-      )
-    }
-
-    override def boolCol: OptField[Boolean, Db2testnullRow] = {
-      new OptField[Boolean, Db2testnullRow](
-        _path,
-        "BOOL_COL",
-        _.boolCol,
-        None,
-        None,
-        (row, value) => row.copy(boolCol = value),
-        ScalaDbTypes.Db2Types.boolean_
-      )
-    }
-
-    override def charCol: OptField[String, Db2testnullRow] = {
-      new OptField[String, Db2testnullRow](
-        _path,
-        "CHAR_COL",
-        _.charCol,
-        None,
-        None,
-        (row, value) => row.copy(charCol = value),
-        Db2Types.char_
-      )
-    }
-
-    override def varcharCol: OptField[String, Db2testnullRow] = {
-      new OptField[String, Db2testnullRow](
-        _path,
-        "VARCHAR_COL",
-        _.varcharCol,
-        None,
-        None,
-        (row, value) => row.copy(varcharCol = value),
-        Db2Types.varchar
-      )
-    }
-
-    override def clobCol: OptField[String, Db2testnullRow] = {
-      new OptField[String, Db2testnullRow](
-        _path,
-        "CLOB_COL",
-        _.clobCol,
-        None,
-        None,
-        (row, value) => row.copy(clobCol = value),
-        Db2Types.clob
-      )
-    }
-
-    override def graphicCol: OptField[String, Db2testnullRow] = {
-      new OptField[String, Db2testnullRow](
-        _path,
-        "GRAPHIC_COL",
-        _.graphicCol,
-        None,
-        None,
-        (row, value) => row.copy(graphicCol = value),
-        Db2Types.graphic
-      )
-    }
-
-    override def vargraphicCol: OptField[String, Db2testnullRow] = {
-      new OptField[String, Db2testnullRow](
-        _path,
-        "VARGRAPHIC_COL",
-        _.vargraphicCol,
-        None,
-        None,
-        (row, value) => row.copy(vargraphicCol = value),
-        Db2Types.vargraphic
-      )
-    }
-
-    override def binaryCol: OptField[Array[Byte], Db2testnullRow] = {
-      new OptField[Array[Byte], Db2testnullRow](
-        _path,
-        "BINARY_COL",
-        _.binaryCol,
-        None,
-        None,
-        (row, value) => row.copy(binaryCol = value),
-        Db2Types.binary
-      )
-    }
-
-    override def varbinaryCol: OptField[Array[Byte], Db2testnullRow] = {
-      new OptField[Array[Byte], Db2testnullRow](
-        _path,
-        "VARBINARY_COL",
-        _.varbinaryCol,
-        None,
-        None,
-        (row, value) => row.copy(varbinaryCol = value),
-        Db2Types.varbinary
-      )
-    }
-
-    override def blobCol: OptField[Array[Byte], Db2testnullRow] = {
-      new OptField[Array[Byte], Db2testnullRow](
-        _path,
-        "BLOB_COL",
-        _.blobCol,
-        None,
-        None,
-        (row, value) => row.copy(blobCol = value),
-        Db2Types.blob
-      )
-    }
-
-    override def dateCol: OptField[LocalDate, Db2testnullRow] = {
-      new OptField[LocalDate, Db2testnullRow](
-        _path,
-        "DATE_COL",
-        _.dateCol,
-        None,
-        None,
-        (row, value) => row.copy(dateCol = value),
-        Db2Types.date
-      )
-    }
-
-    override def timeCol: OptField[LocalTime, Db2testnullRow] = {
-      new OptField[LocalTime, Db2testnullRow](
-        _path,
-        "TIME_COL",
-        _.timeCol,
-        None,
-        None,
-        (row, value) => row.copy(timeCol = value),
-        Db2Types.time
-      )
-    }
-
-    override def timestampCol: OptField[LocalDateTime, Db2testnullRow] = {
-      new OptField[LocalDateTime, Db2testnullRow](
-        _path,
-        "TIMESTAMP_COL",
-        _.timestampCol,
-        None,
-        None,
-        (row, value) => row.copy(timestampCol = value),
-        Db2Types.timestamp
-      )
-    }
-
-    override def timestamp6Col: OptField[LocalDateTime, Db2testnullRow] = {
-      new OptField[LocalDateTime, Db2testnullRow](
-        _path,
-        "TIMESTAMP6_COL",
-        _.timestamp6Col,
-        None,
-        None,
-        (row, value) => row.copy(timestamp6Col = value),
-        Db2Types.timestamp
-      )
-    }
-
-    override def timestamp12Col: OptField[LocalDateTime, Db2testnullRow] = {
-      new OptField[LocalDateTime, Db2testnullRow](
-        _path,
-        "TIMESTAMP12_COL",
-        _.timestamp12Col,
-        None,
-        None,
-        (row, value) => row.copy(timestamp12Col = value),
-        Db2Types.timestamp
-      )
-    }
-
-    override def xmlCol: OptField[String, Db2testnullRow] = {
-      new OptField[String, Db2testnullRow](
-        _path,
-        "XML_COL",
-        _.xmlCol,
-        None,
-        None,
-        (row, value) => row.copy(xmlCol = value),
-        Db2Types.xml
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, Db2testnullRow]] = java.util.List.of(this.smallintCol.underlying, this.intCol.underlying, this.bigintCol.underlying, this.decimalCol.underlying, this.numericCol.underlying, this.decfloat16Col.underlying, this.decfloat34Col.underlying, this.realCol.underlying, this.doubleCol.underlying, this.boolCol.underlying, this.charCol.underlying, this.varcharCol.underlying, this.clobCol.underlying, this.graphicCol.underlying, this.vargraphicCol.underlying, this.binaryCol.underlying, this.varbinaryCol.underlying, this.blobCol.underlying, this.dateCol.underlying, this.timeCol.underlying, this.timestampCol.underlying, this.timestamp6Col.underlying, this.timestamp12Col.underlying, this.xmlCol.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[Db2testnullFields, Db2testnullRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: Db2testnullFields = new Db2testnullFields(java.util.Collections.emptyList())
 }

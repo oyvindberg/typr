@@ -7,9 +7,11 @@ package testdb.orders_by_customer
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple8
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
+import dev.typr.foundations.kotlin.nullable
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -17,14 +19,30 @@ import java.time.LocalDate
 data class OrdersByCustomerSqlRow(
   @JsonProperty("order_id") val orderId: Int,
   @JsonProperty("order_date") val orderDate: LocalDate,
-  @JsonProperty("total_amount") val totalAmount: BigDecimal,
-  val status: String,
+  @JsonProperty("total_amount") val totalAmount: BigDecimal?,
+  val status: String?,
   @JsonProperty("item_number") val itemNumber: Int,
   @JsonProperty("product_name") val productName: String,
   val quantity: Int,
   @JsonProperty("unit_price") val unitPrice: BigDecimal
-) {
+) : Tuple8<Int, LocalDate, BigDecimal?, String?, Int, String, Int, BigDecimal> {
+  override fun _1(): Int = orderId
+
+  override fun _2(): LocalDate = orderDate
+
+  override fun _3(): BigDecimal? = totalAmount
+
+  override fun _4(): String? = status
+
+  override fun _5(): Int = itemNumber
+
+  override fun _6(): String = productName
+
+  override fun _7(): Int = quantity
+
+  override fun _8(): BigDecimal = unitPrice
+
   companion object {
-    val _rowParser: RowParser<OrdersByCustomerSqlRow> = RowParsers.of(KotlinDbTypes.Db2Types.integer, Db2Types.date, KotlinDbTypes.Db2Types.decimal, Db2Types.varchar, KotlinDbTypes.Db2Types.integer, Db2Types.varchar, KotlinDbTypes.Db2Types.integer, KotlinDbTypes.Db2Types.decimal, { t0, t1, t2, t3, t4, t5, t6, t7 -> OrdersByCustomerSqlRow(t0, t1, t2, t3, t4, t5, t6, t7) }, { row -> arrayOf<Any?>(row.orderId, row.orderDate, row.totalAmount, row.status, row.itemNumber, row.productName, row.quantity, row.unitPrice) })
+    val _rowParser: RowParser<OrdersByCustomerSqlRow> = RowParsers.of(KotlinDbTypes.Db2Types.integer, Db2Types.date, KotlinDbTypes.Db2Types.decimal.nullable(), Db2Types.varchar.nullable(), KotlinDbTypes.Db2Types.integer, Db2Types.varchar, KotlinDbTypes.Db2Types.integer, KotlinDbTypes.Db2Types.decimal, { t0, t1, t2, t3, t4, t5, t6, t7 -> OrdersByCustomerSqlRow(t0, t1, t2, t3, t4, t5, t6, t7) }, { row -> arrayOf<Any?>(row.orderId, row.orderDate, row.totalAmount, row.status, row.itemNumber, row.productName, row.quantity, row.unitPrice) })
   }
 }

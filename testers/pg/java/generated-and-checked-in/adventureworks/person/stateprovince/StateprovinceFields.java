@@ -15,189 +15,200 @@ import adventureworks.sales.salesterritory.SalesterritoryId;
 import adventureworks.sales.salesterritory.SalesterritoryRow;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr8;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface StateprovinceFields extends FieldsExpr<StateprovinceRow> {
-  record Impl(List<Path> _path)
-      implements StateprovinceFields, RelationStructure<StateprovinceFields, StateprovinceRow> {
-    @Override
-    public IdField<StateprovinceId, StateprovinceRow> stateprovinceid() {
-      return new IdField<StateprovinceId, StateprovinceRow>(
-          _path,
-          "stateprovinceid",
-          StateprovinceRow::stateprovinceid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withStateprovinceid(value),
-          StateprovinceId.pgType);
-    }
-    ;
+public class StateprovinceFields
+    extends TupleExpr8<
+        StateprovinceId, String, CountryregionId, Flag, Name, SalesterritoryId, UUID, LocalDateTime>
+    implements RelationStructure<StateprovinceFields, StateprovinceRow>,
+        FieldsBase<StateprovinceRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, StateprovinceRow> stateprovincecode() {
-      return new Field<String, StateprovinceRow>(
-          _path,
-          "stateprovincecode",
-          StateprovinceRow::stateprovincecode,
-          Optional.empty(),
-          Optional.of("bpchar"),
-          (row, value) -> row.withStateprovincecode(value),
-          PgTypes.bpchar);
-    }
-    ;
-
-    @Override
-    public Field<CountryregionId, StateprovinceRow> countryregioncode() {
-      return new Field<CountryregionId, StateprovinceRow>(
-          _path,
-          "countryregioncode",
-          StateprovinceRow::countryregioncode,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCountryregioncode(value),
-          CountryregionId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<Flag, StateprovinceRow> isonlystateprovinceflag() {
-      return new Field<Flag, StateprovinceRow>(
-          _path,
-          "isonlystateprovinceflag",
-          StateprovinceRow::isonlystateprovinceflag,
-          Optional.empty(),
-          Optional.of("bool"),
-          (row, value) -> row.withIsonlystateprovinceflag(value),
-          Flag.pgType);
-    }
-    ;
-
-    @Override
-    public Field<Name, StateprovinceRow> name() {
-      return new Field<Name, StateprovinceRow>(
-          _path,
-          "name",
-          StateprovinceRow::name,
-          Optional.empty(),
-          Optional.of("varchar"),
-          (row, value) -> row.withName(value),
-          Name.pgType);
-    }
-    ;
-
-    @Override
-    public Field<SalesterritoryId, StateprovinceRow> territoryid() {
-      return new Field<SalesterritoryId, StateprovinceRow>(
-          _path,
-          "territoryid",
-          StateprovinceRow::territoryid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withTerritoryid(value),
-          SalesterritoryId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<UUID, StateprovinceRow> rowguid() {
-      return new Field<UUID, StateprovinceRow>(
-          _path,
-          "rowguid",
-          StateprovinceRow::rowguid,
-          Optional.empty(),
-          Optional.of("uuid"),
-          (row, value) -> row.withRowguid(value),
-          PgTypes.uuid);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, StateprovinceRow> modifieddate() {
-      return new Field<LocalDateTime, StateprovinceRow>(
-          _path,
-          "modifieddate",
-          StateprovinceRow::modifieddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withModifieddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, StateprovinceRow>> columns() {
-      return java.util.List.of(
-          this.stateprovinceid(),
-          this.stateprovincecode(),
-          this.countryregioncode(),
-          this.isonlystateprovinceflag(),
-          this.name(),
-          this.territoryid(),
-          this.rowguid(),
-          this.modifieddate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<StateprovinceFields, StateprovinceRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public StateprovinceFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static StateprovinceFields structure =
+      new StateprovinceFields(java.util.Collections.emptyList());
+
+  public IdField<StateprovinceId, StateprovinceRow> stateprovinceid() {
+    return new IdField<StateprovinceId, StateprovinceRow>(
+        _path,
+        "stateprovinceid",
+        StateprovinceRow::stateprovinceid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withStateprovinceid(value),
+        StateprovinceId.dbType);
   }
-  ;
 
-  IdField<StateprovinceId, StateprovinceRow> stateprovinceid();
+  public Field<String, StateprovinceRow> stateprovincecode() {
+    return new Field<String, StateprovinceRow>(
+        _path,
+        "stateprovincecode",
+        StateprovinceRow::stateprovincecode,
+        Optional.empty(),
+        Optional.of("bpchar"),
+        (row, value) -> row.withStateprovincecode(value),
+        PgTypes.bpchar);
+  }
 
-  Field<String, StateprovinceRow> stateprovincecode();
+  public Field<CountryregionId, StateprovinceRow> countryregioncode() {
+    return new Field<CountryregionId, StateprovinceRow>(
+        _path,
+        "countryregioncode",
+        StateprovinceRow::countryregioncode,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCountryregioncode(value),
+        CountryregionId.dbType);
+  }
 
-  Field<CountryregionId, StateprovinceRow> countryregioncode();
+  public Field<Flag, StateprovinceRow> isonlystateprovinceflag() {
+    return new Field<Flag, StateprovinceRow>(
+        _path,
+        "isonlystateprovinceflag",
+        StateprovinceRow::isonlystateprovinceflag,
+        Optional.empty(),
+        Optional.of("bool"),
+        (row, value) -> row.withIsonlystateprovinceflag(value),
+        Flag.dbType);
+  }
 
-  Field<Flag, StateprovinceRow> isonlystateprovinceflag();
+  public Field<Name, StateprovinceRow> name() {
+    return new Field<Name, StateprovinceRow>(
+        _path,
+        "name",
+        StateprovinceRow::name,
+        Optional.empty(),
+        Optional.of("varchar"),
+        (row, value) -> row.withName(value),
+        Name.dbType);
+  }
 
-  Field<Name, StateprovinceRow> name();
+  public Field<SalesterritoryId, StateprovinceRow> territoryid() {
+    return new Field<SalesterritoryId, StateprovinceRow>(
+        _path,
+        "territoryid",
+        StateprovinceRow::territoryid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withTerritoryid(value),
+        SalesterritoryId.dbType);
+  }
 
-  Field<SalesterritoryId, StateprovinceRow> territoryid();
+  public Field<UUID, StateprovinceRow> rowguid() {
+    return new Field<UUID, StateprovinceRow>(
+        _path,
+        "rowguid",
+        StateprovinceRow::rowguid,
+        Optional.empty(),
+        Optional.of("uuid"),
+        (row, value) -> row.withRowguid(value),
+        PgTypes.uuid);
+  }
 
-  Field<UUID, StateprovinceRow> rowguid();
+  public Field<LocalDateTime, StateprovinceRow> modifieddate() {
+    return new Field<LocalDateTime, StateprovinceRow>(
+        _path,
+        "modifieddate",
+        StateprovinceRow::modifieddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withModifieddate(value),
+        PgTypes.timestamp);
+  }
 
-  Field<LocalDateTime, StateprovinceRow> modifieddate();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<CountryregionFields, CountryregionRow> fkCountryregion() {
+  public ForeignKey<CountryregionFields, CountryregionRow> fkCountryregion() {
     return ForeignKey.<CountryregionFields, CountryregionRow>of(
             "person.FK_StateProvince_CountryRegion_CountryRegionCode")
         .<CountryregionId>withColumnPair(
             countryregioncode(), CountryregionFields::countryregioncode);
   }
-  ;
 
-  default ForeignKey<SalesterritoryFields, SalesterritoryRow> fkSalesSalesterritory() {
+  public ForeignKey<SalesterritoryFields, SalesterritoryRow> fkSalesSalesterritory() {
     return ForeignKey.<SalesterritoryFields, SalesterritoryRow>of(
             "person.FK_StateProvince_SalesTerritory_TerritoryID")
         .<SalesterritoryId>withColumnPair(territoryid(), SalesterritoryFields::territoryid);
   }
-  ;
 
   @Override
-  List<FieldLike<?, StateprovinceRow>> columns();
+  public List<FieldLike<?, StateprovinceRow>> columns() {
+    return java.util.List.of(
+        this.stateprovinceid(),
+        this.stateprovincecode(),
+        this.countryregioncode(),
+        this.isonlystateprovinceflag(),
+        this.name(),
+        this.territoryid(),
+        this.rowguid(),
+        this.modifieddate());
+  }
 
   @Override
-  default RowParser<StateprovinceRow> rowParser() {
+  public RowParser<StateprovinceRow> rowParser() {
     return StateprovinceRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<StateprovinceFields, StateprovinceRow> withPaths(List<Path> _path) {
+    return new StateprovinceFields(_path);
+  }
+
+  @Override
+  public SqlExpr<StateprovinceId> _1() {
+    return stateprovinceid();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return stateprovincecode();
+  }
+
+  @Override
+  public SqlExpr<CountryregionId> _3() {
+    return countryregioncode();
+  }
+
+  @Override
+  public SqlExpr<Flag> _4() {
+    return isonlystateprovinceflag();
+  }
+
+  @Override
+  public SqlExpr<Name> _5() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<SalesterritoryId> _6() {
+    return territoryid();
+  }
+
+  @Override
+  public SqlExpr<UUID> _7() {
+    return rowguid();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _8() {
+    return modifieddate();
+  }
 }

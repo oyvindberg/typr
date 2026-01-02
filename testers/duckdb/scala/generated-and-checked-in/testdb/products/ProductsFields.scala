@@ -8,98 +8,95 @@ package testdb.products
 import dev.typr.foundations.DuckDbTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.data.Json
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr5
 
-trait ProductsFields extends FieldsExpr0[ProductsRow] {
-  def productId: IdField[ProductsId, ProductsRow]
+class ProductsFields(val `_path`: java.util.List[Path]) extends TupleExpr5[ProductsId, String, String, BigDecimal, Json] with RelationStructure[ProductsFields, ProductsRow]  with FieldsBase[ProductsRow] {
+  def productId: IdField[ProductsId, ProductsRow] = {
+    new IdField[ProductsId, ProductsRow](
+      _path,
+      "product_id",
+      _.productId,
+      None,
+      Some("INTEGER"),
+      (row, value) => row.copy(productId = value),
+      ProductsId.duckDbType
+    )
+  }
 
-  def sku: Field[String, ProductsRow]
+  def sku: Field[String, ProductsRow] = {
+    new Field[String, ProductsRow](
+      _path,
+      "sku",
+      _.sku,
+      None,
+      None,
+      (row, value) => row.copy(sku = value),
+      DuckDbTypes.varchar
+    )
+  }
 
-  def name: Field[String, ProductsRow]
+  def name: Field[String, ProductsRow] = {
+    new Field[String, ProductsRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      None,
+      (row, value) => row.copy(name = value),
+      DuckDbTypes.varchar
+    )
+  }
 
-  def price: Field[BigDecimal, ProductsRow]
+  def price: Field[BigDecimal, ProductsRow] = {
+    new Field[BigDecimal, ProductsRow](
+      _path,
+      "price",
+      _.price,
+      None,
+      Some("DECIMAL(10,2)"),
+      (row, value) => row.copy(price = value),
+      ScalaDbTypes.DuckDbTypes.numeric
+    )
+  }
 
-  def metadata: OptField[Json, ProductsRow]
+  def metadata: OptField[Json, ProductsRow] = {
+    new OptField[Json, ProductsRow](
+      _path,
+      "metadata",
+      _.metadata,
+      None,
+      Some("JSON"),
+      (row, value) => row.copy(metadata = value),
+      DuckDbTypes.json
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, ProductsRow]]
+  override def columns: java.util.List[FieldLike[?, ProductsRow]] = java.util.List.of(this.productId.underlying, this.sku.underlying, this.name.underlying, this.price.underlying, this.metadata.underlying)
 
   override def rowParser: RowParser[ProductsRow] = ProductsRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductsFields, ProductsRow] = new ProductsFields(`_path`)
+
+  override def `_1`: SqlExpr[ProductsId] = productId
+
+  override def `_2`: SqlExpr[String] = sku
+
+  override def `_3`: SqlExpr[String] = name
+
+  override def `_4`: SqlExpr[BigDecimal] = price
+
+  override def `_5`: SqlExpr[Json] = metadata
 }
 
 object ProductsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ProductsFields with RelationStructure[ProductsFields, ProductsRow] {
-
-    override def productId: IdField[ProductsId, ProductsRow] = {
-      new IdField[ProductsId, ProductsRow](
-        _path,
-        "product_id",
-        _.productId,
-        None,
-        Some("INTEGER"),
-        (row, value) => row.copy(productId = value),
-        ProductsId.duckDbType
-      )
-    }
-
-    override def sku: Field[String, ProductsRow] = {
-      new Field[String, ProductsRow](
-        _path,
-        "sku",
-        _.sku,
-        None,
-        None,
-        (row, value) => row.copy(sku = value),
-        DuckDbTypes.varchar
-      )
-    }
-
-    override def name: Field[String, ProductsRow] = {
-      new Field[String, ProductsRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        None,
-        (row, value) => row.copy(name = value),
-        DuckDbTypes.varchar
-      )
-    }
-
-    override def price: Field[BigDecimal, ProductsRow] = {
-      new Field[BigDecimal, ProductsRow](
-        _path,
-        "price",
-        _.price,
-        None,
-        Some("DECIMAL(10,2)"),
-        (row, value) => row.copy(price = value),
-        ScalaDbTypes.DuckDbTypes.numeric
-      )
-    }
-
-    override def metadata: OptField[Json, ProductsRow] = {
-      new OptField[Json, ProductsRow](
-        _path,
-        "metadata",
-        _.metadata,
-        None,
-        Some("JSON"),
-        (row, value) => row.copy(metadata = value),
-        DuckDbTypes.json
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, ProductsRow]] = java.util.List.of(this.productId.underlying, this.sku.underlying, this.name.underlying, this.price.underlying, this.metadata.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductsFields, ProductsRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: ProductsFields = new ProductsFields(java.util.Collections.emptyList())
 }

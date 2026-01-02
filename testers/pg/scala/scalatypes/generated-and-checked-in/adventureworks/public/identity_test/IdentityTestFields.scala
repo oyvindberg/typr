@@ -6,69 +6,66 @@
 package adventureworks.public.identity_test
 
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
+import dev.typr.foundations.scala.TupleExpr3
 
-trait IdentityTestFields extends FieldsExpr0[IdentityTestRow] {
-  def alwaysGenerated: Field[Int, IdentityTestRow]
+class IdentityTestFields(val `_path`: java.util.List[Path]) extends TupleExpr3[Int, Int, IdentityTestId] with RelationStructure[IdentityTestFields, IdentityTestRow]  with FieldsBase[IdentityTestRow] {
+  def alwaysGenerated: Field[Int, IdentityTestRow] = {
+    new Field[Int, IdentityTestRow](
+      _path,
+      "always_generated",
+      _.alwaysGenerated,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(alwaysGenerated = value),
+      ScalaDbTypes.PgTypes.int4
+    )
+  }
 
-  def defaultGenerated: Field[Int, IdentityTestRow]
+  def defaultGenerated: Field[Int, IdentityTestRow] = {
+    new Field[Int, IdentityTestRow](
+      _path,
+      "default_generated",
+      _.defaultGenerated,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(defaultGenerated = value),
+      ScalaDbTypes.PgTypes.int4
+    )
+  }
 
-  def name: IdField[IdentityTestId, IdentityTestRow]
+  def name: IdField[IdentityTestId, IdentityTestRow] = {
+    new IdField[IdentityTestId, IdentityTestRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      None,
+      (row, value) => row.copy(name = value),
+      IdentityTestId.dbType
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, IdentityTestRow]]
+  override def columns: java.util.List[FieldLike[?, IdentityTestRow]] = java.util.List.of(this.alwaysGenerated.underlying, this.defaultGenerated.underlying, this.name.underlying)
 
   override def rowParser: RowParser[IdentityTestRow] = IdentityTestRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[IdentityTestFields, IdentityTestRow] = new IdentityTestFields(`_path`)
+
+  override def `_1`: SqlExpr[Int] = alwaysGenerated
+
+  override def `_2`: SqlExpr[Int] = defaultGenerated
+
+  override def `_3`: SqlExpr[IdentityTestId] = name
 }
 
 object IdentityTestFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends IdentityTestFields with RelationStructure[IdentityTestFields, IdentityTestRow] {
-
-    override def alwaysGenerated: Field[Int, IdentityTestRow] = {
-      new Field[Int, IdentityTestRow](
-        _path,
-        "always_generated",
-        _.alwaysGenerated,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(alwaysGenerated = value),
-        ScalaDbTypes.PgTypes.int4
-      )
-    }
-
-    override def defaultGenerated: Field[Int, IdentityTestRow] = {
-      new Field[Int, IdentityTestRow](
-        _path,
-        "default_generated",
-        _.defaultGenerated,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(defaultGenerated = value),
-        ScalaDbTypes.PgTypes.int4
-      )
-    }
-
-    override def name: IdField[IdentityTestId, IdentityTestRow] = {
-      new IdField[IdentityTestId, IdentityTestRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        None,
-        (row, value) => row.copy(name = value),
-        IdentityTestId.pgType
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, IdentityTestRow]] = java.util.List.of(this.alwaysGenerated.underlying, this.defaultGenerated.underlying, this.name.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[IdentityTestFields, IdentityTestRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: IdentityTestFields = new IdentityTestFields(java.util.Collections.emptyList())
 }

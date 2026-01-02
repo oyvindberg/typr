@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple3;
 import java.time.LocalDateTime;
 
 /** Table: production.unitmeasure Unit of measure lookup table. Primary key: unitmeasurecode */
@@ -20,7 +21,8 @@ public record UnitmeasureRow(
     /** Unit of measure description. */
     Name name,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple3<UnitmeasureId, Name, LocalDateTime> {
   /** Primary key. */
   public UnitmeasureRow withUnitmeasurecode(UnitmeasureId unitmeasurecode) {
     return new UnitmeasureRow(unitmeasurecode, name, modifieddate);
@@ -41,14 +43,32 @@ public record UnitmeasureRow(
 
   public static RowParser<UnitmeasureRow> _rowParser =
       RowParsers.of(
-          UnitmeasureId.pgType,
-          Name.pgType,
+          UnitmeasureId.dbType,
+          Name.dbType,
           PgTypes.timestamp,
           UnitmeasureRow::new,
           row -> new Object[] {row.unitmeasurecode(), row.name(), row.modifieddate()});
   ;
 
   public static PgText<UnitmeasureRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public UnitmeasureId _1() {
+    return unitmeasurecode;
+  }
+  ;
+
+  @Override
+  public Name _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _3() {
+    return modifieddate;
+  }
+  ;
 
   public UnitmeasureId id() {
     return unitmeasurecode;

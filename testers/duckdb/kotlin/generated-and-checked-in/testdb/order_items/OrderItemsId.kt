@@ -6,6 +6,7 @@
 package testdb.order_items
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -14,7 +15,11 @@ import dev.typr.foundations.kotlin.RowParsers
 data class OrderItemsId(
   @JsonProperty("order_id") val orderId: Int,
   @JsonProperty("product_id") val productId: Int
-) {
+) : Tuple2<Int, Int> {
+  override fun _1(): Int = orderId
+
+  override fun _2(): Int = productId
+
   companion object {
     val _rowParser: RowParser<OrderItemsId> = RowParsers.of(KotlinDbTypes.DuckDbTypes.integer, KotlinDbTypes.DuckDbTypes.integer, { t0, t1 -> OrderItemsId(t0, t1) }, { row -> arrayOf<Any?>(row.orderId, row.productId) })
   }

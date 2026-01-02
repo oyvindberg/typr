@@ -48,7 +48,7 @@ public record CountryregionRepoMock(
   @Override
   public DeleteBuilder<CountryregionFields, CountryregionRow> delete() {
     return new DeleteBuilderMock<>(
-        CountryregionFields.structure(),
+        CountryregionFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.countryregioncode(),
@@ -126,7 +126,7 @@ public record CountryregionRepoMock(
   @Override
   public SelectBuilder<CountryregionFields, CountryregionRow> select() {
     return new SelectBuilderMock<>(
-        CountryregionFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        CountryregionFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -170,7 +170,7 @@ public record CountryregionRepoMock(
   @Override
   public UpdateBuilder<CountryregionFields, CountryregionRow> update() {
     return new UpdateBuilderMock<>(
-        CountryregionFields.structure(),
+        CountryregionFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

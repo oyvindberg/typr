@@ -7,6 +7,7 @@ package testdb.subquery_test
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple6
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -25,8 +26,20 @@ case class SubqueryTestSqlRow(
   @JsonProperty("total_spent") totalSpent: BigDecimal,
   /** Points to [[testdb.brands.BrandsRow.name]] */
   @JsonProperty("favorite_brand") favoriteBrand: Option[String]
-)
+) extends Tuple6[CustomersId, String, String, Long, BigDecimal, Option[String]] {
+  override def `_1`: CustomersId = customerId
+
+  override def `_2`: String = email
+
+  override def `_3`: String = firstName
+
+  override def `_4`: Long = orderCount
+
+  override def `_5`: BigDecimal = totalSpent
+
+  override def `_6`: Option[String] = favoriteBrand
+}
 
 object SubqueryTestSqlRow {
-  val `_rowParser`: RowParser[SubqueryTestSqlRow] = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.numeric, MariaTypes.varchar.nullable)(SubqueryTestSqlRow.apply)(row => Array[Any](row.customerId, row.email, row.firstName, row.orderCount, row.totalSpent, row.favoriteBrand))
+  val `_rowParser`: RowParser[SubqueryTestSqlRow] = RowParsers.of(CustomersId.dbType, MariaTypes.varchar, MariaTypes.varchar, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.numeric, MariaTypes.varchar.nullable)(SubqueryTestSqlRow.apply)(row => Array[Any](row.customerId, row.email, row.firstName, row.orderCount, row.totalSpent, row.favoriteBrand))
 }

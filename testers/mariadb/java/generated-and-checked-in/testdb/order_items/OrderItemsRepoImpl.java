@@ -27,27 +27,25 @@ import testdb.warehouses.WarehousesId;
 public class OrderItemsRepoImpl implements OrderItemsRepo {
   @Override
   public DeleteBuilder<OrderItemsFields, OrderItemsRow> delete() {
-    return DeleteBuilder.of("`order_items`", OrderItemsFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`order_items`", OrderItemsFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(OrderItemsId itemId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `order_items` where `item_id` = "),
-                Fragment.encode(OrderItemsId.pgType, itemId),
+                Fragment.encode(OrderItemsId.dbType, itemId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(OrderItemsId[] itemIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : itemIds) {
-      fragments.add(Fragment.encode(OrderItemsId.pgType, id));
+      fragments.add(Fragment.encode(OrderItemsId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -57,7 +55,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public OrderItemsRow insert(OrderItemsRow unsaved, Connection c) {
@@ -67,9 +64,9 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
                     + " `quantity`, `unit_price`, `discount_amount`, `tax_amount`, `line_total`,"
                     + " `fulfillment_status`, `warehouse_id`, `notes`)\n"
                     + "values ("),
-            Fragment.encode(OrdersId.pgType, unsaved.orderId()),
+            Fragment.encode(OrdersId.dbType, unsaved.orderId()),
             Fragment.lit(", "),
-            Fragment.encode(ProductsId.pgType, unsaved.productId()),
+            Fragment.encode(ProductsId.dbType, unsaved.productId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.sku()),
             Fragment.lit(", "),
@@ -87,7 +84,7 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text, unsaved.fulfillmentStatus()),
             Fragment.lit(", "),
-            Fragment.encode(WarehousesId.pgType.opt(), unsaved.warehouseId()),
+            Fragment.encode(WarehousesId.dbType.opt(), unsaved.warehouseId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.tinytext.opt(), unsaved.notes()),
             Fragment.lit(
@@ -98,7 +95,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .updateReturning(OrderItemsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public OrderItemsRow insert(OrderItemsRowUnsaved unsaved, Connection c) {
@@ -107,10 +103,10 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
     ArrayList<Fragment> values = new ArrayList<>();
     ;
     columns.add(Fragment.lit("`order_id`"));
-    values.add(interpolate(Fragment.encode(OrdersId.pgType, unsaved.orderId()), Fragment.lit("")));
+    values.add(interpolate(Fragment.encode(OrdersId.dbType, unsaved.orderId()), Fragment.lit("")));
     columns.add(Fragment.lit("`product_id`"));
     values.add(
-        interpolate(Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit("")));
+        interpolate(Fragment.encode(ProductsId.dbType, unsaved.productId()), Fragment.lit("")));
     columns.add(Fragment.lit("`sku`"));
     values.add(interpolate(Fragment.encode(MariaTypes.varchar, unsaved.sku()), Fragment.lit("")));
     columns.add(Fragment.lit("`product_name`"));
@@ -160,7 +156,7 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
             value -> {
               columns.add(Fragment.lit("`warehouse_id`"));
               values.add(
-                  interpolate(Fragment.encode(WarehousesId.pgType.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(WarehousesId.dbType.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -187,14 +183,12 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
     ;
     return q.updateReturning(OrderItemsRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<OrderItemsFields, OrderItemsRow> select() {
     return SelectBuilder.of(
-        "`order_items`", OrderItemsFields.structure(), OrderItemsRow._rowParser, Dialect.MARIADB);
+        "`order_items`", OrderItemsFields.structure, OrderItemsRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<OrderItemsRow> selectAll(Connection c) {
@@ -207,7 +201,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .query(OrderItemsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<OrderItemsRow> selectById(OrderItemsId itemId, Connection c) {
@@ -218,18 +211,17 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
                     + " `fulfillment_status`, `warehouse_id`, `notes`\n"
                     + "from `order_items`\n"
                     + "where `item_id` = "),
-            Fragment.encode(OrderItemsId.pgType, itemId),
+            Fragment.encode(OrderItemsId.dbType, itemId),
             Fragment.lit(""))
         .query(OrderItemsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<OrderItemsRow> selectByIds(OrderItemsId[] itemIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : itemIds) {
-      fragments.add(Fragment.encode(OrderItemsId.pgType, id));
+      fragments.add(Fragment.encode(OrderItemsId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -243,7 +235,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .query(OrderItemsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<OrderItemsId, OrderItemsRow> selectByIdsTracked(OrderItemsId[] itemIds, Connection c) {
@@ -251,14 +242,12 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
     selectByIds(itemIds, c).forEach(row -> ret.put(row.itemId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<OrderItemsFields, OrderItemsRow> update() {
     return UpdateBuilder.of(
-        "`order_items`", OrderItemsFields.structure(), OrderItemsRow._rowParser, Dialect.MARIADB);
+        "`order_items`", OrderItemsFields.structure, OrderItemsRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(OrderItemsRow row, Connection c) {
@@ -266,9 +255,9 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
     ;
     return interpolate(
                 Fragment.lit("update `order_items`\nset `order_id` = "),
-                Fragment.encode(OrdersId.pgType, row.orderId()),
+                Fragment.encode(OrdersId.dbType, row.orderId()),
                 Fragment.lit(",\n`product_id` = "),
-                Fragment.encode(ProductsId.pgType, row.productId()),
+                Fragment.encode(ProductsId.dbType, row.productId()),
                 Fragment.lit(",\n`sku` = "),
                 Fragment.encode(MariaTypes.varchar, row.sku()),
                 Fragment.lit(",\n`product_name` = "),
@@ -286,29 +275,30 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
                 Fragment.lit(",\n`fulfillment_status` = "),
                 Fragment.encode(MariaTypes.text, row.fulfillmentStatus()),
                 Fragment.lit(",\n`warehouse_id` = "),
-                Fragment.encode(WarehousesId.pgType.opt(), row.warehouseId()),
+                Fragment.encode(WarehousesId.dbType.opt(), row.warehouseId()),
                 Fragment.lit(",\n`notes` = "),
                 Fragment.encode(MariaTypes.tinytext.opt(), row.notes()),
                 Fragment.lit("\nwhere `item_id` = "),
-                Fragment.encode(OrderItemsId.pgType, itemId),
+                Fragment.encode(OrderItemsId.dbType, itemId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public OrderItemsRow upsert(OrderItemsRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `order_items`(`order_id`, `product_id`, `sku`, `product_name`,"
-                    + " `quantity`, `unit_price`, `discount_amount`, `tax_amount`, `line_total`,"
-                    + " `fulfillment_status`, `warehouse_id`, `notes`)\n"
+                "INSERT INTO `order_items`(`item_id`, `order_id`, `product_id`, `sku`,"
+                    + " `product_name`, `quantity`, `unit_price`, `discount_amount`, `tax_amount`,"
+                    + " `line_total`, `fulfillment_status`, `warehouse_id`, `notes`)\n"
                     + "VALUES ("),
-            Fragment.encode(OrdersId.pgType, unsaved.orderId()),
+            Fragment.encode(OrderItemsId.dbType, unsaved.itemId()),
             Fragment.lit(", "),
-            Fragment.encode(ProductsId.pgType, unsaved.productId()),
+            Fragment.encode(OrdersId.dbType, unsaved.orderId()),
+            Fragment.lit(", "),
+            Fragment.encode(ProductsId.dbType, unsaved.productId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.sku()),
             Fragment.lit(", "),
@@ -326,7 +316,7 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text, unsaved.fulfillmentStatus()),
             Fragment.lit(", "),
-            Fragment.encode(WarehousesId.pgType.opt(), unsaved.warehouseId()),
+            Fragment.encode(WarehousesId.dbType.opt(), unsaved.warehouseId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.tinytext.opt(), unsaved.notes()),
             Fragment.lit(
@@ -349,7 +339,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .updateReturning(OrderItemsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<OrderItemsRow> upsertBatch(Iterator<OrderItemsRow> unsaved, Connection c) {
@@ -377,5 +366,4 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .updateReturningEach(OrderItemsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

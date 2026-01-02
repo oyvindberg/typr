@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple11;
 import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -37,7 +38,19 @@ public record VProductCatalogViewRow(
     /** Default: 0.0000 */
     @JsonProperty("avg_rating") BigDecimal avgRating,
     /** Default: 0 */
-    @JsonProperty("review_count") Long reviewCount) {
+    @JsonProperty("review_count") Long reviewCount)
+    implements Tuple11<
+        ProductsId,
+        String,
+        String,
+        Optional<String>,
+        BigDecimal,
+        String,
+        Optional<MariaSet>,
+        Optional<String>,
+        BigDecimal,
+        BigDecimal,
+        Long> {
   /** Default: 0 Points to {@link testdb.products.ProductsRow#productId()} */
   public VProductCatalogViewRow withProductId(ProductsId productId) {
     return new VProductCatalogViewRow(
@@ -227,7 +240,7 @@ public record VProductCatalogViewRow(
 
   public static RowParser<VProductCatalogViewRow> _rowParser =
       RowParsers.of(
-          ProductsId.pgType,
+          ProductsId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.varchar.opt(),
@@ -253,5 +266,71 @@ public record VProductCatalogViewRow(
                 row.avgRating(),
                 row.reviewCount()
               });
+  ;
+
+  @Override
+  public ProductsId _1() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public BigDecimal _10() {
+    return avgRating;
+  }
+  ;
+
+  @Override
+  public Long _11() {
+    return reviewCount;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return sku;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return name;
+  }
+  ;
+
+  @Override
+  public Optional<String> _4() {
+    return shortDescription;
+  }
+  ;
+
+  @Override
+  public BigDecimal _5() {
+    return basePrice;
+  }
+  ;
+
+  @Override
+  public String _6() {
+    return status;
+  }
+  ;
+
+  @Override
+  public Optional<MariaSet> _7() {
+    return tags;
+  }
+  ;
+
+  @Override
+  public Optional<String> _8() {
+    return brandName;
+  }
+  ;
+
+  @Override
+  public BigDecimal _9() {
+    return availableQuantity;
+  }
   ;
 }

@@ -5,15 +5,16 @@
  */
 package testdb.inventory_check;
 
-import java.math.BigInteger;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint8;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Optional;
 
 public interface InventoryCheckSqlRepo {
   List<InventoryCheckSqlRow> apply(
-      Optional<Short> warehouseId,
-      Optional<BigInteger> productId,
+      Optional<Uint1> warehouseId,
+      Optional<Uint8> productId,
       Optional<Boolean> lowStockOnly,
       Connection c);
 }

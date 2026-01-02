@@ -25,27 +25,25 @@ public class Db2testIdentityAlwaysRepoImpl implements Db2testIdentityAlwaysRepo 
   @Override
   public DeleteBuilder<Db2testIdentityAlwaysFields, Db2testIdentityAlwaysRow> delete() {
     return DeleteBuilder.of(
-        "\"DB2TEST_IDENTITY_ALWAYS\"", Db2testIdentityAlwaysFields.structure(), Dialect.DB2);
+        "\"DB2TEST_IDENTITY_ALWAYS\"", Db2testIdentityAlwaysFields.structure, Dialect.DB2);
   }
-  ;
 
   @Override
   public Boolean deleteById(Db2testIdentityAlwaysId id, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"DB2TEST_IDENTITY_ALWAYS\" where \"ID\" = "),
-                Fragment.encode(Db2testIdentityAlwaysId.pgType, id),
+                Fragment.encode(Db2testIdentityAlwaysId.dbType, id),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(Db2testIdentityAlwaysId[] ids, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : ids) {
-      fragments.add(Fragment.encode(Db2testIdentityAlwaysId.pgType, id));
+      fragments.add(Fragment.encode(Db2testIdentityAlwaysId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -55,7 +53,6 @@ public class Db2testIdentityAlwaysRepoImpl implements Db2testIdentityAlwaysRepo 
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Db2testIdentityAlwaysRow insert(Db2testIdentityAlwaysRow unsaved, Connection c) {
@@ -69,7 +66,6 @@ public class Db2testIdentityAlwaysRepoImpl implements Db2testIdentityAlwaysRepo 
         .updateReturning(Db2testIdentityAlwaysRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Db2testIdentityAlwaysRow insert(Db2testIdentityAlwaysRowUnsaved unsaved, Connection c) {
@@ -91,17 +87,15 @@ public class Db2testIdentityAlwaysRepoImpl implements Db2testIdentityAlwaysRepo 
     ;
     return q.updateReturning(Db2testIdentityAlwaysRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<Db2testIdentityAlwaysFields, Db2testIdentityAlwaysRow> select() {
     return SelectBuilder.of(
         "\"DB2TEST_IDENTITY_ALWAYS\"",
-        Db2testIdentityAlwaysFields.structure(),
+        Db2testIdentityAlwaysFields.structure,
         Db2testIdentityAlwaysRow._rowParser,
         Dialect.DB2);
   }
-  ;
 
   @Override
   public List<Db2testIdentityAlwaysRow> selectAll(Connection c) {
@@ -109,25 +103,23 @@ public class Db2testIdentityAlwaysRepoImpl implements Db2testIdentityAlwaysRepo 
         .query(Db2testIdentityAlwaysRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<Db2testIdentityAlwaysRow> selectById(Db2testIdentityAlwaysId id, Connection c) {
     return interpolate(
             Fragment.lit(
                 "select \"ID\", \"NAME\"\nfrom \"DB2TEST_IDENTITY_ALWAYS\"\nwhere \"ID\" = "),
-            Fragment.encode(Db2testIdentityAlwaysId.pgType, id),
+            Fragment.encode(Db2testIdentityAlwaysId.dbType, id),
             Fragment.lit(""))
         .query(Db2testIdentityAlwaysRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<Db2testIdentityAlwaysRow> selectByIds(Db2testIdentityAlwaysId[] ids, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : ids) {
-      fragments.add(Fragment.encode(Db2testIdentityAlwaysId.pgType, id));
+      fragments.add(Fragment.encode(Db2testIdentityAlwaysId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -138,7 +130,6 @@ public class Db2testIdentityAlwaysRepoImpl implements Db2testIdentityAlwaysRepo 
         .query(Db2testIdentityAlwaysRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<Db2testIdentityAlwaysId, Db2testIdentityAlwaysRow> selectByIdsTracked(
@@ -148,17 +139,15 @@ public class Db2testIdentityAlwaysRepoImpl implements Db2testIdentityAlwaysRepo 
     selectByIds(ids, c).forEach(row -> ret.put(row.id(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<Db2testIdentityAlwaysFields, Db2testIdentityAlwaysRow> update() {
     return UpdateBuilder.of(
         "\"DB2TEST_IDENTITY_ALWAYS\"",
-        Db2testIdentityAlwaysFields.structure(),
+        Db2testIdentityAlwaysFields.structure,
         Db2testIdentityAlwaysRow._rowParser,
         Dialect.DB2);
   }
-  ;
 
   @Override
   public Boolean update(Db2testIdentityAlwaysRow row, Connection c) {
@@ -168,30 +157,32 @@ public class Db2testIdentityAlwaysRepoImpl implements Db2testIdentityAlwaysRepo 
                 Fragment.lit("update \"DB2TEST_IDENTITY_ALWAYS\"\nset \"NAME\" = "),
                 Fragment.encode(Db2Types.varchar, row.name()),
                 Fragment.lit("\nwhere \"ID\" = "),
-                Fragment.encode(Db2testIdentityAlwaysId.pgType, id),
+                Fragment.encode(Db2testIdentityAlwaysId.dbType, id),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public void upsert(Db2testIdentityAlwaysRow unsaved, Connection c) {
     interpolate(
             Fragment.lit("MERGE INTO \"DB2TEST_IDENTITY_ALWAYS\" AS t\nUSING (VALUES ("),
+            Fragment.encode(Db2testIdentityAlwaysId.dbType, unsaved.id()),
+            Fragment.lit(", "),
             Fragment.encode(Db2Types.varchar, unsaved.name()),
             Fragment.lit(
-                ")) AS s(\"NAME\")\n"
+                ")) AS s(\"ID\", \"NAME\")\n"
                     + "ON t.\"ID\" = s.\"ID\"\n"
                     + "WHEN MATCHED THEN UPDATE SET \"NAME\" = s.\"NAME\"\n"
-                    + "WHEN NOT MATCHED THEN INSERT (\"NAME\") VALUES ("),
+                    + "WHEN NOT MATCHED THEN INSERT (\"ID\", \"NAME\") VALUES ("),
+            Fragment.encode(Db2testIdentityAlwaysId.dbType, unsaved.id()),
+            Fragment.lit(", "),
             Fragment.encode(Db2Types.varchar, unsaved.name()),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public void upsertBatch(Iterator<Db2testIdentityAlwaysRow> unsaved, Connection c) {
@@ -205,5 +196,4 @@ public class Db2testIdentityAlwaysRepoImpl implements Db2testIdentityAlwaysRepo 
         .updateMany(Db2testIdentityAlwaysRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

@@ -7,11 +7,16 @@ package testdb
 
 import com.microsoft.sqlserver.jdbc.Geography
 import com.microsoft.sqlserver.jdbc.Geometry
+import dev.typr.foundations.data.HierarchyId
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Xml
 import java.sql.Connection
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.UUID
 import scala.util.Random
 import testdb.all_scalar_types.AllScalarTypesRepoImpl
@@ -22,6 +27,7 @@ import testdb.customers.CustomersRepoImpl
 import testdb.customers.CustomersRow
 import testdb.customers.CustomersRowUnsaved
 import testdb.customtypes.Defaulted
+import testdb.customtypes.Defaulted.UseDefault
 import testdb.order_items.OrderItemsRepoImpl
 import testdb.order_items.OrderItemsRow
 import testdb.order_items.OrderItemsRowUnsaved
@@ -33,46 +39,49 @@ import testdb.products.ProductsId
 import testdb.products.ProductsRepoImpl
 import testdb.products.ProductsRow
 import testdb.products.ProductsRowUnsaved
+import testdb.test_connection.TestConnectionRepoImpl
+import testdb.test_connection.TestConnectionRow
+import testdb.test_connection.TestConnectionRowUnsaved
 
 /** Methods to generate random data for `Ident(TestInsert)` */
 case class TestInsert(random: Random) {
   def AllScalarTypes(
-    colTinyint: Option[Short] = if (random.nextBoolean()) None else Some(random.nextInt(Short.MaxValue).toShort),
-    colSmallint: Option[Short] = if (random.nextBoolean()) None else Some(random.nextInt(Short.MaxValue).toShort),
-    colInt: Option[Int] = if (random.nextBoolean()) None else Some(random.nextInt()),
-    colBigint: Option[Long] = if (random.nextBoolean()) None else Some(random.nextLong()),
-    colDecimal: Option[BigDecimal] = if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble())),
-    colNumeric: Option[BigDecimal] = if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble())),
-    colMoney: Option[BigDecimal] = if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble())),
-    colSmallmoney: Option[BigDecimal] = if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble())),
-    colReal: Option[Float] = if (random.nextBoolean()) None else Some(random.nextFloat()),
-    colFloat: Option[Double] = if (random.nextBoolean()) None else Some(random.nextDouble()),
-    colBit: Option[Boolean] = if (random.nextBoolean()) None else Some(random.nextBoolean()),
-    colChar: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    colVarchar: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    colVarcharMax: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    colText: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    colNchar: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    colNvarchar: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    colNvarcharMax: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    colNtext: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
+    colTinyint: Option[Uint1] = (if (random.nextBoolean()) None else Some(Uint1.of(random.nextInt(256)))),
+    colSmallint: Option[Short] = (if (random.nextBoolean()) None else Some(random.nextInt(Short.MaxValue).toShort)),
+    colInt: Option[Int] = (if (random.nextBoolean()) None else Some(random.nextInt())),
+    colBigint: Option[Long] = (if (random.nextBoolean()) None else Some(random.nextLong())),
+    colDecimal: Option[BigDecimal] = (if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble()))),
+    colNumeric: Option[BigDecimal] = (if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble()))),
+    colMoney: Option[BigDecimal] = (if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble()))),
+    colSmallmoney: Option[BigDecimal] = (if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble()))),
+    colReal: Option[Float] = (if (random.nextBoolean()) None else Some(random.nextFloat())),
+    colFloat: Option[Double] = (if (random.nextBoolean()) None else Some(random.nextDouble())),
+    colBit: Option[Boolean] = (if (random.nextBoolean()) None else Some(random.nextBoolean())),
+    colChar: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(10).mkString)),
+    colVarchar: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString)),
+    colVarcharMax: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString)),
+    colText: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString)),
+    colNchar: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(10).mkString)),
+    colNvarchar: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString)),
+    colNvarcharMax: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString)),
+    colNtext: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString)),
     colBinary: Option[Array[Byte]] = None,
     colVarbinary: Option[Array[Byte]] = None,
     colVarbinaryMax: Option[Array[Byte]] = None,
     colImage: Option[Array[Byte]] = None,
-    colDate: Option[LocalDate] = None,
-    colTime: Option[LocalTime] = None,
-    colDatetime: Option[LocalDateTime] = None,
-    colSmalldatetime: Option[LocalDateTime] = None,
-    colDatetime2: Option[LocalDateTime] = None,
-    colDatetimeoffset: Option[OffsetDateTime] = None,
-    colUniqueidentifier: Option[UUID] = if (random.nextBoolean()) None else Some(UUID.nameUUIDFromBytes{val bs = Array.ofDim[Byte](16); random.nextBytes(bs); bs}),
-    colXml: Option[/* XML */ String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    colJson: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    colHierarchyid: Option[/* HIERARCHYID */ String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
+    colDate: Option[LocalDate] = (if (random.nextBoolean()) None else Some(LocalDate.ofEpochDay(random.nextInt(30000).toLong))),
+    colTime: Option[LocalTime] = (if (random.nextBoolean()) None else Some(LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong))),
+    colDatetime: Option[LocalDateTime] = (if (random.nextBoolean()) None else Some(LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)))),
+    colSmalldatetime: Option[LocalDateTime] = (if (random.nextBoolean()) None else Some(LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)))),
+    colDatetime2: Option[LocalDateTime] = (if (random.nextBoolean()) None else Some(LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)))),
+    colDatetimeoffset: Option[OffsetDateTime] = (if (random.nextBoolean()) None else Some(OffsetDateTime.of(LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)), ZoneOffset.ofHours(random.nextInt(24) - 12)))),
+    colUniqueidentifier: Option[UUID] = (if (random.nextBoolean()) None else Some(UUID.nameUUIDFromBytes{val bs = Array.ofDim[Byte](16); random.nextBytes(bs); bs})),
+    colXml: Option[Xml] = (if (random.nextBoolean()) None else Some(new Xml("<root/>"))),
+    colJson: Option[Json] = (if (random.nextBoolean()) None else Some(new Json("{}"))),
+    colHierarchyid: Option[HierarchyId] = None,
     colGeography: Option[Geography] = None,
     colGeometry: Option[Geometry] = None,
-    colNotNull: Defaulted[String] = Defaulted.UseDefault()
+    colNotNull: Defaulted[String] = new UseDefault()
   )(using c: Connection): AllScalarTypesRow = {
     (new AllScalarTypesRepoImpl()).insert(new AllScalarTypesRowUnsaved(
       colTinyint = colTinyint,
@@ -117,7 +126,7 @@ case class TestInsert(random: Random) {
   def Customers(
     name: String = random.alphanumeric.take(20).mkString,
     email: String = random.alphanumeric.take(20).mkString,
-    createdAt: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault()
+    createdAt: Defaulted[Option[LocalDateTime]] = new UseDefault()
   )(using c: Connection): CustomersRow = (new CustomersRepoImpl()).insert(new CustomersRowUnsaved(name = name, email = email, createdAt = createdAt))(using c)
 
   def OrderItems(
@@ -137,12 +146,17 @@ case class TestInsert(random: Random) {
   def Orders(
     customerId: CustomersId,
     totalAmount: BigDecimal = BigDecimal.decimal(random.nextDouble()),
-    orderDate: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault()
+    orderDate: Defaulted[Option[LocalDateTime]] = new UseDefault()
   )(using c: Connection): OrdersRow = (new OrdersRepoImpl()).insert(new OrdersRowUnsaved(customerId = customerId, totalAmount = totalAmount, orderDate = orderDate))(using c)
 
   def Products(
     name: String = random.alphanumeric.take(20).mkString,
     price: BigDecimal = BigDecimal.decimal(random.nextDouble()),
-    description: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString)
+    description: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString))
   )(using c: Connection): ProductsRow = (new ProductsRepoImpl()).insert(new ProductsRowUnsaved(name = name, price = price, description = description))(using c)
+
+  def TestConnection(
+    message: String = random.alphanumeric.take(20).mkString,
+    createdAt: Defaulted[Option[LocalDateTime]] = new UseDefault()
+  )(using c: Connection): TestConnectionRow = (new TestConnectionRepoImpl()).insert(new TestConnectionRowUnsaved(message = message, createdAt = createdAt))(using c)
 }

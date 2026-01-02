@@ -6,6 +6,7 @@
 package testdb.shipping_carriers
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 
@@ -22,7 +23,7 @@ case class ShippingCarriersRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("api_config") apiConfig: Defaulted[Option[String]] = new UseDefault(),
+  @JsonProperty("api_config") apiConfig: Defaulted[Option[Json]] = new UseDefault(),
   /** Default: 1
 
    */
@@ -30,7 +31,7 @@ case class ShippingCarriersRowUnsaved(
 ) {
   def toRow(
     trackingUrlTemplateDefault: => Option[String],
-    apiConfigDefault: => Option[String],
+    apiConfigDefault: => Option[Json],
     isActiveDefault: => Boolean,
     carrierIdDefault: => ShippingCarriersId
   ): ShippingCarriersRow = {

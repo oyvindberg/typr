@@ -8,14 +8,20 @@ package testdb.all_scalar_types
 import dev.typr.foundations.DuckDbTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.data.Json
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint2
+import dev.typr.foundations.data.Uint4
+import dev.typr.foundations.data.Uint8
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr26
 import java.math.BigInteger
 import java.time.Duration
 import java.time.LocalDate
@@ -25,383 +31,378 @@ import java.time.OffsetDateTime
 import java.util.UUID
 import testdb.Mood
 
-trait AllScalarTypesFields extends FieldsExpr0[AllScalarTypesRow] {
-  def id: IdField[AllScalarTypesId, AllScalarTypesRow]
+class AllScalarTypesFields(val `_path`: java.util.List[Path]) extends TupleExpr26[AllScalarTypesId, Byte, Short, Int, Long, BigInteger, Uint1, Uint2, Uint4, Uint8, Float, Double, BigDecimal, Boolean, String, String, Array[Byte], LocalDate, LocalTime, LocalDateTime, OffsetDateTime, Duration, UUID, Json, Mood, String] with RelationStructure[AllScalarTypesFields, AllScalarTypesRow]  with FieldsBase[AllScalarTypesRow] {
+  def id: IdField[AllScalarTypesId, AllScalarTypesRow] = {
+    new IdField[AllScalarTypesId, AllScalarTypesRow](
+      _path,
+      "id",
+      _.id,
+      None,
+      Some("INTEGER"),
+      (row, value) => row.copy(id = value),
+      AllScalarTypesId.duckDbType
+    )
+  }
 
-  def colTinyint: OptField[Byte, AllScalarTypesRow]
+  def colTinyint: OptField[Byte, AllScalarTypesRow] = {
+    new OptField[Byte, AllScalarTypesRow](
+      _path,
+      "col_tinyint",
+      _.colTinyint,
+      None,
+      Some("TINYINT"),
+      (row, value) => row.copy(colTinyint = value),
+      ScalaDbTypes.DuckDbTypes.tinyint
+    )
+  }
 
-  def colSmallint: OptField[Short, AllScalarTypesRow]
+  def colSmallint: OptField[Short, AllScalarTypesRow] = {
+    new OptField[Short, AllScalarTypesRow](
+      _path,
+      "col_smallint",
+      _.colSmallint,
+      None,
+      Some("SMALLINT"),
+      (row, value) => row.copy(colSmallint = value),
+      ScalaDbTypes.DuckDbTypes.smallint
+    )
+  }
 
-  def colInteger: OptField[Int, AllScalarTypesRow]
+  def colInteger: OptField[Int, AllScalarTypesRow] = {
+    new OptField[Int, AllScalarTypesRow](
+      _path,
+      "col_integer",
+      _.colInteger,
+      None,
+      Some("INTEGER"),
+      (row, value) => row.copy(colInteger = value),
+      ScalaDbTypes.DuckDbTypes.integer
+    )
+  }
 
-  def colBigint: OptField[Long, AllScalarTypesRow]
+  def colBigint: OptField[Long, AllScalarTypesRow] = {
+    new OptField[Long, AllScalarTypesRow](
+      _path,
+      "col_bigint",
+      _.colBigint,
+      None,
+      Some("BIGINT"),
+      (row, value) => row.copy(colBigint = value),
+      ScalaDbTypes.DuckDbTypes.bigint
+    )
+  }
 
-  def colHugeint: OptField[BigInteger, AllScalarTypesRow]
+  def colHugeint: OptField[BigInteger, AllScalarTypesRow] = {
+    new OptField[BigInteger, AllScalarTypesRow](
+      _path,
+      "col_hugeint",
+      _.colHugeint,
+      None,
+      Some("HUGEINT"),
+      (row, value) => row.copy(colHugeint = value),
+      DuckDbTypes.hugeint
+    )
+  }
 
-  def colUtinyint: OptField[Short, AllScalarTypesRow]
+  def colUtinyint: OptField[Uint1, AllScalarTypesRow] = {
+    new OptField[Uint1, AllScalarTypesRow](
+      _path,
+      "col_utinyint",
+      _.colUtinyint,
+      None,
+      Some("UTINYINT"),
+      (row, value) => row.copy(colUtinyint = value),
+      DuckDbTypes.utinyint
+    )
+  }
 
-  def colUsmallint: OptField[Int, AllScalarTypesRow]
+  def colUsmallint: OptField[Uint2, AllScalarTypesRow] = {
+    new OptField[Uint2, AllScalarTypesRow](
+      _path,
+      "col_usmallint",
+      _.colUsmallint,
+      None,
+      Some("USMALLINT"),
+      (row, value) => row.copy(colUsmallint = value),
+      DuckDbTypes.usmallint
+    )
+  }
 
-  def colUinteger: OptField[Long, AllScalarTypesRow]
+  def colUinteger: OptField[Uint4, AllScalarTypesRow] = {
+    new OptField[Uint4, AllScalarTypesRow](
+      _path,
+      "col_uinteger",
+      _.colUinteger,
+      None,
+      Some("UINTEGER"),
+      (row, value) => row.copy(colUinteger = value),
+      DuckDbTypes.uinteger
+    )
+  }
 
-  def colUbigint: OptField[BigInteger, AllScalarTypesRow]
+  def colUbigint: OptField[Uint8, AllScalarTypesRow] = {
+    new OptField[Uint8, AllScalarTypesRow](
+      _path,
+      "col_ubigint",
+      _.colUbigint,
+      None,
+      Some("UBIGINT"),
+      (row, value) => row.copy(colUbigint = value),
+      DuckDbTypes.ubigint
+    )
+  }
 
-  def colFloat: OptField[Float, AllScalarTypesRow]
+  def colFloat: OptField[Float, AllScalarTypesRow] = {
+    new OptField[Float, AllScalarTypesRow](
+      _path,
+      "col_float",
+      _.colFloat,
+      None,
+      Some("FLOAT"),
+      (row, value) => row.copy(colFloat = value),
+      ScalaDbTypes.DuckDbTypes.float_
+    )
+  }
 
-  def colDouble: OptField[Double, AllScalarTypesRow]
+  def colDouble: OptField[Double, AllScalarTypesRow] = {
+    new OptField[Double, AllScalarTypesRow](
+      _path,
+      "col_double",
+      _.colDouble,
+      None,
+      Some("DOUBLE"),
+      (row, value) => row.copy(colDouble = value),
+      ScalaDbTypes.DuckDbTypes.double_
+    )
+  }
 
-  def colDecimal: OptField[BigDecimal, AllScalarTypesRow]
+  def colDecimal: OptField[BigDecimal, AllScalarTypesRow] = {
+    new OptField[BigDecimal, AllScalarTypesRow](
+      _path,
+      "col_decimal",
+      _.colDecimal,
+      None,
+      Some("DECIMAL(10,2)"),
+      (row, value) => row.copy(colDecimal = value),
+      ScalaDbTypes.DuckDbTypes.numeric
+    )
+  }
 
-  def colBoolean: OptField[Boolean, AllScalarTypesRow]
+  def colBoolean: OptField[Boolean, AllScalarTypesRow] = {
+    new OptField[Boolean, AllScalarTypesRow](
+      _path,
+      "col_boolean",
+      _.colBoolean,
+      None,
+      None,
+      (row, value) => row.copy(colBoolean = value),
+      ScalaDbTypes.DuckDbTypes.boolean_
+    )
+  }
 
-  def colVarchar: OptField[String, AllScalarTypesRow]
+  def colVarchar: OptField[String, AllScalarTypesRow] = {
+    new OptField[String, AllScalarTypesRow](
+      _path,
+      "col_varchar",
+      _.colVarchar,
+      None,
+      None,
+      (row, value) => row.copy(colVarchar = value),
+      DuckDbTypes.varchar
+    )
+  }
 
-  def colText: OptField[String, AllScalarTypesRow]
+  def colText: OptField[String, AllScalarTypesRow] = {
+    new OptField[String, AllScalarTypesRow](
+      _path,
+      "col_text",
+      _.colText,
+      None,
+      None,
+      (row, value) => row.copy(colText = value),
+      DuckDbTypes.varchar
+    )
+  }
 
-  def colBlob: OptField[Array[Byte], AllScalarTypesRow]
+  def colBlob: OptField[Array[Byte], AllScalarTypesRow] = {
+    new OptField[Array[Byte], AllScalarTypesRow](
+      _path,
+      "col_blob",
+      _.colBlob,
+      None,
+      Some("BLOB"),
+      (row, value) => row.copy(colBlob = value),
+      DuckDbTypes.blob
+    )
+  }
 
-  def colDate: OptField[LocalDate, AllScalarTypesRow]
+  def colDate: OptField[LocalDate, AllScalarTypesRow] = {
+    new OptField[LocalDate, AllScalarTypesRow](
+      _path,
+      "col_date",
+      _.colDate,
+      None,
+      Some("DATE"),
+      (row, value) => row.copy(colDate = value),
+      DuckDbTypes.date
+    )
+  }
 
-  def colTime: OptField[LocalTime, AllScalarTypesRow]
+  def colTime: OptField[LocalTime, AllScalarTypesRow] = {
+    new OptField[LocalTime, AllScalarTypesRow](
+      _path,
+      "col_time",
+      _.colTime,
+      None,
+      Some("TIME"),
+      (row, value) => row.copy(colTime = value),
+      DuckDbTypes.time
+    )
+  }
 
-  def colTimestamp: OptField[LocalDateTime, AllScalarTypesRow]
+  def colTimestamp: OptField[LocalDateTime, AllScalarTypesRow] = {
+    new OptField[LocalDateTime, AllScalarTypesRow](
+      _path,
+      "col_timestamp",
+      _.colTimestamp,
+      None,
+      Some("TIMESTAMP"),
+      (row, value) => row.copy(colTimestamp = value),
+      DuckDbTypes.timestamp
+    )
+  }
 
-  def colTimestamptz: OptField[OffsetDateTime, AllScalarTypesRow]
+  def colTimestamptz: OptField[OffsetDateTime, AllScalarTypesRow] = {
+    new OptField[OffsetDateTime, AllScalarTypesRow](
+      _path,
+      "col_timestamptz",
+      _.colTimestamptz,
+      None,
+      Some("TIMESTAMP WITH TIME ZONE"),
+      (row, value) => row.copy(colTimestamptz = value),
+      DuckDbTypes.timestamptz
+    )
+  }
 
-  def colInterval: OptField[Duration, AllScalarTypesRow]
+  def colInterval: OptField[Duration, AllScalarTypesRow] = {
+    new OptField[Duration, AllScalarTypesRow](
+      _path,
+      "col_interval",
+      _.colInterval,
+      None,
+      Some("INTERVAL"),
+      (row, value) => row.copy(colInterval = value),
+      DuckDbTypes.interval
+    )
+  }
 
-  def colUuid: OptField[UUID, AllScalarTypesRow]
+  def colUuid: OptField[UUID, AllScalarTypesRow] = {
+    new OptField[UUID, AllScalarTypesRow](
+      _path,
+      "col_uuid",
+      _.colUuid,
+      None,
+      Some("UUID"),
+      (row, value) => row.copy(colUuid = value),
+      DuckDbTypes.uuid
+    )
+  }
 
-  def colJson: OptField[Json, AllScalarTypesRow]
+  def colJson: OptField[Json, AllScalarTypesRow] = {
+    new OptField[Json, AllScalarTypesRow](
+      _path,
+      "col_json",
+      _.colJson,
+      None,
+      Some("JSON"),
+      (row, value) => row.copy(colJson = value),
+      DuckDbTypes.json
+    )
+  }
 
-  def colMood: OptField[Mood, AllScalarTypesRow]
+  def colMood: OptField[Mood, AllScalarTypesRow] = {
+    new OptField[Mood, AllScalarTypesRow](
+      _path,
+      "col_mood",
+      _.colMood,
+      None,
+      Some("mood"),
+      (row, value) => row.copy(colMood = value),
+      Mood.duckDbType
+    )
+  }
 
-  def colNotNull: Field[String, AllScalarTypesRow]
+  def colNotNull: Field[String, AllScalarTypesRow] = {
+    new Field[String, AllScalarTypesRow](
+      _path,
+      "col_not_null",
+      _.colNotNull,
+      None,
+      None,
+      (row, value) => row.copy(colNotNull = value),
+      DuckDbTypes.varchar
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, AllScalarTypesRow]]
+  override def columns: java.util.List[FieldLike[?, AllScalarTypesRow]] = java.util.List.of(this.id.underlying, this.colTinyint.underlying, this.colSmallint.underlying, this.colInteger.underlying, this.colBigint.underlying, this.colHugeint.underlying, this.colUtinyint.underlying, this.colUsmallint.underlying, this.colUinteger.underlying, this.colUbigint.underlying, this.colFloat.underlying, this.colDouble.underlying, this.colDecimal.underlying, this.colBoolean.underlying, this.colVarchar.underlying, this.colText.underlying, this.colBlob.underlying, this.colDate.underlying, this.colTime.underlying, this.colTimestamp.underlying, this.colTimestamptz.underlying, this.colInterval.underlying, this.colUuid.underlying, this.colJson.underlying, this.colMood.underlying, this.colNotNull.underlying)
 
   override def rowParser: RowParser[AllScalarTypesRow] = AllScalarTypesRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[AllScalarTypesFields, AllScalarTypesRow] = new AllScalarTypesFields(`_path`)
+
+  override def `_1`: SqlExpr[AllScalarTypesId] = id
+
+  override def `_2`: SqlExpr[Byte] = colTinyint
+
+  override def `_3`: SqlExpr[Short] = colSmallint
+
+  override def `_4`: SqlExpr[Int] = colInteger
+
+  override def `_5`: SqlExpr[Long] = colBigint
+
+  override def `_6`: SqlExpr[BigInteger] = colHugeint
+
+  override def `_7`: SqlExpr[Uint1] = colUtinyint
+
+  override def `_8`: SqlExpr[Uint2] = colUsmallint
+
+  override def `_9`: SqlExpr[Uint4] = colUinteger
+
+  override def `_10`: SqlExpr[Uint8] = colUbigint
+
+  override def `_11`: SqlExpr[Float] = colFloat
+
+  override def `_12`: SqlExpr[Double] = colDouble
+
+  override def `_13`: SqlExpr[BigDecimal] = colDecimal
+
+  override def `_14`: SqlExpr[Boolean] = colBoolean
+
+  override def `_15`: SqlExpr[String] = colVarchar
+
+  override def `_16`: SqlExpr[String] = colText
+
+  override def `_17`: SqlExpr[Array[Byte]] = colBlob
+
+  override def `_18`: SqlExpr[LocalDate] = colDate
+
+  override def `_19`: SqlExpr[LocalTime] = colTime
+
+  override def `_20`: SqlExpr[LocalDateTime] = colTimestamp
+
+  override def `_21`: SqlExpr[OffsetDateTime] = colTimestamptz
+
+  override def `_22`: SqlExpr[Duration] = colInterval
+
+  override def `_23`: SqlExpr[UUID] = colUuid
+
+  override def `_24`: SqlExpr[Json] = colJson
+
+  override def `_25`: SqlExpr[Mood] = colMood
+
+  override def `_26`: SqlExpr[String] = colNotNull
 }
 
 object AllScalarTypesFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends AllScalarTypesFields with RelationStructure[AllScalarTypesFields, AllScalarTypesRow] {
-
-    override def id: IdField[AllScalarTypesId, AllScalarTypesRow] = {
-      new IdField[AllScalarTypesId, AllScalarTypesRow](
-        _path,
-        "id",
-        _.id,
-        None,
-        Some("INTEGER"),
-        (row, value) => row.copy(id = value),
-        AllScalarTypesId.duckDbType
-      )
-    }
-
-    override def colTinyint: OptField[Byte, AllScalarTypesRow] = {
-      new OptField[Byte, AllScalarTypesRow](
-        _path,
-        "col_tinyint",
-        _.colTinyint,
-        None,
-        Some("TINYINT"),
-        (row, value) => row.copy(colTinyint = value),
-        ScalaDbTypes.DuckDbTypes.tinyint
-      )
-    }
-
-    override def colSmallint: OptField[Short, AllScalarTypesRow] = {
-      new OptField[Short, AllScalarTypesRow](
-        _path,
-        "col_smallint",
-        _.colSmallint,
-        None,
-        Some("SMALLINT"),
-        (row, value) => row.copy(colSmallint = value),
-        ScalaDbTypes.DuckDbTypes.smallint
-      )
-    }
-
-    override def colInteger: OptField[Int, AllScalarTypesRow] = {
-      new OptField[Int, AllScalarTypesRow](
-        _path,
-        "col_integer",
-        _.colInteger,
-        None,
-        Some("INTEGER"),
-        (row, value) => row.copy(colInteger = value),
-        ScalaDbTypes.DuckDbTypes.integer
-      )
-    }
-
-    override def colBigint: OptField[Long, AllScalarTypesRow] = {
-      new OptField[Long, AllScalarTypesRow](
-        _path,
-        "col_bigint",
-        _.colBigint,
-        None,
-        Some("BIGINT"),
-        (row, value) => row.copy(colBigint = value),
-        ScalaDbTypes.DuckDbTypes.bigint
-      )
-    }
-
-    override def colHugeint: OptField[BigInteger, AllScalarTypesRow] = {
-      new OptField[BigInteger, AllScalarTypesRow](
-        _path,
-        "col_hugeint",
-        _.colHugeint,
-        None,
-        Some("HUGEINT"),
-        (row, value) => row.copy(colHugeint = value),
-        DuckDbTypes.hugeint
-      )
-    }
-
-    override def colUtinyint: OptField[Short, AllScalarTypesRow] = {
-      new OptField[Short, AllScalarTypesRow](
-        _path,
-        "col_utinyint",
-        _.colUtinyint,
-        None,
-        Some("UTINYINT"),
-        (row, value) => row.copy(colUtinyint = value),
-        ScalaDbTypes.DuckDbTypes.smallint
-      )
-    }
-
-    override def colUsmallint: OptField[Int, AllScalarTypesRow] = {
-      new OptField[Int, AllScalarTypesRow](
-        _path,
-        "col_usmallint",
-        _.colUsmallint,
-        None,
-        Some("USMALLINT"),
-        (row, value) => row.copy(colUsmallint = value),
-        ScalaDbTypes.DuckDbTypes.integer
-      )
-    }
-
-    override def colUinteger: OptField[Long, AllScalarTypesRow] = {
-      new OptField[Long, AllScalarTypesRow](
-        _path,
-        "col_uinteger",
-        _.colUinteger,
-        None,
-        Some("UINTEGER"),
-        (row, value) => row.copy(colUinteger = value),
-        ScalaDbTypes.DuckDbTypes.bigint
-      )
-    }
-
-    override def colUbigint: OptField[BigInteger, AllScalarTypesRow] = {
-      new OptField[BigInteger, AllScalarTypesRow](
-        _path,
-        "col_ubigint",
-        _.colUbigint,
-        None,
-        Some("UBIGINT"),
-        (row, value) => row.copy(colUbigint = value),
-        DuckDbTypes.ubigint
-      )
-    }
-
-    override def colFloat: OptField[Float, AllScalarTypesRow] = {
-      new OptField[Float, AllScalarTypesRow](
-        _path,
-        "col_float",
-        _.colFloat,
-        None,
-        Some("FLOAT"),
-        (row, value) => row.copy(colFloat = value),
-        ScalaDbTypes.DuckDbTypes.float_
-      )
-    }
-
-    override def colDouble: OptField[Double, AllScalarTypesRow] = {
-      new OptField[Double, AllScalarTypesRow](
-        _path,
-        "col_double",
-        _.colDouble,
-        None,
-        Some("DOUBLE"),
-        (row, value) => row.copy(colDouble = value),
-        ScalaDbTypes.DuckDbTypes.double_
-      )
-    }
-
-    override def colDecimal: OptField[BigDecimal, AllScalarTypesRow] = {
-      new OptField[BigDecimal, AllScalarTypesRow](
-        _path,
-        "col_decimal",
-        _.colDecimal,
-        None,
-        Some("DECIMAL(10,2)"),
-        (row, value) => row.copy(colDecimal = value),
-        ScalaDbTypes.DuckDbTypes.numeric
-      )
-    }
-
-    override def colBoolean: OptField[Boolean, AllScalarTypesRow] = {
-      new OptField[Boolean, AllScalarTypesRow](
-        _path,
-        "col_boolean",
-        _.colBoolean,
-        None,
-        None,
-        (row, value) => row.copy(colBoolean = value),
-        ScalaDbTypes.DuckDbTypes.boolean_
-      )
-    }
-
-    override def colVarchar: OptField[String, AllScalarTypesRow] = {
-      new OptField[String, AllScalarTypesRow](
-        _path,
-        "col_varchar",
-        _.colVarchar,
-        None,
-        None,
-        (row, value) => row.copy(colVarchar = value),
-        DuckDbTypes.varchar
-      )
-    }
-
-    override def colText: OptField[String, AllScalarTypesRow] = {
-      new OptField[String, AllScalarTypesRow](
-        _path,
-        "col_text",
-        _.colText,
-        None,
-        None,
-        (row, value) => row.copy(colText = value),
-        DuckDbTypes.varchar
-      )
-    }
-
-    override def colBlob: OptField[Array[Byte], AllScalarTypesRow] = {
-      new OptField[Array[Byte], AllScalarTypesRow](
-        _path,
-        "col_blob",
-        _.colBlob,
-        None,
-        Some("BLOB"),
-        (row, value) => row.copy(colBlob = value),
-        DuckDbTypes.blob
-      )
-    }
-
-    override def colDate: OptField[LocalDate, AllScalarTypesRow] = {
-      new OptField[LocalDate, AllScalarTypesRow](
-        _path,
-        "col_date",
-        _.colDate,
-        None,
-        Some("DATE"),
-        (row, value) => row.copy(colDate = value),
-        DuckDbTypes.date
-      )
-    }
-
-    override def colTime: OptField[LocalTime, AllScalarTypesRow] = {
-      new OptField[LocalTime, AllScalarTypesRow](
-        _path,
-        "col_time",
-        _.colTime,
-        None,
-        Some("TIME"),
-        (row, value) => row.copy(colTime = value),
-        DuckDbTypes.time
-      )
-    }
-
-    override def colTimestamp: OptField[LocalDateTime, AllScalarTypesRow] = {
-      new OptField[LocalDateTime, AllScalarTypesRow](
-        _path,
-        "col_timestamp",
-        _.colTimestamp,
-        None,
-        Some("TIMESTAMP"),
-        (row, value) => row.copy(colTimestamp = value),
-        DuckDbTypes.timestamp
-      )
-    }
-
-    override def colTimestamptz: OptField[OffsetDateTime, AllScalarTypesRow] = {
-      new OptField[OffsetDateTime, AllScalarTypesRow](
-        _path,
-        "col_timestamptz",
-        _.colTimestamptz,
-        None,
-        Some("TIMESTAMP WITH TIME ZONE"),
-        (row, value) => row.copy(colTimestamptz = value),
-        DuckDbTypes.timestamptz
-      )
-    }
-
-    override def colInterval: OptField[Duration, AllScalarTypesRow] = {
-      new OptField[Duration, AllScalarTypesRow](
-        _path,
-        "col_interval",
-        _.colInterval,
-        None,
-        Some("INTERVAL"),
-        (row, value) => row.copy(colInterval = value),
-        DuckDbTypes.interval
-      )
-    }
-
-    override def colUuid: OptField[UUID, AllScalarTypesRow] = {
-      new OptField[UUID, AllScalarTypesRow](
-        _path,
-        "col_uuid",
-        _.colUuid,
-        None,
-        Some("UUID"),
-        (row, value) => row.copy(colUuid = value),
-        DuckDbTypes.uuid
-      )
-    }
-
-    override def colJson: OptField[Json, AllScalarTypesRow] = {
-      new OptField[Json, AllScalarTypesRow](
-        _path,
-        "col_json",
-        _.colJson,
-        None,
-        Some("JSON"),
-        (row, value) => row.copy(colJson = value),
-        DuckDbTypes.json
-      )
-    }
-
-    override def colMood: OptField[Mood, AllScalarTypesRow] = {
-      new OptField[Mood, AllScalarTypesRow](
-        _path,
-        "col_mood",
-        _.colMood,
-        None,
-        Some("mood"),
-        (row, value) => row.copy(colMood = value),
-        Mood.duckDbType
-      )
-    }
-
-    override def colNotNull: Field[String, AllScalarTypesRow] = {
-      new Field[String, AllScalarTypesRow](
-        _path,
-        "col_not_null",
-        _.colNotNull,
-        None,
-        None,
-        (row, value) => row.copy(colNotNull = value),
-        DuckDbTypes.varchar
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, AllScalarTypesRow]] = java.util.List.of(this.id.underlying, this.colTinyint.underlying, this.colSmallint.underlying, this.colInteger.underlying, this.colBigint.underlying, this.colHugeint.underlying, this.colUtinyint.underlying, this.colUsmallint.underlying, this.colUinteger.underlying, this.colUbigint.underlying, this.colFloat.underlying, this.colDouble.underlying, this.colDecimal.underlying, this.colBoolean.underlying, this.colVarchar.underlying, this.colText.underlying, this.colBlob.underlying, this.colDate.underlying, this.colTime.underlying, this.colTimestamp.underlying, this.colTimestamptz.underlying, this.colInterval.underlying, this.colUuid.underlying, this.colJson.underlying, this.colMood.underlying, this.colNotNull.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[AllScalarTypesFields, AllScalarTypesRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: AllScalarTypesFields = new AllScalarTypesFields(java.util.Collections.emptyList())
 }

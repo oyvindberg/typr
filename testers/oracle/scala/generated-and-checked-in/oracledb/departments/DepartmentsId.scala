@@ -9,12 +9,17 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple2
 
 /** Type for the composite primary key of table `DEPARTMENTS` */
 case class DepartmentsId(
   @JsonProperty("DEPT_CODE") deptCode: String,
   @JsonProperty("DEPT_REGION") deptRegion: String
-)
+) extends Tuple2[String, String] {
+  override def `_1`: String = deptCode
+
+  override def `_2`: String = deptRegion
+}
 
 object DepartmentsId {
   val `_rowParser`: RowParser[DepartmentsId] = RowParsers.of(OracleTypes.varchar2, OracleTypes.varchar2, DepartmentsId.apply, row => Array[Any](row.deptCode, row.deptRegion))

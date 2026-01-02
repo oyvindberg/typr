@@ -32,7 +32,7 @@ object MariaDbAdapter extends DbAdapter {
   val Types: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.MariaTypes")
   val TypeClass: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.MariaType")
   val TextClass: jvm.Type.Qualified = jvm.Type.Qualified("dev.typr.foundations.MariaText")
-  val typeFieldName: jvm.Ident = jvm.Ident("pgType") // Keep same name for compatibility
+  val typeFieldName: jvm.Ident = jvm.Ident("dbType")
   val textFieldName: jvm.Ident = jvm.Ident("mariaText")
   def dialectRef(lang: Lang): Code = code"${lang.dsl.Dialect}.MARIADB"
 
@@ -50,7 +50,7 @@ object MariaDbAdapter extends DbAdapter {
       case TypoType.UserDefined(_, _, userType) =>
         userType match {
           case Left(qualifiedType) =>
-            // Qualified user types must provide their own pgType/mariaType field
+            // Qualified user types must provide their own dbType field
             code"$qualifiedType.$typeFieldName"
           case Right(primitive) =>
             // Well-known primitives use the adapter's lookup
@@ -112,10 +112,10 @@ object MariaDbAdapter extends DbAdapter {
           case db.MariaType.MediumInt         => primitiveType("mediumint")
           case db.MariaType.Int               => primitiveType("int_")
           case db.MariaType.BigInt            => primitiveType("bigint")
-          case db.MariaType.TinyIntUnsigned   => primitiveType("tinyintUnsigned")
-          case db.MariaType.SmallIntUnsigned  => primitiveType("smallintUnsigned")
-          case db.MariaType.MediumIntUnsigned => primitiveType("mediumintUnsigned")
-          case db.MariaType.IntUnsigned       => primitiveType("intUnsigned")
+          case db.MariaType.TinyIntUnsigned   => code"$Types.tinyintUnsigned" // Uint1 (0-255)
+          case db.MariaType.SmallIntUnsigned  => code"$Types.smallintUnsigned" // Uint2 (0-65535)
+          case db.MariaType.MediumIntUnsigned => code"$Types.mediumintUnsigned" // Uint4 (0-16777215)
+          case db.MariaType.IntUnsigned       => code"$Types.intUnsigned" // Uint4 (0-4294967295)
           case db.MariaType.Float             => primitiveType("float_")
           case db.MariaType.Double            => primitiveType("double_")
           case db.MariaType.Decimal(_, _)     => primitiveType("numeric")
@@ -222,4 +222,25 @@ object MariaDbAdapter extends DbAdapter {
 
   def returningClause(columns: Code): Code =
     code"RETURNING $columns"
+
+  /** MariaDB doesn't support DEFAULT VALUES syntax. Use () VALUES () instead */
+  override def insertDefaultValuesReturning(
+      tableName: Code,
+      returningCols: NonEmptyList[ComputedColumn]
+  ): Code = {
+    val returning = returningClause(returningColumns(returningCols))
+    code"""|insert into $tableName() values ()
+           |$returning
+           |""".stripMargin
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LAYER 5: Schema DDL
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  def dropSchemaDdl(schemaName: String, cascade: Boolean): String =
+    s"DROP DATABASE IF EXISTS $schemaName"
+
+  def createSchemaDdl(schemaName: String): String =
+    s"CREATE DATABASE IF NOT EXISTS $schemaName"
 }

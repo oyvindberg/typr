@@ -7,72 +7,70 @@ package testdb.warehouses
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr10
 import kotlin.collections.List
 import org.mariadb.jdbc.type.Point
 import org.mariadb.jdbc.type.Polygon
 
-interface WarehousesFields : FieldsExpr<WarehousesRow> {
-  abstract fun address(): Field<String, WarehousesRow>
+data class WarehousesFields(val _path: List<Path>) : TupleExpr10<WarehousesId, String, String, String, Point, Polygon, String, Boolean, String, String>, RelationStructure<WarehousesFields, WarehousesRow>, FieldsBase<WarehousesRow> {
+  override fun _1(): SqlExpr<WarehousesId> = warehouseId()
 
-  abstract fun code(): Field<String, WarehousesRow>
+  override fun _10(): SqlExpr<String> = contactPhone()
 
-  abstract override fun columns(): List<FieldLike<*, WarehousesRow>>
+  override fun _2(): SqlExpr<String> = code()
 
-  abstract fun contactEmail(): OptField<String, WarehousesRow>
+  override fun _3(): SqlExpr<String> = name()
 
-  abstract fun contactPhone(): OptField<String, WarehousesRow>
+  override fun _4(): SqlExpr<String> = address()
 
-  abstract fun isActive(): Field<Boolean, WarehousesRow>
+  override fun _5(): SqlExpr<Point> = location()
 
-  abstract fun location(): Field<Point, WarehousesRow>
+  override fun _6(): SqlExpr<Polygon> = serviceArea()
 
-  abstract fun name(): Field<String, WarehousesRow>
+  override fun _7(): SqlExpr<String> = timezone()
+
+  override fun _8(): SqlExpr<Boolean> = isActive()
+
+  override fun _9(): SqlExpr<String> = contactEmail()
+
+  override fun _path(): List<Path> = _path
+
+  fun address(): Field<String, WarehousesRow> = Field<String, WarehousesRow>(_path, "address", WarehousesRow::address, null, null, { row, value -> row.copy(address = value) }, MariaTypes.varchar)
+
+  fun code(): Field<String, WarehousesRow> = Field<String, WarehousesRow>(_path, "code", WarehousesRow::code, null, null, { row, value -> row.copy(code = value) }, MariaTypes.char_)
+
+  override fun columns(): List<FieldLike<*, WarehousesRow>> = listOf(this.warehouseId().underlying, this.code().underlying, this.name().underlying, this.address().underlying, this.location().underlying, this.serviceArea().underlying, this.timezone().underlying, this.isActive().underlying, this.contactEmail().underlying, this.contactPhone().underlying)
+
+  fun contactEmail(): OptField<String, WarehousesRow> = OptField<String, WarehousesRow>(_path, "contact_email", WarehousesRow::contactEmail, null, null, { row, value -> row.copy(contactEmail = value) }, MariaTypes.varchar)
+
+  fun contactPhone(): OptField<String, WarehousesRow> = OptField<String, WarehousesRow>(_path, "contact_phone", WarehousesRow::contactPhone, null, null, { row, value -> row.copy(contactPhone = value) }, MariaTypes.varchar)
+
+  fun isActive(): Field<Boolean, WarehousesRow> = Field<Boolean, WarehousesRow>(_path, "is_active", WarehousesRow::isActive, null, null, { row, value -> row.copy(isActive = value) }, KotlinDbTypes.MariaTypes.bool)
+
+  fun location(): Field<Point, WarehousesRow> = Field<Point, WarehousesRow>(_path, "location", WarehousesRow::location, null, null, { row, value -> row.copy(location = value) }, MariaTypes.point)
+
+  fun name(): Field<String, WarehousesRow> = Field<String, WarehousesRow>(_path, "name", WarehousesRow::name, null, null, { row, value -> row.copy(name = value) }, MariaTypes.varchar)
 
   override fun rowParser(): RowParser<WarehousesRow> = WarehousesRow._rowParser.underlying
 
-  abstract fun serviceArea(): OptField<Polygon, WarehousesRow>
+  fun serviceArea(): OptField<Polygon, WarehousesRow> = OptField<Polygon, WarehousesRow>(_path, "service_area", WarehousesRow::serviceArea, null, null, { row, value -> row.copy(serviceArea = value) }, MariaTypes.polygon)
 
-  abstract fun timezone(): Field<String, WarehousesRow>
+  fun timezone(): Field<String, WarehousesRow> = Field<String, WarehousesRow>(_path, "timezone", WarehousesRow::timezone, null, null, { row, value -> row.copy(timezone = value) }, MariaTypes.varchar)
 
-  abstract fun warehouseId(): IdField<WarehousesId, WarehousesRow>
+  fun warehouseId(): IdField<WarehousesId, WarehousesRow> = IdField<WarehousesId, WarehousesRow>(_path, "warehouse_id", WarehousesRow::warehouseId, null, null, { row, value -> row.copy(warehouseId = value) }, WarehousesId.dbType)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<WarehousesFields, WarehousesRow> = WarehousesFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : WarehousesFields, RelationStructure<WarehousesFields, WarehousesRow> {
-      override fun warehouseId(): IdField<WarehousesId, WarehousesRow> = IdField<WarehousesId, WarehousesRow>(_path, "warehouse_id", WarehousesRow::warehouseId, null, null, { row, value -> row.copy(warehouseId = value) }, WarehousesId.pgType)
-
-      override fun code(): Field<String, WarehousesRow> = Field<String, WarehousesRow>(_path, "code", WarehousesRow::code, null, null, { row, value -> row.copy(code = value) }, MariaTypes.char_)
-
-      override fun name(): Field<String, WarehousesRow> = Field<String, WarehousesRow>(_path, "name", WarehousesRow::name, null, null, { row, value -> row.copy(name = value) }, MariaTypes.varchar)
-
-      override fun address(): Field<String, WarehousesRow> = Field<String, WarehousesRow>(_path, "address", WarehousesRow::address, null, null, { row, value -> row.copy(address = value) }, MariaTypes.varchar)
-
-      override fun location(): Field<Point, WarehousesRow> = Field<Point, WarehousesRow>(_path, "location", WarehousesRow::location, null, null, { row, value -> row.copy(location = value) }, MariaTypes.point)
-
-      override fun serviceArea(): OptField<Polygon, WarehousesRow> = OptField<Polygon, WarehousesRow>(_path, "service_area", WarehousesRow::serviceArea, null, null, { row, value -> row.copy(serviceArea = value) }, MariaTypes.polygon)
-
-      override fun timezone(): Field<String, WarehousesRow> = Field<String, WarehousesRow>(_path, "timezone", WarehousesRow::timezone, null, null, { row, value -> row.copy(timezone = value) }, MariaTypes.varchar)
-
-      override fun isActive(): Field<Boolean, WarehousesRow> = Field<Boolean, WarehousesRow>(_path, "is_active", WarehousesRow::isActive, null, null, { row, value -> row.copy(isActive = value) }, KotlinDbTypes.MariaTypes.bool)
-
-      override fun contactEmail(): OptField<String, WarehousesRow> = OptField<String, WarehousesRow>(_path, "contact_email", WarehousesRow::contactEmail, null, null, { row, value -> row.copy(contactEmail = value) }, MariaTypes.varchar)
-
-      override fun contactPhone(): OptField<String, WarehousesRow> = OptField<String, WarehousesRow>(_path, "contact_phone", WarehousesRow::contactPhone, null, null, { row, value -> row.copy(contactPhone = value) }, MariaTypes.varchar)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, WarehousesRow>> = listOf(this.warehouseId().underlying, this.code().underlying, this.name().underlying, this.address().underlying, this.location().underlying, this.serviceArea().underlying, this.timezone().underlying, this.isActive().underlying, this.contactEmail().underlying, this.contactPhone().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<WarehousesFields, WarehousesRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: WarehousesFields = WarehousesFields(emptyList<Path>())
   }
 }

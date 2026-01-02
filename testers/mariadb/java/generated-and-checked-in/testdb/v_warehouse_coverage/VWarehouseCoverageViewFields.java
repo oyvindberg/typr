@@ -7,207 +7,221 @@ package testdb.v_warehouse_coverage;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr10;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import testdb.warehouses.WarehousesId;
 
-public interface VWarehouseCoverageViewFields extends FieldsExpr<VWarehouseCoverageViewRow> {
-  record Impl(List<Path> _path)
-      implements VWarehouseCoverageViewFields,
-          RelationStructure<VWarehouseCoverageViewFields, VWarehouseCoverageViewRow> {
-    @Override
-    public Field<WarehousesId, VWarehouseCoverageViewRow> warehouseId() {
-      return new Field<WarehousesId, VWarehouseCoverageViewRow>(
-          _path,
-          "warehouse_id",
-          VWarehouseCoverageViewRow::warehouseId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withWarehouseId(value),
-          WarehousesId.pgType);
-    }
-    ;
+public class VWarehouseCoverageViewFields
+    extends TupleExpr10<
+        WarehousesId, String, String, String, String, String, String, Boolean, Long, BigDecimal>
+    implements RelationStructure<VWarehouseCoverageViewFields, VWarehouseCoverageViewRow>,
+        FieldsBase<VWarehouseCoverageViewRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, VWarehouseCoverageViewRow> code() {
-      return new Field<String, VWarehouseCoverageViewRow>(
-          _path,
-          "code",
-          VWarehouseCoverageViewRow::code,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCode(value),
-          MariaTypes.char_);
-    }
-    ;
-
-    @Override
-    public Field<String, VWarehouseCoverageViewRow> name() {
-      return new Field<String, VWarehouseCoverageViewRow>(
-          _path,
-          "name",
-          VWarehouseCoverageViewRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, VWarehouseCoverageViewRow> address() {
-      return new Field<String, VWarehouseCoverageViewRow>(
-          _path,
-          "address",
-          VWarehouseCoverageViewRow::address,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withAddress(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, VWarehouseCoverageViewRow> locationWkt() {
-      return new OptField<String, VWarehouseCoverageViewRow>(
-          _path,
-          "location_wkt",
-          VWarehouseCoverageViewRow::locationWkt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withLocationWkt(value),
-          MariaTypes.longtext);
-    }
-    ;
-
-    @Override
-    public OptField<String, VWarehouseCoverageViewRow> serviceAreaWkt() {
-      return new OptField<String, VWarehouseCoverageViewRow>(
-          _path,
-          "service_area_wkt",
-          VWarehouseCoverageViewRow::serviceAreaWkt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withServiceAreaWkt(value),
-          MariaTypes.longtext);
-    }
-    ;
-
-    @Override
-    public Field<String, VWarehouseCoverageViewRow> timezone() {
-      return new Field<String, VWarehouseCoverageViewRow>(
-          _path,
-          "timezone",
-          VWarehouseCoverageViewRow::timezone,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTimezone(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<Boolean, VWarehouseCoverageViewRow> isActive() {
-      return new Field<Boolean, VWarehouseCoverageViewRow>(
-          _path,
-          "is_active",
-          VWarehouseCoverageViewRow::isActive,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withIsActive(value),
-          MariaTypes.bool);
-    }
-    ;
-
-    @Override
-    public Field<Long, VWarehouseCoverageViewRow> productsStocked() {
-      return new Field<Long, VWarehouseCoverageViewRow>(
-          _path,
-          "products_stocked",
-          VWarehouseCoverageViewRow::productsStocked,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withProductsStocked(value),
-          MariaTypes.bigint);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, VWarehouseCoverageViewRow> totalInventory() {
-      return new OptField<BigDecimal, VWarehouseCoverageViewRow>(
-          _path,
-          "total_inventory",
-          VWarehouseCoverageViewRow::totalInventory,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTotalInventory(value),
-          MariaTypes.numeric);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, VWarehouseCoverageViewRow>> columns() {
-      return java.util.List.of(
-          this.warehouseId(),
-          this.code(),
-          this.name(),
-          this.address(),
-          this.locationWkt(),
-          this.serviceAreaWkt(),
-          this.timezone(),
-          this.isActive(),
-          this.productsStocked(),
-          this.totalInventory());
-    }
-    ;
-
-    @Override
-    public RelationStructure<VWarehouseCoverageViewFields, VWarehouseCoverageViewRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public VWarehouseCoverageViewFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static VWarehouseCoverageViewFields structure =
+      new VWarehouseCoverageViewFields(java.util.Collections.emptyList());
+
+  public Field<WarehousesId, VWarehouseCoverageViewRow> warehouseId() {
+    return new Field<WarehousesId, VWarehouseCoverageViewRow>(
+        _path,
+        "warehouse_id",
+        VWarehouseCoverageViewRow::warehouseId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withWarehouseId(value),
+        WarehousesId.dbType);
   }
-  ;
 
-  Field<WarehousesId, VWarehouseCoverageViewRow> warehouseId();
+  public Field<String, VWarehouseCoverageViewRow> code() {
+    return new Field<String, VWarehouseCoverageViewRow>(
+        _path,
+        "code",
+        VWarehouseCoverageViewRow::code,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCode(value),
+        MariaTypes.char_);
+  }
 
-  Field<String, VWarehouseCoverageViewRow> code();
+  public Field<String, VWarehouseCoverageViewRow> name() {
+    return new Field<String, VWarehouseCoverageViewRow>(
+        _path,
+        "name",
+        VWarehouseCoverageViewRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, VWarehouseCoverageViewRow> name();
+  public Field<String, VWarehouseCoverageViewRow> address() {
+    return new Field<String, VWarehouseCoverageViewRow>(
+        _path,
+        "address",
+        VWarehouseCoverageViewRow::address,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withAddress(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, VWarehouseCoverageViewRow> address();
+  public OptField<String, VWarehouseCoverageViewRow> locationWkt() {
+    return new OptField<String, VWarehouseCoverageViewRow>(
+        _path,
+        "location_wkt",
+        VWarehouseCoverageViewRow::locationWkt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withLocationWkt(value),
+        MariaTypes.longtext);
+  }
 
-  OptField<String, VWarehouseCoverageViewRow> locationWkt();
+  public OptField<String, VWarehouseCoverageViewRow> serviceAreaWkt() {
+    return new OptField<String, VWarehouseCoverageViewRow>(
+        _path,
+        "service_area_wkt",
+        VWarehouseCoverageViewRow::serviceAreaWkt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withServiceAreaWkt(value),
+        MariaTypes.longtext);
+  }
 
-  OptField<String, VWarehouseCoverageViewRow> serviceAreaWkt();
+  public Field<String, VWarehouseCoverageViewRow> timezone() {
+    return new Field<String, VWarehouseCoverageViewRow>(
+        _path,
+        "timezone",
+        VWarehouseCoverageViewRow::timezone,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTimezone(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, VWarehouseCoverageViewRow> timezone();
+  public Field<Boolean, VWarehouseCoverageViewRow> isActive() {
+    return new Field<Boolean, VWarehouseCoverageViewRow>(
+        _path,
+        "is_active",
+        VWarehouseCoverageViewRow::isActive,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withIsActive(value),
+        MariaTypes.bool);
+  }
 
-  Field<Boolean, VWarehouseCoverageViewRow> isActive();
+  public Field<Long, VWarehouseCoverageViewRow> productsStocked() {
+    return new Field<Long, VWarehouseCoverageViewRow>(
+        _path,
+        "products_stocked",
+        VWarehouseCoverageViewRow::productsStocked,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withProductsStocked(value),
+        MariaTypes.bigint);
+  }
 
-  Field<Long, VWarehouseCoverageViewRow> productsStocked();
-
-  OptField<BigDecimal, VWarehouseCoverageViewRow> totalInventory();
+  public OptField<BigDecimal, VWarehouseCoverageViewRow> totalInventory() {
+    return new OptField<BigDecimal, VWarehouseCoverageViewRow>(
+        _path,
+        "total_inventory",
+        VWarehouseCoverageViewRow::totalInventory,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTotalInventory(value),
+        MariaTypes.numeric);
+  }
 
   @Override
-  List<FieldLike<?, VWarehouseCoverageViewRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<VWarehouseCoverageViewRow> rowParser() {
+  public List<FieldLike<?, VWarehouseCoverageViewRow>> columns() {
+    return java.util.List.of(
+        this.warehouseId(),
+        this.code(),
+        this.name(),
+        this.address(),
+        this.locationWkt(),
+        this.serviceAreaWkt(),
+        this.timezone(),
+        this.isActive(),
+        this.productsStocked(),
+        this.totalInventory());
+  }
+
+  @Override
+  public RowParser<VWarehouseCoverageViewRow> rowParser() {
     return VWarehouseCoverageViewRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<VWarehouseCoverageViewFields, VWarehouseCoverageViewRow> withPaths(
+      List<Path> _path) {
+    return new VWarehouseCoverageViewFields(_path);
+  }
+
+  @Override
+  public SqlExpr<WarehousesId> _1() {
+    return warehouseId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return code();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return address();
+  }
+
+  @Override
+  public SqlExpr<String> _5() {
+    return locationWkt();
+  }
+
+  @Override
+  public SqlExpr<String> _6() {
+    return serviceAreaWkt();
+  }
+
+  @Override
+  public SqlExpr<String> _7() {
+    return timezone();
+  }
+
+  @Override
+  public SqlExpr<Boolean> _8() {
+    return isActive();
+  }
+
+  @Override
+  public SqlExpr<Long> _9() {
+    return productsStocked();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _10() {
+    return totalInventory();
+  }
 }

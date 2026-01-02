@@ -6,17 +6,20 @@
 package adventureworks.public.title_domain
 
 import dev.typr.foundations.PgText
+import dev.typr.foundations.Tuple.Tuple1
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 
 /** Table: public.title_domain
   * Primary key: code
   */
-data class TitleDomainRow(val code: TitleDomainId) {
+data class TitleDomainRow(val code: TitleDomainId) : Tuple1<TitleDomainId> {
+  override fun _1(): TitleDomainId = code
+
   fun id(): TitleDomainId = code
 
   companion object {
-    val _rowParser: RowParser<TitleDomainRow> = RowParsers.of(TitleDomainId.pgType, { t0 -> TitleDomainRow(t0) }, { row -> arrayOf<Any?>(row.code) })
+    val _rowParser: RowParser<TitleDomainRow> = RowParsers.of(TitleDomainId.dbType, { t0 -> TitleDomainRow(t0) }, { row -> arrayOf<Any?>(row.code) })
 
     val pgText: PgText<TitleDomainRow> =
       PgText.from(_rowParser.underlying)

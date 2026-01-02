@@ -7,6 +7,7 @@ package oracledb.customers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -26,7 +27,17 @@ data class CustomersRow(
   @JsonProperty("CREDIT_LIMIT") val creditLimit: MoneyT?,
   /** Default: SYSTIMESTAMP  */
   @JsonProperty("CREATED_AT") val createdAt: LocalDateTime
-) {
+) : Tuple5<CustomersId, String, AddressT, MoneyT?, LocalDateTime> {
+  override fun _1(): CustomersId = customerId
+
+  override fun _2(): String = name
+
+  override fun _3(): AddressT = billingAddress
+
+  override fun _4(): MoneyT? = creditLimit
+
+  override fun _5(): LocalDateTime = createdAt
+
   fun id(): CustomersId = customerId
 
   fun toUnsavedRow(

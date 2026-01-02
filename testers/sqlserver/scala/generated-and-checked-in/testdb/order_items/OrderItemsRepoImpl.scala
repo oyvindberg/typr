@@ -96,13 +96,13 @@ class OrderItemsRepoImpl extends OrderItemsRepo {
 
   override def upsert(unsaved: OrderItemsRow)(using c: Connection): OrderItemsRow = {
   sql"""MERGE INTO [order_items] AS target
-    USING (VALUES (${Fragment.encode(OrdersId.sqlServerType, unsaved.orderId)}, ${Fragment.encode(ProductsId.sqlServerType, unsaved.productId)}, ${Fragment.encode(ScalaDbTypes.SqlServerTypes.int_, unsaved.quantity)}, ${Fragment.encode(ScalaDbTypes.SqlServerTypes.money, unsaved.price)})) AS source([order_id], [product_id], [quantity], [price])
+    USING (VALUES (${Fragment.encode(OrderItemsId.sqlServerType, unsaved.orderItemId)}, ${Fragment.encode(OrdersId.sqlServerType, unsaved.orderId)}, ${Fragment.encode(ProductsId.sqlServerType, unsaved.productId)}, ${Fragment.encode(ScalaDbTypes.SqlServerTypes.int_, unsaved.quantity)}, ${Fragment.encode(ScalaDbTypes.SqlServerTypes.money, unsaved.price)})) AS source([order_item_id], [order_id], [product_id], [quantity], [price])
     ON target.[order_item_id] = source.[order_item_id]
     WHEN MATCHED THEN UPDATE SET [order_id] = source.[order_id],
     [product_id] = source.[product_id],
     [quantity] = source.[quantity],
     [price] = source.[price]
-    WHEN NOT MATCHED THEN INSERT ([order_id], [product_id], [quantity], [price]) VALUES (${Fragment.encode(OrdersId.sqlServerType, unsaved.orderId)}, ${Fragment.encode(ProductsId.sqlServerType, unsaved.productId)}, ${Fragment.encode(ScalaDbTypes.SqlServerTypes.int_, unsaved.quantity)}, ${Fragment.encode(ScalaDbTypes.SqlServerTypes.money, unsaved.price)})
+    WHEN NOT MATCHED THEN INSERT ([order_item_id], [order_id], [product_id], [quantity], [price]) VALUES (${Fragment.encode(OrderItemsId.sqlServerType, unsaved.orderItemId)}, ${Fragment.encode(OrdersId.sqlServerType, unsaved.orderId)}, ${Fragment.encode(ProductsId.sqlServerType, unsaved.productId)}, ${Fragment.encode(ScalaDbTypes.SqlServerTypes.int_, unsaved.quantity)}, ${Fragment.encode(ScalaDbTypes.SqlServerTypes.money, unsaved.price)})
     OUTPUT INSERTED.[order_item_id], INSERTED.[order_id], INSERTED.[product_id], INSERTED.[quantity], INSERTED.[price];"""
     .updateReturning(OrderItemsRow.`_rowParser`.exactlyOne())
     .runUnchecked(c)

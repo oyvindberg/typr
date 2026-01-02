@@ -7,6 +7,8 @@ package testdb.payment_methods
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple7
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -30,7 +32,7 @@ data class PaymentMethodsRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("processor_config") val processorConfig: String?,
+  @JsonProperty("processor_config") val processorConfig: Json?,
   /** 
     * Default: 1
     */
@@ -39,16 +41,30 @@ data class PaymentMethodsRow(
     * Default: 0
     */
   @JsonProperty("sort_order") val sortOrder: Byte
-) {
+) : Tuple7<PaymentMethodsId, String, String, String, Json?, Boolean, Byte> {
+  override fun _1(): PaymentMethodsId = methodId
+
+  override fun _2(): String = code
+
+  override fun _3(): String = name
+
+  override fun _4(): String = methodType
+
+  override fun _5(): Json? = processorConfig
+
+  override fun _6(): Boolean = isActive
+
+  override fun _7(): Byte = sortOrder
+
   fun id(): PaymentMethodsId = methodId
 
   fun toUnsavedRow(
-    processorConfig: Defaulted<String?> = Defaulted.Provided(this.processorConfig),
+    processorConfig: Defaulted<Json?> = Defaulted.Provided(this.processorConfig),
     isActive: Defaulted<Boolean> = Defaulted.Provided(this.isActive),
     sortOrder: Defaulted<Byte> = Defaulted.Provided(this.sortOrder)
   ): PaymentMethodsRowUnsaved = PaymentMethodsRowUnsaved(code, name, methodType, processorConfig, isActive, sortOrder)
 
   companion object {
-    val _rowParser: RowParser<PaymentMethodsRow> = RowParsers.of(PaymentMethodsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, MariaTypes.longtext.nullable(), KotlinDbTypes.MariaTypes.bool, KotlinDbTypes.MariaTypes.tinyint, { t0, t1, t2, t3, t4, t5, t6 -> PaymentMethodsRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.methodId, row.code, row.name, row.methodType, row.processorConfig, row.isActive, row.sortOrder) })
+    val _rowParser: RowParser<PaymentMethodsRow> = RowParsers.of(PaymentMethodsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, MariaTypes.json.nullable(), KotlinDbTypes.MariaTypes.bool, KotlinDbTypes.MariaTypes.tinyint, { t0, t1, t2, t3, t4, t5, t6 -> PaymentMethodsRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.methodId, row.code, row.name, row.methodType, row.processorConfig, row.isActive, row.sortOrder) })
   }
 }

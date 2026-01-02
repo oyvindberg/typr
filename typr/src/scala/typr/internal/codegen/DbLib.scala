@@ -19,7 +19,7 @@ trait DbLib {
   def customTypeInstances(ct: CustomType): List[jvm.ClassMember]
   def additionalFiles: List[jvm.File]
 
-  /** Whether this DbLib needs constAs expressions for generateCompositeIn. Legacy DSLs need them, DbLibTypo does not.
+  /** Whether this DbLib needs constAs expressions for generateCompositeIn. Legacy DSLs need them, DbLibFoundations does not.
     */
   def needsConstAsForCompositeIn: Boolean
 
@@ -44,31 +44,7 @@ trait DbLib {
       constAsExprs: List[jvm.Code]
   ): jvm.Code
 
-  /** Generate a single CompositeIn.Part expression for one field in a composite key.
-    *
-    * @param fieldType
-    *   the type of the field (e.g., Int, String)
-    * @param idType
-    *   the composite ID type
-    * @param rowType
-    *   the row type
-    * @param fieldExpr
-    *   the field expression (e.g., "empNumber()")
-    * @param fieldName
-    *   the field name for the getter (e.g., "empNumber")
-    * @param pgType
-    *   the database type expression
-    */
-  def compositeInPart(fieldType: jvm.Type, idType: jvm.Type, rowType: jvm.Type, fieldExpr: jvm.Code, fieldName: jvm.Ident, pgType: jvm.Code): jvm.Code
-
-  /** Generate a complete CompositeIn expression from a list of parts and the IDs.
-    *
-    * @param partsExpr
-    *   the expression for the list of parts
-    * @param idsExpr
-    *   the expression for the composite IDs
-    */
-  def compositeInConstruct(partsExpr: jvm.Code, idsExpr: jvm.Code): jvm.Code
+  def booleanAndChain(exprs: NonEmptyList[jvm.Code]): jvm.Code
 }
 
 object DbLib {

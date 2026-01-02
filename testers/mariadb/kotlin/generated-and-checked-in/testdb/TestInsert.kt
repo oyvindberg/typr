@@ -5,11 +5,16 @@
  */
 package testdb
 
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint2
+import dev.typr.foundations.data.Uint4
+import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.data.maria.Inet4
 import dev.typr.foundations.data.maria.Inet6
 import dev.typr.foundations.data.maria.MariaSet
+import java.lang.Math
 import java.math.BigDecimal
-import java.math.BigInteger
 import java.sql.Connection
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -131,8 +136,8 @@ data class TestInsert(val random: Random) {
     tableName: String,
     recordId: String,
     action: String,
-    oldValues: Defaulted<String?> = UseDefault(),
-    newValues: Defaulted<String?> = UseDefault(),
+    oldValues: Defaulted<Json?> = UseDefault(),
+    newValues: Defaulted<Json?> = UseDefault(),
     changedBy: Defaulted<String?> = UseDefault(),
     changedAt: Defaulted<LocalDateTime> = UseDefault(),
     clientIp: Defaulted<Inet6?> = UseDefault(),
@@ -158,7 +163,7 @@ data class TestInsert(val random: Random) {
     imageUrl: Defaulted<String?> = UseDefault(),
     sortOrder: Defaulted<Short> = UseDefault(),
     isVisible: Defaulted<Boolean> = UseDefault(),
-    metadata: Defaulted<String?> = UseDefault(),
+    metadata: Defaulted<Json?> = UseDefault(),
     c: Connection
   ): CategoriesRow = (CategoriesRepoImpl()).insert(CategoriesRowUnsaved(name = name, slug = slug, parentId = parentId, description = description, imageUrl = imageUrl, sortOrder = sortOrder, isVisible = isVisible, metadata = metadata), c)
 
@@ -194,7 +199,7 @@ data class TestInsert(val random: Random) {
     phone: Defaulted<String?> = UseDefault(),
     status: Defaulted<CustomerStatusId> = UseDefault(),
     tier: Defaulted<String> = UseDefault(),
-    preferences: Defaulted<String?> = UseDefault(),
+    preferences: Defaulted<Json?> = UseDefault(),
     marketingFlags: Defaulted<MariaSet?> = UseDefault(),
     notes: Defaulted<String?> = UseDefault(),
     createdAt: Defaulted<LocalDateTime> = UseDefault(),
@@ -218,7 +223,6 @@ data class TestInsert(val random: Random) {
   ): InventoryRow = (InventoryRepoImpl()).insert(InventoryRowUnsaved(productId = productId, warehouseId = warehouseId, quantityOnHand = quantityOnHand, quantityReserved = quantityReserved, quantityOnOrder = quantityOnOrder, reorderPoint = reorderPoint, reorderQuantity = reorderQuantity, binLocation = binLocation, lastCountedAt = lastCountedAt, updatedAt = updatedAt), c)
 
   fun Mariatest(
-    bigintUCol: BigInteger,
     bitCol: ByteArray,
     bit1Col: ByteArray,
     charCol: String,
@@ -234,20 +238,19 @@ data class TestInsert(val random: Random) {
     mediumblobCol: ByteArray,
     longblobCol: ByteArray,
     yearCol: Year,
-    enumCol: String,
     setCol: MariaSet,
-    jsonCol: String,
     inet4Col: Inet4,
     inet6Col: Inet6,
     tinyintCol: Byte = random.nextInt(Byte.MAX_VALUE.toInt()).toByte(),
     smallintCol: Short = random.nextInt(Short.MAX_VALUE.toInt()).toShort(),
-    mediumintCol: Int = random.nextInt(),
+    mediumintCol: Int = random.nextInt(8388607),
     intCol: MariatestId = MariatestId(random.nextInt()),
     bigintCol: Long = random.nextLong(),
-    tinyintUCol: Short = random.nextInt(Short.MAX_VALUE.toInt()).toShort(),
-    smallintUCol: Int = random.nextInt(),
-    mediumintUCol: Int = random.nextInt(),
-    intUCol: Long = random.nextLong(),
+    tinyintUCol: Uint1 = Uint1.of(random.nextInt(256)),
+    smallintUCol: Uint2 = Uint2.of(random.nextInt(65536)),
+    mediumintUCol: Uint4 = Uint4.of(random.nextInt(16777216).toLong()),
+    intUCol: Uint4 = Uint4.of(Math.abs(random.nextInt()).toLong()),
+    bigintUCol: Uint8 = Uint8.of(Math.abs(random.nextLong())),
     decimalCol: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
     numericCol: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
     floatCol: Float = random.nextFloat(),
@@ -258,10 +261,11 @@ data class TestInsert(val random: Random) {
     timeFspCol: LocalTime = LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong()),
     datetimeCol: LocalDateTime = LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
     datetimeFspCol: LocalDateTime = LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
+    jsonCol: Json = Json("{}"),
     timestampCol: Defaulted<LocalDateTime> = UseDefault(),
     timestampFspCol: Defaulted<LocalDateTime> = UseDefault(),
     c: Connection
-  ): MariatestRow = (MariatestRepoImpl()).insert(MariatestRowUnsaved(tinyintCol = tinyintCol, smallintCol = smallintCol, mediumintCol = mediumintCol, intCol = intCol, bigintCol = bigintCol, tinyintUCol = tinyintUCol, smallintUCol = smallintUCol, mediumintUCol = mediumintUCol, intUCol = intUCol, bigintUCol = bigintUCol, decimalCol = decimalCol, numericCol = numericCol, floatCol = floatCol, doubleCol = doubleCol, boolCol = boolCol, bitCol = bitCol, bit1Col = bit1Col, charCol = charCol, varcharCol = varcharCol, tinytextCol = tinytextCol, textCol = textCol, mediumtextCol = mediumtextCol, longtextCol = longtextCol, binaryCol = binaryCol, varbinaryCol = varbinaryCol, tinyblobCol = tinyblobCol, blobCol = blobCol, mediumblobCol = mediumblobCol, longblobCol = longblobCol, dateCol = dateCol, timeCol = timeCol, timeFspCol = timeFspCol, datetimeCol = datetimeCol, datetimeFspCol = datetimeFspCol, yearCol = yearCol, enumCol = enumCol, setCol = setCol, jsonCol = jsonCol, inet4Col = inet4Col, inet6Col = inet6Col, timestampCol = timestampCol, timestampFspCol = timestampFspCol), c)
+  ): MariatestRow = (MariatestRepoImpl()).insert(MariatestRowUnsaved(tinyintCol = tinyintCol, smallintCol = smallintCol, mediumintCol = mediumintCol, intCol = intCol, bigintCol = bigintCol, tinyintUCol = tinyintUCol, smallintUCol = smallintUCol, mediumintUCol = mediumintUCol, intUCol = intUCol, bigintUCol = bigintUCol, decimalCol = decimalCol, numericCol = numericCol, floatCol = floatCol, doubleCol = doubleCol, boolCol = boolCol, bitCol = bitCol, bit1Col = bit1Col, charCol = charCol, varcharCol = varcharCol, tinytextCol = tinytextCol, textCol = textCol, mediumtextCol = mediumtextCol, longtextCol = longtextCol, binaryCol = binaryCol, varbinaryCol = varbinaryCol, tinyblobCol = tinyblobCol, blobCol = blobCol, mediumblobCol = mediumblobCol, longblobCol = longblobCol, dateCol = dateCol, timeCol = timeCol, timeFspCol = timeFspCol, datetimeCol = datetimeCol, datetimeFspCol = datetimeFspCol, yearCol = yearCol, setCol = setCol, jsonCol = jsonCol, inet4Col = inet4Col, inet6Col = inet6Col, timestampCol = timestampCol, timestampFspCol = timestampFspCol), c)
 
   fun MariatestIdentity(
     name: String,
@@ -305,11 +309,11 @@ data class TestInsert(val random: Random) {
     mediumintCol: Defaulted<Int?> = UseDefault(),
     intCol: Defaulted<Int?> = UseDefault(),
     bigintCol: Defaulted<Long?> = UseDefault(),
-    tinyintUCol: Defaulted<Short?> = UseDefault(),
-    smallintUCol: Defaulted<Int?> = UseDefault(),
-    mediumintUCol: Defaulted<Int?> = UseDefault(),
-    intUCol: Defaulted<Long?> = UseDefault(),
-    bigintUCol: Defaulted<BigInteger?> = UseDefault(),
+    tinyintUCol: Defaulted<Uint1?> = UseDefault(),
+    smallintUCol: Defaulted<Uint2?> = UseDefault(),
+    mediumintUCol: Defaulted<Uint4?> = UseDefault(),
+    intUCol: Defaulted<Uint4?> = UseDefault(),
+    bigintUCol: Defaulted<Uint8?> = UseDefault(),
     decimalCol: Defaulted<BigDecimal?> = UseDefault(),
     numericCol: Defaulted<BigDecimal?> = UseDefault(),
     floatCol: Defaulted<Float?> = UseDefault(),
@@ -337,13 +341,12 @@ data class TestInsert(val random: Random) {
     timestampCol: Defaulted<LocalDateTime?> = UseDefault(),
     timestampFspCol: Defaulted<LocalDateTime?> = UseDefault(),
     yearCol: Defaulted<Year?> = UseDefault(),
-    enumCol: Defaulted<String?> = UseDefault(),
     setCol: Defaulted<MariaSet?> = UseDefault(),
-    jsonCol: Defaulted<String?> = UseDefault(),
+    jsonCol: Defaulted<Json?> = UseDefault(),
     inet4Col: Defaulted<Inet4?> = UseDefault(),
     inet6Col: Defaulted<Inet6?> = UseDefault(),
     c: Connection
-  ): MariatestnullRow = (MariatestnullRepoImpl()).insert(MariatestnullRowUnsaved(tinyintCol = tinyintCol, smallintCol = smallintCol, mediumintCol = mediumintCol, intCol = intCol, bigintCol = bigintCol, tinyintUCol = tinyintUCol, smallintUCol = smallintUCol, mediumintUCol = mediumintUCol, intUCol = intUCol, bigintUCol = bigintUCol, decimalCol = decimalCol, numericCol = numericCol, floatCol = floatCol, doubleCol = doubleCol, boolCol = boolCol, bitCol = bitCol, bit1Col = bit1Col, charCol = charCol, varcharCol = varcharCol, tinytextCol = tinytextCol, textCol = textCol, mediumtextCol = mediumtextCol, longtextCol = longtextCol, binaryCol = binaryCol, varbinaryCol = varbinaryCol, tinyblobCol = tinyblobCol, blobCol = blobCol, mediumblobCol = mediumblobCol, longblobCol = longblobCol, dateCol = dateCol, timeCol = timeCol, timeFspCol = timeFspCol, datetimeCol = datetimeCol, datetimeFspCol = datetimeFspCol, timestampCol = timestampCol, timestampFspCol = timestampFspCol, yearCol = yearCol, enumCol = enumCol, setCol = setCol, jsonCol = jsonCol, inet4Col = inet4Col, inet6Col = inet6Col), c)
+  ): MariatestnullRow = (MariatestnullRepoImpl()).insert(MariatestnullRowUnsaved(tinyintCol = tinyintCol, smallintCol = smallintCol, mediumintCol = mediumintCol, intCol = intCol, bigintCol = bigintCol, tinyintUCol = tinyintUCol, smallintUCol = smallintUCol, mediumintUCol = mediumintUCol, intUCol = intUCol, bigintUCol = bigintUCol, decimalCol = decimalCol, numericCol = numericCol, floatCol = floatCol, doubleCol = doubleCol, boolCol = boolCol, bitCol = bitCol, bit1Col = bit1Col, charCol = charCol, varcharCol = varcharCol, tinytextCol = tinytextCol, textCol = textCol, mediumtextCol = mediumtextCol, longtextCol = longtextCol, binaryCol = binaryCol, varbinaryCol = varbinaryCol, tinyblobCol = tinyblobCol, blobCol = blobCol, mediumblobCol = mediumblobCol, longblobCol = longblobCol, dateCol = dateCol, timeCol = timeCol, timeFspCol = timeFspCol, datetimeCol = datetimeCol, datetimeFspCol = datetimeFspCol, timestampCol = timestampCol, timestampFspCol = timestampFspCol, yearCol = yearCol, setCol = setCol, jsonCol = jsonCol, inet4Col = inet4Col, inet6Col = inet6Col), c)
 
   fun OrderHistory(
     orderId: OrdersId,
@@ -351,7 +354,7 @@ data class TestInsert(val random: Random) {
     previousStatus: Defaulted<String?> = UseDefault(),
     changedBy: Defaulted<String?> = UseDefault(),
     changeReason: Defaulted<String?> = UseDefault(),
-    metadata: Defaulted<String?> = UseDefault(),
+    metadata: Defaulted<Json?> = UseDefault(),
     createdAt: Defaulted<LocalDateTime> = UseDefault(),
     c: Connection
   ): OrderHistoryRow = (OrderHistoryRepoImpl()).insert(OrderHistoryRowUnsaved(orderId = orderId, newStatus = newStatus, previousStatus = previousStatus, changedBy = changedBy, changeReason = changeReason, metadata = metadata, createdAt = createdAt), c)
@@ -361,7 +364,7 @@ data class TestInsert(val random: Random) {
     productId: ProductsId,
     sku: String,
     productName: String,
-    quantity: Int = random.nextInt(),
+    quantity: Uint2 = Uint2.of(random.nextInt(65536)),
     unitPrice: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
     lineTotal: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
     discountAmount: Defaulted<BigDecimal> = UseDefault(),
@@ -401,7 +404,7 @@ data class TestInsert(val random: Random) {
     code: String,
     name: String,
     methodType: String,
-    processorConfig: Defaulted<String?> = UseDefault(),
+    processorConfig: Defaulted<Json?> = UseDefault(),
     isActive: Defaulted<Boolean> = UseDefault(),
     sortOrder: Defaulted<Byte> = UseDefault(),
     c: Connection
@@ -414,7 +417,7 @@ data class TestInsert(val random: Random) {
     transactionId: Defaulted<String?> = UseDefault(),
     currencyCode: Defaulted<String> = UseDefault(),
     status: Defaulted<String> = UseDefault(),
-    processorResponse: Defaulted<String?> = UseDefault(),
+    processorResponse: Defaulted<Json?> = UseDefault(),
     errorMessage: Defaulted<String?> = UseDefault(),
     ipAddress: Defaulted<Inet6?> = UseDefault(),
     createdAt: Defaulted<LocalDateTime> = UseDefault(),
@@ -426,7 +429,7 @@ data class TestInsert(val random: Random) {
     name: String,
     discountType: String,
     discountValue: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
-    minQuantity: Defaulted<Long> = UseDefault(),
+    minQuantity: Defaulted<Uint4> = UseDefault(),
     c: Connection
   ): PriceTiersRow = (PriceTiersRepoImpl()).insert(PriceTiersRowUnsaved(name = name, discountType = discountType, discountValue = discountValue, minQuantity = minQuantity), c)
 
@@ -443,7 +446,7 @@ data class TestInsert(val random: Random) {
     imageUrl: String,
     thumbnailUrl: Defaulted<String?> = UseDefault(),
     altText: Defaulted<String?> = UseDefault(),
-    sortOrder: Defaulted<Short> = UseDefault(),
+    sortOrder: Defaulted<Uint1> = UseDefault(),
     isPrimary: Defaulted<Boolean> = UseDefault(),
     imageData: Defaulted<ByteArray?> = UseDefault(),
     c: Connection
@@ -468,12 +471,12 @@ data class TestInsert(val random: Random) {
     fullDescription: Defaulted<String?> = UseDefault(),
     costPrice: Defaulted<BigDecimal?> = UseDefault(),
     weightKg: Defaulted<BigDecimal?> = UseDefault(),
-    dimensionsJson: Defaulted<String?> = UseDefault(),
+    dimensionsJson: Defaulted<Json?> = UseDefault(),
     status: Defaulted<String> = UseDefault(),
     taxClass: Defaulted<String> = UseDefault(),
     tags: Defaulted<MariaSet?> = UseDefault(),
-    attributes: Defaulted<String?> = UseDefault(),
-    seoMetadata: Defaulted<String?> = UseDefault(),
+    attributes: Defaulted<Json?> = UseDefault(),
+    seoMetadata: Defaulted<Json?> = UseDefault(),
     createdAt: Defaulted<LocalDateTime> = UseDefault(),
     updatedAt: Defaulted<LocalDateTime> = UseDefault(),
     publishedAt: Defaulted<LocalDateTime?> = UseDefault(),
@@ -489,11 +492,11 @@ data class TestInsert(val random: Random) {
     validTo: LocalDateTime = LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
     description: Defaulted<String?> = UseDefault(),
     minOrderAmount: Defaulted<BigDecimal?> = UseDefault(),
-    maxUses: Defaulted<Long?> = UseDefault(),
-    usesCount: Defaulted<Long> = UseDefault(),
-    maxUsesPerCustomer: Defaulted<Short?> = UseDefault(),
+    maxUses: Defaulted<Uint4?> = UseDefault(),
+    usesCount: Defaulted<Uint4> = UseDefault(),
+    maxUsesPerCustomer: Defaulted<Uint1?> = UseDefault(),
     applicableTo: Defaulted<MariaSet?> = UseDefault(),
-    rulesJson: Defaulted<String?> = UseDefault(),
+    rulesJson: Defaulted<Json?> = UseDefault(),
     isActive: Defaulted<Boolean> = UseDefault(),
     createdAt: Defaulted<LocalDateTime> = UseDefault(),
     c: Connection
@@ -502,17 +505,17 @@ data class TestInsert(val random: Random) {
   fun Reviews(
     productId: ProductsId,
     customerId: CustomersId,
-    rating: Short = random.nextInt(Short.MAX_VALUE.toInt()).toShort(),
+    rating: Uint1 = Uint1.of(random.nextInt(256)),
     orderItemId: Defaulted<OrderItemsId?> = UseDefault(),
     title: Defaulted<String?> = UseDefault(),
     content: Defaulted<String?> = UseDefault(),
-    pros: Defaulted<String?> = UseDefault(),
-    cons: Defaulted<String?> = UseDefault(),
-    images: Defaulted<String?> = UseDefault(),
+    pros: Defaulted<Json?> = UseDefault(),
+    cons: Defaulted<Json?> = UseDefault(),
+    images: Defaulted<Json?> = UseDefault(),
     isVerifiedPurchase: Defaulted<Boolean> = UseDefault(),
     isApproved: Defaulted<Boolean> = UseDefault(),
-    helpfulVotes: Defaulted<Long> = UseDefault(),
-    unhelpfulVotes: Defaulted<Long> = UseDefault(),
+    helpfulVotes: Defaulted<Uint4> = UseDefault(),
+    unhelpfulVotes: Defaulted<Uint4> = UseDefault(),
     adminResponse: Defaulted<String?> = UseDefault(),
     respondedAt: Defaulted<LocalDateTime?> = UseDefault(),
     createdAt: Defaulted<LocalDateTime> = UseDefault(),
@@ -527,7 +530,7 @@ data class TestInsert(val random: Random) {
     shippingCost: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
     trackingNumber: Defaulted<String?> = UseDefault(),
     weightKg: Defaulted<BigDecimal?> = UseDefault(),
-    dimensionsJson: Defaulted<String?> = UseDefault(),
+    dimensionsJson: Defaulted<Json?> = UseDefault(),
     labelData: Defaulted<ByteArray?> = UseDefault(),
     status: Defaulted<String> = UseDefault(),
     estimatedDeliveryDate: Defaulted<LocalDate?> = UseDefault(),
@@ -544,7 +547,7 @@ data class TestInsert(val random: Random) {
     code: String,
     name: String,
     trackingUrlTemplate: Defaulted<String?> = UseDefault(),
-    apiConfig: Defaulted<String?> = UseDefault(),
+    apiConfig: Defaulted<Json?> = UseDefault(),
     isActive: Defaulted<Boolean> = UseDefault(),
     c: Connection
   ): ShippingCarriersRow = (ShippingCarriersRepoImpl()).insert(ShippingCarriersRowUnsaved(code = code, name = name, trackingUrlTemplate = trackingUrlTemplate, apiConfig = apiConfig, isActive = isActive), c)

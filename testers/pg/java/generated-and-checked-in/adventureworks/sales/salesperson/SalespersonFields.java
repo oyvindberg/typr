@@ -13,206 +13,225 @@ import adventureworks.sales.salesterritory.SalesterritoryId;
 import adventureworks.sales.salesterritory.SalesterritoryRow;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr9;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface SalespersonFields extends FieldsExpr<SalespersonRow> {
-  record Impl(List<Path> _path)
-      implements SalespersonFields, RelationStructure<SalespersonFields, SalespersonRow> {
-    @Override
-    public IdField<BusinessentityId, SalespersonRow> businessentityid() {
-      return new IdField<BusinessentityId, SalespersonRow>(
-          _path,
-          "businessentityid",
-          SalespersonRow::businessentityid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withBusinessentityid(value),
-          BusinessentityId.pgType);
-    }
-    ;
+public class SalespersonFields
+    extends TupleExpr9<
+        BusinessentityId,
+        SalesterritoryId,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        UUID,
+        LocalDateTime>
+    implements RelationStructure<SalespersonFields, SalespersonRow>, FieldsBase<SalespersonRow> {
+  List<Path> _path;
 
-    @Override
-    public OptField<SalesterritoryId, SalespersonRow> territoryid() {
-      return new OptField<SalesterritoryId, SalespersonRow>(
-          _path,
-          "territoryid",
-          SalespersonRow::territoryid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withTerritoryid(value),
-          SalesterritoryId.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, SalespersonRow> salesquota() {
-      return new OptField<BigDecimal, SalespersonRow>(
-          _path,
-          "salesquota",
-          SalespersonRow::salesquota,
-          Optional.empty(),
-          Optional.of("numeric"),
-          (row, value) -> row.withSalesquota(value),
-          PgTypes.numeric);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, SalespersonRow> bonus() {
-      return new Field<BigDecimal, SalespersonRow>(
-          _path,
-          "bonus",
-          SalespersonRow::bonus,
-          Optional.empty(),
-          Optional.of("numeric"),
-          (row, value) -> row.withBonus(value),
-          PgTypes.numeric);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, SalespersonRow> commissionpct() {
-      return new Field<BigDecimal, SalespersonRow>(
-          _path,
-          "commissionpct",
-          SalespersonRow::commissionpct,
-          Optional.empty(),
-          Optional.of("numeric"),
-          (row, value) -> row.withCommissionpct(value),
-          PgTypes.numeric);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, SalespersonRow> salesytd() {
-      return new Field<BigDecimal, SalespersonRow>(
-          _path,
-          "salesytd",
-          SalespersonRow::salesytd,
-          Optional.empty(),
-          Optional.of("numeric"),
-          (row, value) -> row.withSalesytd(value),
-          PgTypes.numeric);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, SalespersonRow> saleslastyear() {
-      return new Field<BigDecimal, SalespersonRow>(
-          _path,
-          "saleslastyear",
-          SalespersonRow::saleslastyear,
-          Optional.empty(),
-          Optional.of("numeric"),
-          (row, value) -> row.withSaleslastyear(value),
-          PgTypes.numeric);
-    }
-    ;
-
-    @Override
-    public Field<UUID, SalespersonRow> rowguid() {
-      return new Field<UUID, SalespersonRow>(
-          _path,
-          "rowguid",
-          SalespersonRow::rowguid,
-          Optional.empty(),
-          Optional.of("uuid"),
-          (row, value) -> row.withRowguid(value),
-          PgTypes.uuid);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, SalespersonRow> modifieddate() {
-      return new Field<LocalDateTime, SalespersonRow>(
-          _path,
-          "modifieddate",
-          SalespersonRow::modifieddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withModifieddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, SalespersonRow>> columns() {
-      return java.util.List.of(
-          this.businessentityid(),
-          this.territoryid(),
-          this.salesquota(),
-          this.bonus(),
-          this.commissionpct(),
-          this.salesytd(),
-          this.saleslastyear(),
-          this.rowguid(),
-          this.modifieddate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<SalespersonFields, SalespersonRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public SalespersonFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static SalespersonFields structure =
+      new SalespersonFields(java.util.Collections.emptyList());
+
+  public IdField<BusinessentityId, SalespersonRow> businessentityid() {
+    return new IdField<BusinessentityId, SalespersonRow>(
+        _path,
+        "businessentityid",
+        SalespersonRow::businessentityid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withBusinessentityid(value),
+        BusinessentityId.dbType);
   }
-  ;
 
-  IdField<BusinessentityId, SalespersonRow> businessentityid();
+  public OptField<SalesterritoryId, SalespersonRow> territoryid() {
+    return new OptField<SalesterritoryId, SalespersonRow>(
+        _path,
+        "territoryid",
+        SalespersonRow::territoryid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withTerritoryid(value),
+        SalesterritoryId.dbType);
+  }
 
-  OptField<SalesterritoryId, SalespersonRow> territoryid();
+  public OptField<BigDecimal, SalespersonRow> salesquota() {
+    return new OptField<BigDecimal, SalespersonRow>(
+        _path,
+        "salesquota",
+        SalespersonRow::salesquota,
+        Optional.empty(),
+        Optional.of("numeric"),
+        (row, value) -> row.withSalesquota(value),
+        PgTypes.numeric);
+  }
 
-  OptField<BigDecimal, SalespersonRow> salesquota();
+  public Field<BigDecimal, SalespersonRow> bonus() {
+    return new Field<BigDecimal, SalespersonRow>(
+        _path,
+        "bonus",
+        SalespersonRow::bonus,
+        Optional.empty(),
+        Optional.of("numeric"),
+        (row, value) -> row.withBonus(value),
+        PgTypes.numeric);
+  }
 
-  Field<BigDecimal, SalespersonRow> bonus();
+  public Field<BigDecimal, SalespersonRow> commissionpct() {
+    return new Field<BigDecimal, SalespersonRow>(
+        _path,
+        "commissionpct",
+        SalespersonRow::commissionpct,
+        Optional.empty(),
+        Optional.of("numeric"),
+        (row, value) -> row.withCommissionpct(value),
+        PgTypes.numeric);
+  }
 
-  Field<BigDecimal, SalespersonRow> commissionpct();
+  public Field<BigDecimal, SalespersonRow> salesytd() {
+    return new Field<BigDecimal, SalespersonRow>(
+        _path,
+        "salesytd",
+        SalespersonRow::salesytd,
+        Optional.empty(),
+        Optional.of("numeric"),
+        (row, value) -> row.withSalesytd(value),
+        PgTypes.numeric);
+  }
 
-  Field<BigDecimal, SalespersonRow> salesytd();
+  public Field<BigDecimal, SalespersonRow> saleslastyear() {
+    return new Field<BigDecimal, SalespersonRow>(
+        _path,
+        "saleslastyear",
+        SalespersonRow::saleslastyear,
+        Optional.empty(),
+        Optional.of("numeric"),
+        (row, value) -> row.withSaleslastyear(value),
+        PgTypes.numeric);
+  }
 
-  Field<BigDecimal, SalespersonRow> saleslastyear();
+  public Field<UUID, SalespersonRow> rowguid() {
+    return new Field<UUID, SalespersonRow>(
+        _path,
+        "rowguid",
+        SalespersonRow::rowguid,
+        Optional.empty(),
+        Optional.of("uuid"),
+        (row, value) -> row.withRowguid(value),
+        PgTypes.uuid);
+  }
 
-  Field<UUID, SalespersonRow> rowguid();
+  public Field<LocalDateTime, SalespersonRow> modifieddate() {
+    return new Field<LocalDateTime, SalespersonRow>(
+        _path,
+        "modifieddate",
+        SalespersonRow::modifieddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withModifieddate(value),
+        PgTypes.timestamp);
+  }
 
-  Field<LocalDateTime, SalespersonRow> modifieddate();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<EmployeeFields, EmployeeRow> fkHumanresourcesEmployee() {
+  public ForeignKey<EmployeeFields, EmployeeRow> fkHumanresourcesEmployee() {
     return ForeignKey.<EmployeeFields, EmployeeRow>of(
             "sales.FK_SalesPerson_Employee_BusinessEntityID")
         .<BusinessentityId>withColumnPair(businessentityid(), EmployeeFields::businessentityid);
   }
-  ;
 
-  default ForeignKey<SalesterritoryFields, SalesterritoryRow> fkSalesterritory() {
+  public ForeignKey<SalesterritoryFields, SalesterritoryRow> fkSalesterritory() {
     return ForeignKey.<SalesterritoryFields, SalesterritoryRow>of(
             "sales.FK_SalesPerson_SalesTerritory_TerritoryID")
         .<SalesterritoryId>withColumnPair(territoryid(), SalesterritoryFields::territoryid);
   }
-  ;
 
   @Override
-  List<FieldLike<?, SalespersonRow>> columns();
+  public List<FieldLike<?, SalespersonRow>> columns() {
+    return java.util.List.of(
+        this.businessentityid(),
+        this.territoryid(),
+        this.salesquota(),
+        this.bonus(),
+        this.commissionpct(),
+        this.salesytd(),
+        this.saleslastyear(),
+        this.rowguid(),
+        this.modifieddate());
+  }
 
   @Override
-  default RowParser<SalespersonRow> rowParser() {
+  public RowParser<SalespersonRow> rowParser() {
     return SalespersonRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<SalespersonFields, SalespersonRow> withPaths(List<Path> _path) {
+    return new SalespersonFields(_path);
+  }
+
+  @Override
+  public SqlExpr<BusinessentityId> _1() {
+    return businessentityid();
+  }
+
+  @Override
+  public SqlExpr<SalesterritoryId> _2() {
+    return territoryid();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _3() {
+    return salesquota();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _4() {
+    return bonus();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _5() {
+    return commissionpct();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _6() {
+    return salesytd();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _7() {
+    return saleslastyear();
+  }
+
+  @Override
+  public SqlExpr<UUID> _8() {
+    return rowguid();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _9() {
+    return modifieddate();
+  }
 }

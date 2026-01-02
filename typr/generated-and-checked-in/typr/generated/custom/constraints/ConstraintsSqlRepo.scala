@@ -10,5 +10,5 @@ package typr.generated.custom.constraints
 import java.sql.Connection
 
 trait ConstraintsSqlRepo {
-  def apply(implicit c: Connection): List[ConstraintsSqlRow]
+  def apply(using c: Connection): List[ConstraintsSqlRow]
 }

@@ -9,7 +9,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple26;
 import dev.typr.foundations.data.Json;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint2;
+import dev.typr.foundations.data.Uint4;
+import dev.typr.foundations.data.Uint8;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Duration;
@@ -29,10 +34,10 @@ public record AllScalarTypesRow(
     @JsonProperty("col_integer") Optional<Integer> colInteger,
     @JsonProperty("col_bigint") Optional<Long> colBigint,
     @JsonProperty("col_hugeint") Optional<BigInteger> colHugeint,
-    @JsonProperty("col_utinyint") Optional<Short> colUtinyint,
-    @JsonProperty("col_usmallint") Optional<Integer> colUsmallint,
-    @JsonProperty("col_uinteger") Optional<Long> colUinteger,
-    @JsonProperty("col_ubigint") Optional<BigInteger> colUbigint,
+    @JsonProperty("col_utinyint") Optional<Uint1> colUtinyint,
+    @JsonProperty("col_usmallint") Optional<Uint2> colUsmallint,
+    @JsonProperty("col_uinteger") Optional<Uint4> colUinteger,
+    @JsonProperty("col_ubigint") Optional<Uint8> colUbigint,
     @JsonProperty("col_float") Optional<Float> colFloat,
     @JsonProperty("col_double") Optional<Double> colDouble,
     @JsonProperty("col_decimal") Optional<BigDecimal> colDecimal,
@@ -48,7 +53,34 @@ public record AllScalarTypesRow(
     @JsonProperty("col_uuid") Optional<UUID> colUuid,
     @JsonProperty("col_json") Optional<Json> colJson,
     @JsonProperty("col_mood") Optional<Mood> colMood,
-    @JsonProperty("col_not_null") String colNotNull) {
+    @JsonProperty("col_not_null") String colNotNull)
+    implements Tuple26<
+        AllScalarTypesId,
+        Optional<Byte>,
+        Optional<Short>,
+        Optional<Integer>,
+        Optional<Long>,
+        Optional<BigInteger>,
+        Optional<Uint1>,
+        Optional<Uint2>,
+        Optional<Uint4>,
+        Optional<Uint8>,
+        Optional<Float>,
+        Optional<Double>,
+        Optional<BigDecimal>,
+        Optional<Boolean>,
+        Optional<String>,
+        Optional<String>,
+        Optional<byte[]>,
+        Optional<LocalDate>,
+        Optional<LocalTime>,
+        Optional<LocalDateTime>,
+        Optional<OffsetDateTime>,
+        Optional<Duration>,
+        Optional<UUID>,
+        Optional<Json>,
+        Optional<Mood>,
+        String> {
   public AllScalarTypesRow withId(AllScalarTypesId id) {
     return new AllScalarTypesRow(
         id,
@@ -235,7 +267,7 @@ public record AllScalarTypesRow(
   }
   ;
 
-  public AllScalarTypesRow withColUtinyint(Optional<Short> colUtinyint) {
+  public AllScalarTypesRow withColUtinyint(Optional<Uint1> colUtinyint) {
     return new AllScalarTypesRow(
         id,
         colTinyint,
@@ -266,7 +298,7 @@ public record AllScalarTypesRow(
   }
   ;
 
-  public AllScalarTypesRow withColUsmallint(Optional<Integer> colUsmallint) {
+  public AllScalarTypesRow withColUsmallint(Optional<Uint2> colUsmallint) {
     return new AllScalarTypesRow(
         id,
         colTinyint,
@@ -297,7 +329,7 @@ public record AllScalarTypesRow(
   }
   ;
 
-  public AllScalarTypesRow withColUinteger(Optional<Long> colUinteger) {
+  public AllScalarTypesRow withColUinteger(Optional<Uint4> colUinteger) {
     return new AllScalarTypesRow(
         id,
         colTinyint,
@@ -328,7 +360,7 @@ public record AllScalarTypesRow(
   }
   ;
 
-  public AllScalarTypesRow withColUbigint(Optional<BigInteger> colUbigint) {
+  public AllScalarTypesRow withColUbigint(Optional<Uint8> colUbigint) {
     return new AllScalarTypesRow(
         id,
         colTinyint,
@@ -863,9 +895,9 @@ public record AllScalarTypesRow(
           DuckDbTypes.integer.opt(),
           DuckDbTypes.bigint.opt(),
           DuckDbTypes.hugeint.opt(),
-          DuckDbTypes.smallint.opt(),
-          DuckDbTypes.integer.opt(),
-          DuckDbTypes.bigint.opt(),
+          DuckDbTypes.utinyint.opt(),
+          DuckDbTypes.usmallint.opt(),
+          DuckDbTypes.uinteger.opt(),
           DuckDbTypes.ubigint.opt(),
           DuckDbTypes.float_.opt(),
           DuckDbTypes.double_.opt(),
@@ -913,5 +945,161 @@ public record AllScalarTypesRow(
                 row.colMood(),
                 row.colNotNull()
               });
+  ;
+
+  @Override
+  public AllScalarTypesId _1() {
+    return id;
+  }
+  ;
+
+  @Override
+  public Optional<Uint8> _10() {
+    return colUbigint;
+  }
+  ;
+
+  @Override
+  public Optional<Float> _11() {
+    return colFloat;
+  }
+  ;
+
+  @Override
+  public Optional<Double> _12() {
+    return colDouble;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _13() {
+    return colDecimal;
+  }
+  ;
+
+  @Override
+  public Optional<Boolean> _14() {
+    return colBoolean;
+  }
+  ;
+
+  @Override
+  public Optional<String> _15() {
+    return colVarchar;
+  }
+  ;
+
+  @Override
+  public Optional<String> _16() {
+    return colText;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _17() {
+    return colBlob;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDate> _18() {
+    return colDate;
+  }
+  ;
+
+  @Override
+  public Optional<LocalTime> _19() {
+    return colTime;
+  }
+  ;
+
+  @Override
+  public Optional<Byte> _2() {
+    return colTinyint;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _20() {
+    return colTimestamp;
+  }
+  ;
+
+  @Override
+  public Optional<OffsetDateTime> _21() {
+    return colTimestamptz;
+  }
+  ;
+
+  @Override
+  public Optional<Duration> _22() {
+    return colInterval;
+  }
+  ;
+
+  @Override
+  public Optional<UUID> _23() {
+    return colUuid;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _24() {
+    return colJson;
+  }
+  ;
+
+  @Override
+  public Optional<Mood> _25() {
+    return colMood;
+  }
+  ;
+
+  @Override
+  public String _26() {
+    return colNotNull;
+  }
+  ;
+
+  @Override
+  public Optional<Short> _3() {
+    return colSmallint;
+  }
+  ;
+
+  @Override
+  public Optional<Integer> _4() {
+    return colInteger;
+  }
+  ;
+
+  @Override
+  public Optional<Long> _5() {
+    return colBigint;
+  }
+  ;
+
+  @Override
+  public Optional<BigInteger> _6() {
+    return colHugeint;
+  }
+  ;
+
+  @Override
+  public Optional<Uint1> _7() {
+    return colUtinyint;
+  }
+  ;
+
+  @Override
+  public Optional<Uint2> _8() {
+    return colUsmallint;
+  }
+  ;
+
+  @Override
+  public Optional<Uint4> _9() {
+    return colUinteger;
+  }
   ;
 }

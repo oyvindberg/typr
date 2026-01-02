@@ -72,6 +72,15 @@ public interface PgTypes {
 
   PgType<Inet> inet = ofPgObject("inet", Inet::new, Inet::value, PgJson.inet);
   PgType<Inet[]> inetArray = inet.array(PgRead.pgObjectArray(Inet::new, Inet.class), Inet[]::new);
+  PgType<Cidr> cidr = ofPgObject("cidr", Cidr::new, Cidr::value, PgJson.cidr);
+  PgType<Cidr[]> cidrArray = cidr.array(PgRead.pgObjectArray(Cidr::new, Cidr.class), Cidr[]::new);
+  PgType<MacAddr> macaddr = ofPgObject("macaddr", MacAddr::new, MacAddr::value, PgJson.macaddr);
+  PgType<MacAddr[]> macaddrArray =
+      macaddr.array(PgRead.pgObjectArray(MacAddr::new, MacAddr.class), MacAddr[]::new);
+  PgType<MacAddr8> macaddr8 =
+      ofPgObject("macaddr8", MacAddr8::new, MacAddr8::value, PgJson.macaddr8);
+  PgType<MacAddr8[]> macaddr8Array =
+      macaddr8.array(PgRead.pgObjectArray(MacAddr8::new, MacAddr8.class), MacAddr8[]::new);
   PgType<Instant> timestamptz =
       PgType.of(
           "timestamptz",
@@ -139,6 +148,26 @@ public interface PgTypes {
           PgWrite.writeLongArrayUnboxed,
           PgText.longArrayUnboxed,
           PgJson.longArrayUnboxed);
+
+  // oid is a 32-bit unsigned integer wrapped in Oid type
+  PgType<Oid> oid =
+      PgType.of(
+          "oid",
+          PgRead.readLong.map(Oid::new),
+          PgWrite.writeLong.contramap(Oid::value),
+          PgText.instance((o, sb) -> sb.append(o.value())),
+          PgJson.int8.bimap(Oid::new, Oid::value));
+  PgType<Oid[]> oidArray =
+      oid.array(
+          PgRead.readLongArray.map(
+              arr -> {
+                Oid[] result = new Oid[arr.length];
+                for (int i = 0; i < arr.length; i++) {
+                  result[i] = new Oid(arr[i]);
+                }
+                return result;
+              }),
+          Oid[]::new);
 
   PgType<Map<String, String>> hstore =
       PgType.of(

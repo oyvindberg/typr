@@ -14,6 +14,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple8;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -47,7 +48,16 @@ public record StateprovinceRow(
     /** Default: uuid_generate_v1() */
     UUID rowguid,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple8<
+        StateprovinceId,
+        String,
+        CountryregionId,
+        Flag,
+        Name,
+        SalesterritoryId,
+        UUID,
+        LocalDateTime> {
   /**
    * Primary key for StateProvince records. Default:
    * nextval('person.stateprovince_stateprovinceid_seq'::regclass)
@@ -175,12 +185,12 @@ public record StateprovinceRow(
 
   public static RowParser<StateprovinceRow> _rowParser =
       RowParsers.of(
-          StateprovinceId.pgType,
+          StateprovinceId.dbType,
           PgTypes.bpchar,
-          CountryregionId.pgType,
-          Flag.pgType,
-          Name.pgType,
-          SalesterritoryId.pgType,
+          CountryregionId.dbType,
+          Flag.dbType,
+          Name.dbType,
+          SalesterritoryId.dbType,
           PgTypes.uuid,
           PgTypes.timestamp,
           StateprovinceRow::new,
@@ -198,6 +208,54 @@ public record StateprovinceRow(
   ;
 
   public static PgText<StateprovinceRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public StateprovinceId _1() {
+    return stateprovinceid;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return stateprovincecode;
+  }
+  ;
+
+  @Override
+  public CountryregionId _3() {
+    return countryregioncode;
+  }
+  ;
+
+  @Override
+  public Flag _4() {
+    return isonlystateprovinceflag;
+  }
+  ;
+
+  @Override
+  public Name _5() {
+    return name;
+  }
+  ;
+
+  @Override
+  public SalesterritoryId _6() {
+    return territoryid;
+  }
+  ;
+
+  @Override
+  public UUID _7() {
+    return rowguid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _8() {
+    return modifieddate;
+  }
+  ;
 
   public StateprovinceId id() {
     return stateprovinceid;

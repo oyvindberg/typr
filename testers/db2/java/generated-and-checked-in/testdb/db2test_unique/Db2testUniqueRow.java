@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 
 /** Table: DB2TEST_UNIQUE Primary key: ID */
 public record Db2testUniqueRow(
@@ -16,7 +17,8 @@ public record Db2testUniqueRow(
     @JsonProperty("ID") Db2testUniqueId id,
     @JsonProperty("EMAIL") String email,
     @JsonProperty("CODE") String code,
-    @JsonProperty("CATEGORY") String category) {
+    @JsonProperty("CATEGORY") String category)
+    implements Tuple4<Db2testUniqueId, String, String, String> {
   /** Identity ALWAYS */
   public Db2testUniqueRow withId(Db2testUniqueId id) {
     return new Db2testUniqueRow(id, email, code, category);
@@ -40,12 +42,36 @@ public record Db2testUniqueRow(
 
   public static RowParser<Db2testUniqueRow> _rowParser =
       RowParsers.of(
-          Db2testUniqueId.pgType,
+          Db2testUniqueId.dbType,
           Db2Types.varchar,
           Db2Types.varchar,
           Db2Types.varchar,
           Db2testUniqueRow::new,
           row -> new Object[] {row.id(), row.email(), row.code(), row.category()});
+  ;
+
+  @Override
+  public Db2testUniqueId _1() {
+    return id;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return email;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return code;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return category;
+  }
   ;
 
   public Db2testUniqueRowUnsaved toUnsavedRow() {

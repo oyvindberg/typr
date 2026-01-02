@@ -7,90 +7,86 @@ package testdb.departments
 
 import dev.typr.foundations.DuckDbTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
 import dev.typr.foundations.scala.SqlExpr
-import dev.typr.foundations.scala.SqlExpr.CompositeIn
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr
+import dev.typr.foundations.scala.TupleExpr4
 
-trait DepartmentsFields extends FieldsExpr0[DepartmentsRow] {
-  def deptCode: IdField[String, DepartmentsRow]
+class DepartmentsFields(val `_path`: java.util.List[Path]) extends TupleExpr4[String, String, String, BigDecimal] with RelationStructure[DepartmentsFields, DepartmentsRow]  with FieldsBase[DepartmentsRow] {
+  def deptCode: IdField[String, DepartmentsRow] = {
+    new IdField[String, DepartmentsRow](
+      _path,
+      "dept_code",
+      _.deptCode,
+      None,
+      None,
+      (row, value) => row.copy(deptCode = value),
+      DuckDbTypes.varchar
+    )
+  }
 
-  def deptRegion: IdField[String, DepartmentsRow]
+  def deptRegion: IdField[String, DepartmentsRow] = {
+    new IdField[String, DepartmentsRow](
+      _path,
+      "dept_region",
+      _.deptRegion,
+      None,
+      None,
+      (row, value) => row.copy(deptRegion = value),
+      DuckDbTypes.varchar
+    )
+  }
 
-  def deptName: Field[String, DepartmentsRow]
+  def deptName: Field[String, DepartmentsRow] = {
+    new Field[String, DepartmentsRow](
+      _path,
+      "dept_name",
+      _.deptName,
+      None,
+      None,
+      (row, value) => row.copy(deptName = value),
+      DuckDbTypes.varchar
+    )
+  }
 
-  def budget: OptField[BigDecimal, DepartmentsRow]
+  def budget: OptField[BigDecimal, DepartmentsRow] = {
+    new OptField[BigDecimal, DepartmentsRow](
+      _path,
+      "budget",
+      _.budget,
+      None,
+      Some("DECIMAL(15,2)"),
+      (row, value) => row.copy(budget = value),
+      ScalaDbTypes.DuckDbTypes.numeric
+    )
+  }
 
   def compositeIdIs(compositeId: DepartmentsId): SqlExpr[Boolean] = SqlExpr.all(deptCode.isEqual(compositeId.deptCode), deptRegion.isEqual(compositeId.deptRegion))
 
-  def compositeIdIn(compositeIds: List[DepartmentsId]): SqlExpr[Boolean] = CompositeIn(List(CompositeIn.Part[String, DepartmentsId, DepartmentsRow](deptCode, _.deptCode, DuckDbTypes.varchar), CompositeIn.Part[String, DepartmentsId, DepartmentsRow](deptRegion, _.deptRegion, DuckDbTypes.varchar)), compositeIds)
+  def compositeIdIn(compositeIds: List[DepartmentsId]): SqlExpr[Boolean] = TupleExpr.of(deptCode, deptRegion).among(compositeIds)
 
-  override def columns: java.util.List[FieldLike[?, DepartmentsRow]]
+  override def columns: java.util.List[FieldLike[?, DepartmentsRow]] = java.util.List.of(this.deptCode.underlying, this.deptRegion.underlying, this.deptName.underlying, this.budget.underlying)
 
   override def rowParser: RowParser[DepartmentsRow] = DepartmentsRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[DepartmentsFields, DepartmentsRow] = new DepartmentsFields(`_path`)
+
+  override def `_1`: SqlExpr[String] = deptCode
+
+  override def `_2`: SqlExpr[String] = deptRegion
+
+  override def `_3`: SqlExpr[String] = deptName
+
+  override def `_4`: SqlExpr[BigDecimal] = budget
 }
 
 object DepartmentsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends DepartmentsFields with RelationStructure[DepartmentsFields, DepartmentsRow] {
-
-    override def deptCode: IdField[String, DepartmentsRow] = {
-      new IdField[String, DepartmentsRow](
-        _path,
-        "dept_code",
-        _.deptCode,
-        None,
-        None,
-        (row, value) => row.copy(deptCode = value),
-        DuckDbTypes.varchar
-      )
-    }
-
-    override def deptRegion: IdField[String, DepartmentsRow] = {
-      new IdField[String, DepartmentsRow](
-        _path,
-        "dept_region",
-        _.deptRegion,
-        None,
-        None,
-        (row, value) => row.copy(deptRegion = value),
-        DuckDbTypes.varchar
-      )
-    }
-
-    override def deptName: Field[String, DepartmentsRow] = {
-      new Field[String, DepartmentsRow](
-        _path,
-        "dept_name",
-        _.deptName,
-        None,
-        None,
-        (row, value) => row.copy(deptName = value),
-        DuckDbTypes.varchar
-      )
-    }
-
-    override def budget: OptField[BigDecimal, DepartmentsRow] = {
-      new OptField[BigDecimal, DepartmentsRow](
-        _path,
-        "budget",
-        _.budget,
-        None,
-        Some("DECIMAL(15,2)"),
-        (row, value) => row.copy(budget = value),
-        ScalaDbTypes.DuckDbTypes.numeric
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, DepartmentsRow]] = java.util.List.of(this.deptCode.underlying, this.deptRegion.underlying, this.deptName.underlying, this.budget.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[DepartmentsFields, DepartmentsRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: DepartmentsFields = new DepartmentsFields(java.util.Collections.emptyList())
 }

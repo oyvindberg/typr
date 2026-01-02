@@ -8,106 +8,102 @@ package adventureworks.public.flaff
 import adventureworks.public.ShortText
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.ForeignKey
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
 import dev.typr.foundations.dsl.SqlExpr
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
 import dev.typr.foundations.dsl.SqlExpr.OptField
+import dev.typr.foundations.dsl.TupleExpr
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5
 import java.util.Optional
 
-trait FlaffFields extends FieldsExpr0[FlaffRow] {
-  def code: IdField[ShortText, FlaffRow]
+class FlaffFields(val `_path`: java.util.List[Path]) extends TupleExpr5[ShortText, String, Integer, ShortText, ShortText] with RelationStructure[FlaffFields, FlaffRow]  with FieldsBase[FlaffRow] {
+  def code: IdField[ShortText, FlaffRow] = {
+    new IdField[ShortText, FlaffRow](
+      _path,
+      "code",
+      _.code,
+      Optional.empty(),
+      Optional.of("text"),
+      (row, value) => row.copy(code = value),
+      ShortText.dbType
+    )
+  }
 
-  def anotherCode: IdField[String, FlaffRow]
+  def anotherCode: IdField[String, FlaffRow] = {
+    new IdField[String, FlaffRow](
+      _path,
+      "another_code",
+      _.anotherCode,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(anotherCode = value),
+      PgTypes.text
+    )
+  }
 
-  def someNumber: IdField[Integer, FlaffRow]
+  def someNumber: IdField[Integer, FlaffRow] = {
+    new IdField[Integer, FlaffRow](
+      _path,
+      "some_number",
+      _.someNumber,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(someNumber = value),
+      PgTypes.int4
+    )
+  }
 
-  def specifier: IdField[ShortText, FlaffRow]
+  def specifier: IdField[ShortText, FlaffRow] = {
+    new IdField[ShortText, FlaffRow](
+      _path,
+      "specifier",
+      _.specifier,
+      Optional.empty(),
+      Optional.of("text"),
+      (row, value) => row.copy(specifier = value),
+      ShortText.dbType
+    )
+  }
 
-  def parentspecifier: OptField[ShortText, FlaffRow]
+  def parentspecifier: OptField[ShortText, FlaffRow] = {
+    new OptField[ShortText, FlaffRow](
+      _path,
+      "parentspecifier",
+      _.parentspecifier,
+      Optional.empty(),
+      Optional.of("text"),
+      (row, value) => row.copy(parentspecifier = value),
+      ShortText.dbType
+    )
+  }
 
   def fkFlaff: ForeignKey[FlaffFields, FlaffRow] = ForeignKey.of[FlaffFields, FlaffRow]("public.flaff_parent_fk").withColumnPair[ShortText](code, _.code).withColumnPair[String](anotherCode, _.anotherCode).withColumnPair[Integer](someNumber, _.someNumber).withColumnPair[ShortText](parentspecifier, _.specifier)
 
   def compositeIdIs(compositeId: FlaffId): SqlExpr[java.lang.Boolean] = SqlExpr.all(code.isEqual(compositeId.code), anotherCode.isEqual(compositeId.anotherCode), someNumber.isEqual(compositeId.someNumber), specifier.isEqual(compositeId.specifier))
 
-  def compositeIdIn(compositeIds: java.util.List[FlaffId]): SqlExpr[java.lang.Boolean] = CompositeIn(java.util.List.of(CompositeIn.Part[ShortText, FlaffId, FlaffRow](code, _.code, ShortText.pgType), CompositeIn.Part[String, FlaffId, FlaffRow](anotherCode, _.anotherCode, PgTypes.text), CompositeIn.Part[Integer, FlaffId, FlaffRow](someNumber, _.someNumber, PgTypes.int4), CompositeIn.Part[ShortText, FlaffId, FlaffRow](specifier, _.specifier, ShortText.pgType)), compositeIds)
+  def compositeIdIn(compositeIds: java.util.List[FlaffId]): SqlExpr[java.lang.Boolean] = TupleExpr.of(code, anotherCode, someNumber, specifier).among(compositeIds)
 
-  override def columns: java.util.List[FieldLike[?, FlaffRow]]
+  override def columns: java.util.List[FieldLike[?, FlaffRow]] = java.util.List.of(this.code, this.anotherCode, this.someNumber, this.specifier, this.parentspecifier)
 
   override def rowParser: RowParser[FlaffRow] = FlaffRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[FlaffFields, FlaffRow] = new FlaffFields(`_path`)
+
+  override def `_1`: SqlExpr[ShortText] = code
+
+  override def `_2`: SqlExpr[String] = anotherCode
+
+  override def `_3`: SqlExpr[Integer] = someNumber
+
+  override def `_4`: SqlExpr[ShortText] = specifier
+
+  override def `_5`: SqlExpr[ShortText] = parentspecifier
 }
 
 object FlaffFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends FlaffFields with RelationStructure[FlaffFields, FlaffRow] {
-
-    override def code: IdField[ShortText, FlaffRow] = {
-      new IdField[ShortText, FlaffRow](
-        _path,
-        "code",
-        _.code,
-        Optional.empty(),
-        Optional.of("text"),
-        (row, value) => row.copy(code = value),
-        ShortText.pgType
-      )
-    }
-
-    override def anotherCode: IdField[String, FlaffRow] = {
-      new IdField[String, FlaffRow](
-        _path,
-        "another_code",
-        _.anotherCode,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(anotherCode = value),
-        PgTypes.text
-      )
-    }
-
-    override def someNumber: IdField[Integer, FlaffRow] = {
-      new IdField[Integer, FlaffRow](
-        _path,
-        "some_number",
-        _.someNumber,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(someNumber = value),
-        PgTypes.int4
-      )
-    }
-
-    override def specifier: IdField[ShortText, FlaffRow] = {
-      new IdField[ShortText, FlaffRow](
-        _path,
-        "specifier",
-        _.specifier,
-        Optional.empty(),
-        Optional.of("text"),
-        (row, value) => row.copy(specifier = value),
-        ShortText.pgType
-      )
-    }
-
-    override def parentspecifier: OptField[ShortText, FlaffRow] = {
-      new OptField[ShortText, FlaffRow](
-        _path,
-        "parentspecifier",
-        _.parentspecifier,
-        Optional.empty(),
-        Optional.of("text"),
-        (row, value) => row.copy(parentspecifier = value),
-        ShortText.pgType
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, FlaffRow]] = java.util.List.of(this.code, this.anotherCode, this.someNumber, this.specifier, this.parentspecifier)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[FlaffFields, FlaffRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: FlaffFields = new FlaffFields(java.util.Collections.emptyList())
 }

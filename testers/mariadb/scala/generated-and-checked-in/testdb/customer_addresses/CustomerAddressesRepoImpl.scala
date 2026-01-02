@@ -21,17 +21,17 @@ import dev.typr.foundations.scala.Fragment.sql
 class CustomerAddressesRepoImpl extends CustomerAddressesRepo {
   override def delete: DeleteBuilder[CustomerAddressesFields, CustomerAddressesRow] = DeleteBuilder.of("`customer_addresses`", CustomerAddressesFields.structure, Dialect.MARIADB)
 
-  override def deleteById(addressId: CustomerAddressesId)(using c: Connection): Boolean = sql"delete from `customer_addresses` where `address_id` = ${Fragment.encode(CustomerAddressesId.pgType, addressId)}".update().runUnchecked(c) > 0
+  override def deleteById(addressId: CustomerAddressesId)(using c: Connection): Boolean = sql"delete from `customer_addresses` where `address_id` = ${Fragment.encode(CustomerAddressesId.dbType, addressId)}".update().runUnchecked(c) > 0
 
   override def deleteByIds(addressIds: Array[CustomerAddressesId])(using c: Connection): Int = {
     val fragments: ListBuffer[Fragment] = ListBuffer()
-    addressIds.foreach { id => fragments.addOne(Fragment.encode(CustomerAddressesId.pgType, id)): @scala.annotation.nowarn }
+    addressIds.foreach { id => fragments.addOne(Fragment.encode(CustomerAddressesId.dbType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("delete from `customer_addresses` where `address_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override def insert(unsaved: CustomerAddressesRow)(using c: Connection): CustomerAddressesRow = {
   sql"""insert into `customer_addresses`(`customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`)
-    values (${Fragment.encode(CustomersId.pgType, unsaved.customerId)}, ${Fragment.encode(MariaTypes.text, unsaved.addressType)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isDefault)}, ${Fragment.encode(MariaTypes.varchar, unsaved.recipientName)}, ${Fragment.encode(MariaTypes.varchar, unsaved.streetLine1)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.streetLine2)}, ${Fragment.encode(MariaTypes.varchar, unsaved.city)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.stateProvince)}, ${Fragment.encode(MariaTypes.varchar, unsaved.postalCode)}, ${Fragment.encode(MariaTypes.char_, unsaved.countryCode)}, ${Fragment.encode(MariaTypes.point.nullable, unsaved.location)}, ${Fragment.encode(MariaTypes.tinytext.nullable, unsaved.deliveryNotes)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)})
+    values (${Fragment.encode(CustomersId.dbType, unsaved.customerId)}, ${Fragment.encode(MariaTypes.text, unsaved.addressType)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isDefault)}, ${Fragment.encode(MariaTypes.varchar, unsaved.recipientName)}, ${Fragment.encode(MariaTypes.varchar, unsaved.streetLine1)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.streetLine2)}, ${Fragment.encode(MariaTypes.varchar, unsaved.city)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.stateProvince)}, ${Fragment.encode(MariaTypes.varchar, unsaved.postalCode)}, ${Fragment.encode(MariaTypes.char_, unsaved.countryCode)}, ${Fragment.encode(MariaTypes.point.nullable, unsaved.location)}, ${Fragment.encode(MariaTypes.tinytext.nullable, unsaved.deliveryNotes)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)})
     RETURNING `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`
     """
     .updateReturning(CustomerAddressesRow.`_rowParser`.exactlyOne()).runUnchecked(c)
@@ -41,7 +41,7 @@ class CustomerAddressesRepoImpl extends CustomerAddressesRepo {
     val columns: ListBuffer[Fragment] = ListBuffer()
     val values: ListBuffer[Fragment] = ListBuffer()
     columns.addOne(Fragment.lit("`customer_id`")): @scala.annotation.nowarn
-    values.addOne(sql"${Fragment.encode(CustomersId.pgType, unsaved.customerId)}"): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(CustomersId.dbType, unsaved.customerId)}"): @scala.annotation.nowarn
     columns.addOne(Fragment.lit("`address_type`")): @scala.annotation.nowarn
     values.addOne(sql"${Fragment.encode(MariaTypes.text, unsaved.addressType)}"): @scala.annotation.nowarn
     columns.addOne(Fragment.lit("`recipient_name`")): @scala.annotation.nowarn
@@ -98,12 +98,12 @@ class CustomerAddressesRepoImpl extends CustomerAddressesRepo {
   override def selectById(addressId: CustomerAddressesId)(using c: Connection): Option[CustomerAddressesRow] = {
     sql"""select `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`
     from `customer_addresses`
-    where `address_id` = ${Fragment.encode(CustomerAddressesId.pgType, addressId)}""".query(CustomerAddressesRow.`_rowParser`.first()).runUnchecked(c)
+    where `address_id` = ${Fragment.encode(CustomerAddressesId.dbType, addressId)}""".query(CustomerAddressesRow.`_rowParser`.first()).runUnchecked(c)
   }
 
   override def selectByIds(addressIds: Array[CustomerAddressesId])(using c: Connection): List[CustomerAddressesRow] = {
     val fragments: ListBuffer[Fragment] = ListBuffer()
-    addressIds.foreach { id => fragments.addOne(Fragment.encode(CustomerAddressesId.pgType, id)): @scala.annotation.nowarn }
+    addressIds.foreach { id => fragments.addOne(Fragment.encode(CustomerAddressesId.dbType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("select `address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at` from `customer_addresses` where `address_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(CustomerAddressesRow.`_rowParser`.all()).runUnchecked(c)
   }
 
@@ -118,7 +118,7 @@ class CustomerAddressesRepoImpl extends CustomerAddressesRepo {
   override def update(row: CustomerAddressesRow)(using c: Connection): Boolean = {
     val addressId: CustomerAddressesId = row.addressId
     return sql"""update `customer_addresses`
-    set `customer_id` = ${Fragment.encode(CustomersId.pgType, row.customerId)},
+    set `customer_id` = ${Fragment.encode(CustomersId.dbType, row.customerId)},
     `address_type` = ${Fragment.encode(MariaTypes.text, row.addressType)},
     `is_default` = ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, row.isDefault)},
     `recipient_name` = ${Fragment.encode(MariaTypes.varchar, row.recipientName)},
@@ -131,12 +131,12 @@ class CustomerAddressesRepoImpl extends CustomerAddressesRepo {
     `location` = ${Fragment.encode(MariaTypes.point.nullable, row.location)},
     `delivery_notes` = ${Fragment.encode(MariaTypes.tinytext.nullable, row.deliveryNotes)},
     `created_at` = ${Fragment.encode(MariaTypes.datetime, row.createdAt)}
-    where `address_id` = ${Fragment.encode(CustomerAddressesId.pgType, addressId)}""".update().runUnchecked(c) > 0
+    where `address_id` = ${Fragment.encode(CustomerAddressesId.dbType, addressId)}""".update().runUnchecked(c) > 0
   }
 
   override def upsert(unsaved: CustomerAddressesRow)(using c: Connection): CustomerAddressesRow = {
-  sql"""INSERT INTO `customer_addresses`(`customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`)
-    VALUES (${Fragment.encode(CustomersId.pgType, unsaved.customerId)}, ${Fragment.encode(MariaTypes.text, unsaved.addressType)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isDefault)}, ${Fragment.encode(MariaTypes.varchar, unsaved.recipientName)}, ${Fragment.encode(MariaTypes.varchar, unsaved.streetLine1)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.streetLine2)}, ${Fragment.encode(MariaTypes.varchar, unsaved.city)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.stateProvince)}, ${Fragment.encode(MariaTypes.varchar, unsaved.postalCode)}, ${Fragment.encode(MariaTypes.char_, unsaved.countryCode)}, ${Fragment.encode(MariaTypes.point.nullable, unsaved.location)}, ${Fragment.encode(MariaTypes.tinytext.nullable, unsaved.deliveryNotes)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)})
+  sql"""INSERT INTO `customer_addresses`(`address_id`, `customer_id`, `address_type`, `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`, `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`)
+    VALUES (${Fragment.encode(CustomerAddressesId.dbType, unsaved.addressId)}, ${Fragment.encode(CustomersId.dbType, unsaved.customerId)}, ${Fragment.encode(MariaTypes.text, unsaved.addressType)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isDefault)}, ${Fragment.encode(MariaTypes.varchar, unsaved.recipientName)}, ${Fragment.encode(MariaTypes.varchar, unsaved.streetLine1)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.streetLine2)}, ${Fragment.encode(MariaTypes.varchar, unsaved.city)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.stateProvince)}, ${Fragment.encode(MariaTypes.varchar, unsaved.postalCode)}, ${Fragment.encode(MariaTypes.char_, unsaved.countryCode)}, ${Fragment.encode(MariaTypes.point.nullable, unsaved.location)}, ${Fragment.encode(MariaTypes.tinytext.nullable, unsaved.deliveryNotes)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)})
     ON DUPLICATE KEY UPDATE `customer_id` = VALUES(`customer_id`),
     `address_type` = VALUES(`address_type`),
     `is_default` = VALUES(`is_default`),

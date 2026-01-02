@@ -9,6 +9,7 @@ import adventureworks.customtypes.Defaulted
 import adventureworks.public.Name
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple6
 import dev.typr.foundations.data.Xml
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
@@ -35,7 +36,7 @@ case class ProductmodelRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple6[ProductmodelId, Name, Option[Xml], Option[Xml], UUID, LocalDateTime] {
   def id: ProductmodelId = productmodelid
 
   def toUnsavedRow(
@@ -52,10 +53,22 @@ case class ProductmodelRow(
       modifieddate
     )
   }
+
+  override def `_1`: ProductmodelId = productmodelid
+
+  override def `_2`: Name = name
+
+  override def `_3`: Option[Xml] = catalogdescription
+
+  override def `_4`: Option[Xml] = instructions
+
+  override def `_5`: UUID = rowguid
+
+  override def `_6`: LocalDateTime = modifieddate
 }
 
 object ProductmodelRow {
-  val `_rowParser`: RowParser[ProductmodelRow] = RowParsers.of(ProductmodelId.pgType, Name.pgType, PgTypes.xml.nullable, PgTypes.xml.nullable, PgTypes.uuid, PgTypes.timestamp)(ProductmodelRow.apply)(row => Array[Any](row.productmodelid, row.name, row.catalogdescription, row.instructions, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[ProductmodelRow] = RowParsers.of(ProductmodelId.dbType, Name.dbType, PgTypes.xml.nullable, PgTypes.xml.nullable, PgTypes.uuid, PgTypes.timestamp)(ProductmodelRow.apply)(row => Array[Any](row.productmodelid, row.name, row.catalogdescription, row.instructions, row.rowguid, row.modifieddate))
 
   given pgText: PgText[ProductmodelRow] = PgText.from(`_rowParser`.underlying)
 }

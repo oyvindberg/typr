@@ -7,90 +7,86 @@ package oracledb.departments
 
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.SqlExpr
-import dev.typr.foundations.scala.SqlExpr.CompositeIn
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr
+import dev.typr.foundations.scala.TupleExpr4
 import oracledb.MoneyT
 
-trait DepartmentsFields extends FieldsExpr0[DepartmentsRow] {
-  def deptCode: IdField[String, DepartmentsRow]
+class DepartmentsFields(val `_path`: java.util.List[Path]) extends TupleExpr4[String, String, String, MoneyT] with RelationStructure[DepartmentsFields, DepartmentsRow]  with FieldsBase[DepartmentsRow] {
+  def deptCode: IdField[String, DepartmentsRow] = {
+    new IdField[String, DepartmentsRow](
+      _path,
+      "DEPT_CODE",
+      _.deptCode,
+      None,
+      None,
+      (row, value) => row.copy(deptCode = value),
+      OracleTypes.varchar2
+    )
+  }
 
-  def deptRegion: IdField[String, DepartmentsRow]
+  def deptRegion: IdField[String, DepartmentsRow] = {
+    new IdField[String, DepartmentsRow](
+      _path,
+      "DEPT_REGION",
+      _.deptRegion,
+      None,
+      None,
+      (row, value) => row.copy(deptRegion = value),
+      OracleTypes.varchar2
+    )
+  }
 
-  def deptName: Field[String, DepartmentsRow]
+  def deptName: Field[String, DepartmentsRow] = {
+    new Field[String, DepartmentsRow](
+      _path,
+      "DEPT_NAME",
+      _.deptName,
+      None,
+      None,
+      (row, value) => row.copy(deptName = value),
+      OracleTypes.varchar2
+    )
+  }
 
-  def budget: OptField[MoneyT, DepartmentsRow]
+  def budget: OptField[MoneyT, DepartmentsRow] = {
+    new OptField[MoneyT, DepartmentsRow](
+      _path,
+      "BUDGET",
+      _.budget,
+      None,
+      None,
+      (row, value) => row.copy(budget = value),
+      MoneyT.oracleType
+    )
+  }
 
   def compositeIdIs(compositeId: DepartmentsId): SqlExpr[Boolean] = SqlExpr.all(deptCode.isEqual(compositeId.deptCode), deptRegion.isEqual(compositeId.deptRegion))
 
-  def compositeIdIn(compositeIds: List[DepartmentsId]): SqlExpr[Boolean] = CompositeIn(List(CompositeIn.Part[String, DepartmentsId, DepartmentsRow](deptCode, _.deptCode, OracleTypes.varchar2), CompositeIn.Part[String, DepartmentsId, DepartmentsRow](deptRegion, _.deptRegion, OracleTypes.varchar2)), compositeIds)
+  def compositeIdIn(compositeIds: List[DepartmentsId]): SqlExpr[Boolean] = TupleExpr.of(deptCode, deptRegion).among(compositeIds)
 
-  override def columns: java.util.List[FieldLike[?, DepartmentsRow]]
+  override def columns: java.util.List[FieldLike[?, DepartmentsRow]] = java.util.List.of(this.deptCode.underlying, this.deptRegion.underlying, this.deptName.underlying, this.budget.underlying)
 
   override def rowParser: RowParser[DepartmentsRow] = DepartmentsRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[DepartmentsFields, DepartmentsRow] = new DepartmentsFields(`_path`)
+
+  override def `_1`: SqlExpr[String] = deptCode
+
+  override def `_2`: SqlExpr[String] = deptRegion
+
+  override def `_3`: SqlExpr[String] = deptName
+
+  override def `_4`: SqlExpr[MoneyT] = budget
 }
 
 object DepartmentsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends DepartmentsFields with RelationStructure[DepartmentsFields, DepartmentsRow] {
-
-    override def deptCode: IdField[String, DepartmentsRow] = {
-      new IdField[String, DepartmentsRow](
-        _path,
-        "DEPT_CODE",
-        _.deptCode,
-        None,
-        None,
-        (row, value) => row.copy(deptCode = value),
-        OracleTypes.varchar2
-      )
-    }
-
-    override def deptRegion: IdField[String, DepartmentsRow] = {
-      new IdField[String, DepartmentsRow](
-        _path,
-        "DEPT_REGION",
-        _.deptRegion,
-        None,
-        None,
-        (row, value) => row.copy(deptRegion = value),
-        OracleTypes.varchar2
-      )
-    }
-
-    override def deptName: Field[String, DepartmentsRow] = {
-      new Field[String, DepartmentsRow](
-        _path,
-        "DEPT_NAME",
-        _.deptName,
-        None,
-        None,
-        (row, value) => row.copy(deptName = value),
-        OracleTypes.varchar2
-      )
-    }
-
-    override def budget: OptField[MoneyT, DepartmentsRow] = {
-      new OptField[MoneyT, DepartmentsRow](
-        _path,
-        "BUDGET",
-        _.budget,
-        None,
-        None,
-        (row, value) => row.copy(budget = value),
-        MoneyT.oracleType
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, DepartmentsRow]] = java.util.List.of(this.deptCode.underlying, this.deptRegion.underlying, this.deptName.underlying, this.budget.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[DepartmentsFields, DepartmentsRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: DepartmentsFields = new DepartmentsFields(java.util.Collections.emptyList())
 }

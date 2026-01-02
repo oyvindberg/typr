@@ -7,14 +7,15 @@ package testdb.customer_addresses
 
 import com.fasterxml.jackson.annotation.JsonValue
 import dev.typr.foundations.MariaType
+import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.scala.Bijection
-import dev.typr.foundations.scala.ScalaDbTypes
 
 /** Type for the primary key of table `customer_addresses` */
-case class CustomerAddressesId(@JsonValue value: Long) extends scala.AnyVal
+case class CustomerAddressesId(@JsonValue value: Uint4) extends scala.AnyVal
 
 object CustomerAddressesId {
-  given bijection: Bijection[CustomerAddressesId, Long] = Bijection.apply[CustomerAddressesId, Long](_.value)(CustomerAddressesId.apply)
+  given bijection: Bijection[CustomerAddressesId, Uint4] = Bijection.apply[CustomerAddressesId, Uint4](_.value)(CustomerAddressesId.apply)
 
-  given pgType: MariaType[CustomerAddressesId] = ScalaDbTypes.MariaTypes.intUnsigned.bimap(CustomerAddressesId.apply, _.value)
+  given dbType: MariaType[CustomerAddressesId] = MariaTypes.intUnsigned.bimap(CustomerAddressesId.apply, _.value)
 }

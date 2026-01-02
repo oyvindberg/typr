@@ -7,100 +7,97 @@ package oracledb.products
 
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
+import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
 import dev.typr.foundations.dsl.SqlExpr.OptField
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5
 import java.util.Optional
 import oracledb.MoneyT
 import oracledb.TagVarrayT
 
-trait ProductsFields extends FieldsExpr0[ProductsRow] {
-  def productId: IdField[ProductsId, ProductsRow]
+class ProductsFields(val `_path`: java.util.List[Path]) extends TupleExpr5[ProductsId, String, String, MoneyT, TagVarrayT] with RelationStructure[ProductsFields, ProductsRow]  with FieldsBase[ProductsRow] {
+  def productId: IdField[ProductsId, ProductsRow] = {
+    new IdField[ProductsId, ProductsRow](
+      _path,
+      "PRODUCT_ID",
+      _.productId,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(productId = value),
+      ProductsId.oracleType
+    )
+  }
 
-  def sku: Field[String, ProductsRow]
+  def sku: Field[String, ProductsRow] = {
+    new Field[String, ProductsRow](
+      _path,
+      "SKU",
+      _.sku,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(sku = value),
+      OracleTypes.varchar2
+    )
+  }
 
-  def name: Field[String, ProductsRow]
+  def name: Field[String, ProductsRow] = {
+    new Field[String, ProductsRow](
+      _path,
+      "NAME",
+      _.name,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(name = value),
+      OracleTypes.varchar2
+    )
+  }
 
-  def price: Field[MoneyT, ProductsRow]
+  def price: Field[MoneyT, ProductsRow] = {
+    new Field[MoneyT, ProductsRow](
+      _path,
+      "PRICE",
+      _.price,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(price = value),
+      MoneyT.oracleType
+    )
+  }
 
-  def tags: OptField[TagVarrayT, ProductsRow]
+  def tags: OptField[TagVarrayT, ProductsRow] = {
+    new OptField[TagVarrayT, ProductsRow](
+      _path,
+      "TAGS",
+      _.tags,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(tags = value),
+      TagVarrayT.oracleType
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, ProductsRow]]
+  override def columns: java.util.List[FieldLike[?, ProductsRow]] = java.util.List.of(this.productId, this.sku, this.name, this.price, this.tags)
 
   override def rowParser: RowParser[ProductsRow] = ProductsRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductsFields, ProductsRow] = new ProductsFields(`_path`)
+
+  override def `_1`: SqlExpr[ProductsId] = productId
+
+  override def `_2`: SqlExpr[String] = sku
+
+  override def `_3`: SqlExpr[String] = name
+
+  override def `_4`: SqlExpr[MoneyT] = price
+
+  override def `_5`: SqlExpr[TagVarrayT] = tags
 }
 
 object ProductsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ProductsFields with RelationStructure[ProductsFields, ProductsRow] {
-
-    override def productId: IdField[ProductsId, ProductsRow] = {
-      new IdField[ProductsId, ProductsRow](
-        _path,
-        "PRODUCT_ID",
-        _.productId,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(productId = value),
-        ProductsId.oracleType
-      )
-    }
-
-    override def sku: Field[String, ProductsRow] = {
-      new Field[String, ProductsRow](
-        _path,
-        "SKU",
-        _.sku,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(sku = value),
-        OracleTypes.varchar2
-      )
-    }
-
-    override def name: Field[String, ProductsRow] = {
-      new Field[String, ProductsRow](
-        _path,
-        "NAME",
-        _.name,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(name = value),
-        OracleTypes.varchar2
-      )
-    }
-
-    override def price: Field[MoneyT, ProductsRow] = {
-      new Field[MoneyT, ProductsRow](
-        _path,
-        "PRICE",
-        _.price,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(price = value),
-        MoneyT.oracleType
-      )
-    }
-
-    override def tags: OptField[TagVarrayT, ProductsRow] = {
-      new OptField[TagVarrayT, ProductsRow](
-        _path,
-        "TAGS",
-        _.tags,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(tags = value),
-        TagVarrayT.oracleType
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, ProductsRow]] = java.util.List.of(this.productId, this.sku, this.name, this.price, this.tags)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductsFields, ProductsRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: ProductsFields = new ProductsFields(java.util.Collections.emptyList())
 }

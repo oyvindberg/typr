@@ -10,5 +10,5 @@ package typr.generated.information_schema.key_column_usage
 import java.sql.Connection
 
 trait KeyColumnUsageViewRepo {
-  def selectAll(implicit c: Connection): List[KeyColumnUsageViewRow]
+  def selectAll(using c: Connection): List[KeyColumnUsageViewRow]
 }

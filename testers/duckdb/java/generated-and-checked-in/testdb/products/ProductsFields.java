@@ -8,121 +8,127 @@ package testdb.products;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.data.Json;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-public interface ProductsFields extends FieldsExpr<ProductsRow> {
-  record Impl(List<Path> _path)
-      implements ProductsFields, RelationStructure<ProductsFields, ProductsRow> {
-    @Override
-    public IdField<ProductsId, ProductsRow> productId() {
-      return new IdField<ProductsId, ProductsRow>(
-          _path,
-          "product_id",
-          ProductsRow::productId,
-          Optional.empty(),
-          Optional.of("INTEGER"),
-          (row, value) -> row.withProductId(value),
-          ProductsId.duckDbType);
-    }
-    ;
+public class ProductsFields extends TupleExpr5<ProductsId, String, String, BigDecimal, Json>
+    implements RelationStructure<ProductsFields, ProductsRow>, FieldsBase<ProductsRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, ProductsRow> sku() {
-      return new Field<String, ProductsRow>(
-          _path,
-          "sku",
-          ProductsRow::sku,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withSku(value),
-          DuckDbTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, ProductsRow> name() {
-      return new Field<String, ProductsRow>(
-          _path,
-          "name",
-          ProductsRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          DuckDbTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, ProductsRow> price() {
-      return new Field<BigDecimal, ProductsRow>(
-          _path,
-          "price",
-          ProductsRow::price,
-          Optional.empty(),
-          Optional.of("DECIMAL(10,2)"),
-          (row, value) -> row.withPrice(value),
-          DuckDbTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<Json, ProductsRow> metadata() {
-      return new OptField<Json, ProductsRow>(
-          _path,
-          "metadata",
-          ProductsRow::metadata,
-          Optional.empty(),
-          Optional.of("JSON"),
-          (row, value) -> row.withMetadata(value),
-          DuckDbTypes.json);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, ProductsRow>> columns() {
-      return java.util.List.of(
-          this.productId(), this.sku(), this.name(), this.price(), this.metadata());
-    }
-    ;
-
-    @Override
-    public RelationStructure<ProductsFields, ProductsRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public ProductsFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static ProductsFields structure = new ProductsFields(java.util.Collections.emptyList());
+
+  public IdField<ProductsId, ProductsRow> productId() {
+    return new IdField<ProductsId, ProductsRow>(
+        _path,
+        "product_id",
+        ProductsRow::productId,
+        Optional.empty(),
+        Optional.of("INTEGER"),
+        (row, value) -> row.withProductId(value),
+        ProductsId.duckDbType);
   }
-  ;
 
-  IdField<ProductsId, ProductsRow> productId();
+  public Field<String, ProductsRow> sku() {
+    return new Field<String, ProductsRow>(
+        _path,
+        "sku",
+        ProductsRow::sku,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withSku(value),
+        DuckDbTypes.varchar);
+  }
 
-  Field<String, ProductsRow> sku();
+  public Field<String, ProductsRow> name() {
+    return new Field<String, ProductsRow>(
+        _path,
+        "name",
+        ProductsRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        DuckDbTypes.varchar);
+  }
 
-  Field<String, ProductsRow> name();
+  public Field<BigDecimal, ProductsRow> price() {
+    return new Field<BigDecimal, ProductsRow>(
+        _path,
+        "price",
+        ProductsRow::price,
+        Optional.empty(),
+        Optional.of("DECIMAL(10,2)"),
+        (row, value) -> row.withPrice(value),
+        DuckDbTypes.numeric);
+  }
 
-  Field<BigDecimal, ProductsRow> price();
-
-  OptField<Json, ProductsRow> metadata();
+  public OptField<Json, ProductsRow> metadata() {
+    return new OptField<Json, ProductsRow>(
+        _path,
+        "metadata",
+        ProductsRow::metadata,
+        Optional.empty(),
+        Optional.of("JSON"),
+        (row, value) -> row.withMetadata(value),
+        DuckDbTypes.json);
+  }
 
   @Override
-  List<FieldLike<?, ProductsRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<ProductsRow> rowParser() {
+  public List<FieldLike<?, ProductsRow>> columns() {
+    return java.util.List.of(
+        this.productId(), this.sku(), this.name(), this.price(), this.metadata());
+  }
+
+  @Override
+  public RowParser<ProductsRow> rowParser() {
     return ProductsRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<ProductsFields, ProductsRow> withPaths(List<Path> _path) {
+    return new ProductsFields(_path);
+  }
+
+  @Override
+  public SqlExpr<ProductsId> _1() {
+    return productId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return sku();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _4() {
+    return price();
+  }
+
+  @Override
+  public SqlExpr<Json> _5() {
+    return metadata();
+  }
 }

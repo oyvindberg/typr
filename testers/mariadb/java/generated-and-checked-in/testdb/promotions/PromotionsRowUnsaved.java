@@ -6,6 +6,9 @@
 package testdb.promotions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.typr.foundations.data.Json;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint4;
 import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -32,15 +35,15 @@ public record PromotionsRowUnsaved(
     /** Default: NULL */
     @JsonProperty("min_order_amount") Defaulted<Optional<BigDecimal>> minOrderAmount,
     /** Default: NULL */
-    @JsonProperty("max_uses") Defaulted<Optional<Long>> maxUses,
+    @JsonProperty("max_uses") Defaulted<Optional<Uint4>> maxUses,
     /** Default: 0 */
-    @JsonProperty("uses_count") Defaulted<Long> usesCount,
+    @JsonProperty("uses_count") Defaulted<Uint4> usesCount,
     /** Default: NULL */
-    @JsonProperty("max_uses_per_customer") Defaulted<Optional<Short>> maxUsesPerCustomer,
+    @JsonProperty("max_uses_per_customer") Defaulted<Optional<Uint1>> maxUsesPerCustomer,
     /** Default: NULL */
     @JsonProperty("applicable_to") Defaulted<Optional<MariaSet>> applicableTo,
     /** Default: NULL Complex eligibility rules */
-    @JsonProperty("rules_json") Defaulted<Optional<String>> rulesJson,
+    @JsonProperty("rules_json") Defaulted<Optional<Json>> rulesJson,
     /** Default: 1 */
     @JsonProperty("is_active") Defaulted<Boolean> isActive,
     /** Default: current_timestamp() */
@@ -246,7 +249,7 @@ public record PromotionsRowUnsaved(
   ;
 
   /** Default: NULL */
-  public PromotionsRowUnsaved withMaxUses(Defaulted<Optional<Long>> maxUses) {
+  public PromotionsRowUnsaved withMaxUses(Defaulted<Optional<Uint4>> maxUses) {
     return new PromotionsRowUnsaved(
         code,
         name,
@@ -267,7 +270,7 @@ public record PromotionsRowUnsaved(
   ;
 
   /** Default: 0 */
-  public PromotionsRowUnsaved withUsesCount(Defaulted<Long> usesCount) {
+  public PromotionsRowUnsaved withUsesCount(Defaulted<Uint4> usesCount) {
     return new PromotionsRowUnsaved(
         code,
         name,
@@ -289,7 +292,7 @@ public record PromotionsRowUnsaved(
 
   /** Default: NULL */
   public PromotionsRowUnsaved withMaxUsesPerCustomer(
-      Defaulted<Optional<Short>> maxUsesPerCustomer) {
+      Defaulted<Optional<Uint1>> maxUsesPerCustomer) {
     return new PromotionsRowUnsaved(
         code,
         name,
@@ -331,7 +334,7 @@ public record PromotionsRowUnsaved(
   ;
 
   /** Default: NULL Complex eligibility rules */
-  public PromotionsRowUnsaved withRulesJson(Defaulted<Optional<String>> rulesJson) {
+  public PromotionsRowUnsaved withRulesJson(Defaulted<Optional<Json>> rulesJson) {
     return new PromotionsRowUnsaved(
         code,
         name,
@@ -396,11 +399,11 @@ public record PromotionsRowUnsaved(
   public PromotionsRow toRow(
       java.util.function.Supplier<Optional<String>> descriptionDefault,
       java.util.function.Supplier<Optional<BigDecimal>> minOrderAmountDefault,
-      java.util.function.Supplier<Optional<Long>> maxUsesDefault,
-      java.util.function.Supplier<Long> usesCountDefault,
-      java.util.function.Supplier<Optional<Short>> maxUsesPerCustomerDefault,
+      java.util.function.Supplier<Optional<Uint4>> maxUsesDefault,
+      java.util.function.Supplier<Uint4> usesCountDefault,
+      java.util.function.Supplier<Optional<Uint1>> maxUsesPerCustomerDefault,
       java.util.function.Supplier<Optional<MariaSet>> applicableToDefault,
-      java.util.function.Supplier<Optional<String>> rulesJsonDefault,
+      java.util.function.Supplier<Optional<Json>> rulesJsonDefault,
       java.util.function.Supplier<Boolean> isActiveDefault,
       java.util.function.Supplier<LocalDateTime> createdAtDefault,
       java.util.function.Supplier<PromotionsId> promotionIdDefault) {

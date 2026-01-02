@@ -7,6 +7,7 @@ package testdb.v_warehouse_coverage
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple10
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -60,8 +61,28 @@ case class VWarehouseCoverageViewRow(
    * Default: NULL
    */
   @JsonProperty("total_inventory") totalInventory: Option[BigDecimal]
-)
+) extends Tuple10[WarehousesId, String, String, String, Option[String], Option[String], String, Boolean, Long, Option[BigDecimal]] {
+  override def `_1`: WarehousesId = warehouseId
+
+  override def `_2`: String = code
+
+  override def `_3`: String = name
+
+  override def `_4`: String = address
+
+  override def `_5`: Option[String] = locationWkt
+
+  override def `_6`: Option[String] = serviceAreaWkt
+
+  override def `_7`: String = timezone
+
+  override def `_8`: Boolean = isActive
+
+  override def `_9`: Long = productsStocked
+
+  override def `_10`: Option[BigDecimal] = totalInventory
+}
 
 object VWarehouseCoverageViewRow {
-  val `_rowParser`: RowParser[VWarehouseCoverageViewRow] = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.longtext.nullable, MariaTypes.longtext.nullable, MariaTypes.varchar, ScalaDbTypes.MariaTypes.bool, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.numeric.nullable)(VWarehouseCoverageViewRow.apply)(row => Array[Any](row.warehouseId, row.code, row.name, row.address, row.locationWkt, row.serviceAreaWkt, row.timezone, row.isActive, row.productsStocked, row.totalInventory))
+  val `_rowParser`: RowParser[VWarehouseCoverageViewRow] = RowParsers.of(WarehousesId.dbType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.longtext.nullable, MariaTypes.longtext.nullable, MariaTypes.varchar, ScalaDbTypes.MariaTypes.bool, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.numeric.nullable)(VWarehouseCoverageViewRow.apply)(row => Array[Any](row.warehouseId, row.code, row.name, row.address, row.locationWkt, row.serviceAreaWkt, row.timezone, row.isActive, row.productsStocked, row.totalInventory))
 }

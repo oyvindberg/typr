@@ -25,15 +25,14 @@ import testdb.orders.OrdersId;
 public class OrderItemsRepoImpl implements OrderItemsRepo {
   @Override
   public DeleteBuilder<OrderItemsFields, OrderItemsRow> delete() {
-    return DeleteBuilder.of("\"ORDER_ITEMS\"", OrderItemsFields.structure(), Dialect.DB2);
+    return DeleteBuilder.of("\"ORDER_ITEMS\"", OrderItemsFields.structure, Dialect.DB2);
   }
-  ;
 
   @Override
   public Boolean deleteById(OrderItemsId compositeId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"ORDER_ITEMS\" where \"ORDER_ID\" = "),
-                Fragment.encode(OrdersId.pgType, compositeId.orderId()),
+                Fragment.encode(OrdersId.dbType, compositeId.orderId()),
                 Fragment.lit(" AND \"ITEM_NUMBER\" = "),
                 Fragment.encode(Db2Types.integer, compositeId.itemNumber()),
                 Fragment.lit(""))
@@ -41,7 +40,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(OrderItemsId[] compositeIds, Connection c) {
@@ -50,7 +48,7 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
       fragments.add(
           Fragment.interpolate(
               Fragment.lit("("),
-              Fragment.encode(OrdersId.pgType, id.orderId()),
+              Fragment.encode(OrdersId.dbType, id.orderId()),
               Fragment.lit(", "),
               Fragment.encode(Db2Types.integer, id.itemNumber()),
               Fragment.lit(")")));
@@ -63,7 +61,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public OrderItemsRow insert(OrderItemsRow unsaved, Connection c) {
@@ -73,7 +70,7 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
                     + " \"UNIT_PRICE\" FROM FINAL TABLE (INSERT INTO \"ORDER_ITEMS\"(\"ORDER_ID\","
                     + " \"ITEM_NUMBER\", \"PRODUCT_NAME\", \"QUANTITY\", \"UNIT_PRICE\")\n"
                     + "VALUES ("),
-            Fragment.encode(OrdersId.pgType, unsaved.orderId()),
+            Fragment.encode(OrdersId.dbType, unsaved.orderId()),
             Fragment.lit(", "),
             Fragment.encode(Db2Types.integer, unsaved.itemNumber()),
             Fragment.lit(", "),
@@ -86,14 +83,12 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .updateReturning(OrderItemsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<OrderItemsFields, OrderItemsRow> select() {
     return SelectBuilder.of(
-        "\"ORDER_ITEMS\"", OrderItemsFields.structure(), OrderItemsRow._rowParser, Dialect.DB2);
+        "\"ORDER_ITEMS\"", OrderItemsFields.structure, OrderItemsRow._rowParser, Dialect.DB2);
   }
-  ;
 
   @Override
   public List<OrderItemsRow> selectAll(Connection c) {
@@ -105,7 +100,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .query(OrderItemsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<OrderItemsRow> selectById(OrderItemsId compositeId, Connection c) {
@@ -115,14 +109,13 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
                     + " \"UNIT_PRICE\"\n"
                     + "from \"ORDER_ITEMS\"\n"
                     + "where \"ORDER_ID\" = "),
-            Fragment.encode(OrdersId.pgType, compositeId.orderId()),
+            Fragment.encode(OrdersId.dbType, compositeId.orderId()),
             Fragment.lit(" AND \"ITEM_NUMBER\" = "),
             Fragment.encode(Db2Types.integer, compositeId.itemNumber()),
             Fragment.lit(""))
         .query(OrderItemsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<OrderItemsRow> selectByIds(OrderItemsId[] compositeIds, Connection c) {
@@ -131,7 +124,7 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
       fragments.add(
           Fragment.interpolate(
               Fragment.lit("("),
-              Fragment.encode(OrdersId.pgType, id.orderId()),
+              Fragment.encode(OrdersId.dbType, id.orderId()),
               Fragment.lit(", "),
               Fragment.encode(Db2Types.integer, id.itemNumber()),
               Fragment.lit(")")));
@@ -147,7 +140,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .query(OrderItemsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<OrderItemsId, OrderItemsRow> selectByIdsTracked(
@@ -156,14 +148,12 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
     selectByIds(compositeIds, c).forEach(row -> ret.put(row.compositeId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<OrderItemsFields, OrderItemsRow> update() {
     return UpdateBuilder.of(
-        "\"ORDER_ITEMS\"", OrderItemsFields.structure(), OrderItemsRow._rowParser, Dialect.DB2);
+        "\"ORDER_ITEMS\"", OrderItemsFields.structure, OrderItemsRow._rowParser, Dialect.DB2);
   }
-  ;
 
   @Override
   public Boolean update(OrderItemsRow row, Connection c) {
@@ -177,7 +167,7 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
                 Fragment.lit(",\n\"UNIT_PRICE\" = "),
                 Fragment.encode(Db2Types.decimal, row.unitPrice()),
                 Fragment.lit("\nwhere \"ORDER_ID\" = "),
-                Fragment.encode(OrdersId.pgType, compositeId.orderId()),
+                Fragment.encode(OrdersId.dbType, compositeId.orderId()),
                 Fragment.lit(" AND \"ITEM_NUMBER\" = "),
                 Fragment.encode(Db2Types.integer, compositeId.itemNumber()),
                 Fragment.lit(""))
@@ -185,13 +175,12 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public void upsert(OrderItemsRow unsaved, Connection c) {
     interpolate(
             Fragment.lit("MERGE INTO \"ORDER_ITEMS\" AS t\nUSING (VALUES ("),
-            Fragment.encode(OrdersId.pgType, unsaved.orderId()),
+            Fragment.encode(OrdersId.dbType, unsaved.orderId()),
             Fragment.lit(", "),
             Fragment.encode(Db2Types.integer, unsaved.itemNumber()),
             Fragment.lit(", "),
@@ -210,7 +199,7 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
                     + "\"UNIT_PRICE\" = s.\"UNIT_PRICE\"\n"
                     + "WHEN NOT MATCHED THEN INSERT (\"ORDER_ID\", \"ITEM_NUMBER\","
                     + " \"PRODUCT_NAME\", \"QUANTITY\", \"UNIT_PRICE\") VALUES ("),
-            Fragment.encode(OrdersId.pgType, unsaved.orderId()),
+            Fragment.encode(OrdersId.dbType, unsaved.orderId()),
             Fragment.lit(", "),
             Fragment.encode(Db2Types.integer, unsaved.itemNumber()),
             Fragment.lit(", "),
@@ -223,7 +212,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public void upsertBatch(Iterator<OrderItemsRow> unsaved, Connection c) {
@@ -242,5 +230,4 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .updateMany(OrderItemsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

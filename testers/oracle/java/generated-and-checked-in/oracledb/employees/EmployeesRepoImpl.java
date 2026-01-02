@@ -25,9 +25,8 @@ import oracledb.MoneyT;
 public class EmployeesRepoImpl implements EmployeesRepo {
   @Override
   public DeleteBuilder<EmployeesFields, EmployeesRow> delete() {
-    return DeleteBuilder.of("\"EMPLOYEES\"", EmployeesFields.structure(), Dialect.ORACLE);
+    return DeleteBuilder.of("\"EMPLOYEES\"", EmployeesFields.structure, Dialect.ORACLE);
   }
-  ;
 
   @Override
   public Boolean deleteById(EmployeesId compositeId, Connection c) {
@@ -41,7 +40,6 @@ public class EmployeesRepoImpl implements EmployeesRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(EmployeesId[] compositeIds, Connection c) {
@@ -63,7 +61,6 @@ public class EmployeesRepoImpl implements EmployeesRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public EmployeesId insert(EmployeesRow unsaved, Connection c) {
@@ -90,7 +87,6 @@ public class EmployeesRepoImpl implements EmployeesRepo {
             new String[] {"EMP_NUMBER", "EMP_SUFFIX"}, EmployeesId._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public EmployeesId insert(EmployeesRowUnsaved unsaved, Connection c) {
@@ -137,14 +133,12 @@ public class EmployeesRepoImpl implements EmployeesRepo {
             new String[] {"EMP_NUMBER", "EMP_SUFFIX"}, EmployeesId._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<EmployeesFields, EmployeesRow> select() {
     return SelectBuilder.of(
-        "\"EMPLOYEES\"", EmployeesFields.structure(), EmployeesRow._rowParser, Dialect.ORACLE);
+        "\"EMPLOYEES\"", EmployeesFields.structure, EmployeesRow._rowParser, Dialect.ORACLE);
   }
-  ;
 
   @Override
   public List<EmployeesRow> selectAll(Connection c) {
@@ -156,7 +150,6 @@ public class EmployeesRepoImpl implements EmployeesRepo {
         .query(EmployeesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<EmployeesRow> selectById(EmployeesId compositeId, Connection c) {
@@ -173,7 +166,6 @@ public class EmployeesRepoImpl implements EmployeesRepo {
         .query(EmployeesRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<EmployeesRow> selectByIds(EmployeesId[] compositeIds, Connection c) {
@@ -198,7 +190,6 @@ public class EmployeesRepoImpl implements EmployeesRepo {
         .query(EmployeesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<EmployeesId, EmployeesRow> selectByIdsTracked(
@@ -207,14 +198,12 @@ public class EmployeesRepoImpl implements EmployeesRepo {
     selectByIds(compositeIds, c).forEach(row -> ret.put(row.compositeId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<EmployeesFields, EmployeesRow> update() {
     return UpdateBuilder.of(
-        "\"EMPLOYEES\"", EmployeesFields.structure(), EmployeesRow._rowParser, Dialect.ORACLE);
+        "\"EMPLOYEES\"", EmployeesFields.structure, EmployeesRow._rowParser, Dialect.ORACLE);
   }
-  ;
 
   @Override
   public Boolean update(EmployeesRow row, Connection c) {
@@ -240,7 +229,6 @@ public class EmployeesRepoImpl implements EmployeesRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public void upsert(EmployeesRow unsaved, Connection c) {
@@ -287,7 +275,6 @@ public class EmployeesRepoImpl implements EmployeesRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public void upsertBatch(Iterator<EmployeesRow> unsaved, Connection c) {
@@ -308,5 +295,4 @@ public class EmployeesRepoImpl implements EmployeesRepo {
         .updateMany(EmployeesRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple7;
+import dev.typr.foundations.data.Json;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
 
@@ -23,11 +25,12 @@ public record PaymentMethodsRow(
     /** */
     @JsonProperty("method_type") String methodType,
     /** Default: NULL */
-    @JsonProperty("processor_config") Optional<String> processorConfig,
+    @JsonProperty("processor_config") Optional<Json> processorConfig,
     /** Default: 1 */
     @JsonProperty("is_active") Boolean isActive,
     /** Default: 0 */
-    @JsonProperty("sort_order") Byte sortOrder) {
+    @JsonProperty("sort_order") Byte sortOrder)
+    implements Tuple7<PaymentMethodsId, String, String, String, Optional<Json>, Boolean, Byte> {
   /** AUTO_INCREMENT */
   public PaymentMethodsRow withMethodId(PaymentMethodsId methodId) {
     return new PaymentMethodsRow(
@@ -57,7 +60,7 @@ public record PaymentMethodsRow(
   ;
 
   /** Default: NULL */
-  public PaymentMethodsRow withProcessorConfig(Optional<String> processorConfig) {
+  public PaymentMethodsRow withProcessorConfig(Optional<Json> processorConfig) {
     return new PaymentMethodsRow(
         methodId, code, name, methodType, processorConfig, isActive, sortOrder);
   }
@@ -79,11 +82,11 @@ public record PaymentMethodsRow(
 
   public static RowParser<PaymentMethodsRow> _rowParser =
       RowParsers.of(
-          PaymentMethodsId.pgType,
+          PaymentMethodsId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.text,
-          MariaTypes.longtext.opt(),
+          MariaTypes.json.opt(),
           MariaTypes.bool,
           MariaTypes.tinyint,
           PaymentMethodsRow::new,
@@ -99,13 +102,55 @@ public record PaymentMethodsRow(
               });
   ;
 
+  @Override
+  public PaymentMethodsId _1() {
+    return methodId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return code;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return name;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return methodType;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _5() {
+    return processorConfig;
+  }
+  ;
+
+  @Override
+  public Boolean _6() {
+    return isActive;
+  }
+  ;
+
+  @Override
+  public Byte _7() {
+    return sortOrder;
+  }
+  ;
+
   public PaymentMethodsId id() {
     return methodId;
   }
   ;
 
   public PaymentMethodsRowUnsaved toUnsavedRow(
-      Defaulted<Optional<String>> processorConfig,
+      Defaulted<Optional<Json>> processorConfig,
       Defaulted<Boolean> isActive,
       Defaulted<Byte> sortOrder) {
     return new PaymentMethodsRowUnsaved(

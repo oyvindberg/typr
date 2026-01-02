@@ -5,7 +5,6 @@ import org.http4s.HttpRoutes
 import org.http4s.Response
 import testapi.model.Animal
 import org.http4s.circe.CirceEntityEncoder.circeEntityEncoder
-import org.http4s.circe.CirceEntityDecoder.circeEntityDecoder
 import org.http4s.dsl.io._
 
 trait AnimalsApiServer extends AnimalsApi {

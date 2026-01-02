@@ -7,6 +7,8 @@ package testdb.categories
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple9
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -49,8 +51,8 @@ case class CategoriesRow(
   /** 
    * Default: NULL
    */
-  metadata: Option[String]
-) {
+  metadata: Option[Json]
+) extends Tuple9[CategoriesId, Option[CategoriesId], String, String, Option[String], Option[String], Short, Boolean, Option[Json]] {
   def id: CategoriesId = categoryId
 
   def toUnsavedRow(
@@ -59,7 +61,7 @@ case class CategoriesRow(
     imageUrl: Defaulted[Option[String]] = Defaulted.Provided(this.imageUrl),
     sortOrder: Defaulted[Short] = Defaulted.Provided(this.sortOrder),
     isVisible: Defaulted[Boolean] = Defaulted.Provided(this.isVisible),
-    metadata: Defaulted[Option[String]] = Defaulted.Provided(this.metadata)
+    metadata: Defaulted[Option[Json]] = Defaulted.Provided(this.metadata)
   ): CategoriesRowUnsaved = {
     new CategoriesRowUnsaved(
       name,
@@ -72,8 +74,26 @@ case class CategoriesRow(
       metadata
     )
   }
+
+  override def `_1`: CategoriesId = categoryId
+
+  override def `_2`: Option[CategoriesId] = parentId
+
+  override def `_3`: String = name
+
+  override def `_4`: String = slug
+
+  override def `_5`: Option[String] = description
+
+  override def `_6`: Option[String] = imageUrl
+
+  override def `_7`: Short = sortOrder
+
+  override def `_8`: Boolean = isVisible
+
+  override def `_9`: Option[Json] = metadata
 }
 
 object CategoriesRow {
-  val `_rowParser`: RowParser[CategoriesRow] = RowParsers.of(CategoriesId.pgType, CategoriesId.pgType.nullable, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.mediumtext.nullable, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.smallint, ScalaDbTypes.MariaTypes.bool, MariaTypes.longtext.nullable)(CategoriesRow.apply)(row => Array[Any](row.categoryId, row.parentId, row.name, row.slug, row.description, row.imageUrl, row.sortOrder, row.isVisible, row.metadata))
+  val `_rowParser`: RowParser[CategoriesRow] = RowParsers.of(CategoriesId.dbType, CategoriesId.dbType.nullable, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.mediumtext.nullable, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.smallint, ScalaDbTypes.MariaTypes.bool, MariaTypes.json.nullable)(CategoriesRow.apply)(row => Array[Any](row.categoryId, row.parentId, row.name, row.slug, row.description, row.imageUrl, row.sortOrder, row.isVisible, row.metadata))
 }

@@ -25,9 +25,8 @@ import testdb.customers.CustomersId;
 public class OrdersRepoImpl implements OrdersRepo {
   @Override
   public DeleteBuilder<OrdersFields, OrdersRow> delete() {
-    return DeleteBuilder.of("[orders]", OrdersFields.structure(), Dialect.SQLSERVER);
+    return DeleteBuilder.of("[orders]", OrdersFields.structure, Dialect.SQLSERVER);
   }
-  ;
 
   @Override
   public Boolean deleteById(OrdersId orderId, Connection c) {
@@ -39,7 +38,6 @@ public class OrdersRepoImpl implements OrdersRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(OrdersId[] orderIds, Connection c) {
@@ -55,7 +53,6 @@ public class OrdersRepoImpl implements OrdersRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public OrdersRow insert(OrdersRow unsaved, Connection c) {
@@ -74,7 +71,6 @@ public class OrdersRepoImpl implements OrdersRepo {
         .updateReturning(OrdersRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public OrdersRow insert(OrdersRowUnsaved unsaved, Connection c) {
@@ -115,14 +111,12 @@ public class OrdersRepoImpl implements OrdersRepo {
     ;
     return q.updateReturning(OrdersRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<OrdersFields, OrdersRow> select() {
     return SelectBuilder.of(
-        "[orders]", OrdersFields.structure(), OrdersRow._rowParser, Dialect.SQLSERVER);
+        "[orders]", OrdersFields.structure, OrdersRow._rowParser, Dialect.SQLSERVER);
   }
-  ;
 
   @Override
   public List<OrdersRow> selectAll(Connection c) {
@@ -132,7 +126,6 @@ public class OrdersRepoImpl implements OrdersRepo {
         .query(OrdersRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<OrdersRow> selectById(OrdersId orderId, Connection c) {
@@ -146,7 +139,6 @@ public class OrdersRepoImpl implements OrdersRepo {
         .query(OrdersRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<OrdersRow> selectByIds(OrdersId[] orderIds, Connection c) {
@@ -164,7 +156,6 @@ public class OrdersRepoImpl implements OrdersRepo {
         .query(OrdersRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<OrdersId, OrdersRow> selectByIdsTracked(OrdersId[] orderIds, Connection c) {
@@ -172,14 +163,12 @@ public class OrdersRepoImpl implements OrdersRepo {
     selectByIds(orderIds, c).forEach(row -> ret.put(row.orderId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<OrdersFields, OrdersRow> update() {
     return UpdateBuilder.of(
-        "[orders]", OrdersFields.structure(), OrdersRow._rowParser, Dialect.SQLSERVER);
+        "[orders]", OrdersFields.structure, OrdersRow._rowParser, Dialect.SQLSERVER);
   }
-  ;
 
   @Override
   public Boolean update(OrdersRow row, Connection c) {
@@ -199,25 +188,28 @@ public class OrdersRepoImpl implements OrdersRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public OrdersRow upsert(OrdersRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit("MERGE INTO [orders] AS target\nUSING (VALUES ("),
+            Fragment.encode(OrdersId.sqlServerType, unsaved.orderId()),
+            Fragment.lit(", "),
             Fragment.encode(CustomersId.sqlServerType, unsaved.customerId()),
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.datetime2.opt(), unsaved.orderDate()),
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.money, unsaved.totalAmount()),
             Fragment.lit(
-                ")) AS source([customer_id], [order_date], [total_amount])\n"
+                ")) AS source([order_id], [customer_id], [order_date], [total_amount])\n"
                     + "ON target.[order_id] = source.[order_id]\n"
                     + "WHEN MATCHED THEN UPDATE SET [customer_id] = source.[customer_id],\n"
                     + "[order_date] = source.[order_date],\n"
                     + "[total_amount] = source.[total_amount]\n"
-                    + "WHEN NOT MATCHED THEN INSERT ([customer_id], [order_date], [total_amount])"
-                    + " VALUES ("),
+                    + "WHEN NOT MATCHED THEN INSERT ([order_id], [customer_id], [order_date],"
+                    + " [total_amount]) VALUES ("),
+            Fragment.encode(OrdersId.sqlServerType, unsaved.orderId()),
+            Fragment.lit(", "),
             Fragment.encode(CustomersId.sqlServerType, unsaved.customerId()),
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.datetime2.opt(), unsaved.orderDate()),
@@ -230,7 +222,6 @@ public class OrdersRepoImpl implements OrdersRepo {
         .updateReturning(OrdersRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<OrdersRow> upsertBatch(Iterator<OrdersRow> unsaved, Connection c) {
@@ -250,5 +241,4 @@ public class OrdersRepoImpl implements OrdersRepo {
         .updateReturningEach(OrdersRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

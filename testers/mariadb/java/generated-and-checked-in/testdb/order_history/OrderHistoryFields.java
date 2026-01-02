@@ -7,14 +7,17 @@ package testdb.order_history;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.data.Json;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr8;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,168 +25,177 @@ import testdb.orders.OrdersFields;
 import testdb.orders.OrdersId;
 import testdb.orders.OrdersRow;
 
-public interface OrderHistoryFields extends FieldsExpr<OrderHistoryRow> {
-  record Impl(List<Path> _path)
-      implements OrderHistoryFields, RelationStructure<OrderHistoryFields, OrderHistoryRow> {
-    @Override
-    public IdField<OrderHistoryId, OrderHistoryRow> historyId() {
-      return new IdField<OrderHistoryId, OrderHistoryRow>(
-          _path,
-          "history_id",
-          OrderHistoryRow::historyId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withHistoryId(value),
-          OrderHistoryId.pgType);
-    }
-    ;
+public class OrderHistoryFields
+    extends TupleExpr8<
+        OrderHistoryId, OrdersId, String, String, String, String, Json, LocalDateTime>
+    implements RelationStructure<OrderHistoryFields, OrderHistoryRow>, FieldsBase<OrderHistoryRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<OrdersId, OrderHistoryRow> orderId() {
-      return new Field<OrdersId, OrderHistoryRow>(
-          _path,
-          "order_id",
-          OrderHistoryRow::orderId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderId(value),
-          OrdersId.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<String, OrderHistoryRow> previousStatus() {
-      return new OptField<String, OrderHistoryRow>(
-          _path,
-          "previous_status",
-          OrderHistoryRow::previousStatus,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPreviousStatus(value),
-          MariaTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<String, OrderHistoryRow> newStatus() {
-      return new Field<String, OrderHistoryRow>(
-          _path,
-          "new_status",
-          OrderHistoryRow::newStatus,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withNewStatus(value),
-          MariaTypes.text);
-    }
-    ;
-
-    @Override
-    public OptField<String, OrderHistoryRow> changedBy() {
-      return new OptField<String, OrderHistoryRow>(
-          _path,
-          "changed_by",
-          OrderHistoryRow::changedBy,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withChangedBy(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, OrderHistoryRow> changeReason() {
-      return new OptField<String, OrderHistoryRow>(
-          _path,
-          "change_reason",
-          OrderHistoryRow::changeReason,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withChangeReason(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, OrderHistoryRow> metadata() {
-      return new OptField<String, OrderHistoryRow>(
-          _path,
-          "metadata",
-          OrderHistoryRow::metadata,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withMetadata(value),
-          MariaTypes.longtext);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, OrderHistoryRow> createdAt() {
-      return new Field<LocalDateTime, OrderHistoryRow>(
-          _path,
-          "created_at",
-          OrderHistoryRow::createdAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCreatedAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, OrderHistoryRow>> columns() {
-      return java.util.List.of(
-          this.historyId(),
-          this.orderId(),
-          this.previousStatus(),
-          this.newStatus(),
-          this.changedBy(),
-          this.changeReason(),
-          this.metadata(),
-          this.createdAt());
-    }
-    ;
-
-    @Override
-    public RelationStructure<OrderHistoryFields, OrderHistoryRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public OrderHistoryFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static OrderHistoryFields structure =
+      new OrderHistoryFields(java.util.Collections.emptyList());
+
+  public IdField<OrderHistoryId, OrderHistoryRow> historyId() {
+    return new IdField<OrderHistoryId, OrderHistoryRow>(
+        _path,
+        "history_id",
+        OrderHistoryRow::historyId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withHistoryId(value),
+        OrderHistoryId.dbType);
   }
-  ;
 
-  IdField<OrderHistoryId, OrderHistoryRow> historyId();
+  public Field<OrdersId, OrderHistoryRow> orderId() {
+    return new Field<OrdersId, OrderHistoryRow>(
+        _path,
+        "order_id",
+        OrderHistoryRow::orderId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderId(value),
+        OrdersId.dbType);
+  }
 
-  Field<OrdersId, OrderHistoryRow> orderId();
+  public OptField<String, OrderHistoryRow> previousStatus() {
+    return new OptField<String, OrderHistoryRow>(
+        _path,
+        "previous_status",
+        OrderHistoryRow::previousStatus,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPreviousStatus(value),
+        MariaTypes.text);
+  }
 
-  OptField<String, OrderHistoryRow> previousStatus();
+  public Field<String, OrderHistoryRow> newStatus() {
+    return new Field<String, OrderHistoryRow>(
+        _path,
+        "new_status",
+        OrderHistoryRow::newStatus,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withNewStatus(value),
+        MariaTypes.text);
+  }
 
-  Field<String, OrderHistoryRow> newStatus();
+  public OptField<String, OrderHistoryRow> changedBy() {
+    return new OptField<String, OrderHistoryRow>(
+        _path,
+        "changed_by",
+        OrderHistoryRow::changedBy,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withChangedBy(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, OrderHistoryRow> changedBy();
+  public OptField<String, OrderHistoryRow> changeReason() {
+    return new OptField<String, OrderHistoryRow>(
+        _path,
+        "change_reason",
+        OrderHistoryRow::changeReason,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withChangeReason(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, OrderHistoryRow> changeReason();
+  public OptField<Json, OrderHistoryRow> metadata() {
+    return new OptField<Json, OrderHistoryRow>(
+        _path,
+        "metadata",
+        OrderHistoryRow::metadata,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withMetadata(value),
+        MariaTypes.json);
+  }
 
-  OptField<String, OrderHistoryRow> metadata();
+  public Field<LocalDateTime, OrderHistoryRow> createdAt() {
+    return new Field<LocalDateTime, OrderHistoryRow>(
+        _path,
+        "created_at",
+        OrderHistoryRow::createdAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCreatedAt(value),
+        MariaTypes.datetime);
+  }
 
-  Field<LocalDateTime, OrderHistoryRow> createdAt();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<OrdersFields, OrdersRow> fkOrders() {
+  public ForeignKey<OrdersFields, OrdersRow> fkOrders() {
     return ForeignKey.<OrdersFields, OrdersRow>of("fk_oh_order")
         .<OrdersId>withColumnPair(orderId(), OrdersFields::orderId);
   }
-  ;
 
   @Override
-  List<FieldLike<?, OrderHistoryRow>> columns();
+  public List<FieldLike<?, OrderHistoryRow>> columns() {
+    return java.util.List.of(
+        this.historyId(),
+        this.orderId(),
+        this.previousStatus(),
+        this.newStatus(),
+        this.changedBy(),
+        this.changeReason(),
+        this.metadata(),
+        this.createdAt());
+  }
 
   @Override
-  default RowParser<OrderHistoryRow> rowParser() {
+  public RowParser<OrderHistoryRow> rowParser() {
     return OrderHistoryRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<OrderHistoryFields, OrderHistoryRow> withPaths(List<Path> _path) {
+    return new OrderHistoryFields(_path);
+  }
+
+  @Override
+  public SqlExpr<OrderHistoryId> _1() {
+    return historyId();
+  }
+
+  @Override
+  public SqlExpr<OrdersId> _2() {
+    return orderId();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return previousStatus();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return newStatus();
+  }
+
+  @Override
+  public SqlExpr<String> _5() {
+    return changedBy();
+  }
+
+  @Override
+  public SqlExpr<String> _6() {
+    return changeReason();
+  }
+
+  @Override
+  public SqlExpr<Json> _7() {
+    return metadata();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _8() {
+    return createdAt();
+  }
 }

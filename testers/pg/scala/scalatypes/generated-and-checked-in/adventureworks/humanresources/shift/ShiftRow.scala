@@ -9,6 +9,7 @@ import adventureworks.customtypes.Defaulted
 import adventureworks.public.Name
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import java.time.LocalDateTime
@@ -31,7 +32,7 @@ case class ShiftRow(
   endtime: LocalTime,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple5[ShiftId, Name, LocalTime, LocalTime, LocalDateTime] {
   def id: ShiftId = shiftid
 
   def toUnsavedRow(
@@ -46,10 +47,20 @@ case class ShiftRow(
       modifieddate
     )
   }
+
+  override def `_1`: ShiftId = shiftid
+
+  override def `_2`: Name = name
+
+  override def `_3`: LocalTime = starttime
+
+  override def `_4`: LocalTime = endtime
+
+  override def `_5`: LocalDateTime = modifieddate
 }
 
 object ShiftRow {
-  val `_rowParser`: RowParser[ShiftRow] = RowParsers.of(ShiftId.pgType, Name.pgType, PgTypes.time, PgTypes.time, PgTypes.timestamp)(ShiftRow.apply)(row => Array[Any](row.shiftid, row.name, row.starttime, row.endtime, row.modifieddate))
+  val `_rowParser`: RowParser[ShiftRow] = RowParsers.of(ShiftId.dbType, Name.dbType, PgTypes.time, PgTypes.time, PgTypes.timestamp)(ShiftRow.apply)(row => Array[Any](row.shiftid, row.name, row.starttime, row.endtime, row.modifieddate))
 
   given pgText: PgText[ShiftRow] = PgText.from(`_rowParser`.underlying)
 }

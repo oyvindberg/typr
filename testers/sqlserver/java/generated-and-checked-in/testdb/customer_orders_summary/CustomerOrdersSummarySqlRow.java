@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
 import dev.typr.foundations.SqlServerTypes;
+import dev.typr.foundations.Tuple.Tuple7;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -30,7 +31,15 @@ public record CustomerOrdersSummarySqlRow(
     /** Points to {@link testdb.orders.OrdersRow#totalAmount()} */
     @JsonProperty("avg_order_amount") Optional<BigDecimal> avgOrderAmount,
     /** Points to {@link testdb.orders.OrdersRow#orderDate()} */
-    @JsonProperty("last_order_date") Optional<LocalDateTime> lastOrderDate) {
+    @JsonProperty("last_order_date") Optional<LocalDateTime> lastOrderDate)
+    implements Tuple7<
+        CustomersId,
+        String,
+        String,
+        Optional<OrdersId>,
+        Optional<BigDecimal>,
+        Optional<BigDecimal>,
+        Optional<LocalDateTime>> {
   /** Points to {@link testdb.customers.CustomersRow#customerId()} */
   public CustomerOrdersSummarySqlRow withCustomerId(CustomersId customerId) {
     return new CustomerOrdersSummarySqlRow(
@@ -142,5 +151,47 @@ public record CustomerOrdersSummarySqlRow(
                 row.avgOrderAmount(),
                 row.lastOrderDate()
               });
+  ;
+
+  @Override
+  public CustomersId _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return customerName;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return customerEmail;
+  }
+  ;
+
+  @Override
+  public Optional<OrdersId> _4() {
+    return orderCount;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _5() {
+    return totalSpent;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _6() {
+    return avgOrderAmount;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _7() {
+    return lastOrderDate;
+  }
   ;
 }

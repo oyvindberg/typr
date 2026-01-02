@@ -9,7 +9,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple26;
 import dev.typr.foundations.data.Json;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint2;
+import dev.typr.foundations.data.Uint4;
+import dev.typr.foundations.data.Uint8;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Duration;
@@ -37,13 +42,13 @@ public record AllScalarTypesSearchSqlRow(
     /** Points to {@link testdb.all_scalar_types.AllScalarTypesRow#colHugeint()} */
     @JsonProperty("col_hugeint") Optional<BigInteger> colHugeint,
     /** Points to {@link testdb.all_scalar_types.AllScalarTypesRow#colUtinyint()} */
-    @JsonProperty("col_utinyint") Optional<Short> colUtinyint,
+    @JsonProperty("col_utinyint") Optional<Uint1> colUtinyint,
     /** Points to {@link testdb.all_scalar_types.AllScalarTypesRow#colUsmallint()} */
-    @JsonProperty("col_usmallint") Optional<Integer> colUsmallint,
+    @JsonProperty("col_usmallint") Optional<Uint2> colUsmallint,
     /** Points to {@link testdb.all_scalar_types.AllScalarTypesRow#colUinteger()} */
-    @JsonProperty("col_uinteger") Optional<Long> colUinteger,
+    @JsonProperty("col_uinteger") Optional<Uint4> colUinteger,
     /** Points to {@link testdb.all_scalar_types.AllScalarTypesRow#colUbigint()} */
-    @JsonProperty("col_ubigint") Optional<BigInteger> colUbigint,
+    @JsonProperty("col_ubigint") Optional<Uint8> colUbigint,
     /** Points to {@link testdb.all_scalar_types.AllScalarTypesRow#colFloat()} */
     @JsonProperty("col_float") Optional<Float> colFloat,
     /** Points to {@link testdb.all_scalar_types.AllScalarTypesRow#colDouble()} */
@@ -75,7 +80,34 @@ public record AllScalarTypesSearchSqlRow(
     /** Points to {@link testdb.all_scalar_types.AllScalarTypesRow#colMood()} */
     @JsonProperty("col_mood") Optional<Mood> colMood,
     /** Points to {@link testdb.all_scalar_types.AllScalarTypesRow#colNotNull()} */
-    @JsonProperty("col_not_null") String colNotNull) {
+    @JsonProperty("col_not_null") String colNotNull)
+    implements Tuple26<
+        AllScalarTypesId,
+        Optional<Byte>,
+        Optional<Short>,
+        Optional<Integer>,
+        Optional<Long>,
+        Optional<BigInteger>,
+        Optional<Uint1>,
+        Optional<Uint2>,
+        Optional<Uint4>,
+        Optional<Uint8>,
+        Optional<Float>,
+        Optional<Double>,
+        Optional<BigDecimal>,
+        Optional<Boolean>,
+        Optional<String>,
+        Optional<String>,
+        Optional<byte[]>,
+        Optional<LocalDate>,
+        Optional<LocalTime>,
+        Optional<LocalDateTime>,
+        Optional<OffsetDateTime>,
+        Optional<Duration>,
+        Optional<UUID>,
+        Optional<Json>,
+        Optional<Mood>,
+        String> {
   /** Points to {@link testdb.all_scalar_types.AllScalarTypesRow#id()} */
   public AllScalarTypesSearchSqlRow withId(AllScalarTypesId id) {
     return new AllScalarTypesSearchSqlRow(
@@ -269,7 +301,7 @@ public record AllScalarTypesSearchSqlRow(
   ;
 
   /** Points to {@link testdb.all_scalar_types.AllScalarTypesRow#colUtinyint()} */
-  public AllScalarTypesSearchSqlRow withColUtinyint(Optional<Short> colUtinyint) {
+  public AllScalarTypesSearchSqlRow withColUtinyint(Optional<Uint1> colUtinyint) {
     return new AllScalarTypesSearchSqlRow(
         id,
         colTinyint,
@@ -301,7 +333,7 @@ public record AllScalarTypesSearchSqlRow(
   ;
 
   /** Points to {@link testdb.all_scalar_types.AllScalarTypesRow#colUsmallint()} */
-  public AllScalarTypesSearchSqlRow withColUsmallint(Optional<Integer> colUsmallint) {
+  public AllScalarTypesSearchSqlRow withColUsmallint(Optional<Uint2> colUsmallint) {
     return new AllScalarTypesSearchSqlRow(
         id,
         colTinyint,
@@ -333,7 +365,7 @@ public record AllScalarTypesSearchSqlRow(
   ;
 
   /** Points to {@link testdb.all_scalar_types.AllScalarTypesRow#colUinteger()} */
-  public AllScalarTypesSearchSqlRow withColUinteger(Optional<Long> colUinteger) {
+  public AllScalarTypesSearchSqlRow withColUinteger(Optional<Uint4> colUinteger) {
     return new AllScalarTypesSearchSqlRow(
         id,
         colTinyint,
@@ -365,7 +397,7 @@ public record AllScalarTypesSearchSqlRow(
   ;
 
   /** Points to {@link testdb.all_scalar_types.AllScalarTypesRow#colUbigint()} */
-  public AllScalarTypesSearchSqlRow withColUbigint(Optional<BigInteger> colUbigint) {
+  public AllScalarTypesSearchSqlRow withColUbigint(Optional<Uint8> colUbigint) {
     return new AllScalarTypesSearchSqlRow(
         id,
         colTinyint,
@@ -916,9 +948,9 @@ public record AllScalarTypesSearchSqlRow(
           DuckDbTypes.integer.opt(),
           DuckDbTypes.bigint.opt(),
           DuckDbTypes.hugeint.opt(),
-          DuckDbTypes.smallint.opt(),
-          DuckDbTypes.integer.opt(),
-          DuckDbTypes.bigint.opt(),
+          DuckDbTypes.utinyint.opt(),
+          DuckDbTypes.usmallint.opt(),
+          DuckDbTypes.uinteger.opt(),
           DuckDbTypes.ubigint.opt(),
           DuckDbTypes.float_.opt(),
           DuckDbTypes.double_.opt(),
@@ -966,5 +998,161 @@ public record AllScalarTypesSearchSqlRow(
                 row.colMood(),
                 row.colNotNull()
               });
+  ;
+
+  @Override
+  public AllScalarTypesId _1() {
+    return id;
+  }
+  ;
+
+  @Override
+  public Optional<Uint8> _10() {
+    return colUbigint;
+  }
+  ;
+
+  @Override
+  public Optional<Float> _11() {
+    return colFloat;
+  }
+  ;
+
+  @Override
+  public Optional<Double> _12() {
+    return colDouble;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _13() {
+    return colDecimal;
+  }
+  ;
+
+  @Override
+  public Optional<Boolean> _14() {
+    return colBoolean;
+  }
+  ;
+
+  @Override
+  public Optional<String> _15() {
+    return colVarchar;
+  }
+  ;
+
+  @Override
+  public Optional<String> _16() {
+    return colText;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _17() {
+    return colBlob;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDate> _18() {
+    return colDate;
+  }
+  ;
+
+  @Override
+  public Optional<LocalTime> _19() {
+    return colTime;
+  }
+  ;
+
+  @Override
+  public Optional<Byte> _2() {
+    return colTinyint;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _20() {
+    return colTimestamp;
+  }
+  ;
+
+  @Override
+  public Optional<OffsetDateTime> _21() {
+    return colTimestamptz;
+  }
+  ;
+
+  @Override
+  public Optional<Duration> _22() {
+    return colInterval;
+  }
+  ;
+
+  @Override
+  public Optional<UUID> _23() {
+    return colUuid;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _24() {
+    return colJson;
+  }
+  ;
+
+  @Override
+  public Optional<Mood> _25() {
+    return colMood;
+  }
+  ;
+
+  @Override
+  public String _26() {
+    return colNotNull;
+  }
+  ;
+
+  @Override
+  public Optional<Short> _3() {
+    return colSmallint;
+  }
+  ;
+
+  @Override
+  public Optional<Integer> _4() {
+    return colInteger;
+  }
+  ;
+
+  @Override
+  public Optional<Long> _5() {
+    return colBigint;
+  }
+  ;
+
+  @Override
+  public Optional<BigInteger> _6() {
+    return colHugeint;
+  }
+  ;
+
+  @Override
+  public Optional<Uint1> _7() {
+    return colUtinyint;
+  }
+  ;
+
+  @Override
+  public Optional<Uint2> _8() {
+    return colUsmallint;
+  }
+  ;
+
+  @Override
+  public Optional<Uint4> _9() {
+    return colUinteger;
+  }
   ;
 }

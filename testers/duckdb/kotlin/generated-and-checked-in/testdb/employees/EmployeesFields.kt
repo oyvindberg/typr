@@ -7,67 +7,63 @@ package testdb.employees
 
 import dev.typr.foundations.DuckDbTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
-import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
-import dev.typr.foundations.kotlin.SqlExpr.CompositeIn
-import dev.typr.foundations.kotlin.SqlExpr.CompositeIn.Part
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr
+import dev.typr.foundations.kotlin.TupleExpr7
 import java.math.BigDecimal
 import java.time.LocalDate
 import kotlin.collections.List
 
-interface EmployeesFields : FieldsExpr<EmployeesRow> {
-  abstract override fun columns(): List<FieldLike<*, EmployeesRow>>
+data class EmployeesFields(val _path: List<Path>) : TupleExpr7<Int, String, String, String, String, BigDecimal, LocalDate>, RelationStructure<EmployeesFields, EmployeesRow>, FieldsBase<EmployeesRow> {
+  override fun _1(): SqlExpr<Int> = empNumber()
 
-  fun compositeIdIn(compositeIds: List<EmployeesId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<Int, EmployeesId, EmployeesRow>(empNumber(), EmployeesId::empNumber, KotlinDbTypes.DuckDbTypes.integer), Part<String, EmployeesId, EmployeesRow>(empSuffix(), EmployeesId::empSuffix, DuckDbTypes.varchar)), compositeIds)
+  override fun _2(): SqlExpr<String> = empSuffix()
+
+  override fun _3(): SqlExpr<String> = deptCode()
+
+  override fun _4(): SqlExpr<String> = deptRegion()
+
+  override fun _5(): SqlExpr<String> = empName()
+
+  override fun _6(): SqlExpr<BigDecimal> = salary()
+
+  override fun _7(): SqlExpr<LocalDate> = hireDate()
+
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, EmployeesRow>> = listOf(this.empNumber().underlying, this.empSuffix().underlying, this.deptCode().underlying, this.deptRegion().underlying, this.empName().underlying, this.salary().underlying, this.hireDate().underlying)
+
+  fun compositeIdIn(compositeIds: List<EmployeesId>): SqlExpr<Boolean> = TupleExpr.of(empNumber(), empSuffix()).among(compositeIds)
 
   fun compositeIdIs(compositeId: EmployeesId): SqlExpr<Boolean> = SqlExpr.all(empNumber().isEqual(compositeId.empNumber), empSuffix().isEqual(compositeId.empSuffix))
 
-  abstract fun deptCode(): Field<String, EmployeesRow>
+  fun deptCode(): Field<String, EmployeesRow> = Field<String, EmployeesRow>(_path, "dept_code", EmployeesRow::deptCode, null, null, { row, value -> row.copy(deptCode = value) }, DuckDbTypes.varchar)
 
-  abstract fun deptRegion(): Field<String, EmployeesRow>
+  fun deptRegion(): Field<String, EmployeesRow> = Field<String, EmployeesRow>(_path, "dept_region", EmployeesRow::deptRegion, null, null, { row, value -> row.copy(deptRegion = value) }, DuckDbTypes.varchar)
 
-  abstract fun empName(): Field<String, EmployeesRow>
+  fun empName(): Field<String, EmployeesRow> = Field<String, EmployeesRow>(_path, "emp_name", EmployeesRow::empName, null, null, { row, value -> row.copy(empName = value) }, DuckDbTypes.varchar)
 
-  abstract fun empNumber(): IdField<Int, EmployeesRow>
+  fun empNumber(): IdField<Int, EmployeesRow> = IdField<Int, EmployeesRow>(_path, "emp_number", EmployeesRow::empNumber, null, "INTEGER", { row, value -> row.copy(empNumber = value) }, KotlinDbTypes.DuckDbTypes.integer)
 
-  abstract fun empSuffix(): IdField<String, EmployeesRow>
+  fun empSuffix(): IdField<String, EmployeesRow> = IdField<String, EmployeesRow>(_path, "emp_suffix", EmployeesRow::empSuffix, null, null, { row, value -> row.copy(empSuffix = value) }, DuckDbTypes.varchar)
 
-  abstract fun hireDate(): Field<LocalDate, EmployeesRow>
+  fun hireDate(): Field<LocalDate, EmployeesRow> = Field<LocalDate, EmployeesRow>(_path, "hire_date", EmployeesRow::hireDate, null, "DATE", { row, value -> row.copy(hireDate = value) }, DuckDbTypes.date)
 
   override fun rowParser(): RowParser<EmployeesRow> = EmployeesRow._rowParser.underlying
 
-  abstract fun salary(): OptField<BigDecimal, EmployeesRow>
+  fun salary(): OptField<BigDecimal, EmployeesRow> = OptField<BigDecimal, EmployeesRow>(_path, "salary", EmployeesRow::salary, null, "DECIMAL(10,2)", { row, value -> row.copy(salary = value) }, DuckDbTypes.numeric)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<EmployeesFields, EmployeesRow> = EmployeesFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : EmployeesFields, RelationStructure<EmployeesFields, EmployeesRow> {
-      override fun empNumber(): IdField<Int, EmployeesRow> = IdField<Int, EmployeesRow>(_path, "emp_number", EmployeesRow::empNumber, null, "INTEGER", { row, value -> row.copy(empNumber = value) }, KotlinDbTypes.DuckDbTypes.integer)
-
-      override fun empSuffix(): IdField<String, EmployeesRow> = IdField<String, EmployeesRow>(_path, "emp_suffix", EmployeesRow::empSuffix, null, null, { row, value -> row.copy(empSuffix = value) }, DuckDbTypes.varchar)
-
-      override fun deptCode(): Field<String, EmployeesRow> = Field<String, EmployeesRow>(_path, "dept_code", EmployeesRow::deptCode, null, null, { row, value -> row.copy(deptCode = value) }, DuckDbTypes.varchar)
-
-      override fun deptRegion(): Field<String, EmployeesRow> = Field<String, EmployeesRow>(_path, "dept_region", EmployeesRow::deptRegion, null, null, { row, value -> row.copy(deptRegion = value) }, DuckDbTypes.varchar)
-
-      override fun empName(): Field<String, EmployeesRow> = Field<String, EmployeesRow>(_path, "emp_name", EmployeesRow::empName, null, null, { row, value -> row.copy(empName = value) }, DuckDbTypes.varchar)
-
-      override fun salary(): OptField<BigDecimal, EmployeesRow> = OptField<BigDecimal, EmployeesRow>(_path, "salary", EmployeesRow::salary, null, "DECIMAL(10,2)", { row, value -> row.copy(salary = value) }, DuckDbTypes.numeric)
-
-      override fun hireDate(): Field<LocalDate, EmployeesRow> = Field<LocalDate, EmployeesRow>(_path, "hire_date", EmployeesRow::hireDate, null, "DATE", { row, value -> row.copy(hireDate = value) }, DuckDbTypes.date)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, EmployeesRow>> = listOf(this.empNumber().underlying, this.empSuffix().underlying, this.deptCode().underlying, this.deptRegion().underlying, this.empName().underlying, this.salary().underlying, this.hireDate().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<EmployeesFields, EmployeesRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: EmployeesFields = EmployeesFields(emptyList<Path>())
   }
 }

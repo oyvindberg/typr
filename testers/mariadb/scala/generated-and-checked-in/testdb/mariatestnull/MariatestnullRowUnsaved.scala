@@ -6,10 +6,14 @@
 package testdb.mariatestnull
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint2
+import dev.typr.foundations.data.Uint4
+import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.data.maria.Inet4
 import dev.typr.foundations.data.maria.Inet6
 import dev.typr.foundations.data.maria.MariaSet
-import java.math.BigInteger
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -42,23 +46,23 @@ case class MariatestnullRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("tinyint_u_col") tinyintUCol: Defaulted[Option[Short]] = new UseDefault(),
+  @JsonProperty("tinyint_u_col") tinyintUCol: Defaulted[Option[Uint1]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("smallint_u_col") smallintUCol: Defaulted[Option[Int]] = new UseDefault(),
+  @JsonProperty("smallint_u_col") smallintUCol: Defaulted[Option[Uint2]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("mediumint_u_col") mediumintUCol: Defaulted[Option[Int]] = new UseDefault(),
+  @JsonProperty("mediumint_u_col") mediumintUCol: Defaulted[Option[Uint4]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("int_u_col") intUCol: Defaulted[Option[Long]] = new UseDefault(),
+  @JsonProperty("int_u_col") intUCol: Defaulted[Option[Uint4]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("bigint_u_col") bigintUCol: Defaulted[Option[BigInteger]] = new UseDefault(),
+  @JsonProperty("bigint_u_col") bigintUCol: Defaulted[Option[Uint8]] = new UseDefault(),
   /** Default: NULL
 
    */
@@ -170,15 +174,11 @@ case class MariatestnullRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("enum_col") enumCol: Defaulted[Option[String]] = new UseDefault(),
-  /** Default: NULL
-
-   */
   @JsonProperty("set_col") setCol: Defaulted[Option[MariaSet]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("json_col") jsonCol: Defaulted[Option[String]] = new UseDefault(),
+  @JsonProperty("json_col") jsonCol: Defaulted[Option[Json]] = new UseDefault(),
   /** Default: NULL
 
    */
@@ -194,11 +194,11 @@ case class MariatestnullRowUnsaved(
     mediumintColDefault: => Option[Int],
     intColDefault: => Option[Int],
     bigintColDefault: => Option[Long],
-    tinyintUColDefault: => Option[Short],
-    smallintUColDefault: => Option[Int],
-    mediumintUColDefault: => Option[Int],
-    intUColDefault: => Option[Long],
-    bigintUColDefault: => Option[BigInteger],
+    tinyintUColDefault: => Option[Uint1],
+    smallintUColDefault: => Option[Uint2],
+    mediumintUColDefault: => Option[Uint4],
+    intUColDefault: => Option[Uint4],
+    bigintUColDefault: => Option[Uint8],
     decimalColDefault: => Option[BigDecimal],
     numericColDefault: => Option[BigDecimal],
     floatColDefault: => Option[Float],
@@ -226,9 +226,8 @@ case class MariatestnullRowUnsaved(
     timestampColDefault: => Option[LocalDateTime],
     timestampFspColDefault: => Option[LocalDateTime],
     yearColDefault: => Option[Year],
-    enumColDefault: => Option[String],
     setColDefault: => Option[MariaSet],
-    jsonColDefault: => Option[String],
+    jsonColDefault: => Option[Json],
     inet4ColDefault: => Option[Inet4],
     inet6ColDefault: => Option[Inet6]
   ): MariatestnullRow = {
@@ -270,7 +269,6 @@ case class MariatestnullRowUnsaved(
       timestampCol = timestampCol.getOrElse(timestampColDefault),
       timestampFspCol = timestampFspCol.getOrElse(timestampFspColDefault),
       yearCol = yearCol.getOrElse(yearColDefault),
-      enumCol = enumCol.getOrElse(enumColDefault),
       setCol = setCol.getOrElse(setColDefault),
       jsonCol = jsonCol.getOrElse(jsonColDefault),
       inet4Col = inet4Col.getOrElse(inet4ColDefault),

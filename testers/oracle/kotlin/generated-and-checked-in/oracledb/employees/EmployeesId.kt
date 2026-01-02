@@ -7,6 +7,7 @@ package oracledb.employees
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -16,7 +17,11 @@ import java.math.BigDecimal
 data class EmployeesId(
   @JsonProperty("EMP_NUMBER") val empNumber: BigDecimal,
   @JsonProperty("EMP_SUFFIX") val empSuffix: String
-) {
+) : Tuple2<BigDecimal, String> {
+  override fun _1(): BigDecimal = empNumber
+
+  override fun _2(): String = empSuffix
+
   companion object {
     val _rowParser: RowParser<EmployeesId> = RowParsers.of(KotlinDbTypes.OracleTypes.number, OracleTypes.varchar2, { t0, t1 -> EmployeesId(t0, t1) }, { row -> arrayOf<Any?>(row.empNumber, row.empSuffix) })
   }

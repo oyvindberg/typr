@@ -7,109 +7,105 @@ package testdb.order_items
 
 import dev.typr.foundations.Db2Types
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
 import dev.typr.foundations.scala.SqlExpr
-import dev.typr.foundations.scala.SqlExpr.CompositeIn
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
+import dev.typr.foundations.scala.TupleExpr
+import dev.typr.foundations.scala.TupleExpr5
 import testdb.orders.OrdersFields
 import testdb.orders.OrdersId
 import testdb.orders.OrdersRow
 
-trait OrderItemsFields extends FieldsExpr0[OrderItemsRow] {
-  def orderId: IdField[OrdersId, OrderItemsRow]
+class OrderItemsFields(val `_path`: java.util.List[Path]) extends TupleExpr5[OrdersId, Int, String, Int, BigDecimal] with RelationStructure[OrderItemsFields, OrderItemsRow]  with FieldsBase[OrderItemsRow] {
+  def orderId: IdField[OrdersId, OrderItemsRow] = {
+    new IdField[OrdersId, OrderItemsRow](
+      _path,
+      "ORDER_ID",
+      _.orderId,
+      None,
+      None,
+      (row, value) => row.copy(orderId = value),
+      OrdersId.dbType
+    )
+  }
 
-  def itemNumber: IdField[Int, OrderItemsRow]
+  def itemNumber: IdField[Int, OrderItemsRow] = {
+    new IdField[Int, OrderItemsRow](
+      _path,
+      "ITEM_NUMBER",
+      _.itemNumber,
+      None,
+      None,
+      (row, value) => row.copy(itemNumber = value),
+      ScalaDbTypes.Db2Types.integer
+    )
+  }
 
-  def productName: Field[String, OrderItemsRow]
+  def productName: Field[String, OrderItemsRow] = {
+    new Field[String, OrderItemsRow](
+      _path,
+      "PRODUCT_NAME",
+      _.productName,
+      None,
+      None,
+      (row, value) => row.copy(productName = value),
+      Db2Types.varchar
+    )
+  }
 
-  def quantity: Field[Int, OrderItemsRow]
+  def quantity: Field[Int, OrderItemsRow] = {
+    new Field[Int, OrderItemsRow](
+      _path,
+      "QUANTITY",
+      _.quantity,
+      None,
+      None,
+      (row, value) => row.copy(quantity = value),
+      ScalaDbTypes.Db2Types.integer
+    )
+  }
 
-  def unitPrice: Field[BigDecimal, OrderItemsRow]
+  def unitPrice: Field[BigDecimal, OrderItemsRow] = {
+    new Field[BigDecimal, OrderItemsRow](
+      _path,
+      "UNIT_PRICE",
+      _.unitPrice,
+      None,
+      None,
+      (row, value) => row.copy(unitPrice = value),
+      ScalaDbTypes.Db2Types.decimal
+    )
+  }
 
   def fkOrders: ForeignKey[OrdersFields, OrdersRow] = ForeignKey.of[OrdersFields, OrdersRow]("FK_ORDER").withColumnPair[OrdersId](orderId, _.orderId)
 
   def compositeIdIs(compositeId: OrderItemsId): SqlExpr[Boolean] = SqlExpr.all(orderId.isEqual(compositeId.orderId), itemNumber.isEqual(compositeId.itemNumber))
 
-  def compositeIdIn(compositeIds: List[OrderItemsId]): SqlExpr[Boolean] = CompositeIn(List(CompositeIn.Part[OrdersId, OrderItemsId, OrderItemsRow](orderId, _.orderId, OrdersId.pgType), CompositeIn.Part[Int, OrderItemsId, OrderItemsRow](itemNumber, _.itemNumber, ScalaDbTypes.Db2Types.integer)), compositeIds)
+  def compositeIdIn(compositeIds: List[OrderItemsId]): SqlExpr[Boolean] = TupleExpr.of(orderId, itemNumber).among(compositeIds)
 
-  override def columns: java.util.List[FieldLike[?, OrderItemsRow]]
+  override def columns: java.util.List[FieldLike[?, OrderItemsRow]] = java.util.List.of(this.orderId.underlying, this.itemNumber.underlying, this.productName.underlying, this.quantity.underlying, this.unitPrice.underlying)
 
   override def rowParser: RowParser[OrderItemsRow] = OrderItemsRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OrderItemsFields, OrderItemsRow] = new OrderItemsFields(`_path`)
+
+  override def `_1`: SqlExpr[OrdersId] = orderId
+
+  override def `_2`: SqlExpr[Int] = itemNumber
+
+  override def `_3`: SqlExpr[String] = productName
+
+  override def `_4`: SqlExpr[Int] = quantity
+
+  override def `_5`: SqlExpr[BigDecimal] = unitPrice
 }
 
 object OrderItemsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends OrderItemsFields with RelationStructure[OrderItemsFields, OrderItemsRow] {
-
-    override def orderId: IdField[OrdersId, OrderItemsRow] = {
-      new IdField[OrdersId, OrderItemsRow](
-        _path,
-        "ORDER_ID",
-        _.orderId,
-        None,
-        None,
-        (row, value) => row.copy(orderId = value),
-        OrdersId.pgType
-      )
-    }
-
-    override def itemNumber: IdField[Int, OrderItemsRow] = {
-      new IdField[Int, OrderItemsRow](
-        _path,
-        "ITEM_NUMBER",
-        _.itemNumber,
-        None,
-        None,
-        (row, value) => row.copy(itemNumber = value),
-        ScalaDbTypes.Db2Types.integer
-      )
-    }
-
-    override def productName: Field[String, OrderItemsRow] = {
-      new Field[String, OrderItemsRow](
-        _path,
-        "PRODUCT_NAME",
-        _.productName,
-        None,
-        None,
-        (row, value) => row.copy(productName = value),
-        Db2Types.varchar
-      )
-    }
-
-    override def quantity: Field[Int, OrderItemsRow] = {
-      new Field[Int, OrderItemsRow](
-        _path,
-        "QUANTITY",
-        _.quantity,
-        None,
-        None,
-        (row, value) => row.copy(quantity = value),
-        ScalaDbTypes.Db2Types.integer
-      )
-    }
-
-    override def unitPrice: Field[BigDecimal, OrderItemsRow] = {
-      new Field[BigDecimal, OrderItemsRow](
-        _path,
-        "UNIT_PRICE",
-        _.unitPrice,
-        None,
-        None,
-        (row, value) => row.copy(unitPrice = value),
-        ScalaDbTypes.Db2Types.decimal
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, OrderItemsRow]] = java.util.List.of(this.orderId.underlying, this.itemNumber.underlying, this.productName.underlying, this.quantity.underlying, this.unitPrice.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OrderItemsFields, OrderItemsRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: OrderItemsFields = new OrderItemsFields(java.util.Collections.emptyList())
 }

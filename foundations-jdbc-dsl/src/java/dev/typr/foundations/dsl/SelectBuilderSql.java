@@ -4,6 +4,7 @@ import dev.typr.foundations.And;
 import dev.typr.foundations.DbType;
 import dev.typr.foundations.Fragment;
 import dev.typr.foundations.RowParser;
+import dev.typr.foundations.Tuple;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -41,13 +42,13 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
   public abstract Query<Fields, Row> collectQuery(RenderCtx ctx, AtomicInteger counter);
 
   /** Get the lazy SQL and row parser. */
-  protected Tuple2<Fragment, RowParser<Row>> getSqlAndRowParser() {
+  protected Tuple.Tuple2<Fragment, RowParser<Row>> getSqlAndRowParser() {
     RenderCtx ctx = RenderCtx.from(this, dialect());
     AtomicInteger counter = new AtomicInteger(0);
     Query<Fields, Row> query = collectQuery(ctx, counter);
 
     Fragment sql = renderQuery(query, ctx, counter);
-    return new Tuple2<>(sql, query.rowParser().apply(1));
+    return Tuple.of(sql, query.rowParser().apply(1));
   }
 
   /**
@@ -235,7 +236,6 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
             .append(Fragment.lit(compositeAlias));
       }
       case SimpleTableState simple -> {
-        Fragment result;
         boolean needsSubquery =
             simple.whereFragment().isPresent()
                 || simple.orderByFragment().isPresent()
@@ -243,35 +243,35 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
                 || simple.offset().isPresent();
 
         if (!needsSubquery) {
-          // Simple case: direct table reference
-          result = Fragment.lit(dialect.quoteTableName(simple.tableName()) + " " + simple.alias());
-        } else { // Need a subquery for WHERE/ORDER BY/LIMIT/OFFSET
-          Fragment subquery =
-              Fragment.lit("(select * from ")
-                  .append(Fragment.lit(dialect.quoteTableName(simple.tableName())))
-                  .append(Fragment.lit(" "))
-                  .append(Fragment.lit(simple.alias())); // Add WHERE if present
-          if (simple.whereFragment().isPresent()) {
-            subquery =
-                subquery.append(Fragment.lit(" where ")).append(simple.whereFragment().get());
-          } // Add ORDER BY if present
-          if (simple.orderByFragment().isPresent()) {
-            subquery =
-                subquery.append(Fragment.lit(" order by ")).append(simple.orderByFragment().get());
-          } // Add OFFSET if present
-          if (simple.offset().isPresent()) {
-            subquery =
-                subquery.append(Fragment.lit(" " + dialect.offsetClause(simple.offset().get())));
-          } // Add LIMIT if present
-          if (simple.limit().isPresent()) {
-            subquery =
-                subquery.append(Fragment.lit(" " + dialect.limitClause(simple.limit().get())));
-          }
-          subquery = subquery.append(Fragment.lit(") ")).append(Fragment.lit(simple.alias()));
-          result = subquery;
+          yield Fragment.lit(dialect.quoteTableName(simple.tableName()) + " " + simple.alias());
         }
 
-        yield result;
+        // Need a subquery for WHERE/ORDER BY/LIMIT/OFFSET
+        Fragment subquery =
+            Fragment.lit("(select * from ")
+                .append(Fragment.lit(dialect.quoteTableName(simple.tableName())))
+                .append(Fragment.lit(" "))
+                .append(Fragment.lit(simple.alias()));
+
+        if (simple.whereFragment().isPresent()) {
+          subquery = subquery.append(Fragment.lit(" where ")).append(simple.whereFragment().get());
+        }
+
+        if (simple.orderByFragment().isPresent()) {
+          subquery =
+              subquery.append(Fragment.lit(" order by ")).append(simple.orderByFragment().get());
+        }
+
+        subquery =
+            dialect.appendPaginationClauses(
+                subquery,
+                simple.alias(),
+                simple.orderByFragment().isPresent(),
+                simple.limit(),
+                simple.offset(),
+                extractFields(simple.columns()));
+
+        yield subquery.append(Fragment.lit(") ")).append(Fragment.lit(simple.alias()));
       }
       case GroupedTableState grouped ->
           renderGroupedTableRef(grouped, dialect, counter, this::renderTableRef);
@@ -382,9 +382,9 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
 
   @Override
   public List<Row> toList(Connection connection) {
-    Tuple2<Fragment, RowParser<Row>> sqlAndParser = getSqlAndRowParser();
-    Fragment frag = sqlAndParser.first();
-    RowParser<Row> rowParser = sqlAndParser.second();
+    Tuple.Tuple2<Fragment, RowParser<Row>> sqlAndParser = getSqlAndRowParser();
+    Fragment frag = sqlAndParser._1();
+    RowParser<Row> rowParser = sqlAndParser._2();
 
     try (PreparedStatement ps = connection.prepareStatement(frag.render())) {
       frag.set(ps);
@@ -402,8 +402,8 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
 
   @Override
   public int count(Connection connection) {
-    Tuple2<Fragment, RowParser<Row>> sqlAndParser = getSqlAndRowParser();
-    Fragment frag = sqlAndParser.first();
+    Tuple.Tuple2<Fragment, RowParser<Row>> sqlAndParser = getSqlAndRowParser();
+    Fragment frag = sqlAndParser._1();
     Fragment countQuery =
         Fragment.lit("select count(*) from (").append(frag).append(Fragment.lit(") subq"));
 
@@ -422,17 +422,14 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
 
   @Override
   public Optional<Fragment> sql() {
-    return Optional.of(getSqlAndRowParser().first());
+    return Optional.of(getSqlAndRowParser()._1());
   }
 
   @Override
   public <Fields2, Row2>
-      SelectBuilder<
-              dev.typr.foundations.dsl.Tuple2<Fields, Fields2>,
-              dev.typr.foundations.dsl.Tuple2<Row, Row2>>
-          joinOn(
-              SelectBuilder<Fields2, Row2> other,
-              Function<dev.typr.foundations.dsl.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
+      SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Row2>> joinOn(
+          SelectBuilder<Fields2, Row2> other,
+          Function<Tuple.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
 
     if (!(other instanceof SelectBuilderSql<Fields2, Row2> otherSql)) {
       throw new IllegalArgumentException("Can only join with SQL-based SelectBuilder");
@@ -448,12 +445,9 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
 
   @Override
   public <Fields2, Row2>
-      SelectBuilder<
-              dev.typr.foundations.dsl.Tuple2<Fields, Fields2>,
-              dev.typr.foundations.dsl.Tuple2<Row, Optional<Row2>>>
-          leftJoinOn(
-              SelectBuilder<Fields2, Row2> other,
-              Function<dev.typr.foundations.dsl.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
+      SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Optional<Row2>>> leftJoinOn(
+          SelectBuilder<Fields2, Row2> other,
+          Function<Tuple.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
 
     if (!(other instanceof SelectBuilderSql<Fields2, Row2> otherSql)) {
       throw new IllegalArgumentException("Can only join with SQL-based SelectBuilder");
@@ -468,23 +462,20 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
 
   @Override
   @SuppressWarnings("unchecked")
-  public <NewFields extends Tuples.TupleExpr<NewRow>, NewRow extends Tuples.Tuple>
-      SelectBuilder<NewFields, NewRow> mapExpr(Function<Fields, NewFields> projection) {
+  public <NewFields extends TupleExpr<NewRow>, NewRow extends Tuple>
+      SelectBuilder<NewFields, NewRow> map(Function<Fields, NewFields> projection) {
     // Apply the projection to get the TupleExpr
     NewFields tupleExpr = projection.apply(structure().fields());
 
-    return new ProjectedSelectBuilder<>(this, tupleExpr, tupleExpr.exprs());
+    return new ProjectedSelectBuilder<>(this, tupleExpr, tupleExpr.children());
   }
 
   @Override
   @SuppressWarnings("unchecked")
   public <Fields2, Row2>
-      SelectBuilder<
-              dev.typr.foundations.dsl.Tuple2<Fields, Fields2>,
-              dev.typr.foundations.dsl.Tuple2<Row, List<Row2>>>
-          multisetOn(
-              SelectBuilder<Fields2, Row2> other,
-              Function<dev.typr.foundations.dsl.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
+      SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, List<Row2>>> multisetOn(
+          SelectBuilder<Fields2, Row2> other,
+          Function<Tuple.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
     if (!(other instanceof SelectBuilderSql<Fields2, Row2> otherSql)) {
       throw new IllegalArgumentException("Can only use multiset with SQL-based SelectBuilder");
     }
@@ -531,11 +522,13 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
     return aliasMap;
   }
 
-  /** Tuple helper class. */
-  public record Tuple2<A, B>(A first, B second) {}
-
   /** Column tuple for queries. */
   public record ColumnTuple(String alias, SqlExpr.FieldLike<?, ?> column) {}
+
+  /** Extract the FieldLike instances from a list of ColumnTuples. */
+  static List<SqlExpr.FieldLike<?, ?>> extractFields(List<ColumnTuple> columns) {
+    return columns.stream().map(ColumnTuple::column).collect(Collectors.toList());
+  }
 
   /** State for a single table in the query. */
   sealed interface TableState
@@ -746,25 +739,29 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
               params.limit(),
               params.offset());
 
-      return new Query<>(
-          tableState, List.of(), SelectParams.empty(), structure.fields(), rowParser);
+      // Create top-level params with just orderBy to ensure ordering at the outer query level.
+      // SQL doesn't guarantee ordering from subqueries, so we need ORDER BY at the top level.
+      // We don't pass WHERE/LIMIT/OFFSET to topLevelParams because those are already in the
+      // subquery.
+      SelectParams<Fields, Row> topLevelOrderByOnly =
+          new SelectParams<>(
+              List.of(), // no where (already in SimpleTableState)
+              params.orderBy(), // pass through orderBy for outer query
+              Optional.empty(), // no offset (already in SimpleTableState)
+              Optional.empty()); // no limit (already in SimpleTableState)
+
+      return new Query<>(tableState, List.of(), topLevelOrderByOnly, structure.fields(), rowParser);
     }
   }
 
   /** SelectBuilder for inner joins. */
   static class TableJoin<Fields1, Row1, Fields2, Row2>
-      extends SelectBuilderSql<
-          dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-          dev.typr.foundations.dsl.Tuple2<Row1, Row2>> {
+      extends SelectBuilderSql<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Row2>> {
 
     private final SelectBuilderSql<Fields1, Row1> leftBuilder;
     private final SelectBuilderSql<Fields2, Row2> rightBuilder;
-    private final Function<dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>, SqlExpr<Boolean>>
-        pred;
-    private final SelectParams<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, Row2>>
-        params;
+    private final Function<Tuple.Tuple2<Fields1, Fields2>, SqlExpr<Boolean>> pred;
+    private final SelectParams<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Row2>> params;
     private final boolean isLeftJoin;
 
     public SelectBuilderSql<Fields1, Row1> left() {
@@ -778,11 +775,8 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
     public TableJoin(
         SelectBuilderSql<Fields1, Row1> left,
         SelectBuilderSql<Fields2, Row2> right,
-        Function<dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>, SqlExpr<Boolean>> pred,
-        SelectParams<
-                dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-                dev.typr.foundations.dsl.Tuple2<Row1, Row2>>
-            params,
+        Function<Tuple.Tuple2<Fields1, Fields2>, SqlExpr<Boolean>> pred,
+        SelectParams<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Row2>> params,
         boolean isLeftJoin) {
       this.leftBuilder = left;
       this.rightBuilder = right;
@@ -797,38 +791,24 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
     }
 
     @Override
-    public Structure<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, Row2>>
-        structure() {
+    public Structure<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Row2>> structure() {
       return leftBuilder.structure().join(rightBuilder.structure());
     }
 
     @Override
-    public SelectParams<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, Row2>>
-        params() {
+    public SelectParams<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Row2>> params() {
       return params;
     }
 
     @Override
-    public SelectBuilder<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, Row2>>
-        withParams(
-            SelectParams<
-                    dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-                    dev.typr.foundations.dsl.Tuple2<Row1, Row2>>
-                newParams) {
+    public SelectBuilder<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Row2>> withParams(
+        SelectParams<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Row2>> newParams) {
       return new TableJoin<>(leftBuilder, rightBuilder, pred, newParams, isLeftJoin);
     }
 
     @Override
-    public SelectBuilderSql<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, Row2>>
-        withPath(Path path) {
+    public SelectBuilderSql<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Row2>> withPath(
+        Path path) {
       return new TableJoin<>(
           leftBuilder.withPath(path).withPath(Path.LEFT_IN_JOIN),
           rightBuilder.withPath(path).withPath(Path.RIGHT_IN_JOIN),
@@ -838,18 +818,14 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
     }
 
     @Override
-    public Query<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, Row2>>
-        collectQuery(RenderCtx ctx, AtomicInteger counter) {
+    public Query<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Row2>> collectQuery(
+        RenderCtx ctx, AtomicInteger counter) {
 
       Query<Fields1, Row1> leftQuery = leftBuilder.collectQuery(ctx, counter);
       Query<Fields2, Row2> rightQuery = rightBuilder.collectQuery(ctx, counter);
 
-      Structure<
-              dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-              dev.typr.foundations.dsl.Tuple2<Row1, Row2>>
-          newStructure = leftBuilder.structure().join(rightBuilder.structure());
+      Structure<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Row2>> newStructure =
+          leftBuilder.structure().join(rightBuilder.structure());
 
       // Collect all tables from left side
       List<JoinInfo> allJoins = new ArrayList<>(leftQuery.joins());
@@ -891,19 +867,19 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
       Function<Integer, RowParser<Row2>> rightParser = rightQuery.rowParser();
       int leftColCount = leftQuery.allTables().stream().mapToInt(t -> t.columns().size()).sum();
 
-      Function<Integer, RowParser<dev.typr.foundations.dsl.Tuple2<Row1, Row2>>> combinedParser =
+      Function<Integer, RowParser<Tuple.Tuple2<Row1, Row2>>> combinedParser =
           i -> {
             RowParser<Row1> r1Parser = leftParser.apply(i);
             RowParser<Row2> r2Parser = rightParser.apply(i + leftColCount);
             RowParser<And<Row1, Row2>> andParser = r1Parser.joined(r2Parser);
 
             var allColumns = new ArrayList<>(andParser.columns());
-            Function<Object[], dev.typr.foundations.dsl.Tuple2<Row1, Row2>> decode =
+            Function<Object[], Tuple.Tuple2<Row1, Row2>> decode =
                 values -> {
                   And<Row1, Row2> and = andParser.decode().apply(values);
-                  return dev.typr.foundations.dsl.Tuple2.of(and.left(), and.right());
+                  return Tuple.of(and.left(), and.right());
                 };
-            Function<dev.typr.foundations.dsl.Tuple2<Row1, Row2>, Object[]> encode =
+            Function<Tuple.Tuple2<Row1, Row2>, Object[]> encode =
                 tuple2 -> {
                   And<Row1, Row2> and = new And<>(tuple2._1(), tuple2._2());
                   return andParser.encode().apply(and);
@@ -919,17 +895,12 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
 
   /** SelectBuilder for left joins. */
   static class TableLeftJoin<Fields1, Row1, Fields2, Row2>
-      extends SelectBuilderSql<
-          dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-          dev.typr.foundations.dsl.Tuple2<Row1, Optional<Row2>>> {
+      extends SelectBuilderSql<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Optional<Row2>>> {
 
     private final SelectBuilderSql<Fields1, Row1> leftBuilder;
     private final SelectBuilderSql<Fields2, Row2> rightBuilder;
-    private final Function<dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>, SqlExpr<Boolean>>
-        pred;
-    private final SelectParams<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, Optional<Row2>>>
+    private final Function<Tuple.Tuple2<Fields1, Fields2>, SqlExpr<Boolean>> pred;
+    private final SelectParams<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Optional<Row2>>>
         params;
 
     public SelectBuilderSql<Fields1, Row1> left() {
@@ -943,11 +914,8 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
     public TableLeftJoin(
         SelectBuilderSql<Fields1, Row1> left,
         SelectBuilderSql<Fields2, Row2> right,
-        Function<dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>, SqlExpr<Boolean>> pred,
-        SelectParams<
-                dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-                dev.typr.foundations.dsl.Tuple2<Row1, Optional<Row2>>>
-            params) {
+        Function<Tuple.Tuple2<Fields1, Fields2>, SqlExpr<Boolean>> pred,
+        SelectParams<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Optional<Row2>>> params) {
       this.leftBuilder = left;
       this.rightBuilder = right;
       this.pred = pred;
@@ -960,37 +928,27 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
     }
 
     @Override
-    public Structure<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, Optional<Row2>>>
+    public Structure<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Optional<Row2>>>
         structure() {
       return leftBuilder.structure().leftJoin(rightBuilder.structure());
     }
 
     @Override
-    public SelectParams<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, Optional<Row2>>>
+    public SelectParams<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Optional<Row2>>>
         params() {
       return params;
     }
 
     @Override
-    public SelectBuilder<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, Optional<Row2>>>
+    public SelectBuilder<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Optional<Row2>>>
         withParams(
-            SelectParams<
-                    dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-                    dev.typr.foundations.dsl.Tuple2<Row1, Optional<Row2>>>
+            SelectParams<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Optional<Row2>>>
                 newParams) {
       return new TableLeftJoin<>(leftBuilder, rightBuilder, pred, newParams);
     }
 
     @Override
-    public SelectBuilderSql<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, Optional<Row2>>>
+    public SelectBuilderSql<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Optional<Row2>>>
         withPath(Path path) {
       // When a join gets a path, we need to distinguish its left and right sides
       // by prepending path and then LEFT/RIGHT to maintain uniqueness throughout nesting
@@ -1002,22 +960,16 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
     }
 
     @Override
-    public Query<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, Optional<Row2>>>
-        collectQuery(RenderCtx ctx, AtomicInteger counter) {
+    public Query<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Optional<Row2>>> collectQuery(
+        RenderCtx ctx, AtomicInteger counter) {
 
       Query<Fields1, Row1> leftQuery = leftBuilder.collectQuery(ctx, counter);
       Query<Fields2, Row2> rightQuery = rightBuilder.collectQuery(ctx, counter);
 
-      Structure<
-              dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-              dev.typr.foundations.dsl.Tuple2<Row1, Row2>>
-          joinedStructure = leftBuilder.structure().join(rightBuilder.structure());
-      Structure<
-              dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-              dev.typr.foundations.dsl.Tuple2<Row1, Optional<Row2>>>
-          newStructure = leftBuilder.structure().leftJoin(rightBuilder.structure());
+      Structure<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Row2>> joinedStructure =
+          leftBuilder.structure().join(rightBuilder.structure());
+      Structure<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Optional<Row2>>> newStructure =
+          leftBuilder.structure().leftJoin(rightBuilder.structure());
 
       // Collect all tables from left side
       List<JoinInfo> allJoins = new ArrayList<>(leftQuery.joins());
@@ -1054,27 +1006,26 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
       Function<Integer, RowParser<Row2>> rightParser = rightQuery.rowParser();
       int leftColCount = leftQuery.allTables().stream().mapToInt(t -> t.columns().size()).sum();
 
-      Function<Integer, RowParser<dev.typr.foundations.dsl.Tuple2<Row1, Optional<Row2>>>>
-          combinedParser =
-              i -> {
-                RowParser<Row1> r1Parser = leftParser.apply(i);
-                RowParser<Row2> r2Parser = rightParser.apply(i + leftColCount);
-                RowParser<And<Row1, Optional<Row2>>> andParser = r1Parser.leftJoined(r2Parser);
+      Function<Integer, RowParser<Tuple.Tuple2<Row1, Optional<Row2>>>> combinedParser =
+          i -> {
+            RowParser<Row1> r1Parser = leftParser.apply(i);
+            RowParser<Row2> r2Parser = rightParser.apply(i + leftColCount);
+            RowParser<And<Row1, Optional<Row2>>> andParser = r1Parser.leftJoined(r2Parser);
 
-                var allColumns = new ArrayList<>(andParser.columns());
-                Function<Object[], dev.typr.foundations.dsl.Tuple2<Row1, Optional<Row2>>> decode =
-                    values -> {
-                      And<Row1, Optional<Row2>> and = andParser.decode().apply(values);
-                      return dev.typr.foundations.dsl.Tuple2.of(and.left(), and.right());
-                    };
-                Function<dev.typr.foundations.dsl.Tuple2<Row1, Optional<Row2>>, Object[]> encode =
-                    tuple2 -> {
-                      And<Row1, Optional<Row2>> and = new And<>(tuple2._1(), tuple2._2());
-                      return andParser.encode().apply(and);
-                    };
+            var allColumns = new ArrayList<>(andParser.columns());
+            Function<Object[], Tuple.Tuple2<Row1, Optional<Row2>>> decode =
+                values -> {
+                  And<Row1, Optional<Row2>> and = andParser.decode().apply(values);
+                  return Tuple.of(and.left(), and.right());
+                };
+            Function<Tuple.Tuple2<Row1, Optional<Row2>>, Object[]> encode =
+                tuple2 -> {
+                  And<Row1, Optional<Row2>> and = new And<>(tuple2._1(), tuple2._2());
+                  return andParser.encode().apply(and);
+                };
 
-                return new RowParser<>(allColumns, decode, encode);
-              };
+            return new RowParser<>(allColumns, decode, encode);
+          };
 
       return new Query<>(
           leftQuery.firstTable(), allJoins, params, newStructure.fields(), combinedParser);
@@ -1084,13 +1035,13 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
   /**
    * SelectBuilder that wraps another builder and projects to specific expressions.
    *
-   * <p>The NewFields is a TupleExpr (e.g., TupleExpr2&lt;String, Integer&gt;) and NewRow is the
-   * corresponding Tuple (e.g., Tuple2&lt;String, Integer&gt;).
+   * <p>The NewFields is a TupleExpr (e.g., TupleExpr.TupleExpr2&lt;String, Integer&gt;) and NewRow
+   * is the corresponding Tuple (e.g., Tuple2&lt;String, Integer&gt;).
    *
    * <p>Supports both FieldLike (column references) and computed expressions.
    */
   static class ProjectedSelectBuilder<
-          Fields, Row, NewFields extends Tuples.TupleExpr<NewRow>, NewRow extends Tuples.Tuple>
+          Fields, Row, NewFields extends TupleExpr<NewRow>, NewRow extends Tuple>
       extends SelectBuilderSql<NewFields, NewRow> {
 
     private final SelectBuilderSql<Fields, Row> underlying;
@@ -1166,7 +1117,7 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
               new RowParser<>(
                   dbTypes,
                   values -> createNestedTuple(values, projectedExprs, exprColumnCounts),
-                  Tuples.Tuple::asArray);
+                  Tuple::asArray);
 
       // We use a ProjectedTableState that renders the projection
       ProjectedTableState projectedTable =
@@ -1181,7 +1132,7 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
     }
 
     @Override
-    protected Tuple2<Fragment, RowParser<NewRow>> getSqlAndRowParser() {
+    protected Tuple.Tuple2<Fragment, RowParser<NewRow>> getSqlAndRowParser() {
       // Optimized SQL generation: push down projections to avoid selecting unnecessary columns
       RenderCtx ctx = RenderCtx.from(underlying, dialect());
       AtomicInteger counter = new AtomicInteger(0);
@@ -1258,7 +1209,7 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
         // TODO: Apply params from the projected query
       }
 
-      return new Tuple2<>(
+      return Tuple.of(
           select
               .append(from)
               .append(joins)
@@ -1406,11 +1357,11 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
           for (int j = 0; j < count; j++) {
             subValues[j] = values[valueIndex++];
           }
-          tupleElements[i] = Tuples.createTuple(subValues);
+          tupleElements[i] = Tuple.createTuple(subValues);
         }
       }
 
-      return (NewRow) Tuples.createTuple(tupleElements);
+      return (NewRow) Tuple.createTuple(tupleElements);
     }
   }
 
@@ -1443,8 +1394,7 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
   }
 
   /** A minimal Structure implementation for projected queries. */
-  record ProjectedStructure<
-          NewFields extends Tuples.TupleExpr<NewRow>, NewRow extends Tuples.Tuple>(
+  record ProjectedStructure<NewFields extends TupleExpr<NewRow>, NewRow extends Tuple>(
       NewFields fields, List<SqlExpr<?>> projectedExprs) implements Structure<NewFields, NewRow> {
 
     @Override
@@ -1501,28 +1451,19 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
    * <p>The JSON is then parsed at runtime using the child RowParser to produce typed Row2 objects.
    */
   static class MultisetSelectBuilder<Fields1, Row1, Fields2, Row2>
-      extends SelectBuilderSql<
-          dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-          dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>> {
+      extends SelectBuilderSql<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, List<Row2>>> {
 
     private final SelectBuilderSql<Fields1, Row1> parentBuilder;
     private final SelectBuilderSql<Fields2, Row2> childBuilder;
-    private final Function<dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>, SqlExpr<Boolean>>
-        correlationPred;
-    private final SelectParams<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>>
+    private final Function<Tuple.Tuple2<Fields1, Fields2>, SqlExpr<Boolean>> correlationPred;
+    private final SelectParams<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, List<Row2>>>
         params;
 
     MultisetSelectBuilder(
         SelectBuilderSql<Fields1, Row1> parentBuilder,
         SelectBuilderSql<Fields2, Row2> childBuilder,
-        Function<dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>, SqlExpr<Boolean>>
-            correlationPred,
-        SelectParams<
-                dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-                dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>>
-            params) {
+        Function<Tuple.Tuple2<Fields1, Fields2>, SqlExpr<Boolean>> correlationPred,
+        SelectParams<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, List<Row2>>> params) {
       this.parentBuilder = parentBuilder;
       this.childBuilder = childBuilder;
       this.correlationPred = correlationPred;
@@ -1535,37 +1476,23 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
     }
 
     @Override
-    public Structure<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>>
-        structure() {
+    public Structure<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, List<Row2>>> structure() {
       return new MultisetStructure<>(parentBuilder.structure(), childBuilder.structure());
     }
 
     @Override
-    public SelectParams<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>>
-        params() {
+    public SelectParams<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, List<Row2>>> params() {
       return params;
     }
 
     @Override
-    public SelectBuilder<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>>
-        withParams(
-            SelectParams<
-                    dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-                    dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>>
-                newParams) {
+    public SelectBuilder<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, List<Row2>>> withParams(
+        SelectParams<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, List<Row2>>> newParams) {
       return new MultisetSelectBuilder<>(parentBuilder, childBuilder, correlationPred, newParams);
     }
 
     @Override
-    public SelectBuilderSql<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>>
+    public SelectBuilderSql<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, List<Row2>>>
         withPath(Path path) {
       return new MultisetSelectBuilder<>(
           parentBuilder.withPath(path), childBuilder.withPath(path), correlationPred, params);
@@ -1592,10 +1519,8 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
     }
 
     @Override
-    public Query<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>>
-        collectQuery(RenderCtx ctx, AtomicInteger counter) {
+    public Query<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, List<Row2>>> collectQuery(
+        RenderCtx ctx, AtomicInteger counter) {
       // For multiset, we collect the parent query normally,
       // but the SQL rendering is custom (done in getSqlAndRowParser)
       Query<Fields1, Row1> parentQuery = parentBuilder.collectQuery(ctx, counter);
@@ -1608,39 +1533,37 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
       Function<Integer, RowParser<Row1>> parentParser = parentQuery.rowParser();
       int parentColCount = computeColumnCount(parentQuery.allTables());
 
-      Function<Integer, RowParser<dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>>>
-          combinedParser =
-              startCol -> {
-                RowParser<Row1> r1Parser = parentParser.apply(startCol);
+      Function<Integer, RowParser<Tuple.Tuple2<Row1, List<Row2>>>> combinedParser =
+          startCol -> {
+            RowParser<Row1> r1Parser = parentParser.apply(startCol);
 
-                // Add the JSON column at the end (we read as text then parse)
-                List<DbType<?>> allDbTypes = new ArrayList<>(r1Parser.columns());
-                allDbTypes.add(dev.typr.foundations.PgTypes.text);
+            // Add the JSON column at the end (we read as text then parse)
+            List<DbType<?>> allDbTypes = new ArrayList<>(r1Parser.columns());
+            allDbTypes.add(GenericDbTypes.text);
 
-                Function<Object[], dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>> decode =
-                    values -> {
-                      // Parent values are 0 to parentColCount-1, JSON text is at parentColCount
-                      Object[] parentValues = new Object[parentColCount];
-                      System.arraycopy(values, 0, parentValues, 0, parentColCount);
-                      Row1 parentRow = r1Parser.decode().apply(parentValues);
-                      String jsonStr = (String) values[parentColCount];
-                      List<Row2> childRows =
-                          childRowParser.parseJsonArray(jsonStr, childColumnNames);
-                      return dev.typr.foundations.dsl.Tuple2.of(parentRow, childRows);
-                    };
+            Function<Object[], Tuple.Tuple2<Row1, List<Row2>>> decode =
+                values -> {
+                  // Parent values are 0 to parentColCount-1, JSON text is at parentColCount
+                  Object[] parentValues = new Object[parentColCount];
+                  System.arraycopy(values, 0, parentValues, 0, parentColCount);
+                  Row1 parentRow = r1Parser.decode().apply(parentValues);
+                  String jsonStr = (String) values[parentColCount];
+                  List<Row2> childRows = childRowParser.parseJsonArray(jsonStr, childColumnNames);
+                  return Tuple.of(parentRow, childRows);
+                };
 
-                Function<dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>, Object[]> encode =
-                    tuple -> {
-                      Object[] parentValues = r1Parser.encode().apply(tuple._1());
-                      Object[] allValues = new Object[parentValues.length + 1];
-                      System.arraycopy(parentValues, 0, allValues, 0, parentValues.length);
-                      // Can't easily encode List<Row2> back to JSON, so we just store null
-                      allValues[parentValues.length] = null;
-                      return allValues;
-                    };
+            Function<Tuple.Tuple2<Row1, List<Row2>>, Object[]> encode =
+                tuple -> {
+                  Object[] parentValues = r1Parser.encode().apply(tuple._1());
+                  Object[] allValues = new Object[parentValues.length + 1];
+                  System.arraycopy(parentValues, 0, allValues, 0, parentValues.length);
+                  // Can't easily encode List<Row2> back to JSON, so we just store null
+                  allValues[parentValues.length] = null;
+                  return allValues;
+                };
 
-                return new RowParser<>(allDbTypes, decode, encode);
-              };
+            return new RowParser<>(allDbTypes, decode, encode);
+          };
 
       return new Query<>(
           parentQuery.firstTable(),
@@ -1651,7 +1574,7 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
     }
 
     @Override
-    protected Tuple2<Fragment, RowParser<dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>>>
+    protected Tuple.Tuple2<Fragment, RowParser<Tuple.Tuple2<Row1, List<Row2>>>>
         getSqlAndRowParser() {
       RenderCtx parentCtx = RenderCtx.from(parentBuilder, dialect());
       AtomicInteger counter = new AtomicInteger(0);
@@ -1679,9 +1602,9 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
           // The flattened column count accounts for nested TupleExpr
           int idx = 0;
           for (SqlExpr<?> expr : projected.projectedExprs()) {
-            if (expr instanceof Tuples.TupleExpr<?> tupleExpr) {
+            if (expr instanceof TupleExpr<?> tupleExpr) {
               // Flatten nested TupleExpr
-              for (SqlExpr<?> subExpr : tupleExpr.exprs()) {
+              for (SqlExpr<?> subExpr : tupleExpr.children()) {
                 String colName = "proj_" + idx;
                 Fragment colRef = Fragment.lit(projected.alias() + "." + colName);
                 colFragments.add(colRef);
@@ -1790,14 +1713,11 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
               .append(limitFrag);
 
       // Build row parser
-      Query<
-              dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-              dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>>
-          fullQuery = collectQuery(parentCtx, new AtomicInteger(0));
-      RowParser<dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>> rowParser =
-          fullQuery.rowParser().apply(1);
+      Query<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, List<Row2>>> fullQuery =
+          collectQuery(parentCtx, new AtomicInteger(0));
+      RowParser<Tuple.Tuple2<Row1, List<Row2>>> rowParser = fullQuery.rowParser().apply(1);
 
-      return new Tuple2<>(sql, rowParser);
+      return Tuple.of(sql, rowParser);
     }
 
     /**
@@ -1897,10 +1817,8 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
       Structure<Fields2, Row2> childStructureWithPath =
           childBuilder.structure().withPath(Path.of("child"));
 
-      Structure<
-              dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-              dev.typr.foundations.dsl.Tuple2<Row1, Row2>>
-          correlationStructure = parentStructureWithPath.join(childStructureWithPath);
+      Structure<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Row2>> correlationStructure =
+          parentStructureWithPath.join(childStructureWithPath);
 
       SqlExpr<Boolean> correlationExpr = correlationPred.apply(correlationStructure.fields());
 
@@ -1914,9 +1832,9 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
         IdentityHashMap<SqlExpr<?>, String> projectedExprMap = new IdentityHashMap<>();
         int idx = 0;
         for (SqlExpr<?> expr : projected.projectedExprs()) {
-          if (expr instanceof Tuples.TupleExpr<?> tupleExpr) {
+          if (expr instanceof TupleExpr<?> tupleExpr) {
             // Flatten nested TupleExpr
-            for (SqlExpr<?> subExpr : tupleExpr.exprs()) {
+            for (SqlExpr<?> subExpr : tupleExpr.children()) {
               String colRef = projected.alias() + ".proj_" + idx;
               projectedExprMap.put(subExpr, colRef);
               idx++;
@@ -2057,9 +1975,9 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
           List<Fragment> selectFragments = new ArrayList<>();
           int idx = 0;
           for (SqlExpr<?> expr : projectedExprs) {
-            if (expr instanceof Tuples.TupleExpr<?> tupleExpr) {
+            if (expr instanceof TupleExpr<?> tupleExpr) {
               // Flatten TupleExpr: each sub-expression gets its own alias
-              for (SqlExpr<?> subExpr : tupleExpr.exprs()) {
+              for (SqlExpr<?> subExpr : tupleExpr.children()) {
                 Fragment subFrag = subExpr.render(projCtx, counter);
                 String alias = "proj_" + idx;
                 selectFragments.add(subFrag.append(Fragment.lit(" AS " + alias)));
@@ -2110,9 +2028,7 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
   /** Structure for multiset queries where the right side becomes a typed List column. */
   record MultisetStructure<Fields1, Row1, Fields2, Row2>(
       Structure<Fields1, Row1> parentStructure, Structure<Fields2, Row2> childStructure)
-      implements Structure<
-          dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-          dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>> {
+      implements Structure<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, List<Row2>>> {
 
     MultisetStructure(
         Structure<Fields1, Row1> parentStructure, Structure<Fields2, Row2> childStructure) {
@@ -2121,8 +2037,8 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
     }
 
     @Override
-    public dev.typr.foundations.dsl.Tuple2<Fields1, Fields2> fields() {
-      return dev.typr.foundations.dsl.Tuple2.of(parentStructure.fields(), childStructure.fields());
+    public Tuple.Tuple2<Fields1, Fields2> fields() {
+      return Tuple.of(parentStructure.fields(), childStructure.fields());
     }
 
     @Override
@@ -2137,17 +2053,15 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
     }
 
     @Override
-    public Structure<
-            dev.typr.foundations.dsl.Tuple2<Fields1, Fields2>,
-            dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>>>
-        withPath(Path _path) {
+    public Structure<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, List<Row2>>> withPath(
+        Path _path) {
       return new MultisetStructure<>(
           parentStructure.withPath(_path), childStructure.withPath(_path));
     }
 
     @Override
     public <T> Optional<T> untypedGetFieldValue(
-        SqlExpr.FieldLike<T, ?> field, dev.typr.foundations.dsl.Tuple2<Row1, List<Row2>> row) {
+        SqlExpr.FieldLike<T, ?> field, Tuple.Tuple2<Row1, List<Row2>> row) {
       // Try to get from parent structure
       return parentStructure.untypedGetFieldValue(field, row._1());
     }
@@ -2248,106 +2162,58 @@ public abstract class SelectBuilderSql<Fields, Row> implements SelectBuilder<Fie
     // Join operations: run on outer, then wrap result with a new Rewritten using composed bijection
     @Override
     public <Fields2, Row2>
-        SelectBuilder<
-                dev.typr.foundations.dsl.Tuple2<Fields, Fields2>,
-                dev.typr.foundations.dsl.Tuple2<Row, Row2>>
-            joinOn(
-                SelectBuilder<Fields2, Row2> other,
-                Function<dev.typr.foundations.dsl.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
-      SelectBuilder<
-              dev.typr.foundations.dsl.Tuple2<Fields, Fields2>,
-              dev.typr.foundations.dsl.Tuple2<OuterRow, Row2>>
-          outerResult = outer.joinOn(other, pred);
-      Bijection<
-              dev.typr.foundations.dsl.Tuple2<OuterRow, Row2>,
-              dev.typr.foundations.dsl.Tuple2<Row, Row2>>
-          tupleBijection =
-              Bijection.of(
-                  tuple ->
-                      new dev.typr.foundations.dsl.Tuple2<>(
-                          bijection.underlying(tuple._1()), tuple._2()),
-                  tuple ->
-                      new dev.typr.foundations.dsl.Tuple2<>(
-                          bijection.from(tuple._1()), tuple._2()));
+        SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Row2>> joinOn(
+            SelectBuilder<Fields2, Row2> other,
+            Function<Tuple.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
+      SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<OuterRow, Row2>> outerResult =
+          outer.joinOn(other, pred);
+      Bijection<Tuple.Tuple2<OuterRow, Row2>, Tuple.Tuple2<Row, Row2>> tupleBijection =
+          Bijection.of(
+              tuple -> Tuple.of(bijection.underlying(tuple._1()), tuple._2()),
+              tuple -> Tuple.of(bijection.from(tuple._1()), tuple._2()));
       @SuppressWarnings("unchecked")
-      SelectBuilderSql<
-              dev.typr.foundations.dsl.Tuple2<Fields, Fields2>,
-              dev.typr.foundations.dsl.Tuple2<OuterRow, Row2>>
-          outerSql =
-              (SelectBuilderSql<
-                      dev.typr.foundations.dsl.Tuple2<Fields, Fields2>,
-                      dev.typr.foundations.dsl.Tuple2<OuterRow, Row2>>)
-                  outerResult;
+      SelectBuilderSql<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<OuterRow, Row2>> outerSql =
+          (SelectBuilderSql<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<OuterRow, Row2>>)
+              outerResult;
       return new Rewritten<>(outerSql, tupleBijection);
     }
 
     @Override
     public <Fields2, Row2>
-        SelectBuilder<
-                dev.typr.foundations.dsl.Tuple2<Fields, Fields2>,
-                dev.typr.foundations.dsl.Tuple2<Row, Optional<Row2>>>
-            leftJoinOn(
-                SelectBuilder<Fields2, Row2> other,
-                Function<dev.typr.foundations.dsl.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
-      SelectBuilder<
-              dev.typr.foundations.dsl.Tuple2<Fields, Fields2>,
-              dev.typr.foundations.dsl.Tuple2<OuterRow, Optional<Row2>>>
+        SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Optional<Row2>>> leftJoinOn(
+            SelectBuilder<Fields2, Row2> other,
+            Function<Tuple.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
+      SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<OuterRow, Optional<Row2>>>
           outerResult = outer.leftJoinOn(other, pred);
-      Bijection<
-              dev.typr.foundations.dsl.Tuple2<OuterRow, Optional<Row2>>,
-              dev.typr.foundations.dsl.Tuple2<Row, Optional<Row2>>>
+      Bijection<Tuple.Tuple2<OuterRow, Optional<Row2>>, Tuple.Tuple2<Row, Optional<Row2>>>
           tupleBijection =
               Bijection.of(
-                  tuple ->
-                      new dev.typr.foundations.dsl.Tuple2<>(
-                          bijection.underlying(tuple._1()), tuple._2()),
-                  tuple ->
-                      new dev.typr.foundations.dsl.Tuple2<>(
-                          bijection.from(tuple._1()), tuple._2()));
+                  tuple -> Tuple.of(bijection.underlying(tuple._1()), tuple._2()),
+                  tuple -> Tuple.of(bijection.from(tuple._1()), tuple._2()));
       @SuppressWarnings("unchecked")
-      SelectBuilderSql<
-              dev.typr.foundations.dsl.Tuple2<Fields, Fields2>,
-              dev.typr.foundations.dsl.Tuple2<OuterRow, Optional<Row2>>>
+      SelectBuilderSql<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<OuterRow, Optional<Row2>>>
           outerSql =
               (SelectBuilderSql<
-                      dev.typr.foundations.dsl.Tuple2<Fields, Fields2>,
-                      dev.typr.foundations.dsl.Tuple2<OuterRow, Optional<Row2>>>)
+                      Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<OuterRow, Optional<Row2>>>)
                   outerResult;
       return new Rewritten<>(outerSql, tupleBijection);
     }
 
     @Override
     public <Fields2, Row2>
-        SelectBuilder<
-                dev.typr.foundations.dsl.Tuple2<Fields, Fields2>,
-                dev.typr.foundations.dsl.Tuple2<Row, List<Row2>>>
-            multisetOn(
-                SelectBuilder<Fields2, Row2> other,
-                Function<dev.typr.foundations.dsl.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
-      SelectBuilder<
-              dev.typr.foundations.dsl.Tuple2<Fields, Fields2>,
-              dev.typr.foundations.dsl.Tuple2<OuterRow, List<Row2>>>
-          outerResult = outer.multisetOn(other, pred);
-      Bijection<
-              dev.typr.foundations.dsl.Tuple2<OuterRow, List<Row2>>,
-              dev.typr.foundations.dsl.Tuple2<Row, List<Row2>>>
-          tupleBijection =
-              Bijection.of(
-                  tuple ->
-                      new dev.typr.foundations.dsl.Tuple2<>(
-                          bijection.underlying(tuple._1()), tuple._2()),
-                  tuple ->
-                      new dev.typr.foundations.dsl.Tuple2<>(
-                          bijection.from(tuple._1()), tuple._2()));
+        SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, List<Row2>>> multisetOn(
+            SelectBuilder<Fields2, Row2> other,
+            Function<Tuple.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
+      SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<OuterRow, List<Row2>>> outerResult =
+          outer.multisetOn(other, pred);
+      Bijection<Tuple.Tuple2<OuterRow, List<Row2>>, Tuple.Tuple2<Row, List<Row2>>> tupleBijection =
+          Bijection.of(
+              tuple -> Tuple.of(bijection.underlying(tuple._1()), tuple._2()),
+              tuple -> Tuple.of(bijection.from(tuple._1()), tuple._2()));
       @SuppressWarnings("unchecked")
-      SelectBuilderSql<
-              dev.typr.foundations.dsl.Tuple2<Fields, Fields2>,
-              dev.typr.foundations.dsl.Tuple2<OuterRow, List<Row2>>>
-          outerSql =
-              (SelectBuilderSql<
-                      dev.typr.foundations.dsl.Tuple2<Fields, Fields2>,
-                      dev.typr.foundations.dsl.Tuple2<OuterRow, List<Row2>>>)
-                  outerResult;
+      SelectBuilderSql<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<OuterRow, List<Row2>>> outerSql =
+          (SelectBuilderSql<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<OuterRow, List<Row2>>>)
+              outerResult;
       return new Rewritten<>(outerSql, tupleBijection);
     }
 

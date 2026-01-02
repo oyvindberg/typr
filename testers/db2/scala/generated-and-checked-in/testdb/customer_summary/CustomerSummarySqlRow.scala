@@ -7,6 +7,7 @@ package testdb.customer_summary
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -17,10 +18,20 @@ case class CustomerSummarySqlRow(
   @JsonProperty("customer_id") customerId: Int,
   name: String,
   email: String,
-  @JsonProperty("order_count") orderCount: Option[Long],
+  @JsonProperty("order_count") orderCount: Option[Int],
   @JsonProperty("total_spent") totalSpent: Option[BigDecimal]
-)
+) extends Tuple5[Int, String, String, Option[Int], Option[BigDecimal]] {
+  override def `_1`: Int = customerId
+
+  override def `_2`: String = name
+
+  override def `_3`: String = email
+
+  override def `_4`: Option[Int] = orderCount
+
+  override def `_5`: Option[BigDecimal] = totalSpent
+}
 
 object CustomerSummarySqlRow {
-  val `_rowParser`: RowParser[CustomerSummarySqlRow] = RowParsers.of(ScalaDbTypes.Db2Types.integer, Db2Types.varchar, Db2Types.varchar, ScalaDbTypes.Db2Types.bigint.nullable, ScalaDbTypes.Db2Types.decimal.nullable)(CustomerSummarySqlRow.apply)(row => Array[Any](row.customerId, row.name, row.email, row.orderCount, row.totalSpent))
+  val `_rowParser`: RowParser[CustomerSummarySqlRow] = RowParsers.of(ScalaDbTypes.Db2Types.integer, Db2Types.varchar, Db2Types.varchar, ScalaDbTypes.Db2Types.integer.nullable, ScalaDbTypes.Db2Types.decimal.nullable)(CustomerSummarySqlRow.apply)(row => Array[Any](row.customerId, row.name, row.email, row.orderCount, row.totalSpent))
 }

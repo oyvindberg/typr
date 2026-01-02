@@ -10,132 +10,138 @@ import adventureworks.person.person.PersonFields;
 import adventureworks.person.person.PersonRow;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface PasswordFields extends FieldsExpr<PasswordRow> {
-  record Impl(List<Path> _path)
-      implements PasswordFields, RelationStructure<PasswordFields, PasswordRow> {
-    @Override
-    public IdField<BusinessentityId, PasswordRow> businessentityid() {
-      return new IdField<BusinessentityId, PasswordRow>(
-          _path,
-          "businessentityid",
-          PasswordRow::businessentityid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withBusinessentityid(value),
-          BusinessentityId.pgType);
-    }
-    ;
+public class PasswordFields
+    extends TupleExpr5<BusinessentityId, String, String, UUID, LocalDateTime>
+    implements RelationStructure<PasswordFields, PasswordRow>, FieldsBase<PasswordRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, PasswordRow> passwordhash() {
-      return new Field<String, PasswordRow>(
-          _path,
-          "passwordhash",
-          PasswordRow::passwordhash,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPasswordhash(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<String, PasswordRow> passwordsalt() {
-      return new Field<String, PasswordRow>(
-          _path,
-          "passwordsalt",
-          PasswordRow::passwordsalt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPasswordsalt(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<UUID, PasswordRow> rowguid() {
-      return new Field<UUID, PasswordRow>(
-          _path,
-          "rowguid",
-          PasswordRow::rowguid,
-          Optional.empty(),
-          Optional.of("uuid"),
-          (row, value) -> row.withRowguid(value),
-          PgTypes.uuid);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, PasswordRow> modifieddate() {
-      return new Field<LocalDateTime, PasswordRow>(
-          _path,
-          "modifieddate",
-          PasswordRow::modifieddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withModifieddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, PasswordRow>> columns() {
-      return java.util.List.of(
-          this.businessentityid(),
-          this.passwordhash(),
-          this.passwordsalt(),
-          this.rowguid(),
-          this.modifieddate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<PasswordFields, PasswordRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public PasswordFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static PasswordFields structure = new PasswordFields(java.util.Collections.emptyList());
+
+  public IdField<BusinessentityId, PasswordRow> businessentityid() {
+    return new IdField<BusinessentityId, PasswordRow>(
+        _path,
+        "businessentityid",
+        PasswordRow::businessentityid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withBusinessentityid(value),
+        BusinessentityId.dbType);
   }
-  ;
 
-  IdField<BusinessentityId, PasswordRow> businessentityid();
+  public Field<String, PasswordRow> passwordhash() {
+    return new Field<String, PasswordRow>(
+        _path,
+        "passwordhash",
+        PasswordRow::passwordhash,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPasswordhash(value),
+        PgTypes.text);
+  }
 
-  Field<String, PasswordRow> passwordhash();
+  public Field<String, PasswordRow> passwordsalt() {
+    return new Field<String, PasswordRow>(
+        _path,
+        "passwordsalt",
+        PasswordRow::passwordsalt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPasswordsalt(value),
+        PgTypes.text);
+  }
 
-  Field<String, PasswordRow> passwordsalt();
+  public Field<UUID, PasswordRow> rowguid() {
+    return new Field<UUID, PasswordRow>(
+        _path,
+        "rowguid",
+        PasswordRow::rowguid,
+        Optional.empty(),
+        Optional.of("uuid"),
+        (row, value) -> row.withRowguid(value),
+        PgTypes.uuid);
+  }
 
-  Field<UUID, PasswordRow> rowguid();
+  public Field<LocalDateTime, PasswordRow> modifieddate() {
+    return new Field<LocalDateTime, PasswordRow>(
+        _path,
+        "modifieddate",
+        PasswordRow::modifieddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withModifieddate(value),
+        PgTypes.timestamp);
+  }
 
-  Field<LocalDateTime, PasswordRow> modifieddate();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<PersonFields, PersonRow> fkPerson() {
+  public ForeignKey<PersonFields, PersonRow> fkPerson() {
     return ForeignKey.<PersonFields, PersonRow>of("person.FK_Password_Person_BusinessEntityID")
         .<BusinessentityId>withColumnPair(businessentityid(), PersonFields::businessentityid);
   }
-  ;
 
   @Override
-  List<FieldLike<?, PasswordRow>> columns();
+  public List<FieldLike<?, PasswordRow>> columns() {
+    return java.util.List.of(
+        this.businessentityid(),
+        this.passwordhash(),
+        this.passwordsalt(),
+        this.rowguid(),
+        this.modifieddate());
+  }
 
   @Override
-  default RowParser<PasswordRow> rowParser() {
+  public RowParser<PasswordRow> rowParser() {
     return PasswordRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<PasswordFields, PasswordRow> withPaths(List<Path> _path) {
+    return new PasswordFields(_path);
+  }
+
+  @Override
+  public SqlExpr<BusinessentityId> _1() {
+    return businessentityid();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return passwordhash();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return passwordsalt();
+  }
+
+  @Override
+  public SqlExpr<UUID> _4() {
+    return rowguid();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _5() {
+    return modifieddate();
+  }
 }

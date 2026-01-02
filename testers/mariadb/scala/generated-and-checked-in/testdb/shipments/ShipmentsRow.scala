@@ -7,6 +7,8 @@ package testdb.shipments
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple17
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -47,7 +49,7 @@ case class ShipmentsRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("dimensions_json") dimensionsJson: Option[String],
+  @JsonProperty("dimensions_json") dimensionsJson: Option[Json],
   /** 
    * Default: NULL
    */
@@ -87,13 +89,13 @@ case class ShipmentsRow(
    * Default: current_timestamp(6)
    */
   @JsonProperty("updated_at") updatedAt: LocalDateTime
-) {
+) extends Tuple17[ShipmentsId, OrdersId, ShippingCarriersId, Option[String], String, Option[BigDecimal], Option[Json], Option[Array[Byte]], String, Option[LocalDate], Option[LocalDateTime], BigDecimal, Option[BigDecimal], Option[WarehousesId], Option[LocalDateTime], LocalDateTime, LocalDateTime] {
   def id: ShipmentsId = shipmentId
 
   def toUnsavedRow(
     trackingNumber: Defaulted[Option[String]] = Defaulted.Provided(this.trackingNumber),
     weightKg: Defaulted[Option[BigDecimal]] = Defaulted.Provided(this.weightKg),
-    dimensionsJson: Defaulted[Option[String]] = Defaulted.Provided(this.dimensionsJson),
+    dimensionsJson: Defaulted[Option[Json]] = Defaulted.Provided(this.dimensionsJson),
     labelData: Defaulted[Option[Array[Byte]]] = Defaulted.Provided(this.labelData),
     status: Defaulted[String] = Defaulted.Provided(this.status),
     estimatedDeliveryDate: Defaulted[Option[LocalDate]] = Defaulted.Provided(this.estimatedDeliveryDate),
@@ -123,8 +125,42 @@ case class ShipmentsRow(
       updatedAt
     )
   }
+
+  override def `_1`: ShipmentsId = shipmentId
+
+  override def `_2`: OrdersId = orderId
+
+  override def `_3`: ShippingCarriersId = carrierId
+
+  override def `_4`: Option[String] = trackingNumber
+
+  override def `_5`: String = shippingMethod
+
+  override def `_6`: Option[BigDecimal] = weightKg
+
+  override def `_7`: Option[Json] = dimensionsJson
+
+  override def `_8`: Option[Array[Byte]] = labelData
+
+  override def `_9`: String = status
+
+  override def `_10`: Option[LocalDate] = estimatedDeliveryDate
+
+  override def `_11`: Option[LocalDateTime] = actualDeliveryAt
+
+  override def `_12`: BigDecimal = shippingCost
+
+  override def `_13`: Option[BigDecimal] = insuranceAmount
+
+  override def `_14`: Option[WarehousesId] = originWarehouseId
+
+  override def `_15`: Option[LocalDateTime] = shippedAt
+
+  override def `_16`: LocalDateTime = createdAt
+
+  override def `_17`: LocalDateTime = updatedAt
 }
 
 object ShipmentsRow {
-  val `_rowParser`: RowParser[ShipmentsRow] = RowParsers.of(ShipmentsId.pgType, OrdersId.pgType, ShippingCarriersId.pgType, MariaTypes.varchar.nullable, MariaTypes.varchar, ScalaDbTypes.MariaTypes.numeric.nullable, MariaTypes.longtext.nullable, MariaTypes.longblob.nullable, MariaTypes.text, MariaTypes.date.nullable, MariaTypes.datetime.nullable, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric.nullable, WarehousesId.pgType.nullable, MariaTypes.datetime.nullable, MariaTypes.datetime, MariaTypes.datetime)(ShipmentsRow.apply)(row => Array[Any](row.shipmentId, row.orderId, row.carrierId, row.trackingNumber, row.shippingMethod, row.weightKg, row.dimensionsJson, row.labelData, row.status, row.estimatedDeliveryDate, row.actualDeliveryAt, row.shippingCost, row.insuranceAmount, row.originWarehouseId, row.shippedAt, row.createdAt, row.updatedAt))
+  val `_rowParser`: RowParser[ShipmentsRow] = RowParsers.of(ShipmentsId.dbType, OrdersId.dbType, ShippingCarriersId.dbType, MariaTypes.varchar.nullable, MariaTypes.varchar, ScalaDbTypes.MariaTypes.numeric.nullable, MariaTypes.json.nullable, MariaTypes.longblob.nullable, MariaTypes.text, MariaTypes.date.nullable, MariaTypes.datetime.nullable, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric.nullable, WarehousesId.dbType.nullable, MariaTypes.datetime.nullable, MariaTypes.datetime, MariaTypes.datetime)(ShipmentsRow.apply)(row => Array[Any](row.shipmentId, row.orderId, row.carrierId, row.trackingNumber, row.shippingMethod, row.weightKg, row.dimensionsJson, row.labelData, row.status, row.estimatedDeliveryDate, row.actualDeliveryAt, row.shippingCost, row.insuranceAmount, row.originWarehouseId, row.shippedAt, row.createdAt, row.updatedAt))
 }

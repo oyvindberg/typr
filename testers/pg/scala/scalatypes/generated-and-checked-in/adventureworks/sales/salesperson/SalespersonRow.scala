@@ -10,6 +10,7 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple9
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -58,7 +59,7 @@ case class SalespersonRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple9[BusinessentityId, Option[SalesterritoryId], Option[BigDecimal], BigDecimal, BigDecimal, BigDecimal, BigDecimal, UUID, LocalDateTime] {
   def id: BusinessentityId = businessentityid
 
   def toUnsavedRow(
@@ -81,10 +82,28 @@ case class SalespersonRow(
       modifieddate
     )
   }
+
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: Option[SalesterritoryId] = territoryid
+
+  override def `_3`: Option[BigDecimal] = salesquota
+
+  override def `_4`: BigDecimal = bonus
+
+  override def `_5`: BigDecimal = commissionpct
+
+  override def `_6`: BigDecimal = salesytd
+
+  override def `_7`: BigDecimal = saleslastyear
+
+  override def `_8`: UUID = rowguid
+
+  override def `_9`: LocalDateTime = modifieddate
 }
 
 object SalespersonRow {
-  val `_rowParser`: RowParser[SalespersonRow] = RowParsers.of(BusinessentityId.pgType, SalesterritoryId.pgType.nullable, ScalaDbTypes.PgTypes.numeric.nullable, ScalaDbTypes.PgTypes.numeric, ScalaDbTypes.PgTypes.numeric, ScalaDbTypes.PgTypes.numeric, ScalaDbTypes.PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp)(SalespersonRow.apply)(row => Array[Any](row.businessentityid, row.territoryid, row.salesquota, row.bonus, row.commissionpct, row.salesytd, row.saleslastyear, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[SalespersonRow] = RowParsers.of(BusinessentityId.dbType, SalesterritoryId.dbType.nullable, ScalaDbTypes.PgTypes.numeric.nullable, ScalaDbTypes.PgTypes.numeric, ScalaDbTypes.PgTypes.numeric, ScalaDbTypes.PgTypes.numeric, ScalaDbTypes.PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp)(SalespersonRow.apply)(row => Array[Any](row.businessentityid, row.territoryid, row.salesquota, row.bonus, row.commissionpct, row.salesytd, row.saleslastyear, row.rowguid, row.modifieddate))
 
   given pgText: PgText[SalespersonRow] = PgText.from(`_rowParser`.underlying)
 }

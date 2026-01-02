@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.time.LocalDateTime;
 
 /**
@@ -28,7 +29,8 @@ public record DepartmentRow(
     /** Name of the group to which the department belongs. */
     Name groupname,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple4<DepartmentId, Name, Name, LocalDateTime> {
   /**
    * Primary key for Department records. Default:
    * nextval('humanresources.department_departmentid_seq'::regclass)
@@ -58,9 +60,9 @@ public record DepartmentRow(
 
   public static RowParser<DepartmentRow> _rowParser =
       RowParsers.of(
-          DepartmentId.pgType,
-          Name.pgType,
-          Name.pgType,
+          DepartmentId.dbType,
+          Name.dbType,
+          Name.dbType,
           PgTypes.timestamp,
           DepartmentRow::new,
           row ->
@@ -68,6 +70,30 @@ public record DepartmentRow(
   ;
 
   public static PgText<DepartmentRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public DepartmentId _1() {
+    return departmentid;
+  }
+  ;
+
+  @Override
+  public Name _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public Name _3() {
+    return groupname;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _4() {
+    return modifieddate;
+  }
+  ;
 
   public DepartmentId id() {
     return departmentid;

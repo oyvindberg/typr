@@ -13,161 +13,158 @@ import adventureworks.sales.salesterritory.SalesterritoryId
 import adventureworks.sales.salesterritory.SalesterritoryRow
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr9
 import java.time.LocalDateTime
 import java.util.UUID
 
-trait SalespersonFields extends FieldsExpr0[SalespersonRow] {
-  def businessentityid: IdField[BusinessentityId, SalespersonRow]
+class SalespersonFields(val `_path`: java.util.List[Path]) extends TupleExpr9[BusinessentityId, SalesterritoryId, BigDecimal, BigDecimal, BigDecimal, BigDecimal, BigDecimal, UUID, LocalDateTime] with RelationStructure[SalespersonFields, SalespersonRow]  with FieldsBase[SalespersonRow] {
+  def businessentityid: IdField[BusinessentityId, SalespersonRow] = {
+    new IdField[BusinessentityId, SalespersonRow](
+      _path,
+      "businessentityid",
+      _.businessentityid,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(businessentityid = value),
+      BusinessentityId.dbType
+    )
+  }
 
-  def territoryid: OptField[SalesterritoryId, SalespersonRow]
+  def territoryid: OptField[SalesterritoryId, SalespersonRow] = {
+    new OptField[SalesterritoryId, SalespersonRow](
+      _path,
+      "territoryid",
+      _.territoryid,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(territoryid = value),
+      SalesterritoryId.dbType
+    )
+  }
 
-  def salesquota: OptField[BigDecimal, SalespersonRow]
+  def salesquota: OptField[BigDecimal, SalespersonRow] = {
+    new OptField[BigDecimal, SalespersonRow](
+      _path,
+      "salesquota",
+      _.salesquota,
+      None,
+      Some("numeric"),
+      (row, value) => row.copy(salesquota = value),
+      ScalaDbTypes.PgTypes.numeric
+    )
+  }
 
-  def bonus: Field[BigDecimal, SalespersonRow]
+  def bonus: Field[BigDecimal, SalespersonRow] = {
+    new Field[BigDecimal, SalespersonRow](
+      _path,
+      "bonus",
+      _.bonus,
+      None,
+      Some("numeric"),
+      (row, value) => row.copy(bonus = value),
+      ScalaDbTypes.PgTypes.numeric
+    )
+  }
 
-  def commissionpct: Field[BigDecimal, SalespersonRow]
+  def commissionpct: Field[BigDecimal, SalespersonRow] = {
+    new Field[BigDecimal, SalespersonRow](
+      _path,
+      "commissionpct",
+      _.commissionpct,
+      None,
+      Some("numeric"),
+      (row, value) => row.copy(commissionpct = value),
+      ScalaDbTypes.PgTypes.numeric
+    )
+  }
 
-  def salesytd: Field[BigDecimal, SalespersonRow]
+  def salesytd: Field[BigDecimal, SalespersonRow] = {
+    new Field[BigDecimal, SalespersonRow](
+      _path,
+      "salesytd",
+      _.salesytd,
+      None,
+      Some("numeric"),
+      (row, value) => row.copy(salesytd = value),
+      ScalaDbTypes.PgTypes.numeric
+    )
+  }
 
-  def saleslastyear: Field[BigDecimal, SalespersonRow]
+  def saleslastyear: Field[BigDecimal, SalespersonRow] = {
+    new Field[BigDecimal, SalespersonRow](
+      _path,
+      "saleslastyear",
+      _.saleslastyear,
+      None,
+      Some("numeric"),
+      (row, value) => row.copy(saleslastyear = value),
+      ScalaDbTypes.PgTypes.numeric
+    )
+  }
 
-  def rowguid: Field[UUID, SalespersonRow]
+  def rowguid: Field[UUID, SalespersonRow] = {
+    new Field[UUID, SalespersonRow](
+      _path,
+      "rowguid",
+      _.rowguid,
+      None,
+      Some("uuid"),
+      (row, value) => row.copy(rowguid = value),
+      PgTypes.uuid
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, SalespersonRow]
+  def modifieddate: Field[LocalDateTime, SalespersonRow] = {
+    new Field[LocalDateTime, SalespersonRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      None,
+      Some("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
   def fkHumanresourcesEmployee: ForeignKey[EmployeeFields, EmployeeRow] = ForeignKey.of[EmployeeFields, EmployeeRow]("sales.FK_SalesPerson_Employee_BusinessEntityID").withColumnPair[BusinessentityId](businessentityid, _.businessentityid)
 
   def fkSalesterritory: ForeignKey[SalesterritoryFields, SalesterritoryRow] = ForeignKey.of[SalesterritoryFields, SalesterritoryRow]("sales.FK_SalesPerson_SalesTerritory_TerritoryID").withColumnPair[SalesterritoryId](territoryid, _.territoryid)
 
-  override def columns: java.util.List[FieldLike[?, SalespersonRow]]
+  override def columns: java.util.List[FieldLike[?, SalespersonRow]] = java.util.List.of(this.businessentityid.underlying, this.territoryid.underlying, this.salesquota.underlying, this.bonus.underlying, this.commissionpct.underlying, this.salesytd.underlying, this.saleslastyear.underlying, this.rowguid.underlying, this.modifieddate.underlying)
 
   override def rowParser: RowParser[SalespersonRow] = SalespersonRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[SalespersonFields, SalespersonRow] = new SalespersonFields(`_path`)
+
+  override def `_1`: SqlExpr[BusinessentityId] = businessentityid
+
+  override def `_2`: SqlExpr[SalesterritoryId] = territoryid
+
+  override def `_3`: SqlExpr[BigDecimal] = salesquota
+
+  override def `_4`: SqlExpr[BigDecimal] = bonus
+
+  override def `_5`: SqlExpr[BigDecimal] = commissionpct
+
+  override def `_6`: SqlExpr[BigDecimal] = salesytd
+
+  override def `_7`: SqlExpr[BigDecimal] = saleslastyear
+
+  override def `_8`: SqlExpr[UUID] = rowguid
+
+  override def `_9`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object SalespersonFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends SalespersonFields with RelationStructure[SalespersonFields, SalespersonRow] {
-
-    override def businessentityid: IdField[BusinessentityId, SalespersonRow] = {
-      new IdField[BusinessentityId, SalespersonRow](
-        _path,
-        "businessentityid",
-        _.businessentityid,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(businessentityid = value),
-        BusinessentityId.pgType
-      )
-    }
-
-    override def territoryid: OptField[SalesterritoryId, SalespersonRow] = {
-      new OptField[SalesterritoryId, SalespersonRow](
-        _path,
-        "territoryid",
-        _.territoryid,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(territoryid = value),
-        SalesterritoryId.pgType
-      )
-    }
-
-    override def salesquota: OptField[BigDecimal, SalespersonRow] = {
-      new OptField[BigDecimal, SalespersonRow](
-        _path,
-        "salesquota",
-        _.salesquota,
-        None,
-        Some("numeric"),
-        (row, value) => row.copy(salesquota = value),
-        ScalaDbTypes.PgTypes.numeric
-      )
-    }
-
-    override def bonus: Field[BigDecimal, SalespersonRow] = {
-      new Field[BigDecimal, SalespersonRow](
-        _path,
-        "bonus",
-        _.bonus,
-        None,
-        Some("numeric"),
-        (row, value) => row.copy(bonus = value),
-        ScalaDbTypes.PgTypes.numeric
-      )
-    }
-
-    override def commissionpct: Field[BigDecimal, SalespersonRow] = {
-      new Field[BigDecimal, SalespersonRow](
-        _path,
-        "commissionpct",
-        _.commissionpct,
-        None,
-        Some("numeric"),
-        (row, value) => row.copy(commissionpct = value),
-        ScalaDbTypes.PgTypes.numeric
-      )
-    }
-
-    override def salesytd: Field[BigDecimal, SalespersonRow] = {
-      new Field[BigDecimal, SalespersonRow](
-        _path,
-        "salesytd",
-        _.salesytd,
-        None,
-        Some("numeric"),
-        (row, value) => row.copy(salesytd = value),
-        ScalaDbTypes.PgTypes.numeric
-      )
-    }
-
-    override def saleslastyear: Field[BigDecimal, SalespersonRow] = {
-      new Field[BigDecimal, SalespersonRow](
-        _path,
-        "saleslastyear",
-        _.saleslastyear,
-        None,
-        Some("numeric"),
-        (row, value) => row.copy(saleslastyear = value),
-        ScalaDbTypes.PgTypes.numeric
-      )
-    }
-
-    override def rowguid: Field[UUID, SalespersonRow] = {
-      new Field[UUID, SalespersonRow](
-        _path,
-        "rowguid",
-        _.rowguid,
-        None,
-        Some("uuid"),
-        (row, value) => row.copy(rowguid = value),
-        PgTypes.uuid
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, SalespersonRow] = {
-      new Field[LocalDateTime, SalespersonRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        None,
-        Some("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, SalespersonRow]] = java.util.List.of(this.businessentityid.underlying, this.territoryid.underlying, this.salesquota.underlying, this.bonus.underlying, this.commissionpct.underlying, this.salesytd.underlying, this.saleslastyear.underlying, this.rowguid.underlying, this.modifieddate.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[SalespersonFields, SalespersonRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: SalespersonFields = new SalespersonFields(java.util.Collections.emptyList())
 }

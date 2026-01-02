@@ -7,6 +7,7 @@ package testdb.employees
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -15,7 +16,11 @@ import dev.typr.foundations.scala.ScalaDbTypes
 case class EmployeesId(
   @JsonProperty("emp_number") empNumber: Int,
   @JsonProperty("emp_suffix") empSuffix: String
-)
+) extends Tuple2[Int, String] {
+  override def `_1`: Int = empNumber
+
+  override def `_2`: String = empSuffix
+}
 
 object EmployeesId {
   val `_rowParser`: RowParser[EmployeesId] = RowParsers.of(ScalaDbTypes.DuckDbTypes.integer, DuckDbTypes.varchar)(EmployeesId.apply)(row => Array[Any](row.empNumber, row.empSuffix))

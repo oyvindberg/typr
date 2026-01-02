@@ -7,6 +7,7 @@ package oracledb.employees
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -15,7 +16,11 @@ import dev.typr.foundations.scala.ScalaDbTypes
 case class EmployeesId(
   @JsonProperty("EMP_NUMBER") empNumber: BigDecimal,
   @JsonProperty("EMP_SUFFIX") empSuffix: String
-)
+) extends Tuple2[BigDecimal, String] {
+  override def `_1`: BigDecimal = empNumber
+
+  override def `_2`: String = empSuffix
+}
 
 object EmployeesId {
   val `_rowParser`: RowParser[EmployeesId] = RowParsers.of(ScalaDbTypes.OracleTypes.number, OracleTypes.varchar2)(EmployeesId.apply)(row => Array[Any](row.empNumber, row.empSuffix))

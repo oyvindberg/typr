@@ -5,6 +5,9 @@
  */
 package testdb;
 
+import dev.typr.foundations.Inserter;
+import dev.typr.foundations.data.Xml;
+import dev.typr.foundations.internal.RandomHelper;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.time.LocalDate;
@@ -19,14 +22,13 @@ import testdb.customers.CustomersId;
 import testdb.customers.CustomersRepoImpl;
 import testdb.customers.CustomersRow;
 import testdb.customers.CustomersRowUnsaved;
-import testdb.customtypes.Defaulted;
+import testdb.customtypes.Defaulted.UseDefault;
 import testdb.db2test.Db2testId;
 import testdb.db2test.Db2testRepoImpl;
 import testdb.db2test.Db2testRow;
 import testdb.db2test_identity_always.Db2testIdentityAlwaysRepoImpl;
 import testdb.db2test_identity_always.Db2testIdentityAlwaysRow;
 import testdb.db2test_identity_always.Db2testIdentityAlwaysRowUnsaved;
-import testdb.db2test_identity_default.Db2testIdentityDefaultId;
 import testdb.db2test_identity_default.Db2testIdentityDefaultRepoImpl;
 import testdb.db2test_identity_default.Db2testIdentityDefaultRow;
 import testdb.db2test_identity_default.Db2testIdentityDefaultRowUnsaved;
@@ -58,204 +60,218 @@ public record TestInsert(Random random) {
   }
   ;
 
-  public CheckConstraintTestRow CheckConstraintTest(
-      Integer age,
-      String status,
-      CheckConstraintTestId id,
-      Optional<BigDecimal> price,
-      Connection c) {
-    return (new CheckConstraintTestRepoImpl())
-        .insert(new CheckConstraintTestRow(id, age, status, price), c);
+  public Inserter<CheckConstraintTestRow, CheckConstraintTestRow> CheckConstraintTest(
+      Integer age, String status) {
+    return Inserter.of(
+        new CheckConstraintTestRow(
+            new CheckConstraintTestId(random.nextInt()), age, status, Optional.empty()),
+        (CheckConstraintTestRow row, Connection c) ->
+            (new CheckConstraintTestRepoImpl()).insert(row, c));
   }
   ;
 
-  public CustomersRow Customers(
-      String name,
-      String email,
-      Defaulted<CustomersId> customerId,
-      Defaulted<Optional<LocalDateTime>> createdAt,
-      Connection c) {
-    return (new CustomersRepoImpl())
-        .insert(new CustomersRowUnsaved(name, email, customerId, createdAt), c);
+  public Inserter<CustomersRowUnsaved, CustomersRow> Customers() {
+    return Inserter.of(
+        new CustomersRowUnsaved(
+            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 20),
+            new UseDefault(),
+            new UseDefault()),
+        (CustomersRowUnsaved row, Connection c) -> (new CustomersRepoImpl()).insert(row, c));
   }
   ;
 
-  public Db2testRow Db2test(
-      byte[] binaryCol,
-      byte[] varbinaryCol,
-      byte[] blobCol,
-      LocalDate dateCol,
-      LocalTime timeCol,
-      LocalDateTime timestampCol,
-      LocalDateTime timestamp6Col,
-      LocalDateTime timestamp12Col,
-      Short smallintCol,
-      Db2testId intCol,
-      Long bigintCol,
-      BigDecimal decimalCol,
-      BigDecimal numericCol,
-      BigDecimal decfloat16Col,
-      BigDecimal decfloat34Col,
-      Float realCol,
-      Double doubleCol,
-      Boolean boolCol,
-      String charCol,
-      String varcharCol,
-      String clobCol,
-      String graphicCol,
-      String vargraphicCol,
-      String xmlCol,
-      Connection c) {
-    return (new Db2testRepoImpl())
-        .insert(
-            new Db2testRow(
-                smallintCol,
-                intCol,
-                bigintCol,
-                decimalCol,
-                numericCol,
-                decfloat16Col,
-                decfloat34Col,
-                realCol,
-                doubleCol,
-                boolCol,
-                charCol,
-                varcharCol,
-                clobCol,
-                graphicCol,
-                vargraphicCol,
-                binaryCol,
-                varbinaryCol,
-                blobCol,
-                dateCol,
-                timeCol,
-                timestampCol,
-                timestamp6Col,
-                timestamp12Col,
-                xmlCol),
-            c);
+  public Inserter<Db2testRow, Db2testRow> Db2test(
+      byte[] binaryCol, byte[] varbinaryCol, byte[] blobCol) {
+    return Inserter.of(
+        new Db2testRow(
+            (short) (random.nextInt(Short.MAX_VALUE)),
+            new Db2testId(random.nextInt()),
+            random.nextLong(),
+            BigDecimal.valueOf(random.nextDouble()),
+            BigDecimal.valueOf(random.nextDouble()),
+            BigDecimal.valueOf(random.nextDouble()),
+            BigDecimal.valueOf(random.nextDouble()),
+            random.nextFloat(),
+            random.nextDouble(),
+            random.nextBoolean(),
+            RandomHelper.alphanumeric(random, 10),
+            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 20),
+            binaryCol,
+            varbinaryCol,
+            blobCol,
+            LocalDate.ofEpochDay((long) (random.nextInt(30000))),
+            LocalTime.ofSecondOfDay((long) (random.nextInt(24 * 60 * 60))),
+            LocalDateTime.of(
+                LocalDate.ofEpochDay((long) (random.nextInt(30000))),
+                LocalTime.ofSecondOfDay((long) (random.nextInt(24 * 60 * 60)))),
+            LocalDateTime.of(
+                LocalDate.ofEpochDay((long) (random.nextInt(30000))),
+                LocalTime.ofSecondOfDay((long) (random.nextInt(24 * 60 * 60)))),
+            LocalDateTime.of(
+                LocalDate.ofEpochDay((long) (random.nextInt(30000))),
+                LocalTime.ofSecondOfDay((long) (random.nextInt(24 * 60 * 60)))),
+            new Xml("<root/>")),
+        (Db2testRow row, Connection c) -> (new Db2testRepoImpl()).insert(row, c));
   }
   ;
 
-  public Db2testIdentityAlwaysRow Db2testIdentityAlways(String name, Connection c) {
-    return (new Db2testIdentityAlwaysRepoImpl())
-        .insert(new Db2testIdentityAlwaysRowUnsaved(name), c);
+  public Inserter<Db2testIdentityAlwaysRowUnsaved, Db2testIdentityAlwaysRow>
+      Db2testIdentityAlways() {
+    return Inserter.of(
+        new Db2testIdentityAlwaysRowUnsaved(RandomHelper.alphanumeric(random, 20)),
+        (Db2testIdentityAlwaysRowUnsaved row, Connection c) ->
+            (new Db2testIdentityAlwaysRepoImpl()).insert(row, c));
   }
   ;
 
-  public Db2testIdentityDefaultRow Db2testIdentityDefault(
-      String name, Defaulted<Db2testIdentityDefaultId> id, Connection c) {
-    return (new Db2testIdentityDefaultRepoImpl())
-        .insert(new Db2testIdentityDefaultRowUnsaved(name, id), c);
+  public Inserter<Db2testIdentityDefaultRowUnsaved, Db2testIdentityDefaultRow>
+      Db2testIdentityDefault() {
+    return Inserter.of(
+        new Db2testIdentityDefaultRowUnsaved(
+            RandomHelper.alphanumeric(random, 20), new UseDefault()),
+        (Db2testIdentityDefaultRowUnsaved row, Connection c) ->
+            (new Db2testIdentityDefaultRepoImpl()).insert(row, c));
   }
   ;
 
-  public Db2testUniqueRow Db2testUnique(String email, String code, String category, Connection c) {
-    return (new Db2testUniqueRepoImpl())
-        .insert(new Db2testUniqueRowUnsaved(email, code, category), c);
+  public Inserter<Db2testUniqueRowUnsaved, Db2testUniqueRow> Db2testUnique() {
+    return Inserter.of(
+        new Db2testUniqueRowUnsaved(
+            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 20)),
+        (Db2testUniqueRowUnsaved row, Connection c) ->
+            (new Db2testUniqueRepoImpl()).insert(row, c));
   }
   ;
 
-  public Db2testnullRow Db2testnull(
-      Optional<Short> smallintCol,
-      Optional<Integer> intCol,
-      Optional<Long> bigintCol,
-      Optional<BigDecimal> decimalCol,
-      Optional<BigDecimal> numericCol,
-      Optional<BigDecimal> decfloat16Col,
-      Optional<BigDecimal> decfloat34Col,
-      Optional<Float> realCol,
-      Optional<Double> doubleCol,
-      Optional<Boolean> boolCol,
-      Optional<String> charCol,
-      Optional<String> varcharCol,
-      Optional<String> clobCol,
-      Optional<String> graphicCol,
-      Optional<String> vargraphicCol,
-      Optional<byte[]> binaryCol,
-      Optional<byte[]> varbinaryCol,
-      Optional<byte[]> blobCol,
-      Optional<LocalDate> dateCol,
-      Optional<LocalTime> timeCol,
-      Optional<LocalDateTime> timestampCol,
-      Optional<LocalDateTime> timestamp6Col,
-      Optional<LocalDateTime> timestamp12Col,
-      Optional</* XML */ String> xmlCol,
-      Connection c) {
-    return (new Db2testnullRepoImpl())
-        .insert(
-            new Db2testnullRow(
-                smallintCol,
-                intCol,
-                bigintCol,
-                decimalCol,
-                numericCol,
-                decfloat16Col,
-                decfloat34Col,
-                realCol,
-                doubleCol,
-                boolCol,
-                charCol,
-                varcharCol,
-                clobCol,
-                graphicCol,
-                vargraphicCol,
-                binaryCol,
-                varbinaryCol,
-                blobCol,
-                dateCol,
-                timeCol,
-                timestampCol,
-                timestamp6Col,
-                timestamp12Col,
-                xmlCol),
-            c);
+  public Inserter<Db2testnullRow, Db2testnullRow> Db2testnull() {
+    return Inserter.of(
+        new Db2testnullRow(
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of((short) (random.nextInt(Short.MAX_VALUE)))),
+            (random.nextBoolean() ? Optional.empty() : Optional.of(random.nextInt())),
+            (random.nextBoolean() ? Optional.empty() : Optional.of(random.nextLong())),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(BigDecimal.valueOf(random.nextDouble()))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(BigDecimal.valueOf(random.nextDouble()))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(BigDecimal.valueOf(random.nextDouble()))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(BigDecimal.valueOf(random.nextDouble()))),
+            (random.nextBoolean() ? Optional.empty() : Optional.of(random.nextFloat())),
+            (random.nextBoolean() ? Optional.empty() : Optional.of(random.nextDouble())),
+            (random.nextBoolean() ? Optional.empty() : Optional.of(random.nextBoolean())),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(RandomHelper.alphanumeric(random, 10))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(RandomHelper.alphanumeric(random, 20))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(RandomHelper.alphanumeric(random, 20))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(RandomHelper.alphanumeric(random, 20))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(RandomHelper.alphanumeric(random, 20))),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(LocalDate.ofEpochDay((long) (random.nextInt(30000))))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(LocalTime.ofSecondOfDay((long) (random.nextInt(24 * 60 * 60))))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(
+                    LocalDateTime.of(
+                        LocalDate.ofEpochDay((long) (random.nextInt(30000))),
+                        LocalTime.ofSecondOfDay((long) (random.nextInt(24 * 60 * 60)))))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(
+                    LocalDateTime.of(
+                        LocalDate.ofEpochDay((long) (random.nextInt(30000))),
+                        LocalTime.ofSecondOfDay((long) (random.nextInt(24 * 60 * 60)))))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(
+                    LocalDateTime.of(
+                        LocalDate.ofEpochDay((long) (random.nextInt(30000))),
+                        LocalTime.ofSecondOfDay((long) (random.nextInt(24 * 60 * 60)))))),
+            (random.nextBoolean() ? Optional.empty() : Optional.of(new Xml("<root/>")))),
+        (Db2testnullRow row, Connection c) -> (new Db2testnullRepoImpl()).insert(row, c));
   }
   ;
 
-  public DistinctTypeTestRow DistinctTypeTest(
-      EmailAddress email, Optional<MoneyAmount> balance, Connection c) {
-    return (new DistinctTypeTestRepoImpl())
-        .insert(new DistinctTypeTestRowUnsaved(email, balance), c);
+  public Inserter<DistinctTypeTestRowUnsaved, DistinctTypeTestRow> DistinctTypeTest(
+      EmailAddress email) {
+    return Inserter.of(
+        new DistinctTypeTestRowUnsaved(email, Optional.empty()),
+        (DistinctTypeTestRowUnsaved row, Connection c) ->
+            (new DistinctTypeTestRepoImpl()).insert(row, c));
   }
   ;
 
-  public IdentityParamsTestRow IdentityParamsTest(String name, Connection c) {
-    return (new IdentityParamsTestRepoImpl()).insert(new IdentityParamsTestRowUnsaved(name), c);
+  public Inserter<IdentityParamsTestRowUnsaved, IdentityParamsTestRow> IdentityParamsTest() {
+    return Inserter.of(
+        new IdentityParamsTestRowUnsaved(RandomHelper.alphanumeric(random, 20)),
+        (IdentityParamsTestRowUnsaved row, Connection c) ->
+            (new IdentityParamsTestRepoImpl()).insert(row, c));
   }
   ;
 
-  public NullabilityTestRow NullabilityTest(
-      Integer id,
-      String requiredCol,
-      Optional<String> optionalCol,
-      Defaulted<Optional<String>> defaultedCol,
-      Connection c) {
-    return (new NullabilityTestRepoImpl())
-        .insert(new NullabilityTestRowUnsaved(id, requiredCol, optionalCol, defaultedCol), c);
+  public Inserter<NullabilityTestRowUnsaved, NullabilityTestRow> NullabilityTest() {
+    return Inserter.of(
+        new NullabilityTestRowUnsaved(
+            random.nextInt(),
+            RandomHelper.alphanumeric(random, 20),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(RandomHelper.alphanumeric(random, 20))),
+            new UseDefault()),
+        (NullabilityTestRowUnsaved row, Connection c) ->
+            (new NullabilityTestRepoImpl()).insert(row, c));
   }
   ;
 
-  public OrderItemsRow OrderItems(
-      OrdersId orderId,
-      Integer itemNumber,
-      String productName,
-      Integer quantity,
-      BigDecimal unitPrice,
-      Connection c) {
-    return (new OrderItemsRepoImpl())
-        .insert(new OrderItemsRow(orderId, itemNumber, productName, quantity, unitPrice), c);
+  public Inserter<OrderItemsRow, OrderItemsRow> OrderItems(OrdersId orderId) {
+    return Inserter.of(
+        new OrderItemsRow(
+            orderId,
+            random.nextInt(),
+            RandomHelper.alphanumeric(random, 20),
+            random.nextInt(),
+            BigDecimal.valueOf(random.nextDouble())),
+        (OrderItemsRow row, Connection c) -> (new OrderItemsRepoImpl()).insert(row, c));
   }
   ;
 
-  public OrdersRow Orders(
-      CustomersId customerId,
-      Optional<BigDecimal> totalAmount,
-      Defaulted<LocalDate> orderDate,
-      Defaulted<Optional<String>> status,
-      Connection c) {
-    return (new OrdersRepoImpl())
-        .insert(new OrdersRowUnsaved(customerId, totalAmount, orderDate, status), c);
+  public Inserter<OrdersRowUnsaved, OrdersRow> Orders(CustomersId customerId) {
+    return Inserter.of(
+        new OrdersRowUnsaved(
+            customerId,
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(BigDecimal.valueOf(random.nextDouble()))),
+            new UseDefault(),
+            new UseDefault()),
+        (OrdersRowUnsaved row, Connection c) -> (new OrdersRepoImpl()).insert(row, c));
   }
   ;
 }

@@ -9,11 +9,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple2;
 import testdb.orders.OrdersId;
 
 /** Type for the composite primary key of table `ORDER_ITEMS` */
 public record OrderItemsId(
-    @JsonProperty("ORDER_ID") OrdersId orderId, @JsonProperty("ITEM_NUMBER") Integer itemNumber) {
+    @JsonProperty("ORDER_ID") OrdersId orderId, @JsonProperty("ITEM_NUMBER") Integer itemNumber)
+    implements Tuple2<OrdersId, Integer> {
   public OrderItemsId withOrderId(OrdersId orderId) {
     return new OrderItemsId(orderId, itemNumber);
   }
@@ -26,9 +28,21 @@ public record OrderItemsId(
 
   public static RowParser<OrderItemsId> _rowParser =
       RowParsers.of(
-          OrdersId.pgType,
+          OrdersId.dbType,
           Db2Types.integer,
           OrderItemsId::new,
           row -> new Object[] {row.orderId(), row.itemNumber()});
+  ;
+
+  @Override
+  public OrdersId _1() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public Integer _2() {
+    return itemNumber;
+  }
   ;
 }

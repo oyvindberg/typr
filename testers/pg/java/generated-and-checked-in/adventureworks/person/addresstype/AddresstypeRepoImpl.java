@@ -27,32 +27,29 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
   @Override
   public DeleteBuilder<AddresstypeFields, AddresstypeRow> delete() {
     return DeleteBuilder.of(
-        "\"person\".\"addresstype\"", AddresstypeFields.structure(), Dialect.POSTGRESQL);
+        "\"person\".\"addresstype\"", AddresstypeFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(AddresstypeId addresstypeid, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"person\".\"addresstype\" where \"addresstypeid\" = "),
-                Fragment.encode(AddresstypeId.pgType, addresstypeid),
+                Fragment.encode(AddresstypeId.dbType, addresstypeid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(AddresstypeId[] addresstypeids, Connection c) {
     return interpolate(
             Fragment.lit("delete\nfrom \"person\".\"addresstype\"\nwhere \"addresstypeid\" = ANY("),
-            Fragment.encode(AddresstypeId.pgTypeArray, addresstypeids),
+            Fragment.encode(AddresstypeId.dbTypeArray, addresstypeids),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public AddresstypeRow insert(AddresstypeRow unsaved, Connection c) {
@@ -61,9 +58,9 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
                 "insert into \"person\".\"addresstype\"(\"addresstypeid\", \"name\", \"rowguid\","
                     + " \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(AddresstypeId.pgType, unsaved.addresstypeid()),
+            Fragment.encode(AddresstypeId.dbType, unsaved.addresstypeid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.uuid, unsaved.rowguid()),
             Fragment.lit("::uuid, "),
@@ -74,7 +71,6 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
         .updateReturning(AddresstypeRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public AddresstypeRow insert(AddresstypeRowUnsaved unsaved, Connection c) {
@@ -84,7 +80,7 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
     ;
     columns.add(Fragment.lit("\"name\""));
     values.add(
-        interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
+        interpolate(Fragment.encode(Name.dbType, unsaved.name()), Fragment.lit("::varchar")));
     unsaved
         .addresstypeid()
         .visit(
@@ -93,7 +89,7 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
               columns.add(Fragment.lit("\"addresstypeid\""));
               values.add(
                   interpolate(
-                      Fragment.encode(AddresstypeId.pgType, value), Fragment.lit("::int4")));
+                      Fragment.encode(AddresstypeId.dbType, value), Fragment.lit("::int4")));
             });
     ;
     unsaved
@@ -127,7 +123,6 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
     ;
     return q.updateReturning(AddresstypeRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<AddresstypeRow> unsaved, Integer batchSize, Connection c) {
@@ -139,7 +134,6 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
         c,
         AddresstypeRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -153,17 +147,15 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
         c,
         AddresstypeRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<AddresstypeFields, AddresstypeRow> select() {
     return SelectBuilder.of(
         "\"person\".\"addresstype\"",
-        AddresstypeFields.structure(),
+        AddresstypeFields.structure,
         AddresstypeRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<AddresstypeRow> selectAll(Connection c) {
@@ -174,7 +166,6 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
         .query(AddresstypeRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<AddresstypeRow> selectById(AddresstypeId addresstypeid, Connection c) {
@@ -183,12 +174,11 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
                 "select \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\"\n"
                     + "from \"person\".\"addresstype\"\n"
                     + "where \"addresstypeid\" = "),
-            Fragment.encode(AddresstypeId.pgType, addresstypeid),
+            Fragment.encode(AddresstypeId.dbType, addresstypeid),
             Fragment.lit(""))
         .query(AddresstypeRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<AddresstypeRow> selectByIds(AddresstypeId[] addresstypeids, Connection c) {
@@ -197,12 +187,11 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
                 "select \"addresstypeid\", \"name\", \"rowguid\", \"modifieddate\"\n"
                     + "from \"person\".\"addresstype\"\n"
                     + "where \"addresstypeid\" = ANY("),
-            Fragment.encode(AddresstypeId.pgTypeArray, addresstypeids),
+            Fragment.encode(AddresstypeId.dbTypeArray, addresstypeids),
             Fragment.lit(")"))
         .query(AddresstypeRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<AddresstypeId, AddresstypeRow> selectByIdsTracked(
@@ -211,17 +200,15 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
     selectByIds(addresstypeids, c).forEach(row -> ret.put(row.addresstypeid(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<AddresstypeFields, AddresstypeRow> update() {
     return UpdateBuilder.of(
         "\"person\".\"addresstype\"",
-        AddresstypeFields.structure(),
+        AddresstypeFields.structure,
         AddresstypeRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(AddresstypeRow row, Connection c) {
@@ -229,19 +216,18 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
     ;
     return interpolate(
                 Fragment.lit("update \"person\".\"addresstype\"\nset \"name\" = "),
-                Fragment.encode(Name.pgType, row.name()),
+                Fragment.encode(Name.dbType, row.name()),
                 Fragment.lit("::varchar,\n\"rowguid\" = "),
                 Fragment.encode(PgTypes.uuid, row.rowguid()),
                 Fragment.lit("::uuid,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"addresstypeid\" = "),
-                Fragment.encode(AddresstypeId.pgType, addresstypeid),
+                Fragment.encode(AddresstypeId.dbType, addresstypeid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public AddresstypeRow upsert(AddresstypeRow unsaved, Connection c) {
@@ -250,9 +236,9 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
                 "insert into \"person\".\"addresstype\"(\"addresstypeid\", \"name\", \"rowguid\","
                     + " \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(AddresstypeId.pgType, unsaved.addresstypeid()),
+            Fragment.encode(AddresstypeId.dbType, unsaved.addresstypeid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.uuid, unsaved.rowguid()),
             Fragment.lit("::uuid, "),
@@ -268,7 +254,6 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
         .updateReturning(AddresstypeRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<AddresstypeRow> upsertBatch(Iterator<AddresstypeRow> unsaved, Connection c) {
@@ -286,7 +271,6 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
         .updateManyReturning(AddresstypeRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -320,5 +304,4 @@ public class AddresstypeRepoImpl implements AddresstypeRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

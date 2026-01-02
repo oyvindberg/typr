@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple8;
+import dev.typr.foundations.data.Uint1;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
 import testdb.products.ProductsId;
@@ -26,11 +28,20 @@ public record ProductImagesRow(
     /** Default: NULL */
     @JsonProperty("alt_text") Optional<String> altText,
     /** Default: 0 */
-    @JsonProperty("sort_order") Short sortOrder,
+    @JsonProperty("sort_order") Uint1 sortOrder,
     /** Default: 0 */
     @JsonProperty("is_primary") Boolean isPrimary,
     /** Optional embedded image data Default: NULL */
-    @JsonProperty("image_data") Optional<byte[]> imageData) {
+    @JsonProperty("image_data") Optional<byte[]> imageData)
+    implements Tuple8<
+        ProductImagesId,
+        ProductsId,
+        String,
+        Optional<String>,
+        Optional<String>,
+        Uint1,
+        Boolean,
+        Optional<byte[]>> {
   /** AUTO_INCREMENT */
   public ProductImagesRow withImageId(ProductImagesId imageId) {
     return new ProductImagesRow(
@@ -67,7 +78,7 @@ public record ProductImagesRow(
   ;
 
   /** Default: 0 */
-  public ProductImagesRow withSortOrder(Short sortOrder) {
+  public ProductImagesRow withSortOrder(Uint1 sortOrder) {
     return new ProductImagesRow(
         imageId, productId, imageUrl, thumbnailUrl, altText, sortOrder, isPrimary, imageData);
   }
@@ -89,8 +100,8 @@ public record ProductImagesRow(
 
   public static RowParser<ProductImagesRow> _rowParser =
       RowParsers.of(
-          ProductImagesId.pgType,
-          ProductsId.pgType,
+          ProductImagesId.dbType,
+          ProductsId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar.opt(),
           MariaTypes.varchar.opt(),
@@ -111,6 +122,54 @@ public record ProductImagesRow(
               });
   ;
 
+  @Override
+  public ProductImagesId _1() {
+    return imageId;
+  }
+  ;
+
+  @Override
+  public ProductsId _2() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return imageUrl;
+  }
+  ;
+
+  @Override
+  public Optional<String> _4() {
+    return thumbnailUrl;
+  }
+  ;
+
+  @Override
+  public Optional<String> _5() {
+    return altText;
+  }
+  ;
+
+  @Override
+  public Uint1 _6() {
+    return sortOrder;
+  }
+  ;
+
+  @Override
+  public Boolean _7() {
+    return isPrimary;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _8() {
+    return imageData;
+  }
+  ;
+
   public ProductImagesId id() {
     return imageId;
   }
@@ -119,7 +178,7 @@ public record ProductImagesRow(
   public ProductImagesRowUnsaved toUnsavedRow(
       Defaulted<Optional<String>> thumbnailUrl,
       Defaulted<Optional<String>> altText,
-      Defaulted<Short> sortOrder,
+      Defaulted<Uint1> sortOrder,
       Defaulted<Boolean> isPrimary,
       Defaulted<Optional<byte[]>> imageData) {
     return new ProductImagesRowUnsaved(

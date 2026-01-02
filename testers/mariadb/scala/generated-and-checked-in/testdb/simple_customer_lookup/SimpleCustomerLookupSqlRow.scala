@@ -7,6 +7,7 @@ package testdb.simple_customer_lookup
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import java.time.LocalDateTime
@@ -29,8 +30,22 @@ case class SimpleCustomerLookupSqlRow(
   status: CustomerStatusId,
   /** Points to [[testdb.customers.CustomersRow.createdAt]] */
   @JsonProperty("created_at") createdAt: LocalDateTime
-)
+) extends Tuple7[CustomersId, String, String, String, String, CustomerStatusId, LocalDateTime] {
+  override def `_1`: CustomersId = customerId
+
+  override def `_2`: String = email
+
+  override def `_3`: String = firstName
+
+  override def `_4`: String = lastName
+
+  override def `_5`: String = tier
+
+  override def `_6`: CustomerStatusId = status
+
+  override def `_7`: LocalDateTime = createdAt
+}
 
 object SimpleCustomerLookupSqlRow {
-  val `_rowParser`: RowParser[SimpleCustomerLookupSqlRow] = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, CustomerStatusId.pgType, MariaTypes.datetime)(SimpleCustomerLookupSqlRow.apply)(row => Array[Any](row.customerId, row.email, row.firstName, row.lastName, row.tier, row.status, row.createdAt))
+  val `_rowParser`: RowParser[SimpleCustomerLookupSqlRow] = RowParsers.of(CustomersId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, CustomerStatusId.dbType, MariaTypes.datetime)(SimpleCustomerLookupSqlRow.apply)(row => Array[Any](row.customerId, row.email, row.firstName, row.lastName, row.tier, row.status, row.createdAt))
 }

@@ -10,6 +10,7 @@ import adventureworks.public.Name
 import adventureworks.public.Phone
 import adventureworks.userdefined.FirstName
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple18
 import dev.typr.foundations.data.Xml
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
@@ -53,8 +54,44 @@ data class VemployeeViewRow(
   val countryregionname: Name,
   /** Points to [adventureworks.person.person.PersonRow.additionalcontactinfo] */
   val additionalcontactinfo: Xml
-) {
+) : Tuple18<BusinessentityId, String, /* user-picked */ FirstName, Name, Name, String, String, Phone, Name, String, Int, String, String, String, Name, String, Name, Xml> {
+  override fun _1(): BusinessentityId = businessentityid
+
+  override fun _10(): String = emailaddress
+
+  override fun _11(): Int = emailpromotion
+
+  override fun _12(): String = addressline1
+
+  override fun _13(): String = addressline2
+
+  override fun _14(): String = city
+
+  override fun _15(): Name = stateprovincename
+
+  override fun _16(): String = postalcode
+
+  override fun _17(): Name = countryregionname
+
+  override fun _18(): Xml = additionalcontactinfo
+
+  override fun _2(): String = title
+
+  override fun _3(): /* user-picked */ FirstName = firstname
+
+  override fun _4(): Name = middlename
+
+  override fun _5(): Name = lastname
+
+  override fun _6(): String = suffix
+
+  override fun _7(): String = jobtitle
+
+  override fun _8(): Phone = phonenumber
+
+  override fun _9(): Name = phonenumbertype
+
   companion object {
-    val _rowParser: RowParser<VemployeeViewRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text, FirstName.pgType, Name.pgType, Name.pgType, PgTypes.text, PgTypes.text, Phone.pgType, Name.pgType, PgTypes.text, KotlinDbTypes.PgTypes.int4, PgTypes.text, PgTypes.text, PgTypes.text, Name.pgType, PgTypes.text, Name.pgType, PgTypes.xml, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17 -> VemployeeViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) }, { row -> arrayOf<Any?>(row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.jobtitle, row.phonenumber, row.phonenumbertype, row.emailaddress, row.emailpromotion, row.addressline1, row.addressline2, row.city, row.stateprovincename, row.postalcode, row.countryregionname, row.additionalcontactinfo) })
+    val _rowParser: RowParser<VemployeeViewRow> = RowParsers.of(BusinessentityId.dbType, PgTypes.text, FirstName.dbType, Name.dbType, Name.dbType, PgTypes.text, PgTypes.text, Phone.dbType, Name.dbType, PgTypes.text, KotlinDbTypes.PgTypes.int4, PgTypes.text, PgTypes.text, PgTypes.text, Name.dbType, PgTypes.text, Name.dbType, PgTypes.xml, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17 -> VemployeeViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) }, { row -> arrayOf<Any?>(row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.jobtitle, row.phonenumber, row.phonenumbertype, row.emailaddress, row.emailpromotion, row.addressline1, row.addressline2, row.city, row.stateprovincename, row.postalcode, row.countryregionname, row.additionalcontactinfo) })
   }
 }

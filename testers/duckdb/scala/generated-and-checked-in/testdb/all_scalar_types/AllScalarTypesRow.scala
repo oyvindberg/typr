@@ -7,7 +7,12 @@ package testdb.all_scalar_types
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple26
 import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint2
+import dev.typr.foundations.data.Uint4
+import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -31,10 +36,10 @@ case class AllScalarTypesRow(
   @JsonProperty("col_integer") colInteger: Option[Int],
   @JsonProperty("col_bigint") colBigint: Option[Long],
   @JsonProperty("col_hugeint") colHugeint: Option[BigInteger],
-  @JsonProperty("col_utinyint") colUtinyint: Option[Short],
-  @JsonProperty("col_usmallint") colUsmallint: Option[Int],
-  @JsonProperty("col_uinteger") colUinteger: Option[Long],
-  @JsonProperty("col_ubigint") colUbigint: Option[BigInteger],
+  @JsonProperty("col_utinyint") colUtinyint: Option[Uint1],
+  @JsonProperty("col_usmallint") colUsmallint: Option[Uint2],
+  @JsonProperty("col_uinteger") colUinteger: Option[Uint4],
+  @JsonProperty("col_ubigint") colUbigint: Option[Uint8],
   @JsonProperty("col_float") colFloat: Option[Float],
   @JsonProperty("col_double") colDouble: Option[Double],
   @JsonProperty("col_decimal") colDecimal: Option[BigDecimal],
@@ -51,8 +56,60 @@ case class AllScalarTypesRow(
   @JsonProperty("col_json") colJson: Option[Json],
   @JsonProperty("col_mood") colMood: Option[Mood],
   @JsonProperty("col_not_null") colNotNull: String
-)
+) extends Tuple26[AllScalarTypesId, Option[Byte], Option[Short], Option[Int], Option[Long], Option[BigInteger], Option[Uint1], Option[Uint2], Option[Uint4], Option[Uint8], Option[Float], Option[Double], Option[BigDecimal], Option[Boolean], Option[String], Option[String], Option[Array[Byte]], Option[LocalDate], Option[LocalTime], Option[LocalDateTime], Option[OffsetDateTime], Option[Duration], Option[UUID], Option[Json], Option[Mood], String] {
+  override def `_1`: AllScalarTypesId = id
+
+  override def `_2`: Option[Byte] = colTinyint
+
+  override def `_3`: Option[Short] = colSmallint
+
+  override def `_4`: Option[Int] = colInteger
+
+  override def `_5`: Option[Long] = colBigint
+
+  override def `_6`: Option[BigInteger] = colHugeint
+
+  override def `_7`: Option[Uint1] = colUtinyint
+
+  override def `_8`: Option[Uint2] = colUsmallint
+
+  override def `_9`: Option[Uint4] = colUinteger
+
+  override def `_10`: Option[Uint8] = colUbigint
+
+  override def `_11`: Option[Float] = colFloat
+
+  override def `_12`: Option[Double] = colDouble
+
+  override def `_13`: Option[BigDecimal] = colDecimal
+
+  override def `_14`: Option[Boolean] = colBoolean
+
+  override def `_15`: Option[String] = colVarchar
+
+  override def `_16`: Option[String] = colText
+
+  override def `_17`: Option[Array[Byte]] = colBlob
+
+  override def `_18`: Option[LocalDate] = colDate
+
+  override def `_19`: Option[LocalTime] = colTime
+
+  override def `_20`: Option[LocalDateTime] = colTimestamp
+
+  override def `_21`: Option[OffsetDateTime] = colTimestamptz
+
+  override def `_22`: Option[Duration] = colInterval
+
+  override def `_23`: Option[UUID] = colUuid
+
+  override def `_24`: Option[Json] = colJson
+
+  override def `_25`: Option[Mood] = colMood
+
+  override def `_26`: String = colNotNull
+}
 
 object AllScalarTypesRow {
-  val `_rowParser`: RowParser[AllScalarTypesRow] = RowParsers.of(AllScalarTypesId.duckDbType, ScalaDbTypes.DuckDbTypes.tinyint.nullable, ScalaDbTypes.DuckDbTypes.smallint.nullable, ScalaDbTypes.DuckDbTypes.integer.nullable, ScalaDbTypes.DuckDbTypes.bigint.nullable, DuckDbTypes.hugeint.nullable, ScalaDbTypes.DuckDbTypes.smallint.nullable, ScalaDbTypes.DuckDbTypes.integer.nullable, ScalaDbTypes.DuckDbTypes.bigint.nullable, DuckDbTypes.ubigint.nullable, ScalaDbTypes.DuckDbTypes.float_.nullable, ScalaDbTypes.DuckDbTypes.double_.nullable, ScalaDbTypes.DuckDbTypes.numeric.nullable, ScalaDbTypes.DuckDbTypes.boolean_.nullable, DuckDbTypes.varchar.nullable, DuckDbTypes.varchar.nullable, DuckDbTypes.blob.nullable, DuckDbTypes.date.nullable, DuckDbTypes.time.nullable, DuckDbTypes.timestamp.nullable, DuckDbTypes.timestamptz.nullable, DuckDbTypes.interval.nullable, DuckDbTypes.uuid.nullable, DuckDbTypes.json.nullable, Mood.duckDbType.nullable, DuckDbTypes.varchar)(AllScalarTypesRow.apply)(row => Array[Any](row.id, row.colTinyint, row.colSmallint, row.colInteger, row.colBigint, row.colHugeint, row.colUtinyint, row.colUsmallint, row.colUinteger, row.colUbigint, row.colFloat, row.colDouble, row.colDecimal, row.colBoolean, row.colVarchar, row.colText, row.colBlob, row.colDate, row.colTime, row.colTimestamp, row.colTimestamptz, row.colInterval, row.colUuid, row.colJson, row.colMood, row.colNotNull))
+  val `_rowParser`: RowParser[AllScalarTypesRow] = RowParsers.of(AllScalarTypesId.duckDbType, ScalaDbTypes.DuckDbTypes.tinyint.nullable, ScalaDbTypes.DuckDbTypes.smallint.nullable, ScalaDbTypes.DuckDbTypes.integer.nullable, ScalaDbTypes.DuckDbTypes.bigint.nullable, DuckDbTypes.hugeint.nullable, DuckDbTypes.utinyint.nullable, DuckDbTypes.usmallint.nullable, DuckDbTypes.uinteger.nullable, DuckDbTypes.ubigint.nullable, ScalaDbTypes.DuckDbTypes.float_.nullable, ScalaDbTypes.DuckDbTypes.double_.nullable, ScalaDbTypes.DuckDbTypes.numeric.nullable, ScalaDbTypes.DuckDbTypes.boolean_.nullable, DuckDbTypes.varchar.nullable, DuckDbTypes.varchar.nullable, DuckDbTypes.blob.nullable, DuckDbTypes.date.nullable, DuckDbTypes.time.nullable, DuckDbTypes.timestamp.nullable, DuckDbTypes.timestamptz.nullable, DuckDbTypes.interval.nullable, DuckDbTypes.uuid.nullable, DuckDbTypes.json.nullable, Mood.duckDbType.nullable, DuckDbTypes.varchar)(AllScalarTypesRow.apply)(row => Array[Any](row.id, row.colTinyint, row.colSmallint, row.colInteger, row.colBigint, row.colHugeint, row.colUtinyint, row.colUsmallint, row.colUinteger, row.colUbigint, row.colFloat, row.colDouble, row.colDecimal, row.colBoolean, row.colVarchar, row.colText, row.colBlob, row.colDate, row.colTime, row.colTimestamp, row.colTimestamptz, row.colInterval, row.colUuid, row.colJson, row.colMood, row.colNotNull))
 }

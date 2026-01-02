@@ -12,6 +12,7 @@ import adventureworks.public.NameStyle
 import adventureworks.userdefined.FirstName
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple13
 import dev.typr.foundations.data.Xml
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
@@ -60,7 +61,7 @@ case class PersonRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple13[BusinessentityId, String, NameStyle, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, Option[/* max 10 chars */ String], Int, Option[Xml], Option[Xml], UUID, LocalDateTime] {
   def id: BusinessentityId = businessentityid
 
   def toUnsavedRow(
@@ -85,10 +86,36 @@ case class PersonRow(
       modifieddate
     )
   }
+
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: String = persontype
+
+  override def `_3`: NameStyle = namestyle
+
+  override def `_4`: Option[/* max 8 chars */ String] = title
+
+  override def `_5`: /* user-picked */ FirstName = firstname
+
+  override def `_6`: Option[Name] = middlename
+
+  override def `_7`: Name = lastname
+
+  override def `_8`: Option[/* max 10 chars */ String] = suffix
+
+  override def `_9`: Int = emailpromotion
+
+  override def `_10`: Option[Xml] = additionalcontactinfo
+
+  override def `_11`: Option[Xml] = demographics
+
+  override def `_12`: UUID = rowguid
+
+  override def `_13`: LocalDateTime = modifieddate
 }
 
 object PersonRow {
-  val `_rowParser`: RowParser[PersonRow] = RowParsers.of(BusinessentityId.pgType, PgTypes.bpchar, NameStyle.pgType, PgTypes.text.nullable, FirstName.pgType, Name.pgType.nullable, Name.pgType, PgTypes.text.nullable, ScalaDbTypes.PgTypes.int4, PgTypes.xml.nullable, PgTypes.xml.nullable, PgTypes.uuid, PgTypes.timestamp)(PersonRow.apply)(row => Array[Any](row.businessentityid, row.persontype, row.namestyle, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.emailpromotion, row.additionalcontactinfo, row.demographics, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[PersonRow] = RowParsers.of(BusinessentityId.dbType, PgTypes.bpchar, NameStyle.dbType, PgTypes.text.nullable, FirstName.dbType, Name.dbType.nullable, Name.dbType, PgTypes.text.nullable, ScalaDbTypes.PgTypes.int4, PgTypes.xml.nullable, PgTypes.xml.nullable, PgTypes.uuid, PgTypes.timestamp)(PersonRow.apply)(row => Array[Any](row.businessentityid, row.persontype, row.namestyle, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.emailpromotion, row.additionalcontactinfo, row.demographics, row.rowguid, row.modifieddate))
 
   given pgText: PgText[PersonRow] = PgText.from(`_rowParser`.underlying)
 }

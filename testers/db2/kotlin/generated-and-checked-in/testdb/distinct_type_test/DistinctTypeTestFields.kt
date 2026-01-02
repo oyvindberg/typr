@@ -6,43 +6,41 @@
 package testdb.distinct_type_test
 
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr3
 import kotlin.collections.List
 import testdb.EmailAddress
 import testdb.MoneyAmount
 
-interface DistinctTypeTestFields : FieldsExpr<DistinctTypeTestRow> {
-  abstract fun balance(): OptField<MoneyAmount, DistinctTypeTestRow>
+data class DistinctTypeTestFields(val _path: List<Path>) : TupleExpr3<DistinctTypeTestId, EmailAddress, MoneyAmount>, RelationStructure<DistinctTypeTestFields, DistinctTypeTestRow>, FieldsBase<DistinctTypeTestRow> {
+  override fun _1(): SqlExpr<DistinctTypeTestId> = id()
 
-  abstract override fun columns(): List<FieldLike<*, DistinctTypeTestRow>>
+  override fun _2(): SqlExpr<EmailAddress> = email()
 
-  abstract fun email(): Field<EmailAddress, DistinctTypeTestRow>
+  override fun _3(): SqlExpr<MoneyAmount> = balance()
 
-  abstract fun id(): IdField<DistinctTypeTestId, DistinctTypeTestRow>
+  override fun _path(): List<Path> = _path
+
+  fun balance(): OptField<MoneyAmount, DistinctTypeTestRow> = OptField<MoneyAmount, DistinctTypeTestRow>(_path, "BALANCE", DistinctTypeTestRow::balance, null, null, { row, value -> row.copy(balance = value) }, MoneyAmount.dbType)
+
+  override fun columns(): List<FieldLike<*, DistinctTypeTestRow>> = listOf(this.id().underlying, this.email().underlying, this.balance().underlying)
+
+  fun email(): Field<EmailAddress, DistinctTypeTestRow> = Field<EmailAddress, DistinctTypeTestRow>(_path, "EMAIL", DistinctTypeTestRow::email, null, null, { row, value -> row.copy(email = value) }, EmailAddress.dbType)
+
+  fun id(): IdField<DistinctTypeTestId, DistinctTypeTestRow> = IdField<DistinctTypeTestId, DistinctTypeTestRow>(_path, "ID", DistinctTypeTestRow::id, null, null, { row, value -> row.copy(id = value) }, DistinctTypeTestId.dbType)
 
   override fun rowParser(): RowParser<DistinctTypeTestRow> = DistinctTypeTestRow._rowParser.underlying
 
+  override fun withPaths(_path: List<Path>): RelationStructure<DistinctTypeTestFields, DistinctTypeTestRow> = DistinctTypeTestFields(_path)
+
   companion object {
-    data class Impl(val _path: List<Path>) : DistinctTypeTestFields, RelationStructure<DistinctTypeTestFields, DistinctTypeTestRow> {
-      override fun id(): IdField<DistinctTypeTestId, DistinctTypeTestRow> = IdField<DistinctTypeTestId, DistinctTypeTestRow>(_path, "ID", DistinctTypeTestRow::id, null, null, { row, value -> row.copy(id = value) }, DistinctTypeTestId.pgType)
-
-      override fun email(): Field<EmailAddress, DistinctTypeTestRow> = Field<EmailAddress, DistinctTypeTestRow>(_path, "EMAIL", DistinctTypeTestRow::email, null, null, { row, value -> row.copy(email = value) }, EmailAddress.pgType)
-
-      override fun balance(): OptField<MoneyAmount, DistinctTypeTestRow> = OptField<MoneyAmount, DistinctTypeTestRow>(_path, "BALANCE", DistinctTypeTestRow::balance, null, null, { row, value -> row.copy(balance = value) }, MoneyAmount.pgType)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, DistinctTypeTestRow>> = listOf(this.id().underlying, this.email().underlying, this.balance().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<DistinctTypeTestFields, DistinctTypeTestRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: DistinctTypeTestFields = DistinctTypeTestFields(emptyList<Path>())
   }
 }

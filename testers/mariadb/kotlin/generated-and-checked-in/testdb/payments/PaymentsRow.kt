@@ -7,6 +7,8 @@ package testdb.payments
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple12
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.Inet6
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
@@ -51,7 +53,7 @@ data class PaymentsRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("processor_response") val processorResponse: String?,
+  @JsonProperty("processor_response") val processorResponse: Json?,
   /** 
     * Default: NULL
     */
@@ -68,14 +70,38 @@ data class PaymentsRow(
     * Default: NULL
     */
   @JsonProperty("processed_at") val processedAt: LocalDateTime?
-) {
+) : Tuple12<PaymentsId, OrdersId, PaymentMethodsId, String?, BigDecimal, String, String, Json?, String?, Inet6?, LocalDateTime, LocalDateTime?> {
+  override fun _1(): PaymentsId = paymentId
+
+  override fun _10(): Inet6? = ipAddress
+
+  override fun _11(): LocalDateTime = createdAt
+
+  override fun _12(): LocalDateTime? = processedAt
+
+  override fun _2(): OrdersId = orderId
+
+  override fun _3(): PaymentMethodsId = methodId
+
+  override fun _4(): String? = transactionId
+
+  override fun _5(): BigDecimal = amount
+
+  override fun _6(): String = currencyCode
+
+  override fun _7(): String = status
+
+  override fun _8(): Json? = processorResponse
+
+  override fun _9(): String? = errorMessage
+
   fun id(): PaymentsId = paymentId
 
   fun toUnsavedRow(
     transactionId: Defaulted<String?> = Defaulted.Provided(this.transactionId),
     currencyCode: Defaulted<String> = Defaulted.Provided(this.currencyCode),
     status: Defaulted<String> = Defaulted.Provided(this.status),
-    processorResponse: Defaulted<String?> = Defaulted.Provided(this.processorResponse),
+    processorResponse: Defaulted<Json?> = Defaulted.Provided(this.processorResponse),
     errorMessage: Defaulted<String?> = Defaulted.Provided(this.errorMessage),
     ipAddress: Defaulted<Inet6?> = Defaulted.Provided(this.ipAddress),
     createdAt: Defaulted<LocalDateTime> = Defaulted.Provided(this.createdAt),
@@ -83,6 +109,6 @@ data class PaymentsRow(
   ): PaymentsRowUnsaved = PaymentsRowUnsaved(orderId, methodId, amount, transactionId, currencyCode, status, processorResponse, errorMessage, ipAddress, createdAt, processedAt)
 
   companion object {
-    val _rowParser: RowParser<PaymentsRow> = RowParsers.of(PaymentsId.pgType, OrdersId.pgType, PaymentMethodsId.pgType, MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.numeric, MariaTypes.char_, MariaTypes.text, MariaTypes.longtext.nullable(), MariaTypes.varchar.nullable(), MariaTypes.inet6.nullable(), MariaTypes.datetime, MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> PaymentsRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) }, { row -> arrayOf<Any?>(row.paymentId, row.orderId, row.methodId, row.transactionId, row.amount, row.currencyCode, row.status, row.processorResponse, row.errorMessage, row.ipAddress, row.createdAt, row.processedAt) })
+    val _rowParser: RowParser<PaymentsRow> = RowParsers.of(PaymentsId.dbType, OrdersId.dbType, PaymentMethodsId.dbType, MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.numeric, MariaTypes.char_, MariaTypes.text, MariaTypes.json.nullable(), MariaTypes.varchar.nullable(), MariaTypes.inet6.nullable(), MariaTypes.datetime, MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> PaymentsRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) }, { row -> arrayOf<Any?>(row.paymentId, row.orderId, row.methodId, row.transactionId, row.amount, row.currencyCode, row.status, row.processorResponse, row.errorMessage, row.ipAddress, row.createdAt, row.processedAt) })
   }
 }

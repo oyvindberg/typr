@@ -26,6 +26,6 @@ public record CustomerStatusId(@JsonValue String value) {
   public static Bijection<CustomerStatusId, String> bijection =
       Bijection.of(CustomerStatusId::value, CustomerStatusId::new);
 
-  public static MariaType<CustomerStatusId> pgType =
+  public static MariaType<CustomerStatusId> dbType =
       MariaTypes.varchar.bimap(CustomerStatusId::new, CustomerStatusId::value);
 }

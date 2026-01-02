@@ -7,84 +7,81 @@ package testdb.customers
 
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.SqlServerTypes
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr4
 import java.time.LocalDateTime
 
-trait CustomersFields extends FieldsExpr0[CustomersRow] {
-  def customerId: IdField[CustomersId, CustomersRow]
+class CustomersFields(val `_path`: java.util.List[Path]) extends TupleExpr4[CustomersId, String, String, LocalDateTime] with RelationStructure[CustomersFields, CustomersRow]  with FieldsBase[CustomersRow] {
+  def customerId: IdField[CustomersId, CustomersRow] = {
+    new IdField[CustomersId, CustomersRow](
+      _path,
+      "customer_id",
+      _.customerId,
+      None,
+      None,
+      (row, value) => row.copy(customerId = value),
+      CustomersId.sqlServerType
+    )
+  }
 
-  def name: Field[String, CustomersRow]
+  def name: Field[String, CustomersRow] = {
+    new Field[String, CustomersRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      None,
+      (row, value) => row.copy(name = value),
+      SqlServerTypes.nvarchar
+    )
+  }
 
-  def email: Field[String, CustomersRow]
+  def email: Field[String, CustomersRow] = {
+    new Field[String, CustomersRow](
+      _path,
+      "email",
+      _.email,
+      None,
+      None,
+      (row, value) => row.copy(email = value),
+      SqlServerTypes.nvarchar
+    )
+  }
 
-  def createdAt: OptField[LocalDateTime, CustomersRow]
+  def createdAt: OptField[LocalDateTime, CustomersRow] = {
+    new OptField[LocalDateTime, CustomersRow](
+      _path,
+      "created_at",
+      _.createdAt,
+      None,
+      None,
+      (row, value) => row.copy(createdAt = value),
+      SqlServerTypes.datetime2
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, CustomersRow]]
+  override def columns: java.util.List[FieldLike[?, CustomersRow]] = java.util.List.of(this.customerId.underlying, this.name.underlying, this.email.underlying, this.createdAt.underlying)
 
   override def rowParser: RowParser[CustomersRow] = CustomersRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomersFields, CustomersRow] = new CustomersFields(`_path`)
+
+  override def `_1`: SqlExpr[CustomersId] = customerId
+
+  override def `_2`: SqlExpr[String] = name
+
+  override def `_3`: SqlExpr[String] = email
+
+  override def `_4`: SqlExpr[LocalDateTime] = createdAt
 }
 
 object CustomersFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends CustomersFields with RelationStructure[CustomersFields, CustomersRow] {
-
-    override def customerId: IdField[CustomersId, CustomersRow] = {
-      new IdField[CustomersId, CustomersRow](
-        _path,
-        "customer_id",
-        _.customerId,
-        None,
-        None,
-        (row, value) => row.copy(customerId = value),
-        CustomersId.sqlServerType
-      )
-    }
-
-    override def name: Field[String, CustomersRow] = {
-      new Field[String, CustomersRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        None,
-        (row, value) => row.copy(name = value),
-        SqlServerTypes.nvarchar
-      )
-    }
-
-    override def email: Field[String, CustomersRow] = {
-      new Field[String, CustomersRow](
-        _path,
-        "email",
-        _.email,
-        None,
-        None,
-        (row, value) => row.copy(email = value),
-        SqlServerTypes.nvarchar
-      )
-    }
-
-    override def createdAt: OptField[LocalDateTime, CustomersRow] = {
-      new OptField[LocalDateTime, CustomersRow](
-        _path,
-        "created_at",
-        _.createdAt,
-        None,
-        None,
-        (row, value) => row.copy(createdAt = value),
-        SqlServerTypes.datetime2
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, CustomersRow]] = java.util.List.of(this.customerId.underlying, this.name.underlying, this.email.underlying, this.createdAt.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomersFields, CustomersRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: CustomersFields = new CustomersFields(java.util.Collections.emptyList())
 }

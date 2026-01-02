@@ -25,9 +25,8 @@ import oracledb.MoneyT;
 public class DepartmentsRepoImpl implements DepartmentsRepo {
   @Override
   public DeleteBuilder<DepartmentsFields, DepartmentsRow> delete() {
-    return DeleteBuilder.of("\"DEPARTMENTS\"", DepartmentsFields.structure(), Dialect.ORACLE);
+    return DeleteBuilder.of("\"DEPARTMENTS\"", DepartmentsFields.structure, Dialect.ORACLE);
   }
-  ;
 
   @Override
   public Boolean deleteById(DepartmentsId compositeId, Connection c) {
@@ -41,7 +40,6 @@ public class DepartmentsRepoImpl implements DepartmentsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(DepartmentsId[] compositeIds, Connection c) {
@@ -63,7 +61,6 @@ public class DepartmentsRepoImpl implements DepartmentsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public DepartmentsId insert(DepartmentsRow unsaved, Connection c) {
@@ -84,17 +81,12 @@ public class DepartmentsRepoImpl implements DepartmentsRepo {
             new String[] {"DEPT_CODE", "DEPT_REGION"}, DepartmentsId._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<DepartmentsFields, DepartmentsRow> select() {
     return SelectBuilder.of(
-        "\"DEPARTMENTS\"",
-        DepartmentsFields.structure(),
-        DepartmentsRow._rowParser,
-        Dialect.ORACLE);
+        "\"DEPARTMENTS\"", DepartmentsFields.structure, DepartmentsRow._rowParser, Dialect.ORACLE);
   }
-  ;
 
   @Override
   public List<DepartmentsRow> selectAll(Connection c) {
@@ -105,7 +97,6 @@ public class DepartmentsRepoImpl implements DepartmentsRepo {
         .query(DepartmentsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<DepartmentsRow> selectById(DepartmentsId compositeId, Connection c) {
@@ -121,7 +112,6 @@ public class DepartmentsRepoImpl implements DepartmentsRepo {
         .query(DepartmentsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<DepartmentsRow> selectByIds(DepartmentsId[] compositeIds, Connection c) {
@@ -145,7 +135,6 @@ public class DepartmentsRepoImpl implements DepartmentsRepo {
         .query(DepartmentsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<DepartmentsId, DepartmentsRow> selectByIdsTracked(
@@ -154,17 +143,12 @@ public class DepartmentsRepoImpl implements DepartmentsRepo {
     selectByIds(compositeIds, c).forEach(row -> ret.put(row.compositeId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<DepartmentsFields, DepartmentsRow> update() {
     return UpdateBuilder.of(
-        "\"DEPARTMENTS\"",
-        DepartmentsFields.structure(),
-        DepartmentsRow._rowParser,
-        Dialect.ORACLE);
+        "\"DEPARTMENTS\"", DepartmentsFields.structure, DepartmentsRow._rowParser, Dialect.ORACLE);
   }
-  ;
 
   @Override
   public Boolean update(DepartmentsRow row, Connection c) {
@@ -184,7 +168,6 @@ public class DepartmentsRepoImpl implements DepartmentsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public void upsert(DepartmentsRow unsaved, Connection c) {
@@ -216,7 +199,6 @@ public class DepartmentsRepoImpl implements DepartmentsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public void upsertBatch(Iterator<DepartmentsRow> unsaved, Connection c) {
@@ -233,5 +215,4 @@ public class DepartmentsRepoImpl implements DepartmentsRepo {
         .updateMany(DepartmentsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

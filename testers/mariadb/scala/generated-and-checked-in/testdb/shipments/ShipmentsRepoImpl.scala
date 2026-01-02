@@ -23,17 +23,17 @@ import dev.typr.foundations.scala.Fragment.sql
 class ShipmentsRepoImpl extends ShipmentsRepo {
   override def delete: DeleteBuilder[ShipmentsFields, ShipmentsRow] = DeleteBuilder.of("`shipments`", ShipmentsFields.structure, Dialect.MARIADB)
 
-  override def deleteById(shipmentId: ShipmentsId)(using c: Connection): Boolean = sql"delete from `shipments` where `shipment_id` = ${Fragment.encode(ShipmentsId.pgType, shipmentId)}".update().runUnchecked(c) > 0
+  override def deleteById(shipmentId: ShipmentsId)(using c: Connection): Boolean = sql"delete from `shipments` where `shipment_id` = ${Fragment.encode(ShipmentsId.dbType, shipmentId)}".update().runUnchecked(c) > 0
 
   override def deleteByIds(shipmentIds: Array[ShipmentsId])(using c: Connection): Int = {
     val fragments: ListBuffer[Fragment] = ListBuffer()
-    shipmentIds.foreach { id => fragments.addOne(Fragment.encode(ShipmentsId.pgType, id)): @scala.annotation.nowarn }
+    shipmentIds.foreach { id => fragments.addOne(Fragment.encode(ShipmentsId.dbType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("delete from `shipments` where `shipment_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override def insert(unsaved: ShipmentsRow)(using c: Connection): ShipmentsRow = {
   sql"""insert into `shipments`(`order_id`, `carrier_id`, `tracking_number`, `shipping_method`, `weight_kg`, `dimensions_json`, `label_data`, `status`, `estimated_delivery_date`, `actual_delivery_at`, `shipping_cost`, `insurance_amount`, `origin_warehouse_id`, `shipped_at`, `created_at`, `updated_at`)
-    values (${Fragment.encode(OrdersId.pgType, unsaved.orderId)}, ${Fragment.encode(ShippingCarriersId.pgType, unsaved.carrierId)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.trackingNumber)}, ${Fragment.encode(MariaTypes.varchar, unsaved.shippingMethod)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, unsaved.weightKg)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.dimensionsJson)}, ${Fragment.encode(MariaTypes.longblob.nullable, unsaved.labelData)}, ${Fragment.encode(MariaTypes.text, unsaved.status)}, ${Fragment.encode(MariaTypes.date.nullable, unsaved.estimatedDeliveryDate)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.actualDeliveryAt)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.shippingCost)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, unsaved.insuranceAmount)}, ${Fragment.encode(WarehousesId.pgType.nullable, unsaved.originWarehouseId)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.shippedAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)})
+    values (${Fragment.encode(OrdersId.dbType, unsaved.orderId)}, ${Fragment.encode(ShippingCarriersId.dbType, unsaved.carrierId)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.trackingNumber)}, ${Fragment.encode(MariaTypes.varchar, unsaved.shippingMethod)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, unsaved.weightKg)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.dimensionsJson)}, ${Fragment.encode(MariaTypes.longblob.nullable, unsaved.labelData)}, ${Fragment.encode(MariaTypes.text, unsaved.status)}, ${Fragment.encode(MariaTypes.date.nullable, unsaved.estimatedDeliveryDate)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.actualDeliveryAt)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.shippingCost)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, unsaved.insuranceAmount)}, ${Fragment.encode(WarehousesId.dbType.nullable, unsaved.originWarehouseId)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.shippedAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)})
     RETURNING `shipment_id`, `order_id`, `carrier_id`, `tracking_number`, `shipping_method`, `weight_kg`, `dimensions_json`, `label_data`, `status`, `estimated_delivery_date`, `actual_delivery_at`, `shipping_cost`, `insurance_amount`, `origin_warehouse_id`, `shipped_at`, `created_at`, `updated_at`
     """
     .updateReturning(ShipmentsRow.`_rowParser`.exactlyOne()).runUnchecked(c)
@@ -43,9 +43,9 @@ class ShipmentsRepoImpl extends ShipmentsRepo {
     val columns: ListBuffer[Fragment] = ListBuffer()
     val values: ListBuffer[Fragment] = ListBuffer()
     columns.addOne(Fragment.lit("`order_id`")): @scala.annotation.nowarn
-    values.addOne(sql"${Fragment.encode(OrdersId.pgType, unsaved.orderId)}"): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(OrdersId.dbType, unsaved.orderId)}"): @scala.annotation.nowarn
     columns.addOne(Fragment.lit("`carrier_id`")): @scala.annotation.nowarn
-    values.addOne(sql"${Fragment.encode(ShippingCarriersId.pgType, unsaved.carrierId)}"): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(ShippingCarriersId.dbType, unsaved.carrierId)}"): @scala.annotation.nowarn
     columns.addOne(Fragment.lit("`shipping_method`")): @scala.annotation.nowarn
     values.addOne(sql"${Fragment.encode(MariaTypes.varchar, unsaved.shippingMethod)}"): @scala.annotation.nowarn
     columns.addOne(Fragment.lit("`shipping_cost`")): @scala.annotation.nowarn
@@ -60,7 +60,7 @@ class ShipmentsRepoImpl extends ShipmentsRepo {
     );
     unsaved.dimensionsJson.visit(
       {  },
-      value => { columns.addOne(Fragment.lit("`dimensions_json`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.longtext.nullable, value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`dimensions_json`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.json.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.labelData.visit(
       {  },
@@ -84,7 +84,7 @@ class ShipmentsRepoImpl extends ShipmentsRepo {
     );
     unsaved.originWarehouseId.visit(
       {  },
-      value => { columns.addOne(Fragment.lit("`origin_warehouse_id`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(WarehousesId.pgType.nullable, value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`origin_warehouse_id`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(WarehousesId.dbType.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.shippedAt.visit(
       {  },
@@ -118,12 +118,12 @@ class ShipmentsRepoImpl extends ShipmentsRepo {
   override def selectById(shipmentId: ShipmentsId)(using c: Connection): Option[ShipmentsRow] = {
     sql"""select `shipment_id`, `order_id`, `carrier_id`, `tracking_number`, `shipping_method`, `weight_kg`, `dimensions_json`, `label_data`, `status`, `estimated_delivery_date`, `actual_delivery_at`, `shipping_cost`, `insurance_amount`, `origin_warehouse_id`, `shipped_at`, `created_at`, `updated_at`
     from `shipments`
-    where `shipment_id` = ${Fragment.encode(ShipmentsId.pgType, shipmentId)}""".query(ShipmentsRow.`_rowParser`.first()).runUnchecked(c)
+    where `shipment_id` = ${Fragment.encode(ShipmentsId.dbType, shipmentId)}""".query(ShipmentsRow.`_rowParser`.first()).runUnchecked(c)
   }
 
   override def selectByIds(shipmentIds: Array[ShipmentsId])(using c: Connection): List[ShipmentsRow] = {
     val fragments: ListBuffer[Fragment] = ListBuffer()
-    shipmentIds.foreach { id => fragments.addOne(Fragment.encode(ShipmentsId.pgType, id)): @scala.annotation.nowarn }
+    shipmentIds.foreach { id => fragments.addOne(Fragment.encode(ShipmentsId.dbType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("select `shipment_id`, `order_id`, `carrier_id`, `tracking_number`, `shipping_method`, `weight_kg`, `dimensions_json`, `label_data`, `status`, `estimated_delivery_date`, `actual_delivery_at`, `shipping_cost`, `insurance_amount`, `origin_warehouse_id`, `shipped_at`, `created_at`, `updated_at` from `shipments` where `shipment_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(ShipmentsRow.`_rowParser`.all()).runUnchecked(c)
   }
 
@@ -138,28 +138,28 @@ class ShipmentsRepoImpl extends ShipmentsRepo {
   override def update(row: ShipmentsRow)(using c: Connection): Boolean = {
     val shipmentId: ShipmentsId = row.shipmentId
     return sql"""update `shipments`
-    set `order_id` = ${Fragment.encode(OrdersId.pgType, row.orderId)},
-    `carrier_id` = ${Fragment.encode(ShippingCarriersId.pgType, row.carrierId)},
+    set `order_id` = ${Fragment.encode(OrdersId.dbType, row.orderId)},
+    `carrier_id` = ${Fragment.encode(ShippingCarriersId.dbType, row.carrierId)},
     `tracking_number` = ${Fragment.encode(MariaTypes.varchar.nullable, row.trackingNumber)},
     `shipping_method` = ${Fragment.encode(MariaTypes.varchar, row.shippingMethod)},
     `weight_kg` = ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, row.weightKg)},
-    `dimensions_json` = ${Fragment.encode(MariaTypes.longtext.nullable, row.dimensionsJson)},
+    `dimensions_json` = ${Fragment.encode(MariaTypes.json.nullable, row.dimensionsJson)},
     `label_data` = ${Fragment.encode(MariaTypes.longblob.nullable, row.labelData)},
     `status` = ${Fragment.encode(MariaTypes.text, row.status)},
     `estimated_delivery_date` = ${Fragment.encode(MariaTypes.date.nullable, row.estimatedDeliveryDate)},
     `actual_delivery_at` = ${Fragment.encode(MariaTypes.datetime.nullable, row.actualDeliveryAt)},
     `shipping_cost` = ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, row.shippingCost)},
     `insurance_amount` = ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, row.insuranceAmount)},
-    `origin_warehouse_id` = ${Fragment.encode(WarehousesId.pgType.nullable, row.originWarehouseId)},
+    `origin_warehouse_id` = ${Fragment.encode(WarehousesId.dbType.nullable, row.originWarehouseId)},
     `shipped_at` = ${Fragment.encode(MariaTypes.datetime.nullable, row.shippedAt)},
     `created_at` = ${Fragment.encode(MariaTypes.datetime, row.createdAt)},
     `updated_at` = ${Fragment.encode(MariaTypes.datetime, row.updatedAt)}
-    where `shipment_id` = ${Fragment.encode(ShipmentsId.pgType, shipmentId)}""".update().runUnchecked(c) > 0
+    where `shipment_id` = ${Fragment.encode(ShipmentsId.dbType, shipmentId)}""".update().runUnchecked(c) > 0
   }
 
   override def upsert(unsaved: ShipmentsRow)(using c: Connection): ShipmentsRow = {
-  sql"""INSERT INTO `shipments`(`order_id`, `carrier_id`, `tracking_number`, `shipping_method`, `weight_kg`, `dimensions_json`, `label_data`, `status`, `estimated_delivery_date`, `actual_delivery_at`, `shipping_cost`, `insurance_amount`, `origin_warehouse_id`, `shipped_at`, `created_at`, `updated_at`)
-    VALUES (${Fragment.encode(OrdersId.pgType, unsaved.orderId)}, ${Fragment.encode(ShippingCarriersId.pgType, unsaved.carrierId)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.trackingNumber)}, ${Fragment.encode(MariaTypes.varchar, unsaved.shippingMethod)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, unsaved.weightKg)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.dimensionsJson)}, ${Fragment.encode(MariaTypes.longblob.nullable, unsaved.labelData)}, ${Fragment.encode(MariaTypes.text, unsaved.status)}, ${Fragment.encode(MariaTypes.date.nullable, unsaved.estimatedDeliveryDate)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.actualDeliveryAt)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.shippingCost)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, unsaved.insuranceAmount)}, ${Fragment.encode(WarehousesId.pgType.nullable, unsaved.originWarehouseId)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.shippedAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)})
+  sql"""INSERT INTO `shipments`(`shipment_id`, `order_id`, `carrier_id`, `tracking_number`, `shipping_method`, `weight_kg`, `dimensions_json`, `label_data`, `status`, `estimated_delivery_date`, `actual_delivery_at`, `shipping_cost`, `insurance_amount`, `origin_warehouse_id`, `shipped_at`, `created_at`, `updated_at`)
+    VALUES (${Fragment.encode(ShipmentsId.dbType, unsaved.shipmentId)}, ${Fragment.encode(OrdersId.dbType, unsaved.orderId)}, ${Fragment.encode(ShippingCarriersId.dbType, unsaved.carrierId)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.trackingNumber)}, ${Fragment.encode(MariaTypes.varchar, unsaved.shippingMethod)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, unsaved.weightKg)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.dimensionsJson)}, ${Fragment.encode(MariaTypes.longblob.nullable, unsaved.labelData)}, ${Fragment.encode(MariaTypes.text, unsaved.status)}, ${Fragment.encode(MariaTypes.date.nullable, unsaved.estimatedDeliveryDate)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.actualDeliveryAt)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.shippingCost)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, unsaved.insuranceAmount)}, ${Fragment.encode(WarehousesId.dbType.nullable, unsaved.originWarehouseId)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.shippedAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)})
     ON DUPLICATE KEY UPDATE `order_id` = VALUES(`order_id`),
     `carrier_id` = VALUES(`carrier_id`),
     `tracking_number` = VALUES(`tracking_number`),

@@ -8,127 +8,124 @@ package adventureworks.public.users
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.data.Unknown
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
+import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
 import dev.typr.foundations.dsl.SqlExpr.OptField
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr7
 import java.time.Instant
 import java.util.Optional
 
-trait UsersFields extends FieldsExpr0[UsersRow] {
-  def userId: IdField[UsersId, UsersRow]
+class UsersFields(val `_path`: java.util.List[Path]) extends TupleExpr7[UsersId, String, String, Unknown, String, Instant, Instant] with RelationStructure[UsersFields, UsersRow]  with FieldsBase[UsersRow] {
+  def userId: IdField[UsersId, UsersRow] = {
+    new IdField[UsersId, UsersRow](
+      _path,
+      "user_id",
+      _.userId,
+      Optional.empty(),
+      Optional.of("uuid"),
+      (row, value) => row.copy(userId = value),
+      UsersId.dbType
+    )
+  }
 
-  def name: Field[String, UsersRow]
+  def name: Field[String, UsersRow] = {
+    new Field[String, UsersRow](
+      _path,
+      "name",
+      _.name,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(name = value),
+      PgTypes.text
+    )
+  }
 
-  def lastName: OptField[String, UsersRow]
+  def lastName: OptField[String, UsersRow] = {
+    new OptField[String, UsersRow](
+      _path,
+      "last_name",
+      _.lastName,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(lastName = value),
+      PgTypes.text
+    )
+  }
 
-  def email: Field[Unknown, UsersRow]
+  def email: Field[Unknown, UsersRow] = {
+    new Field[Unknown, UsersRow](
+      _path,
+      "email",
+      _.email,
+      Optional.of("text"),
+      Optional.of("citext"),
+      (row, value) => row.copy(email = value),
+      PgTypes.unknown
+    )
+  }
 
-  def password: Field[String, UsersRow]
+  def password: Field[String, UsersRow] = {
+    new Field[String, UsersRow](
+      _path,
+      "password",
+      _.password,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(password = value),
+      PgTypes.text
+    )
+  }
 
-  def createdAt: Field[Instant, UsersRow]
+  def createdAt: Field[Instant, UsersRow] = {
+    new Field[Instant, UsersRow](
+      _path,
+      "created_at",
+      _.createdAt,
+      Optional.empty(),
+      Optional.of("timestamptz"),
+      (row, value) => row.copy(createdAt = value),
+      PgTypes.timestamptz
+    )
+  }
 
-  def verifiedOn: OptField[Instant, UsersRow]
+  def verifiedOn: OptField[Instant, UsersRow] = {
+    new OptField[Instant, UsersRow](
+      _path,
+      "verified_on",
+      _.verifiedOn,
+      Optional.empty(),
+      Optional.of("timestamptz"),
+      (row, value) => row.copy(verifiedOn = value),
+      PgTypes.timestamptz
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, UsersRow]]
+  override def columns: java.util.List[FieldLike[?, UsersRow]] = java.util.List.of(this.userId, this.name, this.lastName, this.email, this.password, this.createdAt, this.verifiedOn)
 
   override def rowParser: RowParser[UsersRow] = UsersRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[UsersFields, UsersRow] = new UsersFields(`_path`)
+
+  override def `_1`: SqlExpr[UsersId] = userId
+
+  override def `_2`: SqlExpr[String] = name
+
+  override def `_3`: SqlExpr[String] = lastName
+
+  override def `_4`: SqlExpr[Unknown] = email
+
+  override def `_5`: SqlExpr[String] = password
+
+  override def `_6`: SqlExpr[Instant] = createdAt
+
+  override def `_7`: SqlExpr[Instant] = verifiedOn
 }
 
 object UsersFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends UsersFields with RelationStructure[UsersFields, UsersRow] {
-
-    override def userId: IdField[UsersId, UsersRow] = {
-      new IdField[UsersId, UsersRow](
-        _path,
-        "user_id",
-        _.userId,
-        Optional.empty(),
-        Optional.of("uuid"),
-        (row, value) => row.copy(userId = value),
-        UsersId.pgType
-      )
-    }
-
-    override def name: Field[String, UsersRow] = {
-      new Field[String, UsersRow](
-        _path,
-        "name",
-        _.name,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(name = value),
-        PgTypes.text
-      )
-    }
-
-    override def lastName: OptField[String, UsersRow] = {
-      new OptField[String, UsersRow](
-        _path,
-        "last_name",
-        _.lastName,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(lastName = value),
-        PgTypes.text
-      )
-    }
-
-    override def email: Field[Unknown, UsersRow] = {
-      new Field[Unknown, UsersRow](
-        _path,
-        "email",
-        _.email,
-        Optional.of("text"),
-        Optional.of("citext"),
-        (row, value) => row.copy(email = value),
-        PgTypes.unknown
-      )
-    }
-
-    override def password: Field[String, UsersRow] = {
-      new Field[String, UsersRow](
-        _path,
-        "password",
-        _.password,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(password = value),
-        PgTypes.text
-      )
-    }
-
-    override def createdAt: Field[Instant, UsersRow] = {
-      new Field[Instant, UsersRow](
-        _path,
-        "created_at",
-        _.createdAt,
-        Optional.empty(),
-        Optional.of("timestamptz"),
-        (row, value) => row.copy(createdAt = value),
-        PgTypes.timestamptz
-      )
-    }
-
-    override def verifiedOn: OptField[Instant, UsersRow] = {
-      new OptField[Instant, UsersRow](
-        _path,
-        "verified_on",
-        _.verifiedOn,
-        Optional.empty(),
-        Optional.of("timestamptz"),
-        (row, value) => row.copy(verifiedOn = value),
-        PgTypes.timestamptz
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, UsersRow]] = java.util.List.of(this.userId, this.name, this.lastName, this.email, this.password, this.createdAt, this.verifiedOn)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[UsersFields, UsersRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: UsersFields = new UsersFields(java.util.Collections.emptyList())
 }

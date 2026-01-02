@@ -6,6 +6,7 @@
 package testdb.order_history
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
 import java.time.LocalDateTime
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
@@ -34,7 +35,7 @@ case class OrderHistoryRowUnsaved(
   /** Default: NULL
 
    */
-  metadata: Defaulted[Option[String]] = new UseDefault(),
+  metadata: Defaulted[Option[Json]] = new UseDefault(),
   /** Default: current_timestamp(6)
 
    */
@@ -44,7 +45,7 @@ case class OrderHistoryRowUnsaved(
     previousStatusDefault: => Option[String],
     changedByDefault: => Option[String],
     changeReasonDefault: => Option[String],
-    metadataDefault: => Option[String],
+    metadataDefault: => Option[Json],
     createdAtDefault: => LocalDateTime,
     historyIdDefault: => OrderHistoryId
   ): OrderHistoryRow = {

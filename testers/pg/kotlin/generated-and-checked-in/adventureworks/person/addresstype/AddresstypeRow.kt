@@ -9,6 +9,7 @@ import adventureworks.customtypes.Defaulted
 import adventureworks.public.Name
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import java.time.LocalDateTime
@@ -29,7 +30,15 @@ data class AddresstypeRow(
   val rowguid: UUID,
   /** Default: now() */
   val modifieddate: LocalDateTime
-) {
+) : Tuple4<AddresstypeId, Name, UUID, LocalDateTime> {
+  override fun _1(): AddresstypeId = addresstypeid
+
+  override fun _2(): Name = name
+
+  override fun _3(): UUID = rowguid
+
+  override fun _4(): LocalDateTime = modifieddate
+
   fun id(): AddresstypeId = addresstypeid
 
   fun toUnsavedRow(
@@ -39,7 +48,7 @@ data class AddresstypeRow(
   ): AddresstypeRowUnsaved = AddresstypeRowUnsaved(name, addresstypeid, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<AddresstypeRow> = RowParsers.of(AddresstypeId.pgType, Name.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3 -> AddresstypeRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.addresstypeid, row.name, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<AddresstypeRow> = RowParsers.of(AddresstypeId.dbType, Name.dbType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3 -> AddresstypeRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.addresstypeid, row.name, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<AddresstypeRow> =
       PgText.from(_rowParser.underlying)

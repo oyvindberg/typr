@@ -7,6 +7,7 @@ package testdb.customer_orders_view
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.Tuple.Tuple6
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -22,7 +23,19 @@ data class CustomerOrdersViewViewRow(
   @JsonProperty("order_id") val orderId: Int,
   @JsonProperty("order_date") val orderDate: LocalDateTime?,
   @JsonProperty("order_total") val orderTotal: BigDecimal
-) {
+) : Tuple6<Int, String, String, Int, LocalDateTime?, BigDecimal> {
+  override fun _1(): Int = customerId
+
+  override fun _2(): String = customerName
+
+  override fun _3(): String = customerEmail
+
+  override fun _4(): Int = orderId
+
+  override fun _5(): LocalDateTime? = orderDate
+
+  override fun _6(): BigDecimal = orderTotal
+
   companion object {
     val _rowParser: RowParser<CustomerOrdersViewViewRow> = RowParsers.of(KotlinDbTypes.SqlServerTypes.int_, SqlServerTypes.nvarchar, SqlServerTypes.nvarchar, KotlinDbTypes.SqlServerTypes.int_, SqlServerTypes.datetime2.nullable(), KotlinDbTypes.SqlServerTypes.money, { t0, t1, t2, t3, t4, t5 -> CustomerOrdersViewViewRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.customerId, row.customerName, row.customerEmail, row.orderId, row.orderDate, row.orderTotal) })
   }

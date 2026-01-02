@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple14;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -43,7 +44,22 @@ public record VOrderDetailsViewRow(
     /** Default: 'pending' Points to {@link testdb.shipments.ShipmentsRow#status()} */
     @JsonProperty("shipping_status") Optional<String> shippingStatus,
     /** Points to {@link testdb.shipping_carriers.ShippingCarriersRow#name()} */
-    @JsonProperty("carrier_name") Optional<String> carrierName) {
+    @JsonProperty("carrier_name") Optional<String> carrierName)
+    implements Tuple14<
+        OrdersId,
+        String,
+        String,
+        String,
+        BigDecimal,
+        String,
+        LocalDateTime,
+        String,
+        Optional<String>,
+        Long,
+        Optional<BigDecimal>,
+        Optional<String>,
+        Optional<String>,
+        Optional<String>> {
   /** Default: 0 Points to {@link testdb.orders.OrdersRow#orderId()} */
   public VOrderDetailsViewRow withOrderId(OrdersId orderId) {
     return new VOrderDetailsViewRow(
@@ -326,7 +342,7 @@ public record VOrderDetailsViewRow(
 
   public static RowParser<VOrderDetailsViewRow> _rowParser =
       RowParsers.of(
-          OrdersId.pgType,
+          OrdersId.dbType,
           MariaTypes.varchar,
           MariaTypes.text,
           MariaTypes.text,
@@ -358,5 +374,89 @@ public record VOrderDetailsViewRow(
                 row.shippingStatus(),
                 row.carrierName()
               });
+  ;
+
+  @Override
+  public OrdersId _1() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public Long _10() {
+    return itemCount;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _11() {
+    return totalQuantity;
+  }
+  ;
+
+  @Override
+  public Optional<String> _12() {
+    return trackingNumber;
+  }
+  ;
+
+  @Override
+  public Optional<String> _13() {
+    return shippingStatus;
+  }
+  ;
+
+  @Override
+  public Optional<String> _14() {
+    return carrierName;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return orderNumber;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return orderStatus;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return paymentStatus;
+  }
+  ;
+
+  @Override
+  public BigDecimal _5() {
+    return totalAmount;
+  }
+  ;
+
+  @Override
+  public String _6() {
+    return currencyCode;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _7() {
+    return orderedAt;
+  }
+  ;
+
+  @Override
+  public String _8() {
+    return customerEmail;
+  }
+  ;
+
+  @Override
+  public Optional<String> _9() {
+    return customerName;
+  }
   ;
 }

@@ -25,27 +25,25 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
   @Override
   public DeleteBuilder<MariatestSpatialNullFields, MariatestSpatialNullRow> delete() {
     return DeleteBuilder.of(
-        "`mariatest_spatial_null`", MariatestSpatialNullFields.structure(), Dialect.MARIADB);
+        "`mariatest_spatial_null`", MariatestSpatialNullFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(MariatestSpatialNullId id, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `mariatest_spatial_null` where `id` = "),
-                Fragment.encode(MariatestSpatialNullId.pgType, id),
+                Fragment.encode(MariatestSpatialNullId.dbType, id),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(MariatestSpatialNullId[] ids, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : ids) {
-      fragments.add(Fragment.encode(MariatestSpatialNullId.pgType, id));
+      fragments.add(Fragment.encode(MariatestSpatialNullId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -55,7 +53,6 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public MariatestSpatialNullRow insert(MariatestSpatialNullRow unsaved, Connection c) {
@@ -88,7 +85,6 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
         .updateReturning(MariatestSpatialNullRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public MariatestSpatialNullRow insert(MariatestSpatialNullRowUnsaved unsaved, Connection c) {
@@ -186,7 +182,7 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
         (columns.isEmpty()
             ? interpolate(
                 Fragment.lit(
-                    "insert into `mariatest_spatial_null` default values\n"
+                    "insert into `mariatest_spatial_null`() values ()\n"
                         + "RETURNING `id`, `geometry_col`, `point_col`, `linestring_col`,"
                         + " `polygon_col`, `multipoint_col`, `multilinestring_col`,"
                         + " `multipolygon_col`, `geometrycollection_col`\n"))
@@ -203,17 +199,15 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
     ;
     return q.updateReturning(MariatestSpatialNullRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<MariatestSpatialNullFields, MariatestSpatialNullRow> select() {
     return SelectBuilder.of(
         "`mariatest_spatial_null`",
-        MariatestSpatialNullFields.structure(),
+        MariatestSpatialNullFields.structure,
         MariatestSpatialNullRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<MariatestSpatialNullRow> selectAll(Connection c) {
@@ -226,7 +220,6 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
         .query(MariatestSpatialNullRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<MariatestSpatialNullRow> selectById(MariatestSpatialNullId id, Connection c) {
@@ -237,18 +230,17 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
                     + " `geometrycollection_col`\n"
                     + "from `mariatest_spatial_null`\n"
                     + "where `id` = "),
-            Fragment.encode(MariatestSpatialNullId.pgType, id),
+            Fragment.encode(MariatestSpatialNullId.dbType, id),
             Fragment.lit(""))
         .query(MariatestSpatialNullRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<MariatestSpatialNullRow> selectByIds(MariatestSpatialNullId[] ids, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : ids) {
-      fragments.add(Fragment.encode(MariatestSpatialNullId.pgType, id));
+      fragments.add(Fragment.encode(MariatestSpatialNullId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -261,7 +253,6 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
         .query(MariatestSpatialNullRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<MariatestSpatialNullId, MariatestSpatialNullRow> selectByIdsTracked(
@@ -271,17 +262,15 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
     selectByIds(ids, c).forEach(row -> ret.put(row.id(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<MariatestSpatialNullFields, MariatestSpatialNullRow> update() {
     return UpdateBuilder.of(
         "`mariatest_spatial_null`",
-        MariatestSpatialNullFields.structure(),
+        MariatestSpatialNullFields.structure,
         MariatestSpatialNullRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(MariatestSpatialNullRow row, Connection c) {
@@ -305,22 +294,23 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
                 Fragment.lit(",\n`geometrycollection_col` = "),
                 Fragment.encode(MariaTypes.geometrycollection.opt(), row.geometrycollectionCol()),
                 Fragment.lit("\nwhere `id` = "),
-                Fragment.encode(MariatestSpatialNullId.pgType, id),
+                Fragment.encode(MariatestSpatialNullId.dbType, id),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public MariatestSpatialNullRow upsert(MariatestSpatialNullRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `mariatest_spatial_null`(`geometry_col`, `point_col`,"
+                "INSERT INTO `mariatest_spatial_null`(`id`, `geometry_col`, `point_col`,"
                     + " `linestring_col`, `polygon_col`, `multipoint_col`, `multilinestring_col`,"
                     + " `multipolygon_col`, `geometrycollection_col`)\n"
                     + "VALUES ("),
+            Fragment.encode(MariatestSpatialNullId.dbType, unsaved.id()),
+            Fragment.lit(", "),
             Fragment.encode(MariaTypes.geometry.opt(), unsaved.geometryCol()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.point.opt(), unsaved.pointCol()),
@@ -352,7 +342,6 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
         .updateReturning(MariatestSpatialNullRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<MariatestSpatialNullRow> upsertBatch(
@@ -377,5 +366,4 @@ public class MariatestSpatialNullRepoImpl implements MariatestSpatialNullRepo {
         .updateReturningEach(MariatestSpatialNullRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

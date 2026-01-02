@@ -25,5 +25,4 @@ public class UpdatePersonSqlRepoImpl implements UpdatePersonSqlRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

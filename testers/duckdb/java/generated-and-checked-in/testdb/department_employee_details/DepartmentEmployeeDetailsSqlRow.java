@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple10;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -34,7 +35,18 @@ public record DepartmentEmployeeDetailsSqlRow(
     /** Points to {@link testdb.employees.EmployeesRow#hireDate()} */
     @JsonProperty("hire_date") Optional<LocalDate> hireDate,
     /** Points to {@link testdb.employees.EmployeesRow#hireDate()} */
-    @JsonProperty("years_of_service") Optional<Integer> yearsOfService) {
+    @JsonProperty("years_of_service") Optional<Integer> yearsOfService)
+    implements Tuple10<
+        String,
+        String,
+        String,
+        Optional<BigDecimal>,
+        Optional<Integer>,
+        Optional<String>,
+        Optional<String>,
+        Optional<BigDecimal>,
+        Optional<LocalDate>,
+        Optional<Integer>> {
   /** Points to {@link testdb.departments.DepartmentsRow#deptCode()} */
   public DepartmentEmployeeDetailsSqlRow withDeptCode(String deptCode) {
     return new DepartmentEmployeeDetailsSqlRow(
@@ -221,5 +233,65 @@ public record DepartmentEmployeeDetailsSqlRow(
                 row.hireDate(),
                 row.yearsOfService()
               });
+  ;
+
+  @Override
+  public String _1() {
+    return deptCode;
+  }
+  ;
+
+  @Override
+  public Optional<Integer> _10() {
+    return yearsOfService;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return deptRegion;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return deptName;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _4() {
+    return budget;
+  }
+  ;
+
+  @Override
+  public Optional<Integer> _5() {
+    return empNumber;
+  }
+  ;
+
+  @Override
+  public Optional<String> _6() {
+    return empSuffix;
+  }
+  ;
+
+  @Override
+  public Optional<String> _7() {
+    return empName;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _8() {
+    return salary;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDate> _9() {
+    return hireDate;
+  }
   ;
 }

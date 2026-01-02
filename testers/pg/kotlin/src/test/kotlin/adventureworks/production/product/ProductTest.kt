@@ -83,7 +83,7 @@ class ProductTest {
 
             // Test orderBy
             val ordered = productRepo.select()
-                .where { f -> f.productid().`in`(arrayOf(product1.productid, product2.productid), ProductId.pgType) }
+                .where { f -> f.productid().among(product1.productid, product2.productid) }
                 .orderBy { f -> f.listprice().desc() }
                 .toList(c)
 

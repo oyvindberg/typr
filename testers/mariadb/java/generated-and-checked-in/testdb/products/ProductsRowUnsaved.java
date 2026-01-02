@@ -6,6 +6,7 @@
 package testdb.products;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.typr.foundations.data.Json;
 import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -33,7 +34,7 @@ public record ProductsRowUnsaved(
     /** Default: NULL */
     @JsonProperty("weight_kg") Defaulted<Optional<BigDecimal>> weightKg,
     /** Default: NULL length, width, height in cm */
-    @JsonProperty("dimensions_json") Defaulted<Optional<String>> dimensionsJson,
+    @JsonProperty("dimensions_json") Defaulted<Optional<Json>> dimensionsJson,
     /** Default: 'draft' */
     Defaulted<String> status,
     /** Default: 'standard' */
@@ -41,9 +42,9 @@ public record ProductsRowUnsaved(
     /** Default: NULL */
     Defaulted<Optional<MariaSet>> tags,
     /** Default: NULL */
-    Defaulted<Optional<String>> attributes,
+    Defaulted<Optional<Json>> attributes,
     /** Default: NULL */
-    @JsonProperty("seo_metadata") Defaulted<Optional<String>> seoMetadata,
+    @JsonProperty("seo_metadata") Defaulted<Optional<Json>> seoMetadata,
     /** Default: current_timestamp(6) */
     @JsonProperty("created_at") Defaulted<LocalDateTime> createdAt,
     /** Default: current_timestamp(6) */
@@ -263,7 +264,7 @@ public record ProductsRowUnsaved(
   ;
 
   /** Default: NULL length, width, height in cm */
-  public ProductsRowUnsaved withDimensionsJson(Defaulted<Optional<String>> dimensionsJson) {
+  public ProductsRowUnsaved withDimensionsJson(Defaulted<Optional<Json>> dimensionsJson) {
     return new ProductsRowUnsaved(
         sku,
         name,
@@ -355,7 +356,7 @@ public record ProductsRowUnsaved(
   ;
 
   /** Default: NULL */
-  public ProductsRowUnsaved withAttributes(Defaulted<Optional<String>> attributes) {
+  public ProductsRowUnsaved withAttributes(Defaulted<Optional<Json>> attributes) {
     return new ProductsRowUnsaved(
         sku,
         name,
@@ -378,7 +379,7 @@ public record ProductsRowUnsaved(
   ;
 
   /** Default: NULL */
-  public ProductsRowUnsaved withSeoMetadata(Defaulted<Optional<String>> seoMetadata) {
+  public ProductsRowUnsaved withSeoMetadata(Defaulted<Optional<Json>> seoMetadata) {
     return new ProductsRowUnsaved(
         sku,
         name,
@@ -475,12 +476,12 @@ public record ProductsRowUnsaved(
       java.util.function.Supplier<Optional<String>> fullDescriptionDefault,
       java.util.function.Supplier<Optional<BigDecimal>> costPriceDefault,
       java.util.function.Supplier<Optional<BigDecimal>> weightKgDefault,
-      java.util.function.Supplier<Optional<String>> dimensionsJsonDefault,
+      java.util.function.Supplier<Optional<Json>> dimensionsJsonDefault,
       java.util.function.Supplier<String> statusDefault,
       java.util.function.Supplier<String> taxClassDefault,
       java.util.function.Supplier<Optional<MariaSet>> tagsDefault,
-      java.util.function.Supplier<Optional<String>> attributesDefault,
-      java.util.function.Supplier<Optional<String>> seoMetadataDefault,
+      java.util.function.Supplier<Optional<Json>> attributesDefault,
+      java.util.function.Supplier<Optional<Json>> seoMetadataDefault,
       java.util.function.Supplier<LocalDateTime> createdAtDefault,
       java.util.function.Supplier<LocalDateTime> updatedAtDefault,
       java.util.function.Supplier<Optional<LocalDateTime>> publishedAtDefault,

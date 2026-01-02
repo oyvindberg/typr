@@ -18,11 +18,10 @@ public class VemployeeViewRepoImpl implements VemployeeViewRepo {
   public SelectBuilder<VemployeeViewFields, VemployeeViewRow> select() {
     return SelectBuilder.of(
         "\"humanresources\".\"vemployee\"",
-        VemployeeViewFields.structure(),
+        VemployeeViewFields.structure,
         VemployeeViewRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<VemployeeViewRow> selectAll(Connection c) {
@@ -37,5 +36,4 @@ public class VemployeeViewRepoImpl implements VemployeeViewRepo {
         .query(VemployeeViewRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

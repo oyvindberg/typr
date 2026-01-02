@@ -6,6 +6,7 @@
 package testdb.audit_log
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.Inet6
 import java.time.LocalDateTime
 import testdb.customtypes.Defaulted
@@ -22,11 +23,11 @@ data class AuditLogRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("old_values") val oldValues: Defaulted<String?> = UseDefault(),
+  @JsonProperty("old_values") val oldValues: Defaulted<Json?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("new_values") val newValues: Defaulted<String?> = UseDefault(),
+  @JsonProperty("new_values") val newValues: Defaulted<Json?> = UseDefault(),
   /** Default: NULL
 
     */
@@ -45,8 +46,8 @@ data class AuditLogRowUnsaved(
   @JsonProperty("session_id") val sessionId: Defaulted<ByteArray?> = UseDefault()
 ) {
   fun toRow(
-    oldValuesDefault: () -> String?,
-    newValuesDefault: () -> String?,
+    oldValuesDefault: () -> Json?,
+    newValuesDefault: () -> Json?,
     changedByDefault: () -> String?,
     changedAtDefault: () -> LocalDateTime,
     clientIpDefault: () -> Inet6?,

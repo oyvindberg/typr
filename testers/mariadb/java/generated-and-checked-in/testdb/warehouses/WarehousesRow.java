@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple10;
 import java.util.Optional;
 import org.mariadb.jdbc.type.Point;
 import org.mariadb.jdbc.type.Polygon;
@@ -35,7 +36,18 @@ public record WarehousesRow(
     /** Default: NULL */
     @JsonProperty("contact_email") Optional<String> contactEmail,
     /** Default: NULL */
-    @JsonProperty("contact_phone") Optional<String> contactPhone) {
+    @JsonProperty("contact_phone") Optional<String> contactPhone)
+    implements Tuple10<
+        WarehousesId,
+        String,
+        String,
+        String,
+        Point,
+        Optional<Polygon>,
+        String,
+        Boolean,
+        Optional<String>,
+        Optional<String>> {
   /** AUTO_INCREMENT */
   public WarehousesRow withWarehouseId(WarehousesId warehouseId) {
     return new WarehousesRow(
@@ -198,7 +210,7 @@ public record WarehousesRow(
 
   public static RowParser<WarehousesRow> _rowParser =
       RowParsers.of(
-          WarehousesId.pgType,
+          WarehousesId.dbType,
           MariaTypes.char_,
           MariaTypes.varchar,
           MariaTypes.varchar,
@@ -222,6 +234,66 @@ public record WarehousesRow(
                 row.contactEmail(),
                 row.contactPhone()
               });
+  ;
+
+  @Override
+  public WarehousesId _1() {
+    return warehouseId;
+  }
+  ;
+
+  @Override
+  public Optional<String> _10() {
+    return contactPhone;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return code;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return name;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return address;
+  }
+  ;
+
+  @Override
+  public Point _5() {
+    return location;
+  }
+  ;
+
+  @Override
+  public Optional<Polygon> _6() {
+    return serviceArea;
+  }
+  ;
+
+  @Override
+  public String _7() {
+    return timezone;
+  }
+  ;
+
+  @Override
+  public Boolean _8() {
+    return isActive;
+  }
+  ;
+
+  @Override
+  public Optional<String> _9() {
+    return contactEmail;
+  }
   ;
 
   public WarehousesId id() {

@@ -1,8 +1,8 @@
 package dev.typr.foundations.scala
 
-import _root_.scala.jdk.CollectionConverters.*
 import java.sql.PreparedStatement
 import java.util.concurrent.atomic.AtomicInteger
+import _root_.scala.jdk.CollectionConverters.*
 
 /** Scala wrapper for dev.typr.foundations.Fragment with Scala-native APIs.
   *
@@ -113,12 +113,6 @@ object Fragment {
 
   def concat(fragments: Fragment*): Fragment =
     new Fragment(dev.typr.foundations.Fragment.concat(fragments.map(_.underlying)*))
-
-  def in[T <: Object](column: String, values: Array[T], dbType: dev.typr.foundations.DbType[T]): Fragment =
-    new Fragment(dev.typr.foundations.Fragment.in(column, values, dbType))
-
-  def compositeIn(columns: Array[String], tuples: List[Array[Object]], types: Array[dev.typr.foundations.DbType[?]]): Fragment =
-    new Fragment(dev.typr.foundations.Fragment.compositeIn(columns, tuples.asJava, types))
 
   /** Scala string interpolator for creating SQL Fragments.
     *

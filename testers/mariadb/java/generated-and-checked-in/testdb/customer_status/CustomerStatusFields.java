@@ -7,88 +7,94 @@ package testdb.customer_status;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr3;
 import java.util.List;
 import java.util.Optional;
 
-public interface CustomerStatusFields extends FieldsExpr<CustomerStatusRow> {
-  record Impl(List<Path> _path)
-      implements CustomerStatusFields, RelationStructure<CustomerStatusFields, CustomerStatusRow> {
-    @Override
-    public IdField<CustomerStatusId, CustomerStatusRow> statusCode() {
-      return new IdField<CustomerStatusId, CustomerStatusRow>(
-          _path,
-          "status_code",
-          CustomerStatusRow::statusCode,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withStatusCode(value),
-          CustomerStatusId.pgType);
-    }
-    ;
+public class CustomerStatusFields extends TupleExpr3<CustomerStatusId, String, Boolean>
+    implements RelationStructure<CustomerStatusFields, CustomerStatusRow>,
+        FieldsBase<CustomerStatusRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, CustomerStatusRow> description() {
-      return new Field<String, CustomerStatusRow>(
-          _path,
-          "description",
-          CustomerStatusRow::description,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDescription(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<Boolean, CustomerStatusRow> isActive() {
-      return new Field<Boolean, CustomerStatusRow>(
-          _path,
-          "is_active",
-          CustomerStatusRow::isActive,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withIsActive(value),
-          MariaTypes.bool);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, CustomerStatusRow>> columns() {
-      return java.util.List.of(this.statusCode(), this.description(), this.isActive());
-    }
-    ;
-
-    @Override
-    public RelationStructure<CustomerStatusFields, CustomerStatusRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public CustomerStatusFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static CustomerStatusFields structure =
+      new CustomerStatusFields(java.util.Collections.emptyList());
+
+  public IdField<CustomerStatusId, CustomerStatusRow> statusCode() {
+    return new IdField<CustomerStatusId, CustomerStatusRow>(
+        _path,
+        "status_code",
+        CustomerStatusRow::statusCode,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withStatusCode(value),
+        CustomerStatusId.dbType);
   }
-  ;
 
-  IdField<CustomerStatusId, CustomerStatusRow> statusCode();
+  public Field<String, CustomerStatusRow> description() {
+    return new Field<String, CustomerStatusRow>(
+        _path,
+        "description",
+        CustomerStatusRow::description,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDescription(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, CustomerStatusRow> description();
-
-  Field<Boolean, CustomerStatusRow> isActive();
+  public Field<Boolean, CustomerStatusRow> isActive() {
+    return new Field<Boolean, CustomerStatusRow>(
+        _path,
+        "is_active",
+        CustomerStatusRow::isActive,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withIsActive(value),
+        MariaTypes.bool);
+  }
 
   @Override
-  List<FieldLike<?, CustomerStatusRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<CustomerStatusRow> rowParser() {
+  public List<FieldLike<?, CustomerStatusRow>> columns() {
+    return java.util.List.of(this.statusCode(), this.description(), this.isActive());
+  }
+
+  @Override
+  public RowParser<CustomerStatusRow> rowParser() {
     return CustomerStatusRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<CustomerStatusFields, CustomerStatusRow> withPaths(List<Path> _path) {
+    return new CustomerStatusFields(_path);
+  }
+
+  @Override
+  public SqlExpr<CustomerStatusId> _1() {
+    return statusCode();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return description();
+  }
+
+  @Override
+  public SqlExpr<Boolean> _3() {
+    return isActive();
+  }
 }

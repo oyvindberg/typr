@@ -8,6 +8,7 @@ package adventureworks.public.only_pk_columns
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -18,10 +19,14 @@ import dev.typr.foundations.scala.ScalaDbTypes
 case class OnlyPkColumnsRow(
   @JsonProperty("key_column_1") keyColumn1: String,
   @JsonProperty("key_column_2") keyColumn2: Int
-) {
+) extends Tuple2[String, Int] {
   def compositeId: OnlyPkColumnsId = new OnlyPkColumnsId(keyColumn1, keyColumn2)
 
   def id: OnlyPkColumnsId = this.compositeId
+
+  override def `_1`: String = keyColumn1
+
+  override def `_2`: Int = keyColumn2
 }
 
 object OnlyPkColumnsRow {

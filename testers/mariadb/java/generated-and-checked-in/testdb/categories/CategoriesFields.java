@@ -7,195 +7,208 @@ package testdb.categories;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.data.Json;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr9;
 import java.util.List;
 import java.util.Optional;
 
-public interface CategoriesFields extends FieldsExpr<CategoriesRow> {
-  record Impl(List<Path> _path)
-      implements CategoriesFields, RelationStructure<CategoriesFields, CategoriesRow> {
-    @Override
-    public IdField<CategoriesId, CategoriesRow> categoryId() {
-      return new IdField<CategoriesId, CategoriesRow>(
-          _path,
-          "category_id",
-          CategoriesRow::categoryId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCategoryId(value),
-          CategoriesId.pgType);
-    }
-    ;
+public class CategoriesFields
+    extends TupleExpr9<
+        CategoriesId, CategoriesId, String, String, String, String, Short, Boolean, Json>
+    implements RelationStructure<CategoriesFields, CategoriesRow>, FieldsBase<CategoriesRow> {
+  List<Path> _path;
 
-    @Override
-    public OptField<CategoriesId, CategoriesRow> parentId() {
-      return new OptField<CategoriesId, CategoriesRow>(
-          _path,
-          "parent_id",
-          CategoriesRow::parentId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withParentId(value),
-          CategoriesId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<String, CategoriesRow> name() {
-      return new Field<String, CategoriesRow>(
-          _path,
-          "name",
-          CategoriesRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, CategoriesRow> slug() {
-      return new Field<String, CategoriesRow>(
-          _path,
-          "slug",
-          CategoriesRow::slug,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withSlug(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, CategoriesRow> description() {
-      return new OptField<String, CategoriesRow>(
-          _path,
-          "description",
-          CategoriesRow::description,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDescription(value),
-          MariaTypes.mediumtext);
-    }
-    ;
-
-    @Override
-    public OptField<String, CategoriesRow> imageUrl() {
-      return new OptField<String, CategoriesRow>(
-          _path,
-          "image_url",
-          CategoriesRow::imageUrl,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withImageUrl(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<Short, CategoriesRow> sortOrder() {
-      return new Field<Short, CategoriesRow>(
-          _path,
-          "sort_order",
-          CategoriesRow::sortOrder,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withSortOrder(value),
-          MariaTypes.smallint);
-    }
-    ;
-
-    @Override
-    public Field<Boolean, CategoriesRow> isVisible() {
-      return new Field<Boolean, CategoriesRow>(
-          _path,
-          "is_visible",
-          CategoriesRow::isVisible,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withIsVisible(value),
-          MariaTypes.bool);
-    }
-    ;
-
-    @Override
-    public OptField<String, CategoriesRow> metadata() {
-      return new OptField<String, CategoriesRow>(
-          _path,
-          "metadata",
-          CategoriesRow::metadata,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withMetadata(value),
-          MariaTypes.longtext);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, CategoriesRow>> columns() {
-      return java.util.List.of(
-          this.categoryId(),
-          this.parentId(),
-          this.name(),
-          this.slug(),
-          this.description(),
-          this.imageUrl(),
-          this.sortOrder(),
-          this.isVisible(),
-          this.metadata());
-    }
-    ;
-
-    @Override
-    public RelationStructure<CategoriesFields, CategoriesRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public CategoriesFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static CategoriesFields structure =
+      new CategoriesFields(java.util.Collections.emptyList());
+
+  public IdField<CategoriesId, CategoriesRow> categoryId() {
+    return new IdField<CategoriesId, CategoriesRow>(
+        _path,
+        "category_id",
+        CategoriesRow::categoryId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCategoryId(value),
+        CategoriesId.dbType);
   }
-  ;
 
-  IdField<CategoriesId, CategoriesRow> categoryId();
+  public OptField<CategoriesId, CategoriesRow> parentId() {
+    return new OptField<CategoriesId, CategoriesRow>(
+        _path,
+        "parent_id",
+        CategoriesRow::parentId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withParentId(value),
+        CategoriesId.dbType);
+  }
 
-  OptField<CategoriesId, CategoriesRow> parentId();
+  public Field<String, CategoriesRow> name() {
+    return new Field<String, CategoriesRow>(
+        _path,
+        "name",
+        CategoriesRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, CategoriesRow> name();
+  public Field<String, CategoriesRow> slug() {
+    return new Field<String, CategoriesRow>(
+        _path,
+        "slug",
+        CategoriesRow::slug,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withSlug(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, CategoriesRow> slug();
+  public OptField<String, CategoriesRow> description() {
+    return new OptField<String, CategoriesRow>(
+        _path,
+        "description",
+        CategoriesRow::description,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDescription(value),
+        MariaTypes.mediumtext);
+  }
 
-  OptField<String, CategoriesRow> description();
+  public OptField<String, CategoriesRow> imageUrl() {
+    return new OptField<String, CategoriesRow>(
+        _path,
+        "image_url",
+        CategoriesRow::imageUrl,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withImageUrl(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, CategoriesRow> imageUrl();
+  public Field<Short, CategoriesRow> sortOrder() {
+    return new Field<Short, CategoriesRow>(
+        _path,
+        "sort_order",
+        CategoriesRow::sortOrder,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withSortOrder(value),
+        MariaTypes.smallint);
+  }
 
-  Field<Short, CategoriesRow> sortOrder();
+  public Field<Boolean, CategoriesRow> isVisible() {
+    return new Field<Boolean, CategoriesRow>(
+        _path,
+        "is_visible",
+        CategoriesRow::isVisible,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withIsVisible(value),
+        MariaTypes.bool);
+  }
 
-  Field<Boolean, CategoriesRow> isVisible();
+  public OptField<Json, CategoriesRow> metadata() {
+    return new OptField<Json, CategoriesRow>(
+        _path,
+        "metadata",
+        CategoriesRow::metadata,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withMetadata(value),
+        MariaTypes.json);
+  }
 
-  OptField<String, CategoriesRow> metadata();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<CategoriesFields, CategoriesRow> fkCategories() {
+  public ForeignKey<CategoriesFields, CategoriesRow> fkCategories() {
     return ForeignKey.<CategoriesFields, CategoriesRow>of("fk_category_parent")
         .<CategoriesId>withColumnPair(parentId(), CategoriesFields::categoryId);
   }
-  ;
 
   @Override
-  List<FieldLike<?, CategoriesRow>> columns();
+  public List<FieldLike<?, CategoriesRow>> columns() {
+    return java.util.List.of(
+        this.categoryId(),
+        this.parentId(),
+        this.name(),
+        this.slug(),
+        this.description(),
+        this.imageUrl(),
+        this.sortOrder(),
+        this.isVisible(),
+        this.metadata());
+  }
 
   @Override
-  default RowParser<CategoriesRow> rowParser() {
+  public RowParser<CategoriesRow> rowParser() {
     return CategoriesRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<CategoriesFields, CategoriesRow> withPaths(List<Path> _path) {
+    return new CategoriesFields(_path);
+  }
+
+  @Override
+  public SqlExpr<CategoriesId> _1() {
+    return categoryId();
+  }
+
+  @Override
+  public SqlExpr<CategoriesId> _2() {
+    return parentId();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return slug();
+  }
+
+  @Override
+  public SqlExpr<String> _5() {
+    return description();
+  }
+
+  @Override
+  public SqlExpr<String> _6() {
+    return imageUrl();
+  }
+
+  @Override
+  public SqlExpr<Short> _7() {
+    return sortOrder();
+  }
+
+  @Override
+  public SqlExpr<Boolean> _8() {
+    return isVisible();
+  }
+
+  @Override
+  public SqlExpr<Json> _9() {
+    return metadata();
+  }
 }

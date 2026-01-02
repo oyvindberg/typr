@@ -5,7 +5,6 @@
  */
 package oracledb
 
-import dev.typr.foundations.data.Json
 import dev.typr.foundations.internal.RandomHelper
 import java.sql.Connection
 import java.time.LocalDate
@@ -24,6 +23,7 @@ import oracledb.customers.CustomersId
 import oracledb.customers.CustomersRepoImpl
 import oracledb.customers.CustomersRowUnsaved
 import oracledb.customtypes.Defaulted
+import oracledb.customtypes.Defaulted.UseDefault
 import oracledb.departments.DepartmentsId
 import oracledb.departments.DepartmentsRepoImpl
 import oracledb.departments.DepartmentsRow
@@ -33,20 +33,17 @@ import oracledb.employees.EmployeesRowUnsaved
 import oracledb.products.ProductsId
 import oracledb.products.ProductsRepoImpl
 import oracledb.products.ProductsRowUnsaved
-import oracledb.test_genkeys_1766794419639.TestGenkeys1766794419639RepoImpl
-import oracledb.test_genkeys_1766794419639.TestGenkeys1766794419639Row
-import oracledb.test_genkeys_1766794419639.TestGenkeys1766794419639RowUnsaved
 
 /** Methods to generate random data for `Ident(TestInsert)` */
 case class TestInsert(random: Random) {
   def AllScalarTypes(
-    colVarchar2: Optional[String] = if (random.nextBoolean()) Optional.empty() else Optional.of(RandomHelper.alphanumeric(random, 20)),
-    colNumber: Optional[java.math.BigDecimal] = if (random.nextBoolean()) Optional.empty() else Optional.of(java.math.BigDecimal.valueOf(random.nextDouble())),
-    colDate: Optional[LocalDateTime] = if (random.nextBoolean()) Optional.empty() else Optional.of(LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong))),
-    colTimestamp: Optional[LocalDateTime] = if (random.nextBoolean()) Optional.empty() else Optional.of(LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong))),
-    colClob: Optional[String] = if (random.nextBoolean()) Optional.empty() else Optional.of(RandomHelper.alphanumeric(random, 20)),
+    colVarchar2: Optional[String] = (if (random.nextBoolean()) Optional.empty() else Optional.of(RandomHelper.alphanumeric(random, 20))),
+    colNumber: Optional[java.math.BigDecimal] = (if (random.nextBoolean()) Optional.empty() else Optional.of(java.math.BigDecimal.valueOf(random.nextDouble()))),
+    colDate: Optional[LocalDateTime] = (if (random.nextBoolean()) Optional.empty() else Optional.of(LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)))),
+    colTimestamp: Optional[LocalDateTime] = (if (random.nextBoolean()) Optional.empty() else Optional.of(LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)))),
+    colClob: Optional[String] = (if (random.nextBoolean()) Optional.empty() else Optional.of(RandomHelper.alphanumeric(random, 20))),
     colNotNull: String = RandomHelper.alphanumeric(random, 20),
-    id: Defaulted[AllScalarTypesId] = Defaulted.UseDefault()
+    id: Defaulted[AllScalarTypesId] = new UseDefault()
   )(using c: Connection): AllScalarTypesRow = {
     (new AllScalarTypesRepoImpl()).insert(new AllScalarTypesRowUnsaved(
       colVarchar2 = colVarchar2,
@@ -63,7 +60,7 @@ case class TestInsert(random: Random) {
     name: String = RandomHelper.alphanumeric(random, 20),
     emails: Optional[EmailTableT] = Optional.empty(),
     tags: Optional[TagVarrayT] = Optional.empty(),
-    contactId: Defaulted[ContactsId] = Defaulted.UseDefault()
+    contactId: Defaulted[ContactsId] = new UseDefault()
   )(using c: Connection): ContactsId = {
     (new ContactsRepoImpl()).insert(new ContactsRowUnsaved(
       name = name,
@@ -77,8 +74,8 @@ case class TestInsert(random: Random) {
     billingAddress: AddressT,
     name: String = RandomHelper.alphanumeric(random, 20),
     creditLimit: Optional[MoneyT] = Optional.empty(),
-    customerId: Defaulted[CustomersId] = Defaulted.UseDefault(),
-    createdAt: Defaulted[LocalDateTime] = Defaulted.UseDefault()
+    customerId: Defaulted[CustomersId] = new UseDefault(),
+    createdAt: Defaulted[LocalDateTime] = new UseDefault()
   )(using c: Connection): CustomersId = {
     (new CustomersRepoImpl()).insert(new CustomersRowUnsaved(
       name = name,
@@ -109,7 +106,7 @@ case class TestInsert(random: Random) {
     empSuffix: String = RandomHelper.alphanumeric(random, 20),
     empName: String = RandomHelper.alphanumeric(random, 20),
     salary: Optional[MoneyT] = Optional.empty(),
-    hireDate: Defaulted[LocalDateTime] = Defaulted.UseDefault()
+    hireDate: Defaulted[LocalDateTime] = new UseDefault()
   )(using c: Connection): EmployeesId = {
     (new EmployeesRepoImpl()).insert(new EmployeesRowUnsaved(
       empNumber = empNumber,
@@ -127,7 +124,7 @@ case class TestInsert(random: Random) {
     sku: String = RandomHelper.alphanumeric(random, 20),
     name: String = RandomHelper.alphanumeric(random, 20),
     tags: Optional[TagVarrayT] = Optional.empty(),
-    productId: Defaulted[ProductsId] = Defaulted.UseDefault()
+    productId: Defaulted[ProductsId] = new UseDefault()
   )(using c: Connection): ProductsId = {
     (new ProductsRepoImpl()).insert(new ProductsRowUnsaved(
       sku = sku,
@@ -137,9 +134,4 @@ case class TestInsert(random: Random) {
       productId = productId
     ))(using c)
   }
-
-  def TestGenkeys1766794419639(
-    v: Optional[Json] = if (random.nextBoolean()) Optional.empty() else Optional.of(Json("{}")),
-    id: Defaulted[java.math.BigDecimal] = Defaulted.UseDefault()
-  )(using c: Connection): TestGenkeys1766794419639Row = (new TestGenkeys1766794419639RepoImpl()).insert(new TestGenkeys1766794419639RowUnsaved(v = v, id = id))(using c)
 }

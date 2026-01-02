@@ -43,6 +43,8 @@ object KotlinDbTypes {
             { it }
         )
 
+        val oid: PgType<dev.typr.foundations.data.Oid> = dev.typr.foundations.PgTypes.oid
+
         // Collections - convert Java collections to Kotlin collections
         val hstore: PgType<Map<String, String>> = dev.typr.foundations.PgTypes.hstore.bimap(
             SqlFunction { javaMap -> javaMap.toMap() },
@@ -69,24 +71,6 @@ object KotlinDbTypes {
             { it }
         )
         val bigint: MariaType<Long> = dev.typr.foundations.MariaTypes.bigint.bimap(
-            SqlFunction { it },
-            { it }
-        )
-
-        // Unsigned integers
-        val tinyintUnsigned: MariaType<Short> = dev.typr.foundations.MariaTypes.tinyintUnsigned.bimap(
-            SqlFunction { it },
-            { it }
-        )
-        val smallintUnsigned: MariaType<Int> = dev.typr.foundations.MariaTypes.smallintUnsigned.bimap(
-            SqlFunction { it },
-            { it }
-        )
-        val mediumintUnsigned: MariaType<Int> = dev.typr.foundations.MariaTypes.mediumintUnsigned.bimap(
-            SqlFunction { it },
-            { it }
-        )
-        val intUnsigned: MariaType<Long> = dev.typr.foundations.MariaTypes.intUnsigned.bimap(
             SqlFunction { it },
             { it }
         )
@@ -130,20 +114,6 @@ object KotlinDbTypes {
             { it }
         )
         val bigint: DuckDbType<Long> = dev.typr.foundations.DuckDbTypes.bigint.bimap(
-            SqlFunction { it },
-            { it }
-        )
-
-        // Unsigned integers
-        val utinyint: DuckDbType<Short> = dev.typr.foundations.DuckDbTypes.utinyint.bimap(
-            SqlFunction { it },
-            { it }
-        )
-        val usmallint: DuckDbType<Int> = dev.typr.foundations.DuckDbTypes.usmallint.bimap(
-            SqlFunction { it },
-            { it }
-        )
-        val uinteger: DuckDbType<Long> = dev.typr.foundations.DuckDbTypes.uinteger.bimap(
             SqlFunction { it },
             { it }
         )
@@ -202,10 +172,6 @@ object KotlinDbTypes {
 
     object SqlServerTypes {
         // Primitives - convert Java boxed types to Kotlin native types
-        val tinyint: SqlServerType<Short> = dev.typr.foundations.SqlServerTypes.tinyint.bimap(
-            SqlFunction { it },
-            { it }
-        )
         val smallint: SqlServerType<Short> = dev.typr.foundations.SqlServerTypes.smallint.bimap(
             SqlFunction { it },
             { it }

@@ -6,6 +6,7 @@
 package testdb.payment_methods;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.typr.foundations.data.Json;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
 import testdb.customtypes.Defaulted.UseDefault;
@@ -19,7 +20,7 @@ public record PaymentMethodsRowUnsaved(
     /** */
     @JsonProperty("method_type") String methodType,
     /** Default: NULL */
-    @JsonProperty("processor_config") Defaulted<Optional<String>> processorConfig,
+    @JsonProperty("processor_config") Defaulted<Optional<Json>> processorConfig,
     /** Default: 1 */
     @JsonProperty("is_active") Defaulted<Boolean> isActive,
     /** Default: 0 */
@@ -57,7 +58,7 @@ public record PaymentMethodsRowUnsaved(
   ;
 
   /** Default: NULL */
-  public PaymentMethodsRowUnsaved withProcessorConfig(Defaulted<Optional<String>> processorConfig) {
+  public PaymentMethodsRowUnsaved withProcessorConfig(Defaulted<Optional<Json>> processorConfig) {
     return new PaymentMethodsRowUnsaved(
         code, name, methodType, processorConfig, isActive, sortOrder);
   }
@@ -78,7 +79,7 @@ public record PaymentMethodsRowUnsaved(
   ;
 
   public PaymentMethodsRow toRow(
-      java.util.function.Supplier<Optional<String>> processorConfigDefault,
+      java.util.function.Supplier<Optional<Json>> processorConfigDefault,
       java.util.function.Supplier<Boolean> isActiveDefault,
       java.util.function.Supplier<Byte> sortOrderDefault,
       java.util.function.Supplier<PaymentMethodsId> methodIdDefault) {

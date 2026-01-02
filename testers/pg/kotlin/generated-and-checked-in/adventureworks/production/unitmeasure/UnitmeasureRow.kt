@@ -9,6 +9,7 @@ import adventureworks.customtypes.Defaulted
 import adventureworks.public.Name
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple3
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import java.time.LocalDateTime
@@ -24,13 +25,19 @@ data class UnitmeasureRow(
   val name: Name,
   /** Default: now() */
   val modifieddate: LocalDateTime
-) {
+) : Tuple3<UnitmeasureId, Name, LocalDateTime> {
+  override fun _1(): UnitmeasureId = unitmeasurecode
+
+  override fun _2(): Name = name
+
+  override fun _3(): LocalDateTime = modifieddate
+
   fun id(): UnitmeasureId = unitmeasurecode
 
   fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime> = Defaulted.Provided(this.modifieddate)): UnitmeasureRowUnsaved = UnitmeasureRowUnsaved(unitmeasurecode, name, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<UnitmeasureRow> = RowParsers.of(UnitmeasureId.pgType, Name.pgType, PgTypes.timestamp, { t0, t1, t2 -> UnitmeasureRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.unitmeasurecode, row.name, row.modifieddate) })
+    val _rowParser: RowParser<UnitmeasureRow> = RowParsers.of(UnitmeasureId.dbType, Name.dbType, PgTypes.timestamp, { t0, t1, t2 -> UnitmeasureRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.unitmeasurecode, row.name, row.modifieddate) })
 
     val pgText: PgText<UnitmeasureRow> =
       PgText.from(_rowParser.underlying)

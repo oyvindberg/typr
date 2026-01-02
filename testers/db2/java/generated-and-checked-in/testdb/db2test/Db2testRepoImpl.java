@@ -24,27 +24,25 @@ import java.util.Optional;
 public class Db2testRepoImpl implements Db2testRepo {
   @Override
   public DeleteBuilder<Db2testFields, Db2testRow> delete() {
-    return DeleteBuilder.of("\"DB2TEST\"", Db2testFields.structure(), Dialect.DB2);
+    return DeleteBuilder.of("\"DB2TEST\"", Db2testFields.structure, Dialect.DB2);
   }
-  ;
 
   @Override
   public Boolean deleteById(Db2testId intCol, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"DB2TEST\" where \"INT_COL\" = "),
-                Fragment.encode(Db2testId.pgType, intCol),
+                Fragment.encode(Db2testId.dbType, intCol),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(Db2testId[] intCols, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : intCols) {
-      fragments.add(Fragment.encode(Db2testId.pgType, id));
+      fragments.add(Fragment.encode(Db2testId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -54,7 +52,6 @@ public class Db2testRepoImpl implements Db2testRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Db2testRow insert(Db2testRow unsaved, Connection c) {
@@ -75,7 +72,7 @@ public class Db2testRepoImpl implements Db2testRepo {
                     + "VALUES ("),
             Fragment.encode(Db2Types.smallint, unsaved.smallintCol()),
             Fragment.lit(", "),
-            Fragment.encode(Db2testId.pgType, unsaved.intCol()),
+            Fragment.encode(Db2testId.dbType, unsaved.intCol()),
             Fragment.lit(", "),
             Fragment.encode(Db2Types.bigint, unsaved.bigintCol()),
             Fragment.lit(", "),
@@ -124,14 +121,12 @@ public class Db2testRepoImpl implements Db2testRepo {
         .updateReturning(Db2testRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<Db2testFields, Db2testRow> select() {
     return SelectBuilder.of(
-        "\"DB2TEST\"", Db2testFields.structure(), Db2testRow._rowParser, Dialect.DB2);
+        "\"DB2TEST\"", Db2testFields.structure, Db2testRow._rowParser, Dialect.DB2);
   }
-  ;
 
   @Override
   public List<Db2testRow> selectAll(Connection c) {
@@ -147,7 +142,6 @@ public class Db2testRepoImpl implements Db2testRepo {
         .query(Db2testRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<Db2testRow> selectById(Db2testId intCol, Connection c) {
@@ -161,18 +155,17 @@ public class Db2testRepoImpl implements Db2testRepo {
                     + " \"TIMESTAMP6_COL\", \"TIMESTAMP12_COL\", \"XML_COL\"\n"
                     + "from \"DB2TEST\"\n"
                     + "where \"INT_COL\" = "),
-            Fragment.encode(Db2testId.pgType, intCol),
+            Fragment.encode(Db2testId.dbType, intCol),
             Fragment.lit(""))
         .query(Db2testRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<Db2testRow> selectByIds(Db2testId[] intCols, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : intCols) {
-      fragments.add(Fragment.encode(Db2testId.pgType, id));
+      fragments.add(Fragment.encode(Db2testId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -189,7 +182,6 @@ public class Db2testRepoImpl implements Db2testRepo {
         .query(Db2testRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<Db2testId, Db2testRow> selectByIdsTracked(Db2testId[] intCols, Connection c) {
@@ -197,14 +189,12 @@ public class Db2testRepoImpl implements Db2testRepo {
     selectByIds(intCols, c).forEach(row -> ret.put(row.intCol(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<Db2testFields, Db2testRow> update() {
     return UpdateBuilder.of(
-        "\"DB2TEST\"", Db2testFields.structure(), Db2testRow._rowParser, Dialect.DB2);
+        "\"DB2TEST\"", Db2testFields.structure, Db2testRow._rowParser, Dialect.DB2);
   }
-  ;
 
   @Override
   public Boolean update(Db2testRow row, Connection c) {
@@ -258,13 +248,12 @@ public class Db2testRepoImpl implements Db2testRepo {
                 Fragment.lit(",\n\"XML_COL\" = "),
                 Fragment.encode(Db2Types.xml, row.xmlCol()),
                 Fragment.lit("\nwhere \"INT_COL\" = "),
-                Fragment.encode(Db2testId.pgType, intCol),
+                Fragment.encode(Db2testId.dbType, intCol),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public void upsert(Db2testRow unsaved, Connection c) {
@@ -272,7 +261,7 @@ public class Db2testRepoImpl implements Db2testRepo {
             Fragment.lit("MERGE INTO \"DB2TEST\" AS t\nUSING (VALUES ("),
             Fragment.encode(Db2Types.smallint, unsaved.smallintCol()),
             Fragment.lit(", "),
-            Fragment.encode(Db2testId.pgType, unsaved.intCol()),
+            Fragment.encode(Db2testId.dbType, unsaved.intCol()),
             Fragment.lit(", "),
             Fragment.encode(Db2Types.bigint, unsaved.bigintCol()),
             Fragment.lit(", "),
@@ -357,7 +346,7 @@ public class Db2testRepoImpl implements Db2testRepo {
                     + " VALUES ("),
             Fragment.encode(Db2Types.smallint, unsaved.smallintCol()),
             Fragment.lit(", "),
-            Fragment.encode(Db2testId.pgType, unsaved.intCol()),
+            Fragment.encode(Db2testId.dbType, unsaved.intCol()),
             Fragment.lit(", "),
             Fragment.encode(Db2Types.bigint, unsaved.bigintCol()),
             Fragment.lit(", "),
@@ -406,7 +395,6 @@ public class Db2testRepoImpl implements Db2testRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public void upsertBatch(Iterator<Db2testRow> unsaved, Connection c) {
@@ -455,5 +443,4 @@ public class Db2testRepoImpl implements Db2testRepo {
         .updateMany(Db2testRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

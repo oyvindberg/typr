@@ -13,72 +13,69 @@ import adventureworks.public.title_domain.TitleDomainId
 import adventureworks.public.title_domain.TitleDomainRow
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
+import dev.typr.foundations.scala.TupleExpr3
 
-trait TitledpersonFields extends FieldsExpr0[TitledpersonRow] {
-  def titleShort: Field[TitleDomainId, TitledpersonRow]
+class TitledpersonFields(val `_path`: java.util.List[Path]) extends TupleExpr3[TitleDomainId, TitleId, String] with RelationStructure[TitledpersonFields, TitledpersonRow]  with FieldsBase[TitledpersonRow] {
+  def titleShort: Field[TitleDomainId, TitledpersonRow] = {
+    new Field[TitleDomainId, TitledpersonRow](
+      _path,
+      "title_short",
+      _.titleShort,
+      None,
+      Some("text"),
+      (row, value) => row.copy(titleShort = value),
+      TitleDomainId.dbType
+    )
+  }
 
-  def title: Field[TitleId, TitledpersonRow]
+  def title: Field[TitleId, TitledpersonRow] = {
+    new Field[TitleId, TitledpersonRow](
+      _path,
+      "title",
+      _.title,
+      None,
+      None,
+      (row, value) => row.copy(title = value),
+      TitleId.dbType
+    )
+  }
 
-  def name: Field[String, TitledpersonRow]
+  def name: Field[String, TitledpersonRow] = {
+    new Field[String, TitledpersonRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      None,
+      (row, value) => row.copy(name = value),
+      PgTypes.text
+    )
+  }
 
   def fkTitle: ForeignKey[TitleFields, TitleRow] = ForeignKey.of[TitleFields, TitleRow]("public.titledperson_title_fkey").withColumnPair[TitleId](title, _.code)
 
   def fkTitleDomain: ForeignKey[TitleDomainFields, TitleDomainRow] = ForeignKey.of[TitleDomainFields, TitleDomainRow]("public.titledperson_title_short_fkey").withColumnPair[TitleDomainId](titleShort, _.code)
 
-  override def columns: java.util.List[FieldLike[?, TitledpersonRow]]
+  override def columns: java.util.List[FieldLike[?, TitledpersonRow]] = java.util.List.of(this.titleShort.underlying, this.title.underlying, this.name.underlying)
 
   override def rowParser: RowParser[TitledpersonRow] = TitledpersonRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[TitledpersonFields, TitledpersonRow] = new TitledpersonFields(`_path`)
+
+  override def `_1`: SqlExpr[TitleDomainId] = titleShort
+
+  override def `_2`: SqlExpr[TitleId] = title
+
+  override def `_3`: SqlExpr[String] = name
 }
 
 object TitledpersonFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends TitledpersonFields with RelationStructure[TitledpersonFields, TitledpersonRow] {
-
-    override def titleShort: Field[TitleDomainId, TitledpersonRow] = {
-      new Field[TitleDomainId, TitledpersonRow](
-        _path,
-        "title_short",
-        _.titleShort,
-        None,
-        Some("text"),
-        (row, value) => row.copy(titleShort = value),
-        TitleDomainId.pgType
-      )
-    }
-
-    override def title: Field[TitleId, TitledpersonRow] = {
-      new Field[TitleId, TitledpersonRow](
-        _path,
-        "title",
-        _.title,
-        None,
-        None,
-        (row, value) => row.copy(title = value),
-        TitleId.pgType
-      )
-    }
-
-    override def name: Field[String, TitledpersonRow] = {
-      new Field[String, TitledpersonRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        None,
-        (row, value) => row.copy(name = value),
-        PgTypes.text
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, TitledpersonRow]] = java.util.List.of(this.titleShort.underlying, this.title.underlying, this.name.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[TitledpersonFields, TitledpersonRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: TitledpersonFields = new TitledpersonFields(java.util.Collections.emptyList())
 }

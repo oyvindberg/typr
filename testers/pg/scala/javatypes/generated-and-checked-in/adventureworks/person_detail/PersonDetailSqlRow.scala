@@ -11,6 +11,7 @@ import adventureworks.userdefined.FirstName
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple10
 import java.util.Optional
 import java.util.UUID
 
@@ -36,8 +37,28 @@ case class PersonDetailSqlRow(
   postalcode: Optional[String],
   /** Points to [[adventureworks.person.address.AddressRow.rowguid]] */
   rowguid: Optional[UUID]
-)
+) extends Tuple10[BusinessentityId, Optional[/* max 8 chars */ String], /* user-picked */ FirstName, Optional[Name], Name, String, Optional[String], Optional[String], Optional[String], Optional[UUID]] {
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: Optional[/* max 8 chars */ String] = title
+
+  override def `_3`: /* user-picked */ FirstName = firstname
+
+  override def `_4`: Optional[Name] = middlename
+
+  override def `_5`: Name = lastname
+
+  override def `_6`: String = jobtitle
+
+  override def `_7`: Optional[String] = addressline1
+
+  override def `_8`: Optional[String] = city
+
+  override def `_9`: Optional[String] = postalcode
+
+  override def `_10`: Optional[UUID] = rowguid
+}
 
 object PersonDetailSqlRow {
-  val `_rowParser`: RowParser[PersonDetailSqlRow] = RowParsers.of(BusinessentityId.pgType, PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.uuid.opt(), PersonDetailSqlRow.apply, row => Array[Any](row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.jobtitle, row.addressline1, row.city, row.postalcode, row.rowguid))
+  val `_rowParser`: RowParser[PersonDetailSqlRow] = RowParsers.of(BusinessentityId.dbType, PgTypes.text.opt(), FirstName.dbType, Name.dbType.opt(), Name.dbType, PgTypes.text, PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.text.opt(), PgTypes.uuid.opt(), PersonDetailSqlRow.apply, row => Array[Any](row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.jobtitle, row.addressline1, row.city, row.postalcode, row.rowguid))
 }

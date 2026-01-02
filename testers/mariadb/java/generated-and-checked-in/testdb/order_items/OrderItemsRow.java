@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple13;
+import dev.typr.foundations.data.Uint2;
 import java.math.BigDecimal;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
@@ -29,7 +31,7 @@ public record OrderItemsRow(
     /** */
     @JsonProperty("product_name") String productName,
     /** */
-    Integer quantity,
+    Uint2 quantity,
     /** */
     @JsonProperty("unit_price") BigDecimal unitPrice,
     /** Default: 0.0000 */
@@ -43,7 +45,21 @@ public record OrderItemsRow(
     /** Default: NULL Points to {@link testdb.warehouses.WarehousesRow#warehouseId()} */
     @JsonProperty("warehouse_id") Optional<WarehousesId> warehouseId,
     /** Default: NULL */
-    Optional<String> notes) {
+    Optional<String> notes)
+    implements Tuple13<
+        OrderItemsId,
+        OrdersId,
+        ProductsId,
+        String,
+        String,
+        Uint2,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        String,
+        Optional<WarehousesId>,
+        Optional<String>> {
   /** AUTO_INCREMENT */
   public OrderItemsRow withItemId(OrderItemsId itemId) {
     return new OrderItemsRow(
@@ -140,7 +156,7 @@ public record OrderItemsRow(
   ;
 
   /** */
-  public OrderItemsRow withQuantity(Integer quantity) {
+  public OrderItemsRow withQuantity(Uint2 quantity) {
     return new OrderItemsRow(
         itemId,
         orderId,
@@ -293,9 +309,9 @@ public record OrderItemsRow(
 
   public static RowParser<OrderItemsRow> _rowParser =
       RowParsers.of(
-          OrderItemsId.pgType,
-          OrdersId.pgType,
-          ProductsId.pgType,
+          OrderItemsId.dbType,
+          OrdersId.dbType,
+          ProductsId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.smallintUnsigned,
@@ -304,7 +320,7 @@ public record OrderItemsRow(
           MariaTypes.numeric,
           MariaTypes.numeric,
           MariaTypes.text,
-          WarehousesId.pgType.opt(),
+          WarehousesId.dbType.opt(),
           MariaTypes.tinytext.opt(),
           OrderItemsRow::new,
           row ->
@@ -323,6 +339,84 @@ public record OrderItemsRow(
                 row.warehouseId(),
                 row.notes()
               });
+  ;
+
+  @Override
+  public OrderItemsId _1() {
+    return itemId;
+  }
+  ;
+
+  @Override
+  public BigDecimal _10() {
+    return lineTotal;
+  }
+  ;
+
+  @Override
+  public String _11() {
+    return fulfillmentStatus;
+  }
+  ;
+
+  @Override
+  public Optional<WarehousesId> _12() {
+    return warehouseId;
+  }
+  ;
+
+  @Override
+  public Optional<String> _13() {
+    return notes;
+  }
+  ;
+
+  @Override
+  public OrdersId _2() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public ProductsId _3() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return sku;
+  }
+  ;
+
+  @Override
+  public String _5() {
+    return productName;
+  }
+  ;
+
+  @Override
+  public Uint2 _6() {
+    return quantity;
+  }
+  ;
+
+  @Override
+  public BigDecimal _7() {
+    return unitPrice;
+  }
+  ;
+
+  @Override
+  public BigDecimal _8() {
+    return discountAmount;
+  }
+  ;
+
+  @Override
+  public BigDecimal _9() {
+    return taxAmount;
+  }
   ;
 
   public OrderItemsId id() {

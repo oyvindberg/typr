@@ -25,27 +25,25 @@ public class Db2testIdentityDefaultRepoImpl implements Db2testIdentityDefaultRep
   @Override
   public DeleteBuilder<Db2testIdentityDefaultFields, Db2testIdentityDefaultRow> delete() {
     return DeleteBuilder.of(
-        "\"DB2TEST_IDENTITY_DEFAULT\"", Db2testIdentityDefaultFields.structure(), Dialect.DB2);
+        "\"DB2TEST_IDENTITY_DEFAULT\"", Db2testIdentityDefaultFields.structure, Dialect.DB2);
   }
-  ;
 
   @Override
   public Boolean deleteById(Db2testIdentityDefaultId id, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"DB2TEST_IDENTITY_DEFAULT\" where \"ID\" = "),
-                Fragment.encode(Db2testIdentityDefaultId.pgType, id),
+                Fragment.encode(Db2testIdentityDefaultId.dbType, id),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(Db2testIdentityDefaultId[] ids, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : ids) {
-      fragments.add(Fragment.encode(Db2testIdentityDefaultId.pgType, id));
+      fragments.add(Fragment.encode(Db2testIdentityDefaultId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -55,7 +53,6 @@ public class Db2testIdentityDefaultRepoImpl implements Db2testIdentityDefaultRep
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Db2testIdentityDefaultRow insert(Db2testIdentityDefaultRow unsaved, Connection c) {
@@ -64,14 +61,13 @@ public class Db2testIdentityDefaultRepoImpl implements Db2testIdentityDefaultRep
                 "SELECT \"ID\", \"NAME\" FROM FINAL TABLE (INSERT INTO"
                     + " \"DB2TEST_IDENTITY_DEFAULT\"(\"ID\", \"NAME\")\n"
                     + "VALUES ("),
-            Fragment.encode(Db2testIdentityDefaultId.pgType, unsaved.id()),
+            Fragment.encode(Db2testIdentityDefaultId.dbType, unsaved.id()),
             Fragment.lit(", "),
             Fragment.encode(Db2Types.varchar, unsaved.name()),
             Fragment.lit("))\n"))
         .updateReturning(Db2testIdentityDefaultRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Db2testIdentityDefaultRow insert(Db2testIdentityDefaultRowUnsaved unsaved, Connection c) {
@@ -89,7 +85,7 @@ public class Db2testIdentityDefaultRepoImpl implements Db2testIdentityDefaultRep
               columns.add(Fragment.lit("\"ID\""));
               values.add(
                   interpolate(
-                      Fragment.encode(Db2testIdentityDefaultId.pgType, value), Fragment.lit("")));
+                      Fragment.encode(Db2testIdentityDefaultId.dbType, value), Fragment.lit("")));
             });
     ;
     Fragment q =
@@ -104,17 +100,15 @@ public class Db2testIdentityDefaultRepoImpl implements Db2testIdentityDefaultRep
     ;
     return q.updateReturning(Db2testIdentityDefaultRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<Db2testIdentityDefaultFields, Db2testIdentityDefaultRow> select() {
     return SelectBuilder.of(
         "\"DB2TEST_IDENTITY_DEFAULT\"",
-        Db2testIdentityDefaultFields.structure(),
+        Db2testIdentityDefaultFields.structure,
         Db2testIdentityDefaultRow._rowParser,
         Dialect.DB2);
   }
-  ;
 
   @Override
   public List<Db2testIdentityDefaultRow> selectAll(Connection c) {
@@ -122,25 +116,23 @@ public class Db2testIdentityDefaultRepoImpl implements Db2testIdentityDefaultRep
         .query(Db2testIdentityDefaultRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<Db2testIdentityDefaultRow> selectById(Db2testIdentityDefaultId id, Connection c) {
     return interpolate(
             Fragment.lit(
                 "select \"ID\", \"NAME\"\nfrom \"DB2TEST_IDENTITY_DEFAULT\"\nwhere \"ID\" = "),
-            Fragment.encode(Db2testIdentityDefaultId.pgType, id),
+            Fragment.encode(Db2testIdentityDefaultId.dbType, id),
             Fragment.lit(""))
         .query(Db2testIdentityDefaultRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<Db2testIdentityDefaultRow> selectByIds(Db2testIdentityDefaultId[] ids, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : ids) {
-      fragments.add(Fragment.encode(Db2testIdentityDefaultId.pgType, id));
+      fragments.add(Fragment.encode(Db2testIdentityDefaultId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -151,7 +143,6 @@ public class Db2testIdentityDefaultRepoImpl implements Db2testIdentityDefaultRep
         .query(Db2testIdentityDefaultRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<Db2testIdentityDefaultId, Db2testIdentityDefaultRow> selectByIdsTracked(
@@ -161,17 +152,15 @@ public class Db2testIdentityDefaultRepoImpl implements Db2testIdentityDefaultRep
     selectByIds(ids, c).forEach(row -> ret.put(row.id(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<Db2testIdentityDefaultFields, Db2testIdentityDefaultRow> update() {
     return UpdateBuilder.of(
         "\"DB2TEST_IDENTITY_DEFAULT\"",
-        Db2testIdentityDefaultFields.structure(),
+        Db2testIdentityDefaultFields.structure,
         Db2testIdentityDefaultRow._rowParser,
         Dialect.DB2);
   }
-  ;
 
   @Override
   public Boolean update(Db2testIdentityDefaultRow row, Connection c) {
@@ -181,19 +170,18 @@ public class Db2testIdentityDefaultRepoImpl implements Db2testIdentityDefaultRep
                 Fragment.lit("update \"DB2TEST_IDENTITY_DEFAULT\"\nset \"NAME\" = "),
                 Fragment.encode(Db2Types.varchar, row.name()),
                 Fragment.lit("\nwhere \"ID\" = "),
-                Fragment.encode(Db2testIdentityDefaultId.pgType, id),
+                Fragment.encode(Db2testIdentityDefaultId.dbType, id),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public void upsert(Db2testIdentityDefaultRow unsaved, Connection c) {
     interpolate(
             Fragment.lit("MERGE INTO \"DB2TEST_IDENTITY_DEFAULT\" AS t\nUSING (VALUES ("),
-            Fragment.encode(Db2testIdentityDefaultId.pgType, unsaved.id()),
+            Fragment.encode(Db2testIdentityDefaultId.dbType, unsaved.id()),
             Fragment.lit(", "),
             Fragment.encode(Db2Types.varchar, unsaved.name()),
             Fragment.lit(
@@ -201,14 +189,13 @@ public class Db2testIdentityDefaultRepoImpl implements Db2testIdentityDefaultRep
                     + "ON t.\"ID\" = s.\"ID\"\n"
                     + "WHEN MATCHED THEN UPDATE SET \"NAME\" = s.\"NAME\"\n"
                     + "WHEN NOT MATCHED THEN INSERT (\"ID\", \"NAME\") VALUES ("),
-            Fragment.encode(Db2testIdentityDefaultId.pgType, unsaved.id()),
+            Fragment.encode(Db2testIdentityDefaultId.dbType, unsaved.id()),
             Fragment.lit(", "),
             Fragment.encode(Db2Types.varchar, unsaved.name()),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public void upsertBatch(Iterator<Db2testIdentityDefaultRow> unsaved, Connection c) {
@@ -222,5 +209,4 @@ public class Db2testIdentityDefaultRepoImpl implements Db2testIdentityDefaultRep
         .updateMany(Db2testIdentityDefaultRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

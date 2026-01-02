@@ -7,15 +7,18 @@ package testdb.order_items
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.data.Uint2
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr13
 import testdb.orders.OrdersFields
 import testdb.orders.OrdersId
 import testdb.orders.OrdersRow
@@ -26,32 +29,162 @@ import testdb.warehouses.WarehousesFields
 import testdb.warehouses.WarehousesId
 import testdb.warehouses.WarehousesRow
 
-trait OrderItemsFields extends FieldsExpr0[OrderItemsRow] {
-  def itemId: IdField[OrderItemsId, OrderItemsRow]
+class OrderItemsFields(val `_path`: java.util.List[Path]) extends TupleExpr13[OrderItemsId, OrdersId, ProductsId, String, String, Uint2, BigDecimal, BigDecimal, BigDecimal, BigDecimal, String, WarehousesId, String] with RelationStructure[OrderItemsFields, OrderItemsRow]  with FieldsBase[OrderItemsRow] {
+  def itemId: IdField[OrderItemsId, OrderItemsRow] = {
+    new IdField[OrderItemsId, OrderItemsRow](
+      _path,
+      "item_id",
+      _.itemId,
+      None,
+      None,
+      (row, value) => row.copy(itemId = value),
+      OrderItemsId.dbType
+    )
+  }
 
-  def orderId: Field[OrdersId, OrderItemsRow]
+  def orderId: Field[OrdersId, OrderItemsRow] = {
+    new Field[OrdersId, OrderItemsRow](
+      _path,
+      "order_id",
+      _.orderId,
+      None,
+      None,
+      (row, value) => row.copy(orderId = value),
+      OrdersId.dbType
+    )
+  }
 
-  def productId: Field[ProductsId, OrderItemsRow]
+  def productId: Field[ProductsId, OrderItemsRow] = {
+    new Field[ProductsId, OrderItemsRow](
+      _path,
+      "product_id",
+      _.productId,
+      None,
+      None,
+      (row, value) => row.copy(productId = value),
+      ProductsId.dbType
+    )
+  }
 
-  def sku: Field[String, OrderItemsRow]
+  def sku: Field[String, OrderItemsRow] = {
+    new Field[String, OrderItemsRow](
+      _path,
+      "sku",
+      _.sku,
+      None,
+      None,
+      (row, value) => row.copy(sku = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def productName: Field[String, OrderItemsRow]
+  def productName: Field[String, OrderItemsRow] = {
+    new Field[String, OrderItemsRow](
+      _path,
+      "product_name",
+      _.productName,
+      None,
+      None,
+      (row, value) => row.copy(productName = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def quantity: Field[Int, OrderItemsRow]
+  def quantity: Field[Uint2, OrderItemsRow] = {
+    new Field[Uint2, OrderItemsRow](
+      _path,
+      "quantity",
+      _.quantity,
+      None,
+      None,
+      (row, value) => row.copy(quantity = value),
+      MariaTypes.smallintUnsigned
+    )
+  }
 
-  def unitPrice: Field[BigDecimal, OrderItemsRow]
+  def unitPrice: Field[BigDecimal, OrderItemsRow] = {
+    new Field[BigDecimal, OrderItemsRow](
+      _path,
+      "unit_price",
+      _.unitPrice,
+      None,
+      None,
+      (row, value) => row.copy(unitPrice = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def discountAmount: Field[BigDecimal, OrderItemsRow]
+  def discountAmount: Field[BigDecimal, OrderItemsRow] = {
+    new Field[BigDecimal, OrderItemsRow](
+      _path,
+      "discount_amount",
+      _.discountAmount,
+      None,
+      None,
+      (row, value) => row.copy(discountAmount = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def taxAmount: Field[BigDecimal, OrderItemsRow]
+  def taxAmount: Field[BigDecimal, OrderItemsRow] = {
+    new Field[BigDecimal, OrderItemsRow](
+      _path,
+      "tax_amount",
+      _.taxAmount,
+      None,
+      None,
+      (row, value) => row.copy(taxAmount = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def lineTotal: Field[BigDecimal, OrderItemsRow]
+  def lineTotal: Field[BigDecimal, OrderItemsRow] = {
+    new Field[BigDecimal, OrderItemsRow](
+      _path,
+      "line_total",
+      _.lineTotal,
+      None,
+      None,
+      (row, value) => row.copy(lineTotal = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def fulfillmentStatus: Field[String, OrderItemsRow]
+  def fulfillmentStatus: Field[String, OrderItemsRow] = {
+    new Field[String, OrderItemsRow](
+      _path,
+      "fulfillment_status",
+      _.fulfillmentStatus,
+      None,
+      None,
+      (row, value) => row.copy(fulfillmentStatus = value),
+      MariaTypes.text
+    )
+  }
 
-  def warehouseId: OptField[WarehousesId, OrderItemsRow]
+  def warehouseId: OptField[WarehousesId, OrderItemsRow] = {
+    new OptField[WarehousesId, OrderItemsRow](
+      _path,
+      "warehouse_id",
+      _.warehouseId,
+      None,
+      None,
+      (row, value) => row.copy(warehouseId = value),
+      WarehousesId.dbType
+    )
+  }
 
-  def notes: OptField[String, OrderItemsRow]
+  def notes: OptField[String, OrderItemsRow] = {
+    new OptField[String, OrderItemsRow](
+      _path,
+      "notes",
+      _.notes,
+      None,
+      None,
+      (row, value) => row.copy(notes = value),
+      MariaTypes.tinytext
+    )
+  }
 
   def fkOrders: ForeignKey[OrdersFields, OrdersRow] = ForeignKey.of[OrdersFields, OrdersRow]("fk_oi_order").withColumnPair[OrdersId](orderId, _.orderId)
 
@@ -59,174 +192,39 @@ trait OrderItemsFields extends FieldsExpr0[OrderItemsRow] {
 
   def fkWarehouses: ForeignKey[WarehousesFields, WarehousesRow] = ForeignKey.of[WarehousesFields, WarehousesRow]("fk_oi_warehouse").withColumnPair[WarehousesId](warehouseId, _.warehouseId)
 
-  override def columns: java.util.List[FieldLike[?, OrderItemsRow]]
+  override def columns: java.util.List[FieldLike[?, OrderItemsRow]] = java.util.List.of(this.itemId.underlying, this.orderId.underlying, this.productId.underlying, this.sku.underlying, this.productName.underlying, this.quantity.underlying, this.unitPrice.underlying, this.discountAmount.underlying, this.taxAmount.underlying, this.lineTotal.underlying, this.fulfillmentStatus.underlying, this.warehouseId.underlying, this.notes.underlying)
 
   override def rowParser: RowParser[OrderItemsRow] = OrderItemsRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OrderItemsFields, OrderItemsRow] = new OrderItemsFields(`_path`)
+
+  override def `_1`: SqlExpr[OrderItemsId] = itemId
+
+  override def `_2`: SqlExpr[OrdersId] = orderId
+
+  override def `_3`: SqlExpr[ProductsId] = productId
+
+  override def `_4`: SqlExpr[String] = sku
+
+  override def `_5`: SqlExpr[String] = productName
+
+  override def `_6`: SqlExpr[Uint2] = quantity
+
+  override def `_7`: SqlExpr[BigDecimal] = unitPrice
+
+  override def `_8`: SqlExpr[BigDecimal] = discountAmount
+
+  override def `_9`: SqlExpr[BigDecimal] = taxAmount
+
+  override def `_10`: SqlExpr[BigDecimal] = lineTotal
+
+  override def `_11`: SqlExpr[String] = fulfillmentStatus
+
+  override def `_12`: SqlExpr[WarehousesId] = warehouseId
+
+  override def `_13`: SqlExpr[String] = notes
 }
 
 object OrderItemsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends OrderItemsFields with RelationStructure[OrderItemsFields, OrderItemsRow] {
-
-    override def itemId: IdField[OrderItemsId, OrderItemsRow] = {
-      new IdField[OrderItemsId, OrderItemsRow](
-        _path,
-        "item_id",
-        _.itemId,
-        None,
-        None,
-        (row, value) => row.copy(itemId = value),
-        OrderItemsId.pgType
-      )
-    }
-
-    override def orderId: Field[OrdersId, OrderItemsRow] = {
-      new Field[OrdersId, OrderItemsRow](
-        _path,
-        "order_id",
-        _.orderId,
-        None,
-        None,
-        (row, value) => row.copy(orderId = value),
-        OrdersId.pgType
-      )
-    }
-
-    override def productId: Field[ProductsId, OrderItemsRow] = {
-      new Field[ProductsId, OrderItemsRow](
-        _path,
-        "product_id",
-        _.productId,
-        None,
-        None,
-        (row, value) => row.copy(productId = value),
-        ProductsId.pgType
-      )
-    }
-
-    override def sku: Field[String, OrderItemsRow] = {
-      new Field[String, OrderItemsRow](
-        _path,
-        "sku",
-        _.sku,
-        None,
-        None,
-        (row, value) => row.copy(sku = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def productName: Field[String, OrderItemsRow] = {
-      new Field[String, OrderItemsRow](
-        _path,
-        "product_name",
-        _.productName,
-        None,
-        None,
-        (row, value) => row.copy(productName = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def quantity: Field[Int, OrderItemsRow] = {
-      new Field[Int, OrderItemsRow](
-        _path,
-        "quantity",
-        _.quantity,
-        None,
-        None,
-        (row, value) => row.copy(quantity = value),
-        ScalaDbTypes.MariaTypes.smallintUnsigned
-      )
-    }
-
-    override def unitPrice: Field[BigDecimal, OrderItemsRow] = {
-      new Field[BigDecimal, OrderItemsRow](
-        _path,
-        "unit_price",
-        _.unitPrice,
-        None,
-        None,
-        (row, value) => row.copy(unitPrice = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def discountAmount: Field[BigDecimal, OrderItemsRow] = {
-      new Field[BigDecimal, OrderItemsRow](
-        _path,
-        "discount_amount",
-        _.discountAmount,
-        None,
-        None,
-        (row, value) => row.copy(discountAmount = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def taxAmount: Field[BigDecimal, OrderItemsRow] = {
-      new Field[BigDecimal, OrderItemsRow](
-        _path,
-        "tax_amount",
-        _.taxAmount,
-        None,
-        None,
-        (row, value) => row.copy(taxAmount = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def lineTotal: Field[BigDecimal, OrderItemsRow] = {
-      new Field[BigDecimal, OrderItemsRow](
-        _path,
-        "line_total",
-        _.lineTotal,
-        None,
-        None,
-        (row, value) => row.copy(lineTotal = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def fulfillmentStatus: Field[String, OrderItemsRow] = {
-      new Field[String, OrderItemsRow](
-        _path,
-        "fulfillment_status",
-        _.fulfillmentStatus,
-        None,
-        None,
-        (row, value) => row.copy(fulfillmentStatus = value),
-        MariaTypes.text
-      )
-    }
-
-    override def warehouseId: OptField[WarehousesId, OrderItemsRow] = {
-      new OptField[WarehousesId, OrderItemsRow](
-        _path,
-        "warehouse_id",
-        _.warehouseId,
-        None,
-        None,
-        (row, value) => row.copy(warehouseId = value),
-        WarehousesId.pgType
-      )
-    }
-
-    override def notes: OptField[String, OrderItemsRow] = {
-      new OptField[String, OrderItemsRow](
-        _path,
-        "notes",
-        _.notes,
-        None,
-        None,
-        (row, value) => row.copy(notes = value),
-        MariaTypes.tinytext
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, OrderItemsRow]] = java.util.List.of(this.itemId.underlying, this.orderId.underlying, this.productId.underlying, this.sku.underlying, this.productName.underlying, this.quantity.underlying, this.unitPrice.underlying, this.discountAmount.underlying, this.taxAmount.underlying, this.lineTotal.underlying, this.fulfillmentStatus.underlying, this.warehouseId.underlying, this.notes.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OrderItemsFields, OrderItemsRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: OrderItemsFields = new OrderItemsFields(java.util.Collections.emptyList())
 }

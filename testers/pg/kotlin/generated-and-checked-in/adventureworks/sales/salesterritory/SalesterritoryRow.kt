@@ -10,6 +10,7 @@ import adventureworks.person.countryregion.CountryregionId
 import adventureworks.public.Name
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple10
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import java.math.BigDecimal
@@ -57,7 +58,27 @@ data class SalesterritoryRow(
   val rowguid: UUID,
   /** Default: now() */
   val modifieddate: LocalDateTime
-) {
+) : Tuple10<SalesterritoryId, Name, CountryregionId, String, BigDecimal, BigDecimal, BigDecimal, BigDecimal, UUID, LocalDateTime> {
+  override fun _1(): SalesterritoryId = territoryid
+
+  override fun _10(): LocalDateTime = modifieddate
+
+  override fun _2(): Name = name
+
+  override fun _3(): CountryregionId = countryregioncode
+
+  override fun _4(): String = group
+
+  override fun _5(): BigDecimal = salesytd
+
+  override fun _6(): BigDecimal = saleslastyear
+
+  override fun _7(): BigDecimal = costytd
+
+  override fun _8(): BigDecimal = costlastyear
+
+  override fun _9(): UUID = rowguid
+
   fun id(): SalesterritoryId = territoryid
 
   fun toUnsavedRow(
@@ -71,7 +92,7 @@ data class SalesterritoryRow(
   ): SalesterritoryRowUnsaved = SalesterritoryRowUnsaved(name, countryregioncode, group, territoryid, salesytd, saleslastyear, costytd, costlastyear, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<SalesterritoryRow> = RowParsers.of(SalesterritoryId.pgType, Name.pgType, CountryregionId.pgType, PgTypes.text, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> SalesterritoryRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.territoryid, row.name, row.countryregioncode, row.group, row.salesytd, row.saleslastyear, row.costytd, row.costlastyear, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SalesterritoryRow> = RowParsers.of(SalesterritoryId.dbType, Name.dbType, CountryregionId.dbType, PgTypes.text, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> SalesterritoryRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.territoryid, row.name, row.countryregioncode, row.group, row.salesytd, row.saleslastyear, row.costytd, row.costlastyear, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<SalesterritoryRow> =
       PgText.from(_rowParser.underlying)

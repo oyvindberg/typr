@@ -7,6 +7,10 @@ package testdb.promotions
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple16
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
@@ -42,15 +46,15 @@ case class PromotionsRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("max_uses") maxUses: Option[Long],
+  @JsonProperty("max_uses") maxUses: Option[Uint4],
   /** 
    * Default: 0
    */
-  @JsonProperty("uses_count") usesCount: Long,
+  @JsonProperty("uses_count") usesCount: Uint4,
   /** 
    * Default: NULL
    */
-  @JsonProperty("max_uses_per_customer") maxUsesPerCustomer: Option[Short],
+  @JsonProperty("max_uses_per_customer") maxUsesPerCustomer: Option[Uint1],
   /** 
    * Default: NULL
    */
@@ -58,7 +62,7 @@ case class PromotionsRow(
   /** Complex eligibility rules
    * Default: NULL
    */
-  @JsonProperty("rules_json") rulesJson: Option[String],
+  @JsonProperty("rules_json") rulesJson: Option[Json],
   /**  */
   @JsonProperty("valid_from") validFrom: LocalDateTime,
   /**  */
@@ -71,17 +75,17 @@ case class PromotionsRow(
    * Default: current_timestamp()
    */
   @JsonProperty("created_at") createdAt: LocalDateTime
-) {
+) extends Tuple16[PromotionsId, String, String, Option[String], String, BigDecimal, Option[BigDecimal], Option[Uint4], Uint4, Option[Uint1], Option[MariaSet], Option[Json], LocalDateTime, LocalDateTime, Boolean, LocalDateTime] {
   def id: PromotionsId = promotionId
 
   def toUnsavedRow(
     description: Defaulted[Option[String]] = Defaulted.Provided(this.description),
     minOrderAmount: Defaulted[Option[BigDecimal]] = Defaulted.Provided(this.minOrderAmount),
-    maxUses: Defaulted[Option[Long]] = Defaulted.Provided(this.maxUses),
-    usesCount: Defaulted[Long] = Defaulted.Provided(this.usesCount),
-    maxUsesPerCustomer: Defaulted[Option[Short]] = Defaulted.Provided(this.maxUsesPerCustomer),
+    maxUses: Defaulted[Option[Uint4]] = Defaulted.Provided(this.maxUses),
+    usesCount: Defaulted[Uint4] = Defaulted.Provided(this.usesCount),
+    maxUsesPerCustomer: Defaulted[Option[Uint1]] = Defaulted.Provided(this.maxUsesPerCustomer),
     applicableTo: Defaulted[Option[MariaSet]] = Defaulted.Provided(this.applicableTo),
-    rulesJson: Defaulted[Option[String]] = Defaulted.Provided(this.rulesJson),
+    rulesJson: Defaulted[Option[Json]] = Defaulted.Provided(this.rulesJson),
     isActive: Defaulted[Boolean] = Defaulted.Provided(this.isActive),
     createdAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.createdAt)
   ): PromotionsRowUnsaved = {
@@ -103,8 +107,40 @@ case class PromotionsRow(
       createdAt
     )
   }
+
+  override def `_1`: PromotionsId = promotionId
+
+  override def `_2`: String = code
+
+  override def `_3`: String = name
+
+  override def `_4`: Option[String] = description
+
+  override def `_5`: String = discountType
+
+  override def `_6`: BigDecimal = discountValue
+
+  override def `_7`: Option[BigDecimal] = minOrderAmount
+
+  override def `_8`: Option[Uint4] = maxUses
+
+  override def `_9`: Uint4 = usesCount
+
+  override def `_10`: Option[Uint1] = maxUsesPerCustomer
+
+  override def `_11`: Option[MariaSet] = applicableTo
+
+  override def `_12`: Option[Json] = rulesJson
+
+  override def `_13`: LocalDateTime = validFrom
+
+  override def `_14`: LocalDateTime = validTo
+
+  override def `_15`: Boolean = isActive
+
+  override def `_16`: LocalDateTime = createdAt
 }
 
 object PromotionsRow {
-  val `_rowParser`: RowParser[PromotionsRow] = RowParsers.of(PromotionsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text.nullable, MariaTypes.text, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.intUnsigned.nullable, ScalaDbTypes.MariaTypes.intUnsigned, ScalaDbTypes.MariaTypes.tinyintUnsigned.nullable, MariaTypes.set.nullable, MariaTypes.longtext.nullable, MariaTypes.datetime, MariaTypes.datetime, ScalaDbTypes.MariaTypes.bool, MariaTypes.datetime)(PromotionsRow.apply)(row => Array[Any](row.promotionId, row.code, row.name, row.description, row.discountType, row.discountValue, row.minOrderAmount, row.maxUses, row.usesCount, row.maxUsesPerCustomer, row.applicableTo, row.rulesJson, row.validFrom, row.validTo, row.isActive, row.createdAt))
+  val `_rowParser`: RowParser[PromotionsRow] = RowParsers.of(PromotionsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text.nullable, MariaTypes.text, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric.nullable, MariaTypes.intUnsigned.nullable, MariaTypes.intUnsigned, MariaTypes.tinyintUnsigned.nullable, MariaTypes.set.nullable, MariaTypes.json.nullable, MariaTypes.datetime, MariaTypes.datetime, ScalaDbTypes.MariaTypes.bool, MariaTypes.datetime)(PromotionsRow.apply)(row => Array[Any](row.promotionId, row.code, row.name, row.description, row.discountType, row.discountValue, row.minOrderAmount, row.maxUses, row.usesCount, row.maxUsesPerCustomer, row.applicableTo, row.rulesJson, row.validFrom, row.validTo, row.isActive, row.createdAt))
 }

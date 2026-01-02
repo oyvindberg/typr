@@ -6,17 +6,18 @@
 package testdb.inventory_check
 
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.Fragment
 import dev.typr.foundations.scala.ScalaDbTypes
-import java.math.BigInteger
 import java.sql.Connection
 import dev.typr.foundations.scala.Fragment.sql
 
 class InventoryCheckSqlRepoImpl extends InventoryCheckSqlRepo {
   override def apply(
-    warehouseId: Option[Short],
-    productId: Option[BigInteger],
+    warehouseId: Option[Uint1],
+    productId: Option[Uint8],
     lowStockOnly: Option[Boolean]
   )(using c: Connection): List[InventoryCheckSqlRow] = {
     sql"""-- Check inventory levels across warehouses
@@ -35,7 +36,7 @@ class InventoryCheckSqlRepoImpl extends InventoryCheckSqlRepo {
     FROM inventory i
     JOIN products p ON i.product_id = p.product_id
     JOIN warehouses w ON i.warehouse_id = w.warehouse_id
-    WHERE (${Fragment.encode(ScalaDbTypes.MariaTypes.tinyintUnsigned.nullable, warehouseId)} IS NULL OR i.warehouse_id = ${Fragment.encode(ScalaDbTypes.MariaTypes.tinyintUnsigned.nullable, warehouseId)})
+    WHERE (${Fragment.encode(MariaTypes.tinyintUnsigned.nullable, warehouseId)} IS NULL OR i.warehouse_id = ${Fragment.encode(MariaTypes.tinyintUnsigned.nullable, warehouseId)})
       AND (${Fragment.encode(MariaTypes.bigintUnsigned.nullable, productId)} IS NULL OR i.product_id = ${Fragment.encode(MariaTypes.bigintUnsigned.nullable, productId)})
       AND (${Fragment.encode(ScalaDbTypes.MariaTypes.bool.nullable, lowStockOnly)} IS NULL OR (i.quantity_on_hand - i.quantity_reserved) <= i.reorder_point)
     """.query(InventoryCheckSqlRow.`_rowParser`.all()).runUnchecked(c)

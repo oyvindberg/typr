@@ -7,15 +7,17 @@ package testdb.inventory
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr11
 import java.time.LocalDateTime
 import testdb.products.ProductsFields
 import testdb.products.ProductsId
@@ -24,177 +26,172 @@ import testdb.warehouses.WarehousesFields
 import testdb.warehouses.WarehousesId
 import testdb.warehouses.WarehousesRow
 
-trait InventoryFields extends FieldsExpr0[InventoryRow] {
-  def inventoryId: IdField[InventoryId, InventoryRow]
+class InventoryFields(val `_path`: java.util.List[Path]) extends TupleExpr11[InventoryId, ProductsId, WarehousesId, Int, Int, Int, Int, Int, String, LocalDateTime, LocalDateTime] with RelationStructure[InventoryFields, InventoryRow]  with FieldsBase[InventoryRow] {
+  def inventoryId: IdField[InventoryId, InventoryRow] = {
+    new IdField[InventoryId, InventoryRow](
+      _path,
+      "inventory_id",
+      _.inventoryId,
+      None,
+      None,
+      (row, value) => row.copy(inventoryId = value),
+      InventoryId.dbType
+    )
+  }
 
-  def productId: Field[ProductsId, InventoryRow]
+  def productId: Field[ProductsId, InventoryRow] = {
+    new Field[ProductsId, InventoryRow](
+      _path,
+      "product_id",
+      _.productId,
+      None,
+      None,
+      (row, value) => row.copy(productId = value),
+      ProductsId.dbType
+    )
+  }
 
-  def warehouseId: Field[WarehousesId, InventoryRow]
+  def warehouseId: Field[WarehousesId, InventoryRow] = {
+    new Field[WarehousesId, InventoryRow](
+      _path,
+      "warehouse_id",
+      _.warehouseId,
+      None,
+      None,
+      (row, value) => row.copy(warehouseId = value),
+      WarehousesId.dbType
+    )
+  }
 
-  def quantityOnHand: Field[Int, InventoryRow]
+  def quantityOnHand: Field[Int, InventoryRow] = {
+    new Field[Int, InventoryRow](
+      _path,
+      "quantity_on_hand",
+      _.quantityOnHand,
+      None,
+      None,
+      (row, value) => row.copy(quantityOnHand = value),
+      ScalaDbTypes.MariaTypes.int_
+    )
+  }
 
-  def quantityReserved: Field[Int, InventoryRow]
+  def quantityReserved: Field[Int, InventoryRow] = {
+    new Field[Int, InventoryRow](
+      _path,
+      "quantity_reserved",
+      _.quantityReserved,
+      None,
+      None,
+      (row, value) => row.copy(quantityReserved = value),
+      ScalaDbTypes.MariaTypes.int_
+    )
+  }
 
-  def quantityOnOrder: Field[Int, InventoryRow]
+  def quantityOnOrder: Field[Int, InventoryRow] = {
+    new Field[Int, InventoryRow](
+      _path,
+      "quantity_on_order",
+      _.quantityOnOrder,
+      None,
+      None,
+      (row, value) => row.copy(quantityOnOrder = value),
+      ScalaDbTypes.MariaTypes.int_
+    )
+  }
 
-  def reorderPoint: Field[Int, InventoryRow]
+  def reorderPoint: Field[Int, InventoryRow] = {
+    new Field[Int, InventoryRow](
+      _path,
+      "reorder_point",
+      _.reorderPoint,
+      None,
+      None,
+      (row, value) => row.copy(reorderPoint = value),
+      ScalaDbTypes.MariaTypes.int_
+    )
+  }
 
-  def reorderQuantity: Field[Int, InventoryRow]
+  def reorderQuantity: Field[Int, InventoryRow] = {
+    new Field[Int, InventoryRow](
+      _path,
+      "reorder_quantity",
+      _.reorderQuantity,
+      None,
+      None,
+      (row, value) => row.copy(reorderQuantity = value),
+      ScalaDbTypes.MariaTypes.int_
+    )
+  }
 
-  def binLocation: OptField[String, InventoryRow]
+  def binLocation: OptField[String, InventoryRow] = {
+    new OptField[String, InventoryRow](
+      _path,
+      "bin_location",
+      _.binLocation,
+      None,
+      None,
+      (row, value) => row.copy(binLocation = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def lastCountedAt: OptField[LocalDateTime, InventoryRow]
+  def lastCountedAt: OptField[LocalDateTime, InventoryRow] = {
+    new OptField[LocalDateTime, InventoryRow](
+      _path,
+      "last_counted_at",
+      _.lastCountedAt,
+      None,
+      None,
+      (row, value) => row.copy(lastCountedAt = value),
+      MariaTypes.datetime
+    )
+  }
 
-  def updatedAt: Field[LocalDateTime, InventoryRow]
+  def updatedAt: Field[LocalDateTime, InventoryRow] = {
+    new Field[LocalDateTime, InventoryRow](
+      _path,
+      "updated_at",
+      _.updatedAt,
+      None,
+      None,
+      (row, value) => row.copy(updatedAt = value),
+      MariaTypes.datetime
+    )
+  }
 
   def fkProducts: ForeignKey[ProductsFields, ProductsRow] = ForeignKey.of[ProductsFields, ProductsRow]("fk_inventory_product").withColumnPair[ProductsId](productId, _.productId)
 
   def fkWarehouses: ForeignKey[WarehousesFields, WarehousesRow] = ForeignKey.of[WarehousesFields, WarehousesRow]("fk_inventory_warehouse").withColumnPair[WarehousesId](warehouseId, _.warehouseId)
 
-  override def columns: java.util.List[FieldLike[?, InventoryRow]]
+  override def columns: java.util.List[FieldLike[?, InventoryRow]] = java.util.List.of(this.inventoryId.underlying, this.productId.underlying, this.warehouseId.underlying, this.quantityOnHand.underlying, this.quantityReserved.underlying, this.quantityOnOrder.underlying, this.reorderPoint.underlying, this.reorderQuantity.underlying, this.binLocation.underlying, this.lastCountedAt.underlying, this.updatedAt.underlying)
 
   override def rowParser: RowParser[InventoryRow] = InventoryRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[InventoryFields, InventoryRow] = new InventoryFields(`_path`)
+
+  override def `_1`: SqlExpr[InventoryId] = inventoryId
+
+  override def `_2`: SqlExpr[ProductsId] = productId
+
+  override def `_3`: SqlExpr[WarehousesId] = warehouseId
+
+  override def `_4`: SqlExpr[Int] = quantityOnHand
+
+  override def `_5`: SqlExpr[Int] = quantityReserved
+
+  override def `_6`: SqlExpr[Int] = quantityOnOrder
+
+  override def `_7`: SqlExpr[Int] = reorderPoint
+
+  override def `_8`: SqlExpr[Int] = reorderQuantity
+
+  override def `_9`: SqlExpr[String] = binLocation
+
+  override def `_10`: SqlExpr[LocalDateTime] = lastCountedAt
+
+  override def `_11`: SqlExpr[LocalDateTime] = updatedAt
 }
 
 object InventoryFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends InventoryFields with RelationStructure[InventoryFields, InventoryRow] {
-
-    override def inventoryId: IdField[InventoryId, InventoryRow] = {
-      new IdField[InventoryId, InventoryRow](
-        _path,
-        "inventory_id",
-        _.inventoryId,
-        None,
-        None,
-        (row, value) => row.copy(inventoryId = value),
-        InventoryId.pgType
-      )
-    }
-
-    override def productId: Field[ProductsId, InventoryRow] = {
-      new Field[ProductsId, InventoryRow](
-        _path,
-        "product_id",
-        _.productId,
-        None,
-        None,
-        (row, value) => row.copy(productId = value),
-        ProductsId.pgType
-      )
-    }
-
-    override def warehouseId: Field[WarehousesId, InventoryRow] = {
-      new Field[WarehousesId, InventoryRow](
-        _path,
-        "warehouse_id",
-        _.warehouseId,
-        None,
-        None,
-        (row, value) => row.copy(warehouseId = value),
-        WarehousesId.pgType
-      )
-    }
-
-    override def quantityOnHand: Field[Int, InventoryRow] = {
-      new Field[Int, InventoryRow](
-        _path,
-        "quantity_on_hand",
-        _.quantityOnHand,
-        None,
-        None,
-        (row, value) => row.copy(quantityOnHand = value),
-        ScalaDbTypes.MariaTypes.int_
-      )
-    }
-
-    override def quantityReserved: Field[Int, InventoryRow] = {
-      new Field[Int, InventoryRow](
-        _path,
-        "quantity_reserved",
-        _.quantityReserved,
-        None,
-        None,
-        (row, value) => row.copy(quantityReserved = value),
-        ScalaDbTypes.MariaTypes.int_
-      )
-    }
-
-    override def quantityOnOrder: Field[Int, InventoryRow] = {
-      new Field[Int, InventoryRow](
-        _path,
-        "quantity_on_order",
-        _.quantityOnOrder,
-        None,
-        None,
-        (row, value) => row.copy(quantityOnOrder = value),
-        ScalaDbTypes.MariaTypes.int_
-      )
-    }
-
-    override def reorderPoint: Field[Int, InventoryRow] = {
-      new Field[Int, InventoryRow](
-        _path,
-        "reorder_point",
-        _.reorderPoint,
-        None,
-        None,
-        (row, value) => row.copy(reorderPoint = value),
-        ScalaDbTypes.MariaTypes.int_
-      )
-    }
-
-    override def reorderQuantity: Field[Int, InventoryRow] = {
-      new Field[Int, InventoryRow](
-        _path,
-        "reorder_quantity",
-        _.reorderQuantity,
-        None,
-        None,
-        (row, value) => row.copy(reorderQuantity = value),
-        ScalaDbTypes.MariaTypes.int_
-      )
-    }
-
-    override def binLocation: OptField[String, InventoryRow] = {
-      new OptField[String, InventoryRow](
-        _path,
-        "bin_location",
-        _.binLocation,
-        None,
-        None,
-        (row, value) => row.copy(binLocation = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def lastCountedAt: OptField[LocalDateTime, InventoryRow] = {
-      new OptField[LocalDateTime, InventoryRow](
-        _path,
-        "last_counted_at",
-        _.lastCountedAt,
-        None,
-        None,
-        (row, value) => row.copy(lastCountedAt = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def updatedAt: Field[LocalDateTime, InventoryRow] = {
-      new Field[LocalDateTime, InventoryRow](
-        _path,
-        "updated_at",
-        _.updatedAt,
-        None,
-        None,
-        (row, value) => row.copy(updatedAt = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, InventoryRow]] = java.util.List.of(this.inventoryId.underlying, this.productId.underlying, this.warehouseId.underlying, this.quantityOnHand.underlying, this.quantityReserved.underlying, this.quantityOnOrder.underlying, this.reorderPoint.underlying, this.reorderQuantity.underlying, this.binLocation.underlying, this.lastCountedAt.underlying, this.updatedAt.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[InventoryFields, InventoryRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: InventoryFields = new InventoryFields(java.util.Collections.emptyList())
 }

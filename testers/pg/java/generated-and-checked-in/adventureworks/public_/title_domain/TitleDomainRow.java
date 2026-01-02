@@ -8,19 +8,26 @@ package adventureworks.public_.title_domain;
 import dev.typr.foundations.PgText;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple1;
 
 /** Table: public.title_domain Primary key: code */
-public record TitleDomainRow(TitleDomainId code) {
+public record TitleDomainRow(TitleDomainId code) implements Tuple1<TitleDomainId> {
   public TitleDomainRow withCode(TitleDomainId code) {
     return new TitleDomainRow(code);
   }
   ;
 
   public static RowParser<TitleDomainRow> _rowParser =
-      RowParsers.of(TitleDomainId.pgType, TitleDomainRow::new, row -> new Object[] {row.code()});
+      RowParsers.of(TitleDomainId.dbType, TitleDomainRow::new, row -> new Object[] {row.code()});
   ;
 
   public static PgText<TitleDomainRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public TitleDomainId _1() {
+    return code;
+  }
+  ;
 
   public TitleDomainId id() {
     return code;

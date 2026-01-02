@@ -9,6 +9,7 @@ import adventureworks.public.ShortText
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -27,7 +28,7 @@ case class FlaffRow(
   specifier: ShortText,
   /** Points to [[adventureworks.public.flaff.FlaffRow.specifier]] */
   parentspecifier: Option[ShortText]
-) {
+) extends Tuple5[ShortText, String, Int, ShortText, Option[ShortText]] {
   def compositeId: FlaffId = {
     new FlaffId(
       code,
@@ -38,10 +39,20 @@ case class FlaffRow(
   }
 
   def id: FlaffId = this.compositeId
+
+  override def `_1`: ShortText = code
+
+  override def `_2`: String = anotherCode
+
+  override def `_3`: Int = someNumber
+
+  override def `_4`: ShortText = specifier
+
+  override def `_5`: Option[ShortText] = parentspecifier
 }
 
 object FlaffRow {
-  val `_rowParser`: RowParser[FlaffRow] = RowParsers.of(ShortText.pgType, PgTypes.text, ScalaDbTypes.PgTypes.int4, ShortText.pgType, ShortText.pgType.nullable)(FlaffRow.apply)(row => Array[Any](row.code, row.anotherCode, row.someNumber, row.specifier, row.parentspecifier))
+  val `_rowParser`: RowParser[FlaffRow] = RowParsers.of(ShortText.dbType, PgTypes.text, ScalaDbTypes.PgTypes.int4, ShortText.dbType, ShortText.dbType.nullable)(FlaffRow.apply)(row => Array[Any](row.code, row.anotherCode, row.someNumber, row.specifier, row.parentspecifier))
 
   def apply(
     compositeId: FlaffId,

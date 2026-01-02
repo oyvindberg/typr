@@ -7,6 +7,7 @@ package adventureworks.production.productcosthistory
 
 import adventureworks.production.product.ProductId
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import java.time.LocalDateTime
@@ -15,8 +16,12 @@ import java.time.LocalDateTime
 case class ProductcosthistoryId(
   productid: ProductId,
   startdate: LocalDateTime
-)
+) extends Tuple2[ProductId, LocalDateTime] {
+  override def `_1`: ProductId = productid
+
+  override def `_2`: LocalDateTime = startdate
+}
 
 object ProductcosthistoryId {
-  val `_rowParser`: RowParser[ProductcosthistoryId] = RowParsers.of(ProductId.pgType, PgTypes.timestamp)(ProductcosthistoryId.apply)(row => Array[Any](row.productid, row.startdate))
+  val `_rowParser`: RowParser[ProductcosthistoryId] = RowParsers.of(ProductId.dbType, PgTypes.timestamp)(ProductcosthistoryId.apply)(row => Array[Any](row.productid, row.startdate))
 }

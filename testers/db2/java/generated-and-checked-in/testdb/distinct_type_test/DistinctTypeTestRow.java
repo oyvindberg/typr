@@ -8,6 +8,7 @@ package testdb.distinct_type_test;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple3;
 import java.util.Optional;
 import testdb.EmailAddress;
 import testdb.MoneyAmount;
@@ -17,7 +18,8 @@ public record DistinctTypeTestRow(
     /** Identity ALWAYS */
     @JsonProperty("ID") DistinctTypeTestId id,
     @JsonProperty("EMAIL") EmailAddress email,
-    @JsonProperty("BALANCE") Optional<MoneyAmount> balance) {
+    @JsonProperty("BALANCE") Optional<MoneyAmount> balance)
+    implements Tuple3<DistinctTypeTestId, EmailAddress, Optional<MoneyAmount>> {
   /** Identity ALWAYS */
   public DistinctTypeTestRow withId(DistinctTypeTestId id) {
     return new DistinctTypeTestRow(id, email, balance);
@@ -36,11 +38,29 @@ public record DistinctTypeTestRow(
 
   public static RowParser<DistinctTypeTestRow> _rowParser =
       RowParsers.of(
-          DistinctTypeTestId.pgType,
-          EmailAddress.pgType,
-          MoneyAmount.pgType.opt(),
+          DistinctTypeTestId.dbType,
+          EmailAddress.dbType,
+          MoneyAmount.dbType.opt(),
           DistinctTypeTestRow::new,
           row -> new Object[] {row.id(), row.email(), row.balance()});
+  ;
+
+  @Override
+  public DistinctTypeTestId _1() {
+    return id;
+  }
+  ;
+
+  @Override
+  public EmailAddress _2() {
+    return email;
+  }
+  ;
+
+  @Override
+  public Optional<MoneyAmount> _3() {
+    return balance;
+  }
   ;
 
   public DistinctTypeTestRowUnsaved toUnsavedRow() {

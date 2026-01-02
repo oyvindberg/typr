@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
+import dev.typr.foundations.data.Uint4;
 import java.math.BigDecimal;
 import testdb.customtypes.Defaulted;
 
@@ -19,11 +21,12 @@ public record PriceTiersRow(
     /** */
     String name,
     /** Default: 1 */
-    @JsonProperty("min_quantity") Long minQuantity,
+    @JsonProperty("min_quantity") Uint4 minQuantity,
     /** */
     @JsonProperty("discount_type") String discountType,
     /** */
-    @JsonProperty("discount_value") BigDecimal discountValue) {
+    @JsonProperty("discount_value") BigDecimal discountValue)
+    implements Tuple5<PriceTiersId, String, Uint4, String, BigDecimal> {
   /** AUTO_INCREMENT */
   public PriceTiersRow withTierId(PriceTiersId tierId) {
     return new PriceTiersRow(tierId, name, minQuantity, discountType, discountValue);
@@ -37,7 +40,7 @@ public record PriceTiersRow(
   ;
 
   /** Default: 1 */
-  public PriceTiersRow withMinQuantity(Long minQuantity) {
+  public PriceTiersRow withMinQuantity(Uint4 minQuantity) {
     return new PriceTiersRow(tierId, name, minQuantity, discountType, discountValue);
   }
   ;
@@ -56,7 +59,7 @@ public record PriceTiersRow(
 
   public static RowParser<PriceTiersRow> _rowParser =
       RowParsers.of(
-          PriceTiersId.pgType,
+          PriceTiersId.dbType,
           MariaTypes.varchar,
           MariaTypes.intUnsigned,
           MariaTypes.text,
@@ -68,12 +71,42 @@ public record PriceTiersRow(
               });
   ;
 
+  @Override
+  public PriceTiersId _1() {
+    return tierId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public Uint4 _3() {
+    return minQuantity;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return discountType;
+  }
+  ;
+
+  @Override
+  public BigDecimal _5() {
+    return discountValue;
+  }
+  ;
+
   public PriceTiersId id() {
     return tierId;
   }
   ;
 
-  public PriceTiersRowUnsaved toUnsavedRow(Defaulted<Long> minQuantity) {
+  public PriceTiersRowUnsaved toUnsavedRow(Defaulted<Uint4> minQuantity) {
     return new PriceTiersRowUnsaved(name, discountType, discountValue, minQuantity);
   }
   ;

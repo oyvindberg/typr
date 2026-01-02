@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -41,7 +42,9 @@ public record ProductcosthistoryRow(
      */
     BigDecimal standardcost,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple5<
+        ProductId, LocalDateTime, Optional<LocalDateTime>, BigDecimal, LocalDateTime> {
   /**
    * Product identification number. Foreign key to Product.ProductID Points to {@link
    * adventureworks.production.product.ProductRow#productid()}
@@ -86,7 +89,7 @@ public record ProductcosthistoryRow(
 
   public static RowParser<ProductcosthistoryRow> _rowParser =
       RowParsers.of(
-          ProductId.pgType,
+          ProductId.dbType,
           PgTypes.timestamp,
           PgTypes.timestamp.opt(),
           PgTypes.numeric,
@@ -113,6 +116,36 @@ public record ProductcosthistoryRow(
   ;
 
   public static PgText<ProductcosthistoryRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public ProductId _1() {
+    return productid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _2() {
+    return startdate;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _3() {
+    return enddate;
+  }
+  ;
+
+  @Override
+  public BigDecimal _4() {
+    return standardcost;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _5() {
+    return modifieddate;
+  }
+  ;
 
   public ProductcosthistoryId compositeId() {
     return new ProductcosthistoryId(productid, startdate);

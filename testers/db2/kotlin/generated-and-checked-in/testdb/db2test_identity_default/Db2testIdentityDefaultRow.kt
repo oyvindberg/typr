@@ -7,6 +7,7 @@ package testdb.db2test_identity_default
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import testdb.customtypes.Defaulted
@@ -18,10 +19,14 @@ data class Db2testIdentityDefaultRow(
   /** Identity BY DEFAULT */
   @JsonProperty("ID") val id: Db2testIdentityDefaultId,
   @JsonProperty("NAME") val name: String
-) {
+) : Tuple2<Db2testIdentityDefaultId, String> {
+  override fun _1(): Db2testIdentityDefaultId = id
+
+  override fun _2(): String = name
+
   fun toUnsavedRow(id: Defaulted<Db2testIdentityDefaultId>): Db2testIdentityDefaultRowUnsaved = Db2testIdentityDefaultRowUnsaved(name, id)
 
   companion object {
-    val _rowParser: RowParser<Db2testIdentityDefaultRow> = RowParsers.of(Db2testIdentityDefaultId.pgType, Db2Types.varchar, { t0, t1 -> Db2testIdentityDefaultRow(t0, t1) }, { row -> arrayOf<Any?>(row.id, row.name) })
+    val _rowParser: RowParser<Db2testIdentityDefaultRow> = RowParsers.of(Db2testIdentityDefaultId.dbType, Db2Types.varchar, { t0, t1 -> Db2testIdentityDefaultRow(t0, t1) }, { row -> arrayOf<Any?>(row.id, row.name) })
   }
 }

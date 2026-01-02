@@ -18,68 +18,320 @@ import adventureworks.public.Flag
 import adventureworks.public.Name
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.ForeignKey
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
+import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
 import dev.typr.foundations.dsl.SqlExpr.OptField
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr25
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
 
-trait ProductFields extends FieldsExpr0[ProductRow] {
-  def productid: IdField[ProductId, ProductRow]
+class ProductFields(val `_path`: java.util.List[Path]) extends TupleExpr25[ProductId, Name, String, Flag, Flag, /* max 15 chars */ String, java.lang.Short, java.lang.Short, java.math.BigDecimal, java.math.BigDecimal, /* max 5 chars */ String, UnitmeasureId, UnitmeasureId, java.math.BigDecimal, Integer, /* bpchar, max 2 chars */ String, /* bpchar, max 2 chars */ String, /* bpchar, max 2 chars */ String, ProductsubcategoryId, ProductmodelId, LocalDateTime, LocalDateTime, LocalDateTime, UUID, LocalDateTime] with RelationStructure[ProductFields, ProductRow]  with FieldsBase[ProductRow] {
+  def productid: IdField[ProductId, ProductRow] = {
+    new IdField[ProductId, ProductRow](
+      _path,
+      "productid",
+      _.productid,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(productid = value),
+      ProductId.dbType
+    )
+  }
 
-  def name: Field[Name, ProductRow]
+  def name: Field[Name, ProductRow] = {
+    new Field[Name, ProductRow](
+      _path,
+      "name",
+      _.name,
+      Optional.empty(),
+      Optional.of("varchar"),
+      (row, value) => row.copy(name = value),
+      Name.dbType
+    )
+  }
 
-  def productnumber: Field[String, ProductRow]
+  def productnumber: Field[String, ProductRow] = {
+    new Field[String, ProductRow](
+      _path,
+      "productnumber",
+      _.productnumber,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(productnumber = value),
+      PgTypes.text
+    )
+  }
 
-  def makeflag: Field[Flag, ProductRow]
+  def makeflag: Field[Flag, ProductRow] = {
+    new Field[Flag, ProductRow](
+      _path,
+      "makeflag",
+      _.makeflag,
+      Optional.empty(),
+      Optional.of("bool"),
+      (row, value) => row.copy(makeflag = value),
+      Flag.dbType
+    )
+  }
 
-  def finishedgoodsflag: Field[Flag, ProductRow]
+  def finishedgoodsflag: Field[Flag, ProductRow] = {
+    new Field[Flag, ProductRow](
+      _path,
+      "finishedgoodsflag",
+      _.finishedgoodsflag,
+      Optional.empty(),
+      Optional.of("bool"),
+      (row, value) => row.copy(finishedgoodsflag = value),
+      Flag.dbType
+    )
+  }
 
-  def color: OptField[/* max 15 chars */ String, ProductRow]
+  def color: OptField[String, ProductRow] = {
+    new OptField[String, ProductRow](
+      _path,
+      "color",
+      _.color,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(color = value),
+      PgTypes.text
+    )
+  }
 
-  def safetystocklevel: Field[java.lang.Short, ProductRow]
+  def safetystocklevel: Field[java.lang.Short, ProductRow] = {
+    new Field[java.lang.Short, ProductRow](
+      _path,
+      "safetystocklevel",
+      _.safetystocklevel,
+      Optional.empty(),
+      Optional.of("int2"),
+      (row, value) => row.copy(safetystocklevel = value),
+      PgTypes.int2
+    )
+  }
 
-  def reorderpoint: Field[java.lang.Short, ProductRow]
+  def reorderpoint: Field[java.lang.Short, ProductRow] = {
+    new Field[java.lang.Short, ProductRow](
+      _path,
+      "reorderpoint",
+      _.reorderpoint,
+      Optional.empty(),
+      Optional.of("int2"),
+      (row, value) => row.copy(reorderpoint = value),
+      PgTypes.int2
+    )
+  }
 
-  def standardcost: Field[java.math.BigDecimal, ProductRow]
+  def standardcost: Field[java.math.BigDecimal, ProductRow] = {
+    new Field[java.math.BigDecimal, ProductRow](
+      _path,
+      "standardcost",
+      _.standardcost,
+      Optional.empty(),
+      Optional.of("numeric"),
+      (row, value) => row.copy(standardcost = value),
+      PgTypes.numeric
+    )
+  }
 
-  def listprice: Field[java.math.BigDecimal, ProductRow]
+  def listprice: Field[java.math.BigDecimal, ProductRow] = {
+    new Field[java.math.BigDecimal, ProductRow](
+      _path,
+      "listprice",
+      _.listprice,
+      Optional.empty(),
+      Optional.of("numeric"),
+      (row, value) => row.copy(listprice = value),
+      PgTypes.numeric
+    )
+  }
 
-  def size: OptField[/* max 5 chars */ String, ProductRow]
+  def size: OptField[String, ProductRow] = {
+    new OptField[String, ProductRow](
+      _path,
+      "size",
+      _.size,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(size = value),
+      PgTypes.text
+    )
+  }
 
-  def sizeunitmeasurecode: OptField[UnitmeasureId, ProductRow]
+  def sizeunitmeasurecode: OptField[UnitmeasureId, ProductRow] = {
+    new OptField[UnitmeasureId, ProductRow](
+      _path,
+      "sizeunitmeasurecode",
+      _.sizeunitmeasurecode,
+      Optional.empty(),
+      Optional.of("bpchar"),
+      (row, value) => row.copy(sizeunitmeasurecode = value),
+      UnitmeasureId.dbType
+    )
+  }
 
-  def weightunitmeasurecode: OptField[UnitmeasureId, ProductRow]
+  def weightunitmeasurecode: OptField[UnitmeasureId, ProductRow] = {
+    new OptField[UnitmeasureId, ProductRow](
+      _path,
+      "weightunitmeasurecode",
+      _.weightunitmeasurecode,
+      Optional.empty(),
+      Optional.of("bpchar"),
+      (row, value) => row.copy(weightunitmeasurecode = value),
+      UnitmeasureId.dbType
+    )
+  }
 
-  def weight: OptField[java.math.BigDecimal, ProductRow]
+  def weight: OptField[java.math.BigDecimal, ProductRow] = {
+    new OptField[java.math.BigDecimal, ProductRow](
+      _path,
+      "weight",
+      _.weight,
+      Optional.empty(),
+      Optional.of("numeric"),
+      (row, value) => row.copy(weight = value),
+      PgTypes.numeric
+    )
+  }
 
-  def daystomanufacture: Field[Integer, ProductRow]
+  def daystomanufacture: Field[Integer, ProductRow] = {
+    new Field[Integer, ProductRow](
+      _path,
+      "daystomanufacture",
+      _.daystomanufacture,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(daystomanufacture = value),
+      PgTypes.int4
+    )
+  }
 
-  def productline: OptField[/* bpchar, max 2 chars */ String, ProductRow]
+  def productline: OptField[String, ProductRow] = {
+    new OptField[String, ProductRow](
+      _path,
+      "productline",
+      _.productline,
+      Optional.empty(),
+      Optional.of("bpchar"),
+      (row, value) => row.copy(productline = value),
+      PgTypes.bpchar
+    )
+  }
 
-  def `class`: OptField[/* bpchar, max 2 chars */ String, ProductRow]
+  def `class`: OptField[String, ProductRow] = {
+    new OptField[String, ProductRow](
+      _path,
+      "class",
+      _.`class`,
+      Optional.empty(),
+      Optional.of("bpchar"),
+      (row, value) => row.copy(`class` = value),
+      PgTypes.bpchar
+    )
+  }
 
-  def style: OptField[/* bpchar, max 2 chars */ String, ProductRow]
+  def style: OptField[String, ProductRow] = {
+    new OptField[String, ProductRow](
+      _path,
+      "style",
+      _.style,
+      Optional.empty(),
+      Optional.of("bpchar"),
+      (row, value) => row.copy(style = value),
+      PgTypes.bpchar
+    )
+  }
 
-  def productsubcategoryid: OptField[ProductsubcategoryId, ProductRow]
+  def productsubcategoryid: OptField[ProductsubcategoryId, ProductRow] = {
+    new OptField[ProductsubcategoryId, ProductRow](
+      _path,
+      "productsubcategoryid",
+      _.productsubcategoryid,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(productsubcategoryid = value),
+      ProductsubcategoryId.dbType
+    )
+  }
 
-  def productmodelid: OptField[ProductmodelId, ProductRow]
+  def productmodelid: OptField[ProductmodelId, ProductRow] = {
+    new OptField[ProductmodelId, ProductRow](
+      _path,
+      "productmodelid",
+      _.productmodelid,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(productmodelid = value),
+      ProductmodelId.dbType
+    )
+  }
 
-  def sellstartdate: Field[LocalDateTime, ProductRow]
+  def sellstartdate: Field[LocalDateTime, ProductRow] = {
+    new Field[LocalDateTime, ProductRow](
+      _path,
+      "sellstartdate",
+      _.sellstartdate,
+      Optional.empty(),
+      Optional.of("timestamp"),
+      (row, value) => row.copy(sellstartdate = value),
+      PgTypes.timestamp
+    )
+  }
 
-  def sellenddate: OptField[LocalDateTime, ProductRow]
+  def sellenddate: OptField[LocalDateTime, ProductRow] = {
+    new OptField[LocalDateTime, ProductRow](
+      _path,
+      "sellenddate",
+      _.sellenddate,
+      Optional.empty(),
+      Optional.of("timestamp"),
+      (row, value) => row.copy(sellenddate = value),
+      PgTypes.timestamp
+    )
+  }
 
-  def discontinueddate: OptField[LocalDateTime, ProductRow]
+  def discontinueddate: OptField[LocalDateTime, ProductRow] = {
+    new OptField[LocalDateTime, ProductRow](
+      _path,
+      "discontinueddate",
+      _.discontinueddate,
+      Optional.empty(),
+      Optional.of("timestamp"),
+      (row, value) => row.copy(discontinueddate = value),
+      PgTypes.timestamp
+    )
+  }
 
-  def rowguid: Field[UUID, ProductRow]
+  def rowguid: Field[UUID, ProductRow] = {
+    new Field[UUID, ProductRow](
+      _path,
+      "rowguid",
+      _.rowguid,
+      Optional.empty(),
+      Optional.of("uuid"),
+      (row, value) => row.copy(rowguid = value),
+      PgTypes.uuid
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, ProductRow]
+  def modifieddate: Field[LocalDateTime, ProductRow] = {
+    new Field[LocalDateTime, ProductRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      Optional.empty(),
+      Optional.of("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
   def fkProductmodel: ForeignKey[ProductmodelFields, ProductmodelRow] = ForeignKey.of[ProductmodelFields, ProductmodelRow]("production.FK_Product_ProductModel_ProductModelID").withColumnPair[ProductmodelId](productmodelid, _.productmodelid)
 
@@ -89,318 +341,63 @@ trait ProductFields extends FieldsExpr0[ProductRow] {
 
   def fkUnitmeasureWeightunitmeasurecode: ForeignKey[UnitmeasureFields, UnitmeasureRow] = ForeignKey.of[UnitmeasureFields, UnitmeasureRow]("production.FK_Product_UnitMeasure_WeightUnitMeasureCode").withColumnPair[UnitmeasureId](weightunitmeasurecode, _.unitmeasurecode)
 
-  override def columns: java.util.List[FieldLike[?, ProductRow]]
+  override def columns: java.util.List[FieldLike[?, ProductRow]] = java.util.List.of(this.productid, this.name, this.productnumber, this.makeflag, this.finishedgoodsflag, this.color, this.safetystocklevel, this.reorderpoint, this.standardcost, this.listprice, this.size, this.sizeunitmeasurecode, this.weightunitmeasurecode, this.weight, this.daystomanufacture, this.productline, this.`class`, this.style, this.productsubcategoryid, this.productmodelid, this.sellstartdate, this.sellenddate, this.discontinueddate, this.rowguid, this.modifieddate)
 
   override def rowParser: RowParser[ProductRow] = ProductRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductFields, ProductRow] = new ProductFields(`_path`)
+
+  override def `_1`: SqlExpr[ProductId] = productid
+
+  override def `_2`: SqlExpr[Name] = name
+
+  override def `_3`: SqlExpr[String] = productnumber
+
+  override def `_4`: SqlExpr[Flag] = makeflag
+
+  override def `_5`: SqlExpr[Flag] = finishedgoodsflag
+
+  override def `_6`: SqlExpr[/* max 15 chars */ String] = color
+
+  override def `_7`: SqlExpr[java.lang.Short] = safetystocklevel
+
+  override def `_8`: SqlExpr[java.lang.Short] = reorderpoint
+
+  override def `_9`: SqlExpr[java.math.BigDecimal] = standardcost
+
+  override def `_10`: SqlExpr[java.math.BigDecimal] = listprice
+
+  override def `_11`: SqlExpr[/* max 5 chars */ String] = size
+
+  override def `_12`: SqlExpr[UnitmeasureId] = sizeunitmeasurecode
+
+  override def `_13`: SqlExpr[UnitmeasureId] = weightunitmeasurecode
+
+  override def `_14`: SqlExpr[java.math.BigDecimal] = weight
+
+  override def `_15`: SqlExpr[Integer] = daystomanufacture
+
+  override def `_16`: SqlExpr[/* bpchar, max 2 chars */ String] = productline
+
+  override def `_17`: SqlExpr[/* bpchar, max 2 chars */ String] = `class`
+
+  override def `_18`: SqlExpr[/* bpchar, max 2 chars */ String] = style
+
+  override def `_19`: SqlExpr[ProductsubcategoryId] = productsubcategoryid
+
+  override def `_20`: SqlExpr[ProductmodelId] = productmodelid
+
+  override def `_21`: SqlExpr[LocalDateTime] = sellstartdate
+
+  override def `_22`: SqlExpr[LocalDateTime] = sellenddate
+
+  override def `_23`: SqlExpr[LocalDateTime] = discontinueddate
+
+  override def `_24`: SqlExpr[UUID] = rowguid
+
+  override def `_25`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object ProductFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ProductFields with RelationStructure[ProductFields, ProductRow] {
-
-    override def productid: IdField[ProductId, ProductRow] = {
-      new IdField[ProductId, ProductRow](
-        _path,
-        "productid",
-        _.productid,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(productid = value),
-        ProductId.pgType
-      )
-    }
-
-    override def name: Field[Name, ProductRow] = {
-      new Field[Name, ProductRow](
-        _path,
-        "name",
-        _.name,
-        Optional.empty(),
-        Optional.of("varchar"),
-        (row, value) => row.copy(name = value),
-        Name.pgType
-      )
-    }
-
-    override def productnumber: Field[String, ProductRow] = {
-      new Field[String, ProductRow](
-        _path,
-        "productnumber",
-        _.productnumber,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(productnumber = value),
-        PgTypes.text
-      )
-    }
-
-    override def makeflag: Field[Flag, ProductRow] = {
-      new Field[Flag, ProductRow](
-        _path,
-        "makeflag",
-        _.makeflag,
-        Optional.empty(),
-        Optional.of("bool"),
-        (row, value) => row.copy(makeflag = value),
-        Flag.pgType
-      )
-    }
-
-    override def finishedgoodsflag: Field[Flag, ProductRow] = {
-      new Field[Flag, ProductRow](
-        _path,
-        "finishedgoodsflag",
-        _.finishedgoodsflag,
-        Optional.empty(),
-        Optional.of("bool"),
-        (row, value) => row.copy(finishedgoodsflag = value),
-        Flag.pgType
-      )
-    }
-
-    override def color: OptField[String, ProductRow] = {
-      new OptField[String, ProductRow](
-        _path,
-        "color",
-        _.color,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(color = value),
-        PgTypes.text
-      )
-    }
-
-    override def safetystocklevel: Field[java.lang.Short, ProductRow] = {
-      new Field[java.lang.Short, ProductRow](
-        _path,
-        "safetystocklevel",
-        _.safetystocklevel,
-        Optional.empty(),
-        Optional.of("int2"),
-        (row, value) => row.copy(safetystocklevel = value),
-        PgTypes.int2
-      )
-    }
-
-    override def reorderpoint: Field[java.lang.Short, ProductRow] = {
-      new Field[java.lang.Short, ProductRow](
-        _path,
-        "reorderpoint",
-        _.reorderpoint,
-        Optional.empty(),
-        Optional.of("int2"),
-        (row, value) => row.copy(reorderpoint = value),
-        PgTypes.int2
-      )
-    }
-
-    override def standardcost: Field[java.math.BigDecimal, ProductRow] = {
-      new Field[java.math.BigDecimal, ProductRow](
-        _path,
-        "standardcost",
-        _.standardcost,
-        Optional.empty(),
-        Optional.of("numeric"),
-        (row, value) => row.copy(standardcost = value),
-        PgTypes.numeric
-      )
-    }
-
-    override def listprice: Field[java.math.BigDecimal, ProductRow] = {
-      new Field[java.math.BigDecimal, ProductRow](
-        _path,
-        "listprice",
-        _.listprice,
-        Optional.empty(),
-        Optional.of("numeric"),
-        (row, value) => row.copy(listprice = value),
-        PgTypes.numeric
-      )
-    }
-
-    override def size: OptField[String, ProductRow] = {
-      new OptField[String, ProductRow](
-        _path,
-        "size",
-        _.size,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(size = value),
-        PgTypes.text
-      )
-    }
-
-    override def sizeunitmeasurecode: OptField[UnitmeasureId, ProductRow] = {
-      new OptField[UnitmeasureId, ProductRow](
-        _path,
-        "sizeunitmeasurecode",
-        _.sizeunitmeasurecode,
-        Optional.empty(),
-        Optional.of("bpchar"),
-        (row, value) => row.copy(sizeunitmeasurecode = value),
-        UnitmeasureId.pgType
-      )
-    }
-
-    override def weightunitmeasurecode: OptField[UnitmeasureId, ProductRow] = {
-      new OptField[UnitmeasureId, ProductRow](
-        _path,
-        "weightunitmeasurecode",
-        _.weightunitmeasurecode,
-        Optional.empty(),
-        Optional.of("bpchar"),
-        (row, value) => row.copy(weightunitmeasurecode = value),
-        UnitmeasureId.pgType
-      )
-    }
-
-    override def weight: OptField[java.math.BigDecimal, ProductRow] = {
-      new OptField[java.math.BigDecimal, ProductRow](
-        _path,
-        "weight",
-        _.weight,
-        Optional.empty(),
-        Optional.of("numeric"),
-        (row, value) => row.copy(weight = value),
-        PgTypes.numeric
-      )
-    }
-
-    override def daystomanufacture: Field[Integer, ProductRow] = {
-      new Field[Integer, ProductRow](
-        _path,
-        "daystomanufacture",
-        _.daystomanufacture,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(daystomanufacture = value),
-        PgTypes.int4
-      )
-    }
-
-    override def productline: OptField[String, ProductRow] = {
-      new OptField[String, ProductRow](
-        _path,
-        "productline",
-        _.productline,
-        Optional.empty(),
-        Optional.of("bpchar"),
-        (row, value) => row.copy(productline = value),
-        PgTypes.bpchar
-      )
-    }
-
-    override def `class`: OptField[String, ProductRow] = {
-      new OptField[String, ProductRow](
-        _path,
-        "class",
-        _.`class`,
-        Optional.empty(),
-        Optional.of("bpchar"),
-        (row, value) => row.copy(`class` = value),
-        PgTypes.bpchar
-      )
-    }
-
-    override def style: OptField[String, ProductRow] = {
-      new OptField[String, ProductRow](
-        _path,
-        "style",
-        _.style,
-        Optional.empty(),
-        Optional.of("bpchar"),
-        (row, value) => row.copy(style = value),
-        PgTypes.bpchar
-      )
-    }
-
-    override def productsubcategoryid: OptField[ProductsubcategoryId, ProductRow] = {
-      new OptField[ProductsubcategoryId, ProductRow](
-        _path,
-        "productsubcategoryid",
-        _.productsubcategoryid,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(productsubcategoryid = value),
-        ProductsubcategoryId.pgType
-      )
-    }
-
-    override def productmodelid: OptField[ProductmodelId, ProductRow] = {
-      new OptField[ProductmodelId, ProductRow](
-        _path,
-        "productmodelid",
-        _.productmodelid,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(productmodelid = value),
-        ProductmodelId.pgType
-      )
-    }
-
-    override def sellstartdate: Field[LocalDateTime, ProductRow] = {
-      new Field[LocalDateTime, ProductRow](
-        _path,
-        "sellstartdate",
-        _.sellstartdate,
-        Optional.empty(),
-        Optional.of("timestamp"),
-        (row, value) => row.copy(sellstartdate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def sellenddate: OptField[LocalDateTime, ProductRow] = {
-      new OptField[LocalDateTime, ProductRow](
-        _path,
-        "sellenddate",
-        _.sellenddate,
-        Optional.empty(),
-        Optional.of("timestamp"),
-        (row, value) => row.copy(sellenddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def discontinueddate: OptField[LocalDateTime, ProductRow] = {
-      new OptField[LocalDateTime, ProductRow](
-        _path,
-        "discontinueddate",
-        _.discontinueddate,
-        Optional.empty(),
-        Optional.of("timestamp"),
-        (row, value) => row.copy(discontinueddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def rowguid: Field[UUID, ProductRow] = {
-      new Field[UUID, ProductRow](
-        _path,
-        "rowguid",
-        _.rowguid,
-        Optional.empty(),
-        Optional.of("uuid"),
-        (row, value) => row.copy(rowguid = value),
-        PgTypes.uuid
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, ProductRow] = {
-      new Field[LocalDateTime, ProductRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        Optional.empty(),
-        Optional.of("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, ProductRow]] = java.util.List.of(this.productid, this.name, this.productnumber, this.makeflag, this.finishedgoodsflag, this.color, this.safetystocklevel, this.reorderpoint, this.standardcost, this.listprice, this.size, this.sizeunitmeasurecode, this.weightunitmeasurecode, this.weight, this.daystomanufacture, this.productline, this.`class`, this.style, this.productsubcategoryid, this.productmodelid, this.sellstartdate, this.sellenddate, this.discontinueddate, this.rowguid, this.modifieddate)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductFields, ProductRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: ProductFields = new ProductFields(java.util.Collections.emptyList())
 }

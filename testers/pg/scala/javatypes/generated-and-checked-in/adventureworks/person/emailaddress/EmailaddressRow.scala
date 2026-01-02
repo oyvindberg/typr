@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple5
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
@@ -34,7 +35,7 @@ case class EmailaddressRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple5[BusinessentityId, Integer, Optional[/* max 50 chars */ String], UUID, LocalDateTime] {
   def compositeId: EmailaddressId = new EmailaddressId(businessentityid, emailaddressid)
 
   def id: EmailaddressId = this.compositeId
@@ -52,10 +53,20 @@ case class EmailaddressRow(
       modifieddate
     )
   }
+
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: Integer = emailaddressid
+
+  override def `_3`: Optional[/* max 50 chars */ String] = emailaddress
+
+  override def `_4`: UUID = rowguid
+
+  override def `_5`: LocalDateTime = modifieddate
 }
 
 object EmailaddressRow {
-  val `_rowParser`: RowParser[EmailaddressRow] = RowParsers.of(BusinessentityId.pgType, PgTypes.int4, PgTypes.text.opt(), PgTypes.uuid, PgTypes.timestamp, EmailaddressRow.apply, row => Array[Any](row.businessentityid, row.emailaddressid, row.emailaddress, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[EmailaddressRow] = RowParsers.of(BusinessentityId.dbType, PgTypes.int4, PgTypes.text.opt(), PgTypes.uuid, PgTypes.timestamp, EmailaddressRow.apply, row => Array[Any](row.businessentityid, row.emailaddressid, row.emailaddress, row.rowguid, row.modifieddate))
 
   def apply(
     compositeId: EmailaddressId,

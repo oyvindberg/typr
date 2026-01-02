@@ -7,6 +7,7 @@ package testdb.update_customer_priority
 
 import dev.typr.foundations.kotlin.Fragment
 import java.sql.Connection
+import kotlin.collections.List
 import testdb.Priority
 import testdb.customers.CustomersId
 
@@ -15,5 +16,5 @@ class UpdateCustomerPrioritySqlRepoImpl() : UpdateCustomerPrioritySqlRepo {
     newPriority: /* user-picked */ Priority,
     customerId: /* user-picked */ CustomersId,
     c: Connection
-  ): Int = Fragment.interpolate(Fragment.lit("-- Update customer priority based on spending and return updated rows\n-- Tests: UPDATE with RETURNING, enum parameters\n\nUPDATE customers\nSET priority = "), Fragment.encode(Priority.duckDbType, newPriority), Fragment.lit("\nWHERE customer_id = "), Fragment.encode(CustomersId.duckDbType, customerId), Fragment.lit("\nRETURNING\n    customer_id,\n    name,\n    email,\n    created_at,\n    priority")).update().runUnchecked(c)
+  ): List<UpdateCustomerPrioritySqlRow> = Fragment.interpolate(Fragment.lit("-- Update customer priority based on spending and return updated rows\n-- Tests: UPDATE with RETURNING, enum parameters\n\nUPDATE customers\nSET priority = "), Fragment.encode(Priority.duckDbType, newPriority), Fragment.lit("\nWHERE customer_id = "), Fragment.encode(CustomersId.duckDbType, customerId), Fragment.lit("\nRETURNING\n    customer_id,\n    name,\n    email,\n    created_at,\n    priority")).query(UpdateCustomerPrioritySqlRow._rowParser.all()).runUnchecked(c)
 }

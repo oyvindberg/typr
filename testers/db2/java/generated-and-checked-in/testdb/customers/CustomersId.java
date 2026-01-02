@@ -26,6 +26,6 @@ public record CustomersId(@JsonValue Integer value) {
   public static Bijection<CustomersId, Integer> bijection =
       Bijection.of(CustomersId::value, CustomersId::new);
 
-  public static Db2Type<CustomersId> pgType =
+  public static Db2Type<CustomersId> dbType =
       Db2Types.integer.bimap(CustomersId::new, CustomersId::value);
 }

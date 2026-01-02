@@ -33,5 +33,4 @@ public class CustomerOrdersSqlRepoImpl implements CustomerOrdersSqlRepo {
         .query(CustomerOrdersSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

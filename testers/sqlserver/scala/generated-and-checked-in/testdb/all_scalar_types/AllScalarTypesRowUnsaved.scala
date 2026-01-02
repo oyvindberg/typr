@@ -8,6 +8,10 @@ package testdb.all_scalar_types
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.microsoft.sqlserver.jdbc.Geography
 import com.microsoft.sqlserver.jdbc.Geometry
+import dev.typr.foundations.data.HierarchyId
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Xml
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -18,7 +22,7 @@ import testdb.customtypes.Defaulted.UseDefault
 
 /** This class corresponds to a row in table `all_scalar_types` which has not been persisted yet */
 case class AllScalarTypesRowUnsaved(
-  @JsonProperty("col_tinyint") colTinyint: Option[Short] = None,
+  @JsonProperty("col_tinyint") colTinyint: Option[Uint1] = None,
   @JsonProperty("col_smallint") colSmallint: Option[Short] = None,
   @JsonProperty("col_int") colInt: Option[Int] = None,
   @JsonProperty("col_bigint") colBigint: Option[Long] = None,
@@ -48,9 +52,9 @@ case class AllScalarTypesRowUnsaved(
   @JsonProperty("col_datetime2") colDatetime2: Option[LocalDateTime] = None,
   @JsonProperty("col_datetimeoffset") colDatetimeoffset: Option[OffsetDateTime] = None,
   @JsonProperty("col_uniqueidentifier") colUniqueidentifier: Option[UUID] = None,
-  @JsonProperty("col_xml") colXml: Option[/* XML */ String] = None,
-  @JsonProperty("col_json") colJson: Option[String] = None,
-  @JsonProperty("col_hierarchyid") colHierarchyid: Option[/* HIERARCHYID */ String] = None,
+  @JsonProperty("col_xml") colXml: Option[Xml] = None,
+  @JsonProperty("col_json") colJson: Option[Json] = None,
+  @JsonProperty("col_hierarchyid") colHierarchyid: Option[HierarchyId] = None,
   @JsonProperty("col_geography") colGeography: Option[Geography] = None,
   @JsonProperty("col_geometry") colGeometry: Option[Geometry] = None,
   /** Default: ('default_value') */

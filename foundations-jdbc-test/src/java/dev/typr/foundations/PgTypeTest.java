@@ -249,6 +249,31 @@ public class PgTypeTest {
           new PgTypeAndExample<>(PgTypes.inet, new Inet("0.0.0.0")), // Edge case: any address
           new PgTypeAndExample<>(PgTypes.inetArray, new Inet[] {new Inet("10.1.0.0")}),
 
+          // CIDR - network addresses
+          new PgTypeAndExample<>(PgTypes.cidr, new Cidr("192.168.1.0/24")),
+          new PgTypeAndExample<>(PgTypes.cidr, new Cidr("10.0.0.0/8")), // Edge case: Class A
+          new PgTypeAndExample<>(
+              PgTypes.cidr, new Cidr("172.16.0.0/12")), // Edge case: Class B private
+          new PgTypeAndExample<>(PgTypes.cidrArray, new Cidr[] {new Cidr("192.168.1.0/24")}),
+
+          // MAC addresses (6-byte format)
+          new PgTypeAndExample<>(PgTypes.macaddr, new MacAddr("08:00:2b:01:02:03")),
+          new PgTypeAndExample<>(
+              PgTypes.macaddr, new MacAddr("00:00:00:00:00:00")), // Edge case: all zeros
+          new PgTypeAndExample<>(
+              PgTypes.macaddr, new MacAddr("ff:ff:ff:ff:ff:ff")), // Edge case: broadcast
+          new PgTypeAndExample<>(
+              PgTypes.macaddrArray, new MacAddr[] {new MacAddr("08:00:2b:01:02:03")}),
+
+          // MAC addresses (8-byte format, EUI-64)
+          new PgTypeAndExample<>(PgTypes.macaddr8, new MacAddr8("08:00:2b:01:02:03:04:05")),
+          new PgTypeAndExample<>(
+              PgTypes.macaddr8, new MacAddr8("00:00:00:00:00:00:00:00")), // Edge case: all zeros
+          new PgTypeAndExample<>(
+              PgTypes.macaddr8, new MacAddr8("ff:ff:ff:ff:ff:ff:ff:ff")), // Edge case: all ones
+          new PgTypeAndExample<>(
+              PgTypes.macaddr8Array, new MacAddr8[] {new MacAddr8("08:00:2b:01:02:03:04:05")}),
+
           // ==================== Key-Value Types ====================
           new PgTypeAndExample<>(PgTypes.hstore, Map.of(",.;{}[]-//#®✅", ",.;{}[]-//#®✅")),
           new PgTypeAndExample<>(PgTypes.hstore, Map.of()), // Edge case: empty map

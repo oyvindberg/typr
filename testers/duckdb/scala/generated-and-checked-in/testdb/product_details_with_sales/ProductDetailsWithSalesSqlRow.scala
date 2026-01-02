@@ -7,6 +7,7 @@ package testdb.product_details_with_sales
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple9
 import dev.typr.foundations.data.Json
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
@@ -34,7 +35,25 @@ case class ProductDetailsWithSalesSqlRow(
   @JsonProperty("total_revenue") totalRevenue: Option[Double],
   /** Points to [[testdb.order_items.OrderItemsRow.orderId]] */
   popularity: Option[String]
-)
+) extends Tuple9[ProductsId, String, String, BigDecimal, Option[Json], Option[Long], Option[Long], Option[Double], Option[String]] {
+  override def `_1`: ProductsId = productId
+
+  override def `_2`: String = sku
+
+  override def `_3`: String = name
+
+  override def `_4`: BigDecimal = price
+
+  override def `_5`: Option[Json] = metadata
+
+  override def `_6`: Option[Long] = timesOrdered
+
+  override def `_7`: Option[Long] = totalQuantitySold
+
+  override def `_8`: Option[Double] = totalRevenue
+
+  override def `_9`: Option[String] = popularity
+}
 
 object ProductDetailsWithSalesSqlRow {
   val `_rowParser`: RowParser[ProductDetailsWithSalesSqlRow] = RowParsers.of(ProductsId.duckDbType, DuckDbTypes.varchar, DuckDbTypes.varchar, ScalaDbTypes.DuckDbTypes.numeric, DuckDbTypes.json.nullable, ScalaDbTypes.DuckDbTypes.bigint.nullable, ScalaDbTypes.DuckDbTypes.bigint.nullable, ScalaDbTypes.DuckDbTypes.double_.nullable, DuckDbTypes.varchar.nullable)(ProductDetailsWithSalesSqlRow.apply)(row => Array[Any](row.productId, row.sku, row.name, row.price, row.metadata, row.timesOrdered, row.totalQuantitySold, row.totalRevenue, row.popularity))

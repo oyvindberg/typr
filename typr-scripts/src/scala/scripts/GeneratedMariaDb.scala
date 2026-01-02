@@ -1,6 +1,6 @@
 package scripts
 
-import bleep.{FileWatching, cli}
+import bleep.FileWatching
 import ryddig.{Formatter, LogLevel, LogPatterns, Loggers}
 import typr.*
 import typr.internal.codegen.*
@@ -31,7 +31,7 @@ object GeneratedMariaDb {
           username = "typr",
           password = "password"
         )
-        val scriptsPath = buildDir.resolve("mariadb_sql")
+        val scriptsPath = buildDir.resolve("sql-scripts/mariadb")
         val selector = Selector.All
         val typoLogger = TypoLogger.Console
 
@@ -68,13 +68,7 @@ object GeneratedMariaDb {
               .filter { case (_, synced) => synced != FileSync.Synced.Unchanged }
               .foreach { case (path, synced) => logger.withContext("path", path).warn(synced.toString) }
 
-            cli(
-              "add files to git",
-              buildDir,
-              List("git", "add", "-f", targetSources.toString),
-              logger = logger,
-              cli.Out.Raw
-            )
+            GitOps.gitAdd("add files to git", buildDir, List(targetSources.toString), logger)
           }
         }
 

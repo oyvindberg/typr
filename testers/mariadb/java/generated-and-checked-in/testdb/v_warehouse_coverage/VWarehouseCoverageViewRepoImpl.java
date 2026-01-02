@@ -18,11 +18,10 @@ public class VWarehouseCoverageViewRepoImpl implements VWarehouseCoverageViewRep
   public SelectBuilder<VWarehouseCoverageViewFields, VWarehouseCoverageViewRow> select() {
     return SelectBuilder.of(
         "`v_warehouse_coverage`",
-        VWarehouseCoverageViewFields.structure(),
+        VWarehouseCoverageViewFields.structure,
         VWarehouseCoverageViewRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<VWarehouseCoverageViewRow> selectAll(Connection c) {
@@ -35,5 +34,4 @@ public class VWarehouseCoverageViewRepoImpl implements VWarehouseCoverageViewRep
         .query(VWarehouseCoverageViewRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

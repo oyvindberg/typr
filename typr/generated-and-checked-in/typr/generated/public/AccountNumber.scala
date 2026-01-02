@@ -21,29 +21,29 @@ import typr.generated.Text
 case class AccountNumber(value: String)
 
 object AccountNumber {
-  implicit lazy val arrayColumn: Column[Array[AccountNumber]] = Column.columnToArray(column, implicitly)
+  given arrayColumn: Column[Array[AccountNumber]] = Column.columnToArray(using column, summon)
 
-  implicit lazy val arrayToStatement: ToStatement[Array[AccountNumber]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
+  given arrayToStatement: ToStatement[Array[AccountNumber]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
 
-  implicit lazy val column: Column[AccountNumber] = Column.columnToString.map(AccountNumber.apply)
+  given column: Column[AccountNumber] = Column.columnToString.map(AccountNumber.apply)
 
-  implicit lazy val parameterMetadata: ParameterMetaData[AccountNumber] = {
+  given parameterMetadata: ParameterMetaData[AccountNumber] = {
     new ParameterMetaData[AccountNumber] {
       override def sqlType: String = """"public"."AccountNumber""""
       override def jdbcType: Int = Types.OTHER
     }
   }
 
-  implicit lazy val pgText: Text[AccountNumber] = {
+  given pgText: Text[AccountNumber] = {
     new Text[AccountNumber] {
       override def unsafeEncode(v: AccountNumber, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
       override def unsafeArrayEncode(v: AccountNumber, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
     }
   }
 
-  implicit lazy val reads: Reads[AccountNumber] = Reads.StringReads.map(AccountNumber.apply)
+  given reads: Reads[AccountNumber] = Reads.StringReads.map(AccountNumber.apply)
 
-  implicit lazy val toStatement: ToStatement[AccountNumber] = ToStatement.stringToStatement.contramap(_.value)
+  given toStatement: ToStatement[AccountNumber] = ToStatement.stringToStatement.contramap(_.value)
 
-  implicit lazy val writes: Writes[AccountNumber] = Writes.StringWrites.contramap(_.value)
+  given writes: Writes[AccountNumber] = Writes.StringWrites.contramap(_.value)
 }

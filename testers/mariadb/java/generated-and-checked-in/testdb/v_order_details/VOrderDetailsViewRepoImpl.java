@@ -18,11 +18,10 @@ public class VOrderDetailsViewRepoImpl implements VOrderDetailsViewRepo {
   public SelectBuilder<VOrderDetailsViewFields, VOrderDetailsViewRow> select() {
     return SelectBuilder.of(
         "`v_order_details`",
-        VOrderDetailsViewFields.structure(),
+        VOrderDetailsViewFields.structure,
         VOrderDetailsViewRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<VOrderDetailsViewRow> selectAll(Connection c) {
@@ -36,5 +35,4 @@ public class VOrderDetailsViewRepoImpl implements VOrderDetailsViewRepo {
         .query(VOrderDetailsViewRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

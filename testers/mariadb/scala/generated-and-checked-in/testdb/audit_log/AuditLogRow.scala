@@ -7,6 +7,8 @@ package testdb.audit_log
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple10
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.Inet6
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
@@ -31,11 +33,11 @@ case class AuditLogRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("old_values") oldValues: Option[String],
+  @JsonProperty("old_values") oldValues: Option[Json],
   /** 
    * Default: NULL
    */
-  @JsonProperty("new_values") newValues: Option[String],
+  @JsonProperty("new_values") newValues: Option[Json],
   /** 
    * Default: NULL
    */
@@ -52,12 +54,12 @@ case class AuditLogRow(
    * Default: NULL
    */
   @JsonProperty("session_id") sessionId: Option[Array[Byte]]
-) {
+) extends Tuple10[AuditLogId, String, String, String, Option[Json], Option[Json], Option[String], LocalDateTime, Option[Inet6], Option[Array[Byte]]] {
   def id: AuditLogId = logId
 
   def toUnsavedRow(
-    oldValues: Defaulted[Option[String]] = Defaulted.Provided(this.oldValues),
-    newValues: Defaulted[Option[String]] = Defaulted.Provided(this.newValues),
+    oldValues: Defaulted[Option[Json]] = Defaulted.Provided(this.oldValues),
+    newValues: Defaulted[Option[Json]] = Defaulted.Provided(this.newValues),
     changedBy: Defaulted[Option[String]] = Defaulted.Provided(this.changedBy),
     changedAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.changedAt),
     clientIp: Defaulted[Option[Inet6]] = Defaulted.Provided(this.clientIp),
@@ -75,8 +77,28 @@ case class AuditLogRow(
       sessionId
     )
   }
+
+  override def `_1`: AuditLogId = logId
+
+  override def `_2`: String = tableName
+
+  override def `_3`: String = recordId
+
+  override def `_4`: String = action
+
+  override def `_5`: Option[Json] = oldValues
+
+  override def `_6`: Option[Json] = newValues
+
+  override def `_7`: Option[String] = changedBy
+
+  override def `_8`: LocalDateTime = changedAt
+
+  override def `_9`: Option[Inet6] = clientIp
+
+  override def `_10`: Option[Array[Byte]] = sessionId
 }
 
 object AuditLogRow {
-  val `_rowParser`: RowParser[AuditLogRow] = RowParsers.of(AuditLogId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, MariaTypes.longtext.nullable, MariaTypes.longtext.nullable, MariaTypes.varchar.nullable, MariaTypes.datetime, MariaTypes.inet6.nullable, MariaTypes.varbinary.nullable)(AuditLogRow.apply)(row => Array[Any](row.logId, row.tableName, row.recordId, row.action, row.oldValues, row.newValues, row.changedBy, row.changedAt, row.clientIp, row.sessionId))
+  val `_rowParser`: RowParser[AuditLogRow] = RowParsers.of(AuditLogId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, MariaTypes.json.nullable, MariaTypes.json.nullable, MariaTypes.varchar.nullable, MariaTypes.datetime, MariaTypes.inet6.nullable, MariaTypes.varbinary.nullable)(AuditLogRow.apply)(row => Array[Any](row.logId, row.tableName, row.recordId, row.action, row.oldValues, row.newValues, row.changedBy, row.changedAt, row.clientIp, row.sessionId))
 }

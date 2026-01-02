@@ -7,6 +7,8 @@ package testdb.shipments
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple17
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -48,7 +50,7 @@ data class ShipmentsRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("dimensions_json") val dimensionsJson: String?,
+  @JsonProperty("dimensions_json") val dimensionsJson: Json?,
   /** 
     * Default: NULL
     */
@@ -88,13 +90,47 @@ data class ShipmentsRow(
     * Default: current_timestamp(6)
     */
   @JsonProperty("updated_at") val updatedAt: LocalDateTime
-) {
+) : Tuple17<ShipmentsId, OrdersId, ShippingCarriersId, String?, String, BigDecimal?, Json?, ByteArray?, String, LocalDate?, LocalDateTime?, BigDecimal, BigDecimal?, WarehousesId?, LocalDateTime?, LocalDateTime, LocalDateTime> {
+  override fun _1(): ShipmentsId = shipmentId
+
+  override fun _10(): LocalDate? = estimatedDeliveryDate
+
+  override fun _11(): LocalDateTime? = actualDeliveryAt
+
+  override fun _12(): BigDecimal = shippingCost
+
+  override fun _13(): BigDecimal? = insuranceAmount
+
+  override fun _14(): WarehousesId? = originWarehouseId
+
+  override fun _15(): LocalDateTime? = shippedAt
+
+  override fun _16(): LocalDateTime = createdAt
+
+  override fun _17(): LocalDateTime = updatedAt
+
+  override fun _2(): OrdersId = orderId
+
+  override fun _3(): ShippingCarriersId = carrierId
+
+  override fun _4(): String? = trackingNumber
+
+  override fun _5(): String = shippingMethod
+
+  override fun _6(): BigDecimal? = weightKg
+
+  override fun _7(): Json? = dimensionsJson
+
+  override fun _8(): ByteArray? = labelData
+
+  override fun _9(): String = status
+
   fun id(): ShipmentsId = shipmentId
 
   fun toUnsavedRow(
     trackingNumber: Defaulted<String?> = Defaulted.Provided(this.trackingNumber),
     weightKg: Defaulted<BigDecimal?> = Defaulted.Provided(this.weightKg),
-    dimensionsJson: Defaulted<String?> = Defaulted.Provided(this.dimensionsJson),
+    dimensionsJson: Defaulted<Json?> = Defaulted.Provided(this.dimensionsJson),
     labelData: Defaulted<ByteArray?> = Defaulted.Provided(this.labelData),
     status: Defaulted<String> = Defaulted.Provided(this.status),
     estimatedDeliveryDate: Defaulted<LocalDate?> = Defaulted.Provided(this.estimatedDeliveryDate),
@@ -107,6 +143,6 @@ data class ShipmentsRow(
   ): ShipmentsRowUnsaved = ShipmentsRowUnsaved(orderId, carrierId, shippingMethod, shippingCost, trackingNumber, weightKg, dimensionsJson, labelData, status, estimatedDeliveryDate, actualDeliveryAt, insuranceAmount, originWarehouseId, shippedAt, createdAt, updatedAt)
 
   companion object {
-    val _rowParser: RowParser<ShipmentsRow> = RowParsers.of(ShipmentsId.pgType, OrdersId.pgType, ShippingCarriersId.pgType, MariaTypes.varchar.nullable(), MariaTypes.varchar, KotlinDbTypes.MariaTypes.numeric.nullable(), MariaTypes.longtext.nullable(), MariaTypes.longblob.nullable(), MariaTypes.text, MariaTypes.date.nullable(), MariaTypes.datetime.nullable(), KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric.nullable(), WarehousesId.pgType.nullable(), MariaTypes.datetime.nullable(), MariaTypes.datetime, MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16 -> ShipmentsRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) }, { row -> arrayOf<Any?>(row.shipmentId, row.orderId, row.carrierId, row.trackingNumber, row.shippingMethod, row.weightKg, row.dimensionsJson, row.labelData, row.status, row.estimatedDeliveryDate, row.actualDeliveryAt, row.shippingCost, row.insuranceAmount, row.originWarehouseId, row.shippedAt, row.createdAt, row.updatedAt) })
+    val _rowParser: RowParser<ShipmentsRow> = RowParsers.of(ShipmentsId.dbType, OrdersId.dbType, ShippingCarriersId.dbType, MariaTypes.varchar.nullable(), MariaTypes.varchar, KotlinDbTypes.MariaTypes.numeric.nullable(), MariaTypes.json.nullable(), MariaTypes.longblob.nullable(), MariaTypes.text, MariaTypes.date.nullable(), MariaTypes.datetime.nullable(), KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric.nullable(), WarehousesId.dbType.nullable(), MariaTypes.datetime.nullable(), MariaTypes.datetime, MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16 -> ShipmentsRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) }, { row -> arrayOf<Any?>(row.shipmentId, row.orderId, row.carrierId, row.trackingNumber, row.shippingMethod, row.weightKg, row.dimensionsJson, row.labelData, row.status, row.estimatedDeliveryDate, row.actualDeliveryAt, row.shippingCost, row.insuranceAmount, row.originWarehouseId, row.shippedAt, row.createdAt, row.updatedAt) })
   }
 }

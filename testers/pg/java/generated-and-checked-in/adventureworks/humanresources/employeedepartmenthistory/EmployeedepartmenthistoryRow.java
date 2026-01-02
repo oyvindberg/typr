@@ -13,6 +13,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple6;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -51,7 +52,9 @@ public record EmployeedepartmenthistoryRow(
      */
     Optional<LocalDate> enddate,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple6<
+        BusinessentityId, DepartmentId, ShiftId, LocalDate, Optional<LocalDate>, LocalDateTime> {
   /**
    * Employee identification number. Foreign key to Employee.BusinessEntityID. Points to {@link
    * adventureworks.humanresources.employee.EmployeeRow#businessentityid()}
@@ -114,9 +117,9 @@ public record EmployeedepartmenthistoryRow(
 
   public static RowParser<EmployeedepartmenthistoryRow> _rowParser =
       RowParsers.of(
-          BusinessentityId.pgType,
-          DepartmentId.pgType,
-          ShiftId.pgType,
+          BusinessentityId.dbType,
+          DepartmentId.dbType,
+          ShiftId.dbType,
           PgTypes.date,
           PgTypes.date.opt(),
           PgTypes.timestamp,
@@ -147,6 +150,42 @@ public record EmployeedepartmenthistoryRow(
   ;
 
   public static PgText<EmployeedepartmenthistoryRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public BusinessentityId _1() {
+    return businessentityid;
+  }
+  ;
+
+  @Override
+  public DepartmentId _2() {
+    return departmentid;
+  }
+  ;
+
+  @Override
+  public ShiftId _3() {
+    return shiftid;
+  }
+  ;
+
+  @Override
+  public LocalDate _4() {
+    return startdate;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDate> _5() {
+    return enddate;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _6() {
+    return modifieddate;
+  }
+  ;
 
   public EmployeedepartmenthistoryId compositeId() {
     return new EmployeedepartmenthistoryId(businessentityid, startdate, departmentid, shiftid);

@@ -4,7 +4,6 @@ import typr.*
 import typr.internal.codegen.LangScala
 
 import java.nio.file.Path
-import scala.annotation.nowarn
 
 object GeneratedSources {
   def main(args: Array[String]): Unit = {
@@ -25,7 +24,7 @@ object GeneratedSources {
 
     val options = Options(
       pkg = "typr.generated",
-      lang = LangScala.javaDsl(Dialect.Scala2XSource3, TypeSupportScala),
+      lang = LangScala.javaDsl(Dialect.Scala3, TypeSupportScala),
       jsonLibs = List(JsonLibName.PlayJson),
       dbLib = Some(DbLibName.Anorm),
       fileHeader = header,
@@ -47,13 +46,11 @@ object GeneratedSources {
         "foo",
         "pg_prepared_statements"
       ),
-      List(buildDir.resolve("sql"))
+      List(buildDir.resolve("typr-internal-sql"))
     )
 
     files.foreach(_.overwriteFolder())
 
-    import scala.sys.process.*
-    List("git", "add", "-f", typoSources.toString).!! : @nowarn
-    ()
+    GitOps.gitAddSimple(List(typoSources.toString))
   }
 }

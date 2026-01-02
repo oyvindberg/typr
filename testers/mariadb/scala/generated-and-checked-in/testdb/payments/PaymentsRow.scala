@@ -7,6 +7,8 @@ package testdb.payments
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple12
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.Inet6
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
@@ -50,7 +52,7 @@ case class PaymentsRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("processor_response") processorResponse: Option[String],
+  @JsonProperty("processor_response") processorResponse: Option[Json],
   /** 
    * Default: NULL
    */
@@ -67,14 +69,14 @@ case class PaymentsRow(
    * Default: NULL
    */
   @JsonProperty("processed_at") processedAt: Option[LocalDateTime]
-) {
+) extends Tuple12[PaymentsId, OrdersId, PaymentMethodsId, Option[String], BigDecimal, String, String, Option[Json], Option[String], Option[Inet6], LocalDateTime, Option[LocalDateTime]] {
   def id: PaymentsId = paymentId
 
   def toUnsavedRow(
     transactionId: Defaulted[Option[String]] = Defaulted.Provided(this.transactionId),
     currencyCode: Defaulted[String] = Defaulted.Provided(this.currencyCode),
     status: Defaulted[String] = Defaulted.Provided(this.status),
-    processorResponse: Defaulted[Option[String]] = Defaulted.Provided(this.processorResponse),
+    processorResponse: Defaulted[Option[Json]] = Defaulted.Provided(this.processorResponse),
     errorMessage: Defaulted[Option[String]] = Defaulted.Provided(this.errorMessage),
     ipAddress: Defaulted[Option[Inet6]] = Defaulted.Provided(this.ipAddress),
     createdAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.createdAt),
@@ -94,8 +96,32 @@ case class PaymentsRow(
       processedAt
     )
   }
+
+  override def `_1`: PaymentsId = paymentId
+
+  override def `_2`: OrdersId = orderId
+
+  override def `_3`: PaymentMethodsId = methodId
+
+  override def `_4`: Option[String] = transactionId
+
+  override def `_5`: BigDecimal = amount
+
+  override def `_6`: String = currencyCode
+
+  override def `_7`: String = status
+
+  override def `_8`: Option[Json] = processorResponse
+
+  override def `_9`: Option[String] = errorMessage
+
+  override def `_10`: Option[Inet6] = ipAddress
+
+  override def `_11`: LocalDateTime = createdAt
+
+  override def `_12`: Option[LocalDateTime] = processedAt
 }
 
 object PaymentsRow {
-  val `_rowParser`: RowParser[PaymentsRow] = RowParsers.of(PaymentsId.pgType, OrdersId.pgType, PaymentMethodsId.pgType, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.numeric, MariaTypes.char_, MariaTypes.text, MariaTypes.longtext.nullable, MariaTypes.varchar.nullable, MariaTypes.inet6.nullable, MariaTypes.datetime, MariaTypes.datetime.nullable)(PaymentsRow.apply)(row => Array[Any](row.paymentId, row.orderId, row.methodId, row.transactionId, row.amount, row.currencyCode, row.status, row.processorResponse, row.errorMessage, row.ipAddress, row.createdAt, row.processedAt))
+  val `_rowParser`: RowParser[PaymentsRow] = RowParsers.of(PaymentsId.dbType, OrdersId.dbType, PaymentMethodsId.dbType, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.numeric, MariaTypes.char_, MariaTypes.text, MariaTypes.json.nullable, MariaTypes.varchar.nullable, MariaTypes.inet6.nullable, MariaTypes.datetime, MariaTypes.datetime.nullable)(PaymentsRow.apply)(row => Array[Any](row.paymentId, row.orderId, row.methodId, row.transactionId, row.amount, row.currencyCode, row.status, row.processorResponse, row.errorMessage, row.ipAddress, row.createdAt, row.processedAt))
 }

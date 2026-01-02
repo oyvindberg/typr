@@ -48,7 +48,7 @@ public record EmailaddressRepoMock(
   @Override
   public DeleteBuilder<EmailaddressFields, EmailaddressRow> delete() {
     return new DeleteBuilderMock<>(
-        EmailaddressFields.structure(),
+        EmailaddressFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.compositeId(),
@@ -126,7 +126,7 @@ public record EmailaddressRepoMock(
   @Override
   public SelectBuilder<EmailaddressFields, EmailaddressRow> select() {
     return new SelectBuilderMock<>(
-        EmailaddressFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        EmailaddressFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -168,7 +168,7 @@ public record EmailaddressRepoMock(
   @Override
   public UpdateBuilder<EmailaddressFields, EmailaddressRow> update() {
     return new UpdateBuilderMock<>(
-        EmailaddressFields.structure(),
+        EmailaddressFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

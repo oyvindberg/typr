@@ -26,9 +26,8 @@ import oracledb.TagVarrayT;
 public class ContactsRepoImpl implements ContactsRepo {
   @Override
   public DeleteBuilder<ContactsFields, ContactsRow> delete() {
-    return DeleteBuilder.of("\"CONTACTS\"", ContactsFields.structure(), Dialect.ORACLE);
+    return DeleteBuilder.of("\"CONTACTS\"", ContactsFields.structure, Dialect.ORACLE);
   }
-  ;
 
   @Override
   public Boolean deleteById(ContactsId contactId, Connection c) {
@@ -40,7 +39,6 @@ public class ContactsRepoImpl implements ContactsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(ContactsId[] contactIds, Connection c) {
@@ -56,7 +54,6 @@ public class ContactsRepoImpl implements ContactsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ContactsId insert(ContactsRow unsaved, Connection c) {
@@ -76,7 +73,6 @@ public class ContactsRepoImpl implements ContactsRepo {
             new String[] {"CONTACT_ID"}, ContactsId._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ContactsId insert(ContactsRowUnsaved unsaved, Connection c) {
@@ -117,14 +113,12 @@ public class ContactsRepoImpl implements ContactsRepo {
             new String[] {"CONTACT_ID"}, ContactsId._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<ContactsFields, ContactsRow> select() {
     return SelectBuilder.of(
-        "\"CONTACTS\"", ContactsFields.structure(), ContactsRow._rowParser, Dialect.ORACLE);
+        "\"CONTACTS\"", ContactsFields.structure, ContactsRow._rowParser, Dialect.ORACLE);
   }
-  ;
 
   @Override
   public List<ContactsRow> selectAll(Connection c) {
@@ -134,7 +128,6 @@ public class ContactsRepoImpl implements ContactsRepo {
         .query(ContactsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<ContactsRow> selectById(ContactsId contactId, Connection c) {
@@ -148,7 +141,6 @@ public class ContactsRepoImpl implements ContactsRepo {
         .query(ContactsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ContactsRow> selectByIds(ContactsId[] contactIds, Connection c) {
@@ -166,7 +158,6 @@ public class ContactsRepoImpl implements ContactsRepo {
         .query(ContactsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<ContactsId, ContactsRow> selectByIdsTracked(ContactsId[] contactIds, Connection c) {
@@ -174,14 +165,12 @@ public class ContactsRepoImpl implements ContactsRepo {
     selectByIds(contactIds, c).forEach(row -> ret.put(row.contactId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<ContactsFields, ContactsRow> update() {
     return UpdateBuilder.of(
-        "\"CONTACTS\"", ContactsFields.structure(), ContactsRow._rowParser, Dialect.ORACLE);
+        "\"CONTACTS\"", ContactsFields.structure, ContactsRow._rowParser, Dialect.ORACLE);
   }
-  ;
 
   @Override
   public Boolean update(ContactsRow row, Connection c) {
@@ -201,7 +190,6 @@ public class ContactsRepoImpl implements ContactsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public void upsert(ContactsRow unsaved, Connection c) {
@@ -233,7 +221,6 @@ public class ContactsRepoImpl implements ContactsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public void upsertBatch(Iterator<ContactsRow> unsaved, Connection c) {
@@ -250,5 +237,4 @@ public class ContactsRepoImpl implements ContactsRepo {
         .updateMany(ContactsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

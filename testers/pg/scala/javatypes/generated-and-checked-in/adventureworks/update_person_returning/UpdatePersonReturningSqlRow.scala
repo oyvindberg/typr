@@ -9,6 +9,7 @@ import adventureworks.userdefined.FirstName
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple2
 import java.time.LocalDateTime
 
 /** SQL file: update_person_returning.sql */
@@ -17,8 +18,12 @@ case class UpdatePersonReturningSqlRow(
   firstname: /* user-picked */ FirstName,
   /** Points to [[adventureworks.person.person.PersonRow.modifieddate]] */
   modifieddate: LocalDateTime
-)
+) extends Tuple2[/* user-picked */ FirstName, LocalDateTime] {
+  override def `_1`: /* user-picked */ FirstName = firstname
+
+  override def `_2`: LocalDateTime = modifieddate
+}
 
 object UpdatePersonReturningSqlRow {
-  val `_rowParser`: RowParser[UpdatePersonReturningSqlRow] = RowParsers.of(FirstName.pgType, PgTypes.timestamp, UpdatePersonReturningSqlRow.apply, row => Array[Any](row.firstname, row.modifieddate))
+  val `_rowParser`: RowParser[UpdatePersonReturningSqlRow] = RowParsers.of(FirstName.dbType, PgTypes.timestamp, UpdatePersonReturningSqlRow.apply, row => Array[Any](row.firstname, row.modifieddate))
 }

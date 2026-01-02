@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple6;
+import dev.typr.foundations.data.Json;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
 
@@ -23,9 +25,11 @@ public record ShippingCarriersRow(
     /** Default: NULL */
     @JsonProperty("tracking_url_template") Optional<String> trackingUrlTemplate,
     /** Default: NULL */
-    @JsonProperty("api_config") Optional<String> apiConfig,
+    @JsonProperty("api_config") Optional<Json> apiConfig,
     /** Default: 1 */
-    @JsonProperty("is_active") Boolean isActive) {
+    @JsonProperty("is_active") Boolean isActive)
+    implements Tuple6<
+        ShippingCarriersId, String, String, Optional<String>, Optional<Json>, Boolean> {
   /** AUTO_INCREMENT */
   public ShippingCarriersRow withCarrierId(ShippingCarriersId carrierId) {
     return new ShippingCarriersRow(carrierId, code, name, trackingUrlTemplate, apiConfig, isActive);
@@ -51,7 +55,7 @@ public record ShippingCarriersRow(
   ;
 
   /** Default: NULL */
-  public ShippingCarriersRow withApiConfig(Optional<String> apiConfig) {
+  public ShippingCarriersRow withApiConfig(Optional<Json> apiConfig) {
     return new ShippingCarriersRow(carrierId, code, name, trackingUrlTemplate, apiConfig, isActive);
   }
   ;
@@ -64,11 +68,11 @@ public record ShippingCarriersRow(
 
   public static RowParser<ShippingCarriersRow> _rowParser =
       RowParsers.of(
-          ShippingCarriersId.pgType,
+          ShippingCarriersId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.varchar.opt(),
-          MariaTypes.longtext.opt(),
+          MariaTypes.json.opt(),
           MariaTypes.bool,
           ShippingCarriersRow::new,
           row ->
@@ -82,6 +86,42 @@ public record ShippingCarriersRow(
               });
   ;
 
+  @Override
+  public ShippingCarriersId _1() {
+    return carrierId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return code;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return name;
+  }
+  ;
+
+  @Override
+  public Optional<String> _4() {
+    return trackingUrlTemplate;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _5() {
+    return apiConfig;
+  }
+  ;
+
+  @Override
+  public Boolean _6() {
+    return isActive;
+  }
+  ;
+
   public ShippingCarriersId id() {
     return carrierId;
   }
@@ -89,7 +129,7 @@ public record ShippingCarriersRow(
 
   public ShippingCarriersRowUnsaved toUnsavedRow(
       Defaulted<Optional<String>> trackingUrlTemplate,
-      Defaulted<Optional<String>> apiConfig,
+      Defaulted<Optional<Json>> apiConfig,
       Defaulted<Boolean> isActive) {
     return new ShippingCarriersRowUnsaved(code, name, trackingUrlTemplate, apiConfig, isActive);
   }

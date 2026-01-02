@@ -9,6 +9,7 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import adventureworks.userdefined.FirstName
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple10
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -36,8 +37,28 @@ case class PersonDetailSqlRow(
   postalcode: Option[String],
   /** Points to [[adventureworks.person.address.AddressRow.rowguid]] */
   rowguid: Option[UUID]
-)
+) extends Tuple10[BusinessentityId, Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name, String, Option[String], Option[String], Option[String], Option[UUID]] {
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: Option[/* max 8 chars */ String] = title
+
+  override def `_3`: /* user-picked */ FirstName = firstname
+
+  override def `_4`: Option[Name] = middlename
+
+  override def `_5`: Name = lastname
+
+  override def `_6`: String = jobtitle
+
+  override def `_7`: Option[String] = addressline1
+
+  override def `_8`: Option[String] = city
+
+  override def `_9`: Option[String] = postalcode
+
+  override def `_10`: Option[UUID] = rowguid
+}
 
 object PersonDetailSqlRow {
-  val `_rowParser`: RowParser[PersonDetailSqlRow] = RowParsers.of(BusinessentityId.pgType, PgTypes.text.nullable, FirstName.pgType, Name.pgType.nullable, Name.pgType, PgTypes.text, PgTypes.text.nullable, PgTypes.text.nullable, PgTypes.text.nullable, PgTypes.uuid.nullable)(PersonDetailSqlRow.apply)(row => Array[Any](row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.jobtitle, row.addressline1, row.city, row.postalcode, row.rowguid))
+  val `_rowParser`: RowParser[PersonDetailSqlRow] = RowParsers.of(BusinessentityId.dbType, PgTypes.text.nullable, FirstName.dbType, Name.dbType.nullable, Name.dbType, PgTypes.text, PgTypes.text.nullable, PgTypes.text.nullable, PgTypes.text.nullable, PgTypes.uuid.nullable)(PersonDetailSqlRow.apply)(row => Array[Any](row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.jobtitle, row.addressline1, row.city, row.postalcode, row.rowguid))
 }

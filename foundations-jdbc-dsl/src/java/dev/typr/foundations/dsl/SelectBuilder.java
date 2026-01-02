@@ -2,6 +2,7 @@ package dev.typr.foundations.dsl;
 
 import dev.typr.foundations.Fragment;
 import dev.typr.foundations.RowParser;
+import dev.typr.foundations.Tuple;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +10,18 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /** Builder for SQL SELECT queries with type-safe operations. */
-public interface SelectBuilder<Fields, Row> extends SelectBuilderMap<Fields, Row> {
+public interface SelectBuilder<Fields, Row> {
+
+  /**
+   * Convert this SelectBuilder to a Subquery expression for use in IN clauses.
+   *
+   * <pre>{@code
+   * d.code().and(d.region()).in(repo.select().map(...).subquery())
+   * }</pre>
+   */
+  default SqlExpr.Subquery<Fields, Row> subquery() {
+    return new SqlExpr.Subquery<>(this);
+  }
 
   /** Create a SelectBuilder for a table. */
   static <Fields, Row> SelectBuilder<Fields, Row> of(
@@ -66,6 +78,13 @@ public interface SelectBuilder<Fields, Row> extends SelectBuilderMap<Fields, Row
         .orElse(orderBy(orderFunc));
   }
 
+  /**
+   * Project to a new tuple expression. Use {@code tupleWith()} methods on SqlExpr or {@code
+   * TupleExpr.of()} to create tuple expressions.
+   */
+  <NewFields extends TupleExpr<NewRow>, NewRow extends Tuple> SelectBuilder<NewFields, NewRow> map(
+      java.util.function.Function<Fields, NewFields> projection);
+
   /** Set the offset for the query. */
   default SelectBuilder<Fields, Row> offset(int offset) {
     return withParams(params().offset(offset));
@@ -86,8 +105,9 @@ public interface SelectBuilder<Fields, Row> extends SelectBuilderMap<Fields, Row
   Optional<Fragment> sql();
 
   /** Join using a foreign key relationship. */
-  default <Fields2, Row2> SelectBuilder<Tuple2<Fields, Fields2>, Tuple2<Row, Row2>> joinFk(
-      Function<Fields, ForeignKey<Fields2, Row2>> fkFunc, SelectBuilder<Fields2, Row2> other) {
+  default <Fields2, Row2>
+      SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Row2>> joinFk(
+          Function<Fields, ForeignKey<Fields2, Row2>> fkFunc, SelectBuilder<Fields2, Row2> other) {
     return joinOn(
         other,
         (fields1_2) -> {
@@ -124,12 +144,15 @@ public interface SelectBuilder<Fields, Row> extends SelectBuilderMap<Fields, Row
   }
 
   /** Inner join with the given predicate. */
-  <Fields2, Row2> SelectBuilder<Tuple2<Fields, Fields2>, Tuple2<Row, Row2>> joinOn(
-      SelectBuilder<Fields2, Row2> other, Function<Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred);
+  <Fields2, Row2> SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Row2>> joinOn(
+      SelectBuilder<Fields2, Row2> other,
+      Function<Tuple.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred);
 
   /** Left join with the given predicate. */
-  <Fields2, Row2> SelectBuilder<Tuple2<Fields, Fields2>, Tuple2<Row, Optional<Row2>>> leftJoinOn(
-      SelectBuilder<Fields2, Row2> other, Function<Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred);
+  <Fields2, Row2>
+      SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Optional<Row2>>> leftJoinOn(
+          SelectBuilder<Fields2, Row2> other,
+          Function<Tuple.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred);
 
   /**
    * Join and aggregate the right side into a typed list (one-to-many relationship).
@@ -141,17 +164,19 @@ public interface SelectBuilder<Fields, Row> extends SelectBuilderMap<Fields, Row
    *
    * <pre>
    * person.multisetOn(email, (p, e) -> p.id().isEqual(e.personId()))
-   * // Returns Tuple2<PersonRow, List<EmailRow>>
+   * // Returns Tuple.Tuple2<PersonRow, List<EmailRow>>
    * </pre>
    *
-   * Returns a SelectBuilder where the right side becomes a typed List of rows.
+   * <p>Returns a SelectBuilder where the right side becomes a typed List of rows.
    *
    * @param other The right side of the join (the "many" side)
    * @param pred The join predicate (correlation)
    * @return SelectBuilder with the right side as List<Row2>
    */
-  <Fields2, Row2> SelectBuilder<Tuple2<Fields, Fields2>, Tuple2<Row, List<Row2>>> multisetOn(
-      SelectBuilder<Fields2, Row2> other, Function<Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred);
+  <Fields2, Row2>
+      SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, List<Row2>>> multisetOn(
+          SelectBuilder<Fields2, Row2> other,
+          Function<Tuple.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred);
 
   // ========== GROUP BY Methods ==========
 
@@ -163,7 +188,7 @@ public interface SelectBuilder<Fields, Row> extends SelectBuilderMap<Fields, Row
    * <pre>{@code
    * personRepo.select()
    *     .groupBy(p -> p.department())
-   *     .select(p -> Tuples.of(
+   *     .select(p -> TupleExpr.of(
    *         p.department(),
    *         SqlExpr.count()
    *     ))
@@ -185,7 +210,7 @@ public interface SelectBuilder<Fields, Row> extends SelectBuilderMap<Fields, Row
    * <pre>{@code
    * salesRepo.select()
    *     .groupBy(s -> s.year(), s -> s.quarter())
-   *     .select(s -> Tuples.of(
+   *     .select(s -> TupleExpr.of(
    *         s.year(),
    *         s.quarter(),
    *         SqlExpr.sum(s.amount())
@@ -242,20 +267,20 @@ public interface SelectBuilder<Fields, Row> extends SelectBuilderMap<Fields, Row
   record PartialJoin<Fields, Row, Fields2, Row2>(
       SelectBuilder<Fields, Row> parent, SelectBuilder<Fields2, Row2> other) {
     /** Complete the join using a foreign key. */
-    public SelectBuilder<Tuple2<Fields, Fields2>, Tuple2<Row, Row2>> onFk(
+    public SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Row2>> onFk(
         Function<Fields, ForeignKey<Fields2, Row2>> fkFunc) {
       return parent.joinFk(fkFunc, other);
     }
 
     /** Inner join with the given predicate. */
-    public SelectBuilder<Tuple2<Fields, Fields2>, Tuple2<Row, Row2>> on(
-        Function<Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
+    public SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Row2>> on(
+        Function<Tuple.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
       return parent.joinOn(other, pred);
     }
 
     /** Left join with the given predicate. */
-    public SelectBuilder<Tuple2<Fields, Fields2>, Tuple2<Row, Optional<Row2>>> leftOn(
-        Function<Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
+    public SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Optional<Row2>>> leftOn(
+        Function<Tuple.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
       return parent.leftJoinOn(other, pred);
     }
   }

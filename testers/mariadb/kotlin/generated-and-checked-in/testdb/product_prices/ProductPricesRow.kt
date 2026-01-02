@@ -7,6 +7,7 @@ package testdb.product_prices
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -46,7 +47,21 @@ data class ProductPricesRow(
     * Default: NULL
     */
   @JsonProperty("valid_to") val validTo: LocalDate?
-) {
+) : Tuple7<ProductPricesId, ProductsId, PriceTiersId?, BigDecimal, String, LocalDate, LocalDate?> {
+  override fun _1(): ProductPricesId = priceId
+
+  override fun _2(): ProductsId = productId
+
+  override fun _3(): PriceTiersId? = tierId
+
+  override fun _4(): BigDecimal = price
+
+  override fun _5(): String = currencyCode
+
+  override fun _6(): LocalDate = validFrom
+
+  override fun _7(): LocalDate? = validTo
+
   fun id(): ProductPricesId = priceId
 
   fun toUnsavedRow(
@@ -56,6 +71,6 @@ data class ProductPricesRow(
   ): ProductPricesRowUnsaved = ProductPricesRowUnsaved(productId, price, validFrom, tierId, currencyCode, validTo)
 
   companion object {
-    val _rowParser: RowParser<ProductPricesRow> = RowParsers.of(ProductPricesId.pgType, ProductsId.pgType, PriceTiersId.pgType.nullable(), KotlinDbTypes.MariaTypes.numeric, MariaTypes.char_, MariaTypes.date, MariaTypes.date.nullable(), { t0, t1, t2, t3, t4, t5, t6 -> ProductPricesRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.priceId, row.productId, row.tierId, row.price, row.currencyCode, row.validFrom, row.validTo) })
+    val _rowParser: RowParser<ProductPricesRow> = RowParsers.of(ProductPricesId.dbType, ProductsId.dbType, PriceTiersId.dbType.nullable(), KotlinDbTypes.MariaTypes.numeric, MariaTypes.char_, MariaTypes.date, MariaTypes.date.nullable(), { t0, t1, t2, t3, t4, t5, t6 -> ProductPricesRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.priceId, row.productId, row.tierId, row.price, row.currencyCode, row.validFrom, row.validTo) })
   }
 }

@@ -22,11 +22,37 @@ public abstract class SqlServerJson<A> implements DbJson<A> {
   }
 
   public <B> SqlServerJson<B> map(SqlFunction<A, B> f) {
-    return bimap(f, null); // write not supported
+    var self = this;
+    return new SqlServerJson<>() {
+      @Override
+      public JsonValue toJson(B b) {
+        throw new UnsupportedOperationException("toJson not supported for mapped type");
+      }
+
+      @Override
+      public B fromJson(JsonValue jsonValue) {
+        try {
+          return f.apply(self.fromJson(jsonValue));
+        } catch (java.sql.SQLException e) {
+          throw new RuntimeException(e);
+        }
+      }
+    };
   }
 
   public <B> SqlServerJson<B> contramap(Function<B, A> g) {
-    return bimap(null, g); // read not supported
+    var self = this;
+    return new SqlServerJson<>() {
+      @Override
+      public JsonValue toJson(B b) {
+        return self.toJson(g.apply(b));
+      }
+
+      @Override
+      public B fromJson(JsonValue jsonValue) {
+        throw new UnsupportedOperationException("fromJson not supported for contramapped type");
+      }
+    };
   }
 
   public SqlServerJson<Optional<A>> opt() {

@@ -21,7 +21,7 @@ class InsertOrderWithItemsSqlRepoImpl extends InsertOrderWithItemsSqlRepo {
     orderDate: Option[LocalDate],
     totalAmount: Option[BigDecimal],
     status: Option[String]
-  )(using c: Connection): Int = {
+  )(using c: Connection): List[InsertOrderWithItemsSqlRow] = {
     sql"""-- Insert a new order and return the generated data
     -- Tests: INSERT with RETURNING, multiple columns, foreign keys, DEFAULT values
   
@@ -38,6 +38,6 @@ class InsertOrderWithItemsSqlRepoImpl extends InsertOrderWithItemsSqlRepo {
         customer_id,
         order_date,
         total_amount,
-        status""".update().runUnchecked(c)
+        status""".query(InsertOrderWithItemsSqlRow.`_rowParser`.all()).runUnchecked(c)
   }
 }

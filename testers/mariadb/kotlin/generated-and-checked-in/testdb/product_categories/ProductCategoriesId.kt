@@ -6,6 +6,7 @@
 package testdb.product_categories
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import testdb.categories.CategoriesId
@@ -15,8 +16,12 @@ import testdb.products.ProductsId
 data class ProductCategoriesId(
   @JsonProperty("product_id") val productId: ProductsId,
   @JsonProperty("category_id") val categoryId: CategoriesId
-) {
+) : Tuple2<ProductsId, CategoriesId> {
+  override fun _1(): ProductsId = productId
+
+  override fun _2(): CategoriesId = categoryId
+
   companion object {
-    val _rowParser: RowParser<ProductCategoriesId> = RowParsers.of(ProductsId.pgType, CategoriesId.pgType, { t0, t1 -> ProductCategoriesId(t0, t1) }, { row -> arrayOf<Any?>(row.productId, row.categoryId) })
+    val _rowParser: RowParser<ProductCategoriesId> = RowParsers.of(ProductsId.dbType, CategoriesId.dbType, { t0, t1 -> ProductCategoriesId(t0, t1) }, { row -> arrayOf<Any?>(row.productId, row.categoryId) })
   }
 }

@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple3
 import java.time.LocalDateTime
 
 /** Table: person.countryregion
@@ -24,14 +25,20 @@ case class CountryregionRow(
   name: Name,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple3[CountryregionId, Name, LocalDateTime] {
   def id: CountryregionId = countryregioncode
 
   def toUnsavedRow(modifieddate: Defaulted[LocalDateTime] = Defaulted.Provided(this.modifieddate)): CountryregionRowUnsaved = new CountryregionRowUnsaved(countryregioncode, name, modifieddate)
+
+  override def `_1`: CountryregionId = countryregioncode
+
+  override def `_2`: Name = name
+
+  override def `_3`: LocalDateTime = modifieddate
 }
 
 object CountryregionRow {
-  val `_rowParser`: RowParser[CountryregionRow] = RowParsers.of(CountryregionId.pgType, Name.pgType, PgTypes.timestamp, CountryregionRow.apply, row => Array[Any](row.countryregioncode, row.name, row.modifieddate))
+  val `_rowParser`: RowParser[CountryregionRow] = RowParsers.of(CountryregionId.dbType, Name.dbType, PgTypes.timestamp, CountryregionRow.apply, row => Array[Any](row.countryregioncode, row.name, row.modifieddate))
 
   given pgText: PgText[CountryregionRow] = PgText.from(`_rowParser`)
 }

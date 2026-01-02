@@ -39,7 +39,7 @@ public record Issue1422RepoMock(HashMap<Issue142Id, Issue1422Row> map) implement
   @Override
   public DeleteBuilder<Issue1422Fields, Issue1422Row> delete() {
     return new DeleteBuilderMock<>(
-        Issue1422Fields.structure(),
+        Issue1422Fields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.tabellkode(),
@@ -95,7 +95,7 @@ public record Issue1422RepoMock(HashMap<Issue142Id, Issue1422Row> map) implement
   @Override
   public SelectBuilder<Issue1422Fields, Issue1422Row> select() {
     return new SelectBuilderMock<>(
-        Issue1422Fields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        Issue1422Fields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -136,7 +136,7 @@ public record Issue1422RepoMock(HashMap<Issue142Id, Issue1422Row> map) implement
   @Override
   public UpdateBuilder<Issue1422Fields, Issue1422Row> update() {
     return new UpdateBuilderMock<>(
-        Issue1422Fields.structure(),
+        Issue1422Fields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

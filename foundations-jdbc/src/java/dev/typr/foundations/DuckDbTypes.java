@@ -2,6 +2,10 @@ package dev.typr.foundations;
 
 import dev.typr.foundations.data.Json;
 import dev.typr.foundations.data.JsonValue;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint2;
+import dev.typr.foundations.data.Uint4;
+import dev.typr.foundations.data.Uint8;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.*;
@@ -62,41 +66,41 @@ public interface DuckDbTypes {
 
   // ==================== Integer Types (Unsigned) ====================
 
-  // UTINYINT: 0-255, fits in Short
-  DuckDbType<Short> utinyint =
+  // UTINYINT: 0-255, wrapped in Uint1
+  DuckDbType<Uint1> utinyint =
       DuckDbType.of(
           "UTINYINT",
-          DuckDbRead.readShort,
-          DuckDbWrite.writeShort,
-          DuckDbStringifier.smallint,
-          DuckDbJson.int2);
+          DuckDbRead.readShort.map(Uint1::new),
+          DuckDbWrite.writeShort.contramap(Uint1::value),
+          DuckDbStringifier.smallint.contramap(Uint1::value),
+          DuckDbJson.int2.bimap(Uint1::new, Uint1::value));
 
-  // USMALLINT: 0-65535, fits in Integer
-  DuckDbType<Integer> usmallint =
+  // USMALLINT: 0-65535, wrapped in Uint2
+  DuckDbType<Uint2> usmallint =
       DuckDbType.of(
           "USMALLINT",
-          DuckDbRead.readInteger,
-          DuckDbWrite.writeInteger,
-          DuckDbStringifier.integer,
-          DuckDbJson.int4);
+          DuckDbRead.readInteger.map(Uint2::new),
+          DuckDbWrite.writeInteger.contramap(Uint2::value),
+          DuckDbStringifier.integer.contramap(Uint2::value),
+          DuckDbJson.int4.bimap(Uint2::new, Uint2::value));
 
-  // UINTEGER: 0-4294967295, fits in Long
-  DuckDbType<Long> uinteger =
+  // UINTEGER: 0-4294967295, wrapped in Uint4
+  DuckDbType<Uint4> uinteger =
       DuckDbType.of(
           "UINTEGER",
-          DuckDbRead.readLong,
-          DuckDbWrite.writeLong,
-          DuckDbStringifier.bigint,
-          DuckDbJson.int8);
+          DuckDbRead.readLong.map(Uint4::new),
+          DuckDbWrite.writeLong.contramap(Uint4::value),
+          DuckDbStringifier.bigint.contramap(Uint4::value),
+          DuckDbJson.int8.bimap(Uint4::new, Uint4::value));
 
-  // UBIGINT: 0-18446744073709551615, needs BigInteger
-  DuckDbType<BigInteger> ubigint =
+  // UBIGINT: 0-18446744073709551615, wrapped in Uint8
+  DuckDbType<Uint8> ubigint =
       DuckDbType.of(
           "UBIGINT",
-          DuckDbRead.readBigInteger,
-          DuckDbWrite.writeBigInteger,
-          DuckDbStringifier.hugeint,
-          DuckDbJson.hugeint);
+          DuckDbRead.readBigInteger.map(Uint8::of),
+          DuckDbWrite.writeBigInteger.contramap(Uint8::value),
+          DuckDbStringifier.hugeint.contramap(Uint8::value),
+          DuckDbJson.hugeint.bimap(Uint8::of, Uint8::value));
 
   // UHUGEINT: 128-bit unsigned integer, needs BigInteger
   DuckDbType<BigInteger> uhugeint =
@@ -352,16 +356,16 @@ public interface DuckDbTypes {
   DuckDbType<BigInteger[]> hugeintArray = hugeint.array();
 
   /** UTINYINT[] - array of utinyint values */
-  DuckDbType<Short[]> utinyintArray = utinyint.array();
+  DuckDbType<Uint1[]> utinyintArray = utinyint.array();
 
   /** USMALLINT[] - array of usmallint values */
-  DuckDbType<Integer[]> usmallintArray = usmallint.array();
+  DuckDbType<Uint2[]> usmallintArray = usmallint.array();
 
   /** UINTEGER[] - array of uinteger values */
-  DuckDbType<Long[]> uintegerArray = uinteger.array();
+  DuckDbType<Uint4[]> uintegerArray = uinteger.array();
 
   /** UBIGINT[] - array of ubigint values */
-  DuckDbType<BigInteger[]> ubigintArray = ubigint.array();
+  DuckDbType<Uint8[]> ubigintArray = ubigint.array();
 
   /** FLOAT[] - array of float values */
   DuckDbType<Float[]> floatArray = float_.array();
@@ -511,6 +515,17 @@ public interface DuckDbTypes {
     return uuid.mapToViaSqlLiteral(
         time, UUID.class, LocalTime.class, DuckDbStringifier.uuid, DuckDbStringifier.time);
   }
+
+  // ==================== Unknown Type ====================
+  // For columns whose type typr doesn't know how to handle - cast to/from string
+  DuckDbType<dev.typr.foundations.data.Unknown> unknown =
+      DuckDbType.of(
+              "VARCHAR",
+              DuckDbRead.readString,
+              DuckDbWrite.writeString,
+              DuckDbStringifier.string,
+              DuckDbJson.text)
+          .bimap(dev.typr.foundations.data.Unknown::new, dev.typr.foundations.data.Unknown::value);
 
   /**
    * JSON codec for MAP types with typed keys and values. Uses JSON object format for compatibility

@@ -24,27 +24,25 @@ import java.util.Optional;
 public class PriceTiersRepoImpl implements PriceTiersRepo {
   @Override
   public DeleteBuilder<PriceTiersFields, PriceTiersRow> delete() {
-    return DeleteBuilder.of("`price_tiers`", PriceTiersFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`price_tiers`", PriceTiersFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(PriceTiersId tierId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `price_tiers` where `tier_id` = "),
-                Fragment.encode(PriceTiersId.pgType, tierId),
+                Fragment.encode(PriceTiersId.dbType, tierId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(PriceTiersId[] tierIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : tierIds) {
-      fragments.add(Fragment.encode(PriceTiersId.pgType, id));
+      fragments.add(Fragment.encode(PriceTiersId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -54,7 +52,6 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public PriceTiersRow insert(PriceTiersRow unsaved, Connection c) {
@@ -77,7 +74,6 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
         .updateReturning(PriceTiersRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public PriceTiersRow insert(PriceTiersRowUnsaved unsaved, Connection c) {
@@ -117,14 +113,12 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
     ;
     return q.updateReturning(PriceTiersRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<PriceTiersFields, PriceTiersRow> select() {
     return SelectBuilder.of(
-        "`price_tiers`", PriceTiersFields.structure(), PriceTiersRow._rowParser, Dialect.MARIADB);
+        "`price_tiers`", PriceTiersFields.structure, PriceTiersRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<PriceTiersRow> selectAll(Connection c) {
@@ -135,7 +129,6 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
         .query(PriceTiersRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<PriceTiersRow> selectById(PriceTiersId tierId, Connection c) {
@@ -144,18 +137,17 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
                 "select `tier_id`, `name`, `min_quantity`, `discount_type`, `discount_value`\n"
                     + "from `price_tiers`\n"
                     + "where `tier_id` = "),
-            Fragment.encode(PriceTiersId.pgType, tierId),
+            Fragment.encode(PriceTiersId.dbType, tierId),
             Fragment.lit(""))
         .query(PriceTiersRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<PriceTiersRow> selectByIds(PriceTiersId[] tierIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : tierIds) {
-      fragments.add(Fragment.encode(PriceTiersId.pgType, id));
+      fragments.add(Fragment.encode(PriceTiersId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -167,7 +159,6 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
         .query(PriceTiersRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<PriceTiersId, PriceTiersRow> selectByIdsTracked(PriceTiersId[] tierIds, Connection c) {
@@ -175,14 +166,12 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
     selectByIds(tierIds, c).forEach(row -> ret.put(row.tierId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<PriceTiersFields, PriceTiersRow> update() {
     return UpdateBuilder.of(
-        "`price_tiers`", PriceTiersFields.structure(), PriceTiersRow._rowParser, Dialect.MARIADB);
+        "`price_tiers`", PriceTiersFields.structure, PriceTiersRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(PriceTiersRow row, Connection c) {
@@ -198,21 +187,22 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
                 Fragment.lit(",\n`discount_value` = "),
                 Fragment.encode(MariaTypes.numeric, row.discountValue()),
                 Fragment.lit("\nwhere `tier_id` = "),
-                Fragment.encode(PriceTiersId.pgType, tierId),
+                Fragment.encode(PriceTiersId.dbType, tierId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public PriceTiersRow upsert(PriceTiersRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `price_tiers`(`name`, `min_quantity`, `discount_type`,"
+                "INSERT INTO `price_tiers`(`tier_id`, `name`, `min_quantity`, `discount_type`,"
                     + " `discount_value`)\n"
                     + "VALUES ("),
+            Fragment.encode(PriceTiersId.dbType, unsaved.tierId()),
+            Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.name()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.intUnsigned, unsaved.minQuantity()),
@@ -231,7 +221,6 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
         .updateReturning(PriceTiersRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<PriceTiersRow> upsertBatch(Iterator<PriceTiersRow> unsaved, Connection c) {
@@ -249,5 +238,4 @@ public class PriceTiersRepoImpl implements PriceTiersRepo {
         .updateReturningEach(PriceTiersRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

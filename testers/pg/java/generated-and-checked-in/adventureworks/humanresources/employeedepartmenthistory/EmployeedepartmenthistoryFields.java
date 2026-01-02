@@ -16,195 +16,186 @@ import adventureworks.humanresources.shift.ShiftRow;
 import adventureworks.person.businessentity.BusinessentityId;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
 import dev.typr.foundations.dsl.SqlExpr;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn.Part;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr6;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface EmployeedepartmenthistoryFields extends FieldsExpr<EmployeedepartmenthistoryRow> {
-  record Impl(List<Path> _path)
-      implements EmployeedepartmenthistoryFields,
-          RelationStructure<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow> {
-    @Override
-    public IdField<BusinessentityId, EmployeedepartmenthistoryRow> businessentityid() {
-      return new IdField<BusinessentityId, EmployeedepartmenthistoryRow>(
-          _path,
-          "businessentityid",
-          EmployeedepartmenthistoryRow::businessentityid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withBusinessentityid(value),
-          BusinessentityId.pgType);
-    }
-    ;
+public class EmployeedepartmenthistoryFields
+    extends TupleExpr6<BusinessentityId, DepartmentId, ShiftId, LocalDate, LocalDate, LocalDateTime>
+    implements RelationStructure<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow>,
+        FieldsBase<EmployeedepartmenthistoryRow> {
+  List<Path> _path;
 
-    @Override
-    public IdField<DepartmentId, EmployeedepartmenthistoryRow> departmentid() {
-      return new IdField<DepartmentId, EmployeedepartmenthistoryRow>(
-          _path,
-          "departmentid",
-          EmployeedepartmenthistoryRow::departmentid,
-          Optional.empty(),
-          Optional.of("int2"),
-          (row, value) -> row.withDepartmentid(value),
-          DepartmentId.pgType);
-    }
-    ;
-
-    @Override
-    public IdField<ShiftId, EmployeedepartmenthistoryRow> shiftid() {
-      return new IdField<ShiftId, EmployeedepartmenthistoryRow>(
-          _path,
-          "shiftid",
-          EmployeedepartmenthistoryRow::shiftid,
-          Optional.empty(),
-          Optional.of("int2"),
-          (row, value) -> row.withShiftid(value),
-          ShiftId.pgType);
-    }
-    ;
-
-    @Override
-    public IdField<LocalDate, EmployeedepartmenthistoryRow> startdate() {
-      return new IdField<LocalDate, EmployeedepartmenthistoryRow>(
-          _path,
-          "startdate",
-          EmployeedepartmenthistoryRow::startdate,
-          Optional.empty(),
-          Optional.of("date"),
-          (row, value) -> row.withStartdate(value),
-          PgTypes.date);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDate, EmployeedepartmenthistoryRow> enddate() {
-      return new OptField<LocalDate, EmployeedepartmenthistoryRow>(
-          _path,
-          "enddate",
-          EmployeedepartmenthistoryRow::enddate,
-          Optional.empty(),
-          Optional.of("date"),
-          (row, value) -> row.withEnddate(value),
-          PgTypes.date);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, EmployeedepartmenthistoryRow> modifieddate() {
-      return new Field<LocalDateTime, EmployeedepartmenthistoryRow>(
-          _path,
-          "modifieddate",
-          EmployeedepartmenthistoryRow::modifieddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withModifieddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, EmployeedepartmenthistoryRow>> columns() {
-      return java.util.List.of(
-          this.businessentityid(),
-          this.departmentid(),
-          this.shiftid(),
-          this.startdate(),
-          this.enddate(),
-          this.modifieddate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow>
-        withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public EmployeedepartmenthistoryFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static EmployeedepartmenthistoryFields structure =
+      new EmployeedepartmenthistoryFields(java.util.Collections.emptyList());
+
+  public IdField<BusinessentityId, EmployeedepartmenthistoryRow> businessentityid() {
+    return new IdField<BusinessentityId, EmployeedepartmenthistoryRow>(
+        _path,
+        "businessentityid",
+        EmployeedepartmenthistoryRow::businessentityid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withBusinessentityid(value),
+        BusinessentityId.dbType);
   }
-  ;
 
-  IdField<BusinessentityId, EmployeedepartmenthistoryRow> businessentityid();
+  public IdField<DepartmentId, EmployeedepartmenthistoryRow> departmentid() {
+    return new IdField<DepartmentId, EmployeedepartmenthistoryRow>(
+        _path,
+        "departmentid",
+        EmployeedepartmenthistoryRow::departmentid,
+        Optional.empty(),
+        Optional.of("int2"),
+        (row, value) -> row.withDepartmentid(value),
+        DepartmentId.dbType);
+  }
 
-  IdField<DepartmentId, EmployeedepartmenthistoryRow> departmentid();
+  public IdField<ShiftId, EmployeedepartmenthistoryRow> shiftid() {
+    return new IdField<ShiftId, EmployeedepartmenthistoryRow>(
+        _path,
+        "shiftid",
+        EmployeedepartmenthistoryRow::shiftid,
+        Optional.empty(),
+        Optional.of("int2"),
+        (row, value) -> row.withShiftid(value),
+        ShiftId.dbType);
+  }
 
-  IdField<ShiftId, EmployeedepartmenthistoryRow> shiftid();
+  public IdField<LocalDate, EmployeedepartmenthistoryRow> startdate() {
+    return new IdField<LocalDate, EmployeedepartmenthistoryRow>(
+        _path,
+        "startdate",
+        EmployeedepartmenthistoryRow::startdate,
+        Optional.empty(),
+        Optional.of("date"),
+        (row, value) -> row.withStartdate(value),
+        PgTypes.date);
+  }
 
-  IdField<LocalDate, EmployeedepartmenthistoryRow> startdate();
+  public OptField<LocalDate, EmployeedepartmenthistoryRow> enddate() {
+    return new OptField<LocalDate, EmployeedepartmenthistoryRow>(
+        _path,
+        "enddate",
+        EmployeedepartmenthistoryRow::enddate,
+        Optional.empty(),
+        Optional.of("date"),
+        (row, value) -> row.withEnddate(value),
+        PgTypes.date);
+  }
 
-  OptField<LocalDate, EmployeedepartmenthistoryRow> enddate();
+  public Field<LocalDateTime, EmployeedepartmenthistoryRow> modifieddate() {
+    return new Field<LocalDateTime, EmployeedepartmenthistoryRow>(
+        _path,
+        "modifieddate",
+        EmployeedepartmenthistoryRow::modifieddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withModifieddate(value),
+        PgTypes.timestamp);
+  }
 
-  Field<LocalDateTime, EmployeedepartmenthistoryRow> modifieddate();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<DepartmentFields, DepartmentRow> fkDepartment() {
+  public ForeignKey<DepartmentFields, DepartmentRow> fkDepartment() {
     return ForeignKey.<DepartmentFields, DepartmentRow>of(
             "humanresources.FK_EmployeeDepartmentHistory_Department_DepartmentID")
         .<DepartmentId>withColumnPair(departmentid(), DepartmentFields::departmentid);
   }
-  ;
 
-  default ForeignKey<EmployeeFields, EmployeeRow> fkEmployee() {
+  public ForeignKey<EmployeeFields, EmployeeRow> fkEmployee() {
     return ForeignKey.<EmployeeFields, EmployeeRow>of(
             "humanresources.FK_EmployeeDepartmentHistory_Employee_BusinessEntityID")
         .<BusinessentityId>withColumnPair(businessentityid(), EmployeeFields::businessentityid);
   }
-  ;
 
-  default ForeignKey<ShiftFields, ShiftRow> fkShift() {
+  public ForeignKey<ShiftFields, ShiftRow> fkShift() {
     return ForeignKey.<ShiftFields, ShiftRow>of(
             "humanresources.FK_EmployeeDepartmentHistory_Shift_ShiftID")
         .<ShiftId>withColumnPair(shiftid(), ShiftFields::shiftid);
   }
-  ;
 
-  default SqlExpr<Boolean> compositeIdIs(EmployeedepartmenthistoryId compositeId) {
+  public SqlExpr<Boolean> compositeIdIs(EmployeedepartmenthistoryId compositeId) {
     return SqlExpr.all(
         businessentityid().isEqual(compositeId.businessentityid()),
         startdate().isEqual(compositeId.startdate()),
         departmentid().isEqual(compositeId.departmentid()),
         shiftid().isEqual(compositeId.shiftid()));
   }
-  ;
 
-  default SqlExpr<Boolean> compositeIdIn(List<EmployeedepartmenthistoryId> compositeIds) {
-    return new CompositeIn(
-        List.of(
-            new Part<BusinessentityId, EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow>(
-                businessentityid(),
-                EmployeedepartmenthistoryId::businessentityid,
-                BusinessentityId.pgType),
-            new Part<LocalDate, EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow>(
-                startdate(), EmployeedepartmenthistoryId::startdate, PgTypes.date),
-            new Part<DepartmentId, EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow>(
-                departmentid(), EmployeedepartmenthistoryId::departmentid, DepartmentId.pgType),
-            new Part<ShiftId, EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow>(
-                shiftid(), EmployeedepartmenthistoryId::shiftid, ShiftId.pgType)),
-        compositeIds);
+  public SqlExpr<Boolean> compositeIdIn(List<EmployeedepartmenthistoryId> compositeIds) {
+    return TupleExpr.of(businessentityid(), startdate(), departmentid(), shiftid())
+        .among(compositeIds);
   }
-  ;
 
   @Override
-  List<FieldLike<?, EmployeedepartmenthistoryRow>> columns();
+  public List<FieldLike<?, EmployeedepartmenthistoryRow>> columns() {
+    return java.util.List.of(
+        this.businessentityid(),
+        this.departmentid(),
+        this.shiftid(),
+        this.startdate(),
+        this.enddate(),
+        this.modifieddate());
+  }
 
   @Override
-  default RowParser<EmployeedepartmenthistoryRow> rowParser() {
+  public RowParser<EmployeedepartmenthistoryRow> rowParser() {
     return EmployeedepartmenthistoryRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow> withPaths(
+      List<Path> _path) {
+    return new EmployeedepartmenthistoryFields(_path);
+  }
+
+  @Override
+  public SqlExpr<BusinessentityId> _1() {
+    return businessentityid();
+  }
+
+  @Override
+  public SqlExpr<DepartmentId> _2() {
+    return departmentid();
+  }
+
+  @Override
+  public SqlExpr<ShiftId> _3() {
+    return shiftid();
+  }
+
+  @Override
+  public SqlExpr<LocalDate> _4() {
+    return startdate();
+  }
+
+  @Override
+  public SqlExpr<LocalDate> _5() {
+    return enddate();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _6() {
+    return modifieddate();
+  }
 }

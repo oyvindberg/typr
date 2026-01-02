@@ -7,133 +7,129 @@ package testdb.employees
 
 import dev.typr.foundations.DuckDbTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
 import dev.typr.foundations.scala.SqlExpr
-import dev.typr.foundations.scala.SqlExpr.CompositeIn
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr
+import dev.typr.foundations.scala.TupleExpr7
 import java.time.LocalDate
 
-trait EmployeesFields extends FieldsExpr0[EmployeesRow] {
-  def empNumber: IdField[Int, EmployeesRow]
+class EmployeesFields(val `_path`: java.util.List[Path]) extends TupleExpr7[Int, String, String, String, String, BigDecimal, LocalDate] with RelationStructure[EmployeesFields, EmployeesRow]  with FieldsBase[EmployeesRow] {
+  def empNumber: IdField[Int, EmployeesRow] = {
+    new IdField[Int, EmployeesRow](
+      _path,
+      "emp_number",
+      _.empNumber,
+      None,
+      Some("INTEGER"),
+      (row, value) => row.copy(empNumber = value),
+      ScalaDbTypes.DuckDbTypes.integer
+    )
+  }
 
-  def empSuffix: IdField[String, EmployeesRow]
+  def empSuffix: IdField[String, EmployeesRow] = {
+    new IdField[String, EmployeesRow](
+      _path,
+      "emp_suffix",
+      _.empSuffix,
+      None,
+      None,
+      (row, value) => row.copy(empSuffix = value),
+      DuckDbTypes.varchar
+    )
+  }
 
-  def deptCode: Field[String, EmployeesRow]
+  def deptCode: Field[String, EmployeesRow] = {
+    new Field[String, EmployeesRow](
+      _path,
+      "dept_code",
+      _.deptCode,
+      None,
+      None,
+      (row, value) => row.copy(deptCode = value),
+      DuckDbTypes.varchar
+    )
+  }
 
-  def deptRegion: Field[String, EmployeesRow]
+  def deptRegion: Field[String, EmployeesRow] = {
+    new Field[String, EmployeesRow](
+      _path,
+      "dept_region",
+      _.deptRegion,
+      None,
+      None,
+      (row, value) => row.copy(deptRegion = value),
+      DuckDbTypes.varchar
+    )
+  }
 
-  def empName: Field[String, EmployeesRow]
+  def empName: Field[String, EmployeesRow] = {
+    new Field[String, EmployeesRow](
+      _path,
+      "emp_name",
+      _.empName,
+      None,
+      None,
+      (row, value) => row.copy(empName = value),
+      DuckDbTypes.varchar
+    )
+  }
 
-  def salary: OptField[BigDecimal, EmployeesRow]
+  def salary: OptField[BigDecimal, EmployeesRow] = {
+    new OptField[BigDecimal, EmployeesRow](
+      _path,
+      "salary",
+      _.salary,
+      None,
+      Some("DECIMAL(10,2)"),
+      (row, value) => row.copy(salary = value),
+      ScalaDbTypes.DuckDbTypes.numeric
+    )
+  }
 
-  def hireDate: Field[LocalDate, EmployeesRow]
+  def hireDate: Field[LocalDate, EmployeesRow] = {
+    new Field[LocalDate, EmployeesRow](
+      _path,
+      "hire_date",
+      _.hireDate,
+      None,
+      Some("DATE"),
+      (row, value) => row.copy(hireDate = value),
+      DuckDbTypes.date
+    )
+  }
 
   def compositeIdIs(compositeId: EmployeesId): SqlExpr[Boolean] = SqlExpr.all(empNumber.isEqual(compositeId.empNumber), empSuffix.isEqual(compositeId.empSuffix))
 
-  def compositeIdIn(compositeIds: List[EmployeesId]): SqlExpr[Boolean] = CompositeIn(List(CompositeIn.Part[Int, EmployeesId, EmployeesRow](empNumber, _.empNumber, ScalaDbTypes.DuckDbTypes.integer), CompositeIn.Part[String, EmployeesId, EmployeesRow](empSuffix, _.empSuffix, DuckDbTypes.varchar)), compositeIds)
+  def compositeIdIn(compositeIds: List[EmployeesId]): SqlExpr[Boolean] = TupleExpr.of(empNumber, empSuffix).among(compositeIds)
 
-  override def columns: java.util.List[FieldLike[?, EmployeesRow]]
+  override def columns: java.util.List[FieldLike[?, EmployeesRow]] = java.util.List.of(this.empNumber.underlying, this.empSuffix.underlying, this.deptCode.underlying, this.deptRegion.underlying, this.empName.underlying, this.salary.underlying, this.hireDate.underlying)
 
   override def rowParser: RowParser[EmployeesRow] = EmployeesRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[EmployeesFields, EmployeesRow] = new EmployeesFields(`_path`)
+
+  override def `_1`: SqlExpr[Int] = empNumber
+
+  override def `_2`: SqlExpr[String] = empSuffix
+
+  override def `_3`: SqlExpr[String] = deptCode
+
+  override def `_4`: SqlExpr[String] = deptRegion
+
+  override def `_5`: SqlExpr[String] = empName
+
+  override def `_6`: SqlExpr[BigDecimal] = salary
+
+  override def `_7`: SqlExpr[LocalDate] = hireDate
 }
 
 object EmployeesFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends EmployeesFields with RelationStructure[EmployeesFields, EmployeesRow] {
-
-    override def empNumber: IdField[Int, EmployeesRow] = {
-      new IdField[Int, EmployeesRow](
-        _path,
-        "emp_number",
-        _.empNumber,
-        None,
-        Some("INTEGER"),
-        (row, value) => row.copy(empNumber = value),
-        ScalaDbTypes.DuckDbTypes.integer
-      )
-    }
-
-    override def empSuffix: IdField[String, EmployeesRow] = {
-      new IdField[String, EmployeesRow](
-        _path,
-        "emp_suffix",
-        _.empSuffix,
-        None,
-        None,
-        (row, value) => row.copy(empSuffix = value),
-        DuckDbTypes.varchar
-      )
-    }
-
-    override def deptCode: Field[String, EmployeesRow] = {
-      new Field[String, EmployeesRow](
-        _path,
-        "dept_code",
-        _.deptCode,
-        None,
-        None,
-        (row, value) => row.copy(deptCode = value),
-        DuckDbTypes.varchar
-      )
-    }
-
-    override def deptRegion: Field[String, EmployeesRow] = {
-      new Field[String, EmployeesRow](
-        _path,
-        "dept_region",
-        _.deptRegion,
-        None,
-        None,
-        (row, value) => row.copy(deptRegion = value),
-        DuckDbTypes.varchar
-      )
-    }
-
-    override def empName: Field[String, EmployeesRow] = {
-      new Field[String, EmployeesRow](
-        _path,
-        "emp_name",
-        _.empName,
-        None,
-        None,
-        (row, value) => row.copy(empName = value),
-        DuckDbTypes.varchar
-      )
-    }
-
-    override def salary: OptField[BigDecimal, EmployeesRow] = {
-      new OptField[BigDecimal, EmployeesRow](
-        _path,
-        "salary",
-        _.salary,
-        None,
-        Some("DECIMAL(10,2)"),
-        (row, value) => row.copy(salary = value),
-        ScalaDbTypes.DuckDbTypes.numeric
-      )
-    }
-
-    override def hireDate: Field[LocalDate, EmployeesRow] = {
-      new Field[LocalDate, EmployeesRow](
-        _path,
-        "hire_date",
-        _.hireDate,
-        None,
-        Some("DATE"),
-        (row, value) => row.copy(hireDate = value),
-        DuckDbTypes.date
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, EmployeesRow]] = java.util.List.of(this.empNumber.underlying, this.empSuffix.underlying, this.deptCode.underlying, this.deptRegion.underlying, this.empName.underlying, this.salary.underlying, this.hireDate.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[EmployeesFields, EmployeesRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: EmployeesFields = new EmployeesFields(java.util.Collections.emptyList())
 }

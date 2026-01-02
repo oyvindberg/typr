@@ -7,6 +7,7 @@ package testdb.customers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -25,7 +26,7 @@ case class CustomersRow(
   @JsonProperty("created_at") createdAt: LocalDateTime,
   /** Default: 'medium' */
   priority: Option[Priority]
-) {
+) extends Tuple5[CustomersId, String, Option[String], LocalDateTime, Option[Priority]] {
   def id: CustomersId = customerId
 
   def toUnsavedRow(
@@ -40,6 +41,16 @@ case class CustomersRow(
       priority
     )
   }
+
+  override def `_1`: CustomersId = customerId
+
+  override def `_2`: String = name
+
+  override def `_3`: Option[String] = email
+
+  override def `_4`: LocalDateTime = createdAt
+
+  override def `_5`: Option[Priority] = priority
 }
 
 object CustomersRow {

@@ -31,32 +31,29 @@ public class ProductRepoImpl implements ProductRepo {
   @Override
   public DeleteBuilder<ProductFields, ProductRow> delete() {
     return DeleteBuilder.of(
-        "\"production\".\"product\"", ProductFields.structure(), Dialect.POSTGRESQL);
+        "\"production\".\"product\"", ProductFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(ProductId productid, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"production\".\"product\" where \"productid\" = "),
-                Fragment.encode(ProductId.pgType, productid),
+                Fragment.encode(ProductId.dbType, productid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(ProductId[] productids, Connection c) {
     return interpolate(
             Fragment.lit("delete\nfrom \"production\".\"product\"\nwhere \"productid\" = ANY("),
-            Fragment.encode(ProductId.pgTypeArray, productids),
+            Fragment.encode(ProductId.dbTypeArray, productids),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductRow insert(ProductRow unsaved, Connection c) {
@@ -70,15 +67,15 @@ public class ProductRepoImpl implements ProductRepo {
                     + " \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\","
                     + " \"sellenddate\", \"discontinueddate\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(ProductId.pgType, unsaved.productid()),
+            Fragment.encode(ProductId.dbType, unsaved.productid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.text, unsaved.productnumber()),
             Fragment.lit(", "),
-            Fragment.encode(Flag.pgType, unsaved.makeflag()),
+            Fragment.encode(Flag.dbType, unsaved.makeflag()),
             Fragment.lit("::bool, "),
-            Fragment.encode(Flag.pgType, unsaved.finishedgoodsflag()),
+            Fragment.encode(Flag.dbType, unsaved.finishedgoodsflag()),
             Fragment.lit("::bool, "),
             Fragment.encode(PgTypes.text.opt(), unsaved.color()),
             Fragment.lit(", "),
@@ -92,9 +89,9 @@ public class ProductRepoImpl implements ProductRepo {
             Fragment.lit("::numeric, "),
             Fragment.encode(PgTypes.text.opt(), unsaved.size()),
             Fragment.lit(", "),
-            Fragment.encode(UnitmeasureId.pgType.opt(), unsaved.sizeunitmeasurecode()),
+            Fragment.encode(UnitmeasureId.dbType.opt(), unsaved.sizeunitmeasurecode()),
             Fragment.lit("::bpchar, "),
-            Fragment.encode(UnitmeasureId.pgType.opt(), unsaved.weightunitmeasurecode()),
+            Fragment.encode(UnitmeasureId.dbType.opt(), unsaved.weightunitmeasurecode()),
             Fragment.lit("::bpchar, "),
             Fragment.encode(PgTypes.numeric.opt(), unsaved.weight()),
             Fragment.lit("::numeric, "),
@@ -106,9 +103,9 @@ public class ProductRepoImpl implements ProductRepo {
             Fragment.lit("::bpchar, "),
             Fragment.encode(PgTypes.bpchar.opt(), unsaved.style()),
             Fragment.lit("::bpchar, "),
-            Fragment.encode(ProductsubcategoryId.pgType.opt(), unsaved.productsubcategoryid()),
+            Fragment.encode(ProductsubcategoryId.dbType.opt(), unsaved.productsubcategoryid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(ProductmodelId.pgType.opt(), unsaved.productmodelid()),
+            Fragment.encode(ProductmodelId.dbType.opt(), unsaved.productmodelid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.timestamp, unsaved.sellstartdate()),
             Fragment.lit("::timestamp, "),
@@ -131,7 +128,6 @@ public class ProductRepoImpl implements ProductRepo {
         .updateReturning(ProductRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductRow insert(ProductRowUnsaved unsaved, Connection c) {
@@ -141,7 +137,7 @@ public class ProductRepoImpl implements ProductRepo {
     ;
     columns.add(Fragment.lit("\"name\""));
     values.add(
-        interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
+        interpolate(Fragment.encode(Name.dbType, unsaved.name()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"productnumber\""));
     values.add(
         interpolate(Fragment.encode(PgTypes.text, unsaved.productnumber()), Fragment.lit("")));
@@ -167,12 +163,12 @@ public class ProductRepoImpl implements ProductRepo {
     columns.add(Fragment.lit("\"sizeunitmeasurecode\""));
     values.add(
         interpolate(
-            Fragment.encode(UnitmeasureId.pgType.opt(), unsaved.sizeunitmeasurecode()),
+            Fragment.encode(UnitmeasureId.dbType.opt(), unsaved.sizeunitmeasurecode()),
             Fragment.lit("::bpchar")));
     columns.add(Fragment.lit("\"weightunitmeasurecode\""));
     values.add(
         interpolate(
-            Fragment.encode(UnitmeasureId.pgType.opt(), unsaved.weightunitmeasurecode()),
+            Fragment.encode(UnitmeasureId.dbType.opt(), unsaved.weightunitmeasurecode()),
             Fragment.lit("::bpchar")));
     columns.add(Fragment.lit("\"weight\""));
     values.add(
@@ -198,12 +194,12 @@ public class ProductRepoImpl implements ProductRepo {
     columns.add(Fragment.lit("\"productsubcategoryid\""));
     values.add(
         interpolate(
-            Fragment.encode(ProductsubcategoryId.pgType.opt(), unsaved.productsubcategoryid()),
+            Fragment.encode(ProductsubcategoryId.dbType.opt(), unsaved.productsubcategoryid()),
             Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"productmodelid\""));
     values.add(
         interpolate(
-            Fragment.encode(ProductmodelId.pgType.opt(), unsaved.productmodelid()),
+            Fragment.encode(ProductmodelId.dbType.opt(), unsaved.productmodelid()),
             Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"sellstartdate\""));
     values.add(
@@ -227,7 +223,7 @@ public class ProductRepoImpl implements ProductRepo {
             value -> {
               columns.add(Fragment.lit("\"productid\""));
               values.add(
-                  interpolate(Fragment.encode(ProductId.pgType, value), Fragment.lit("::int4")));
+                  interpolate(Fragment.encode(ProductId.dbType, value), Fragment.lit("::int4")));
             });
     ;
     unsaved
@@ -236,7 +232,7 @@ public class ProductRepoImpl implements ProductRepo {
             () -> {},
             value -> {
               columns.add(Fragment.lit("\"makeflag\""));
-              values.add(interpolate(Fragment.encode(Flag.pgType, value), Fragment.lit("::bool")));
+              values.add(interpolate(Fragment.encode(Flag.dbType, value), Fragment.lit("::bool")));
             });
     ;
     unsaved
@@ -245,7 +241,7 @@ public class ProductRepoImpl implements ProductRepo {
             () -> {},
             value -> {
               columns.add(Fragment.lit("\"finishedgoodsflag\""));
-              values.add(interpolate(Fragment.encode(Flag.pgType, value), Fragment.lit("::bool")));
+              values.add(interpolate(Fragment.encode(Flag.dbType, value), Fragment.lit("::bool")));
             });
     ;
     unsaved
@@ -286,7 +282,6 @@ public class ProductRepoImpl implements ProductRepo {
     ;
     return q.updateReturning(ProductRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<ProductRow> unsaved, Integer batchSize, Connection c) {
@@ -303,7 +298,6 @@ public class ProductRepoImpl implements ProductRepo {
         c,
         ProductRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -322,17 +316,15 @@ public class ProductRepoImpl implements ProductRepo {
         c,
         ProductRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<ProductFields, ProductRow> select() {
     return SelectBuilder.of(
         "\"production\".\"product\"",
-        ProductFields.structure(),
+        ProductFields.structure,
         ProductRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<ProductRow> selectAll(Connection c) {
@@ -349,7 +341,6 @@ public class ProductRepoImpl implements ProductRepo {
         .query(ProductRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<ProductRow> selectById(ProductId productid, Connection c) {
@@ -364,12 +355,11 @@ public class ProductRepoImpl implements ProductRepo {
                     + " \"discontinueddate\", \"rowguid\", \"modifieddate\"\n"
                     + "from \"production\".\"product\"\n"
                     + "where \"productid\" = "),
-            Fragment.encode(ProductId.pgType, productid),
+            Fragment.encode(ProductId.dbType, productid),
             Fragment.lit(""))
         .query(ProductRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductRow> selectByIds(ProductId[] productids, Connection c) {
@@ -384,12 +374,11 @@ public class ProductRepoImpl implements ProductRepo {
                     + " \"discontinueddate\", \"rowguid\", \"modifieddate\"\n"
                     + "from \"production\".\"product\"\n"
                     + "where \"productid\" = ANY("),
-            Fragment.encode(ProductId.pgTypeArray, productids),
+            Fragment.encode(ProductId.dbTypeArray, productids),
             Fragment.lit(")"))
         .query(ProductRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<ProductId, ProductRow> selectByIdsTracked(ProductId[] productids, Connection c) {
@@ -397,17 +386,15 @@ public class ProductRepoImpl implements ProductRepo {
     selectByIds(productids, c).forEach(row -> ret.put(row.productid(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<ProductFields, ProductRow> update() {
     return UpdateBuilder.of(
         "\"production\".\"product\"",
-        ProductFields.structure(),
+        ProductFields.structure,
         ProductRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(ProductRow row, Connection c) {
@@ -415,13 +402,13 @@ public class ProductRepoImpl implements ProductRepo {
     ;
     return interpolate(
                 Fragment.lit("update \"production\".\"product\"\nset \"name\" = "),
-                Fragment.encode(Name.pgType, row.name()),
+                Fragment.encode(Name.dbType, row.name()),
                 Fragment.lit("::varchar,\n\"productnumber\" = "),
                 Fragment.encode(PgTypes.text, row.productnumber()),
                 Fragment.lit(",\n\"makeflag\" = "),
-                Fragment.encode(Flag.pgType, row.makeflag()),
+                Fragment.encode(Flag.dbType, row.makeflag()),
                 Fragment.lit("::bool,\n\"finishedgoodsflag\" = "),
-                Fragment.encode(Flag.pgType, row.finishedgoodsflag()),
+                Fragment.encode(Flag.dbType, row.finishedgoodsflag()),
                 Fragment.lit("::bool,\n\"color\" = "),
                 Fragment.encode(PgTypes.text.opt(), row.color()),
                 Fragment.lit(",\n\"safetystocklevel\" = "),
@@ -435,9 +422,9 @@ public class ProductRepoImpl implements ProductRepo {
                 Fragment.lit("::numeric,\n\"size\" = "),
                 Fragment.encode(PgTypes.text.opt(), row.size()),
                 Fragment.lit(",\n\"sizeunitmeasurecode\" = "),
-                Fragment.encode(UnitmeasureId.pgType.opt(), row.sizeunitmeasurecode()),
+                Fragment.encode(UnitmeasureId.dbType.opt(), row.sizeunitmeasurecode()),
                 Fragment.lit("::bpchar,\n\"weightunitmeasurecode\" = "),
-                Fragment.encode(UnitmeasureId.pgType.opt(), row.weightunitmeasurecode()),
+                Fragment.encode(UnitmeasureId.dbType.opt(), row.weightunitmeasurecode()),
                 Fragment.lit("::bpchar,\n\"weight\" = "),
                 Fragment.encode(PgTypes.numeric.opt(), row.weight()),
                 Fragment.lit("::numeric,\n\"daystomanufacture\" = "),
@@ -449,9 +436,9 @@ public class ProductRepoImpl implements ProductRepo {
                 Fragment.lit("::bpchar,\n\"style\" = "),
                 Fragment.encode(PgTypes.bpchar.opt(), row.style()),
                 Fragment.lit("::bpchar,\n\"productsubcategoryid\" = "),
-                Fragment.encode(ProductsubcategoryId.pgType.opt(), row.productsubcategoryid()),
+                Fragment.encode(ProductsubcategoryId.dbType.opt(), row.productsubcategoryid()),
                 Fragment.lit("::int4,\n\"productmodelid\" = "),
-                Fragment.encode(ProductmodelId.pgType.opt(), row.productmodelid()),
+                Fragment.encode(ProductmodelId.dbType.opt(), row.productmodelid()),
                 Fragment.lit("::int4,\n\"sellstartdate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.sellstartdate()),
                 Fragment.lit("::timestamp,\n\"sellenddate\" = "),
@@ -463,13 +450,12 @@ public class ProductRepoImpl implements ProductRepo {
                 Fragment.lit("::uuid,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"productid\" = "),
-                Fragment.encode(ProductId.pgType, productid),
+                Fragment.encode(ProductId.dbType, productid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public ProductRow upsert(ProductRow unsaved, Connection c) {
@@ -483,15 +469,15 @@ public class ProductRepoImpl implements ProductRepo {
                     + " \"productsubcategoryid\", \"productmodelid\", \"sellstartdate\","
                     + " \"sellenddate\", \"discontinueddate\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(ProductId.pgType, unsaved.productid()),
+            Fragment.encode(ProductId.dbType, unsaved.productid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.text, unsaved.productnumber()),
             Fragment.lit(", "),
-            Fragment.encode(Flag.pgType, unsaved.makeflag()),
+            Fragment.encode(Flag.dbType, unsaved.makeflag()),
             Fragment.lit("::bool, "),
-            Fragment.encode(Flag.pgType, unsaved.finishedgoodsflag()),
+            Fragment.encode(Flag.dbType, unsaved.finishedgoodsflag()),
             Fragment.lit("::bool, "),
             Fragment.encode(PgTypes.text.opt(), unsaved.color()),
             Fragment.lit(", "),
@@ -505,9 +491,9 @@ public class ProductRepoImpl implements ProductRepo {
             Fragment.lit("::numeric, "),
             Fragment.encode(PgTypes.text.opt(), unsaved.size()),
             Fragment.lit(", "),
-            Fragment.encode(UnitmeasureId.pgType.opt(), unsaved.sizeunitmeasurecode()),
+            Fragment.encode(UnitmeasureId.dbType.opt(), unsaved.sizeunitmeasurecode()),
             Fragment.lit("::bpchar, "),
-            Fragment.encode(UnitmeasureId.pgType.opt(), unsaved.weightunitmeasurecode()),
+            Fragment.encode(UnitmeasureId.dbType.opt(), unsaved.weightunitmeasurecode()),
             Fragment.lit("::bpchar, "),
             Fragment.encode(PgTypes.numeric.opt(), unsaved.weight()),
             Fragment.lit("::numeric, "),
@@ -519,9 +505,9 @@ public class ProductRepoImpl implements ProductRepo {
             Fragment.lit("::bpchar, "),
             Fragment.encode(PgTypes.bpchar.opt(), unsaved.style()),
             Fragment.lit("::bpchar, "),
-            Fragment.encode(ProductsubcategoryId.pgType.opt(), unsaved.productsubcategoryid()),
+            Fragment.encode(ProductsubcategoryId.dbType.opt(), unsaved.productsubcategoryid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(ProductmodelId.pgType.opt(), unsaved.productmodelid()),
+            Fragment.encode(ProductmodelId.dbType.opt(), unsaved.productmodelid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.timestamp, unsaved.sellstartdate()),
             Fragment.lit("::timestamp, "),
@@ -570,7 +556,6 @@ public class ProductRepoImpl implements ProductRepo {
         .updateReturning(ProductRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductRow> upsertBatch(Iterator<ProductRow> unsaved, Connection c) {
@@ -623,7 +608,6 @@ public class ProductRepoImpl implements ProductRepo {
         .updateManyReturning(ProductRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -687,5 +671,4 @@ public class ProductRepoImpl implements ProductRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

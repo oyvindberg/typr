@@ -8,11 +8,12 @@ package testdb.warehouses;
 import com.fasterxml.jackson.annotation.JsonValue;
 import dev.typr.foundations.MariaType;
 import dev.typr.foundations.MariaTypes;
+import dev.typr.foundations.data.Uint1;
 import dev.typr.foundations.dsl.Bijection;
 
 /** Type for the primary key of table `warehouses` */
-public record WarehousesId(@JsonValue Short value) {
-  public WarehousesId withValue(Short value) {
+public record WarehousesId(@JsonValue Uint1 value) {
+  public WarehousesId withValue(Uint1 value) {
     return new WarehousesId(value);
   }
   ;
@@ -23,9 +24,9 @@ public record WarehousesId(@JsonValue Short value) {
   }
   ;
 
-  public static Bijection<WarehousesId, Short> bijection =
+  public static Bijection<WarehousesId, Uint1> bijection =
       Bijection.of(WarehousesId::value, WarehousesId::new);
 
-  public static MariaType<WarehousesId> pgType =
+  public static MariaType<WarehousesId> dbType =
       MariaTypes.tinyintUnsigned.bimap(WarehousesId::new, WarehousesId::value);
 }

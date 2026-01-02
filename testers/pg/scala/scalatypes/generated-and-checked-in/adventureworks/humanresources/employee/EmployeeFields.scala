@@ -11,244 +11,241 @@ import adventureworks.person.person.PersonRow
 import adventureworks.public.Flag
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr15
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
-trait EmployeeFields extends FieldsExpr0[EmployeeRow] {
-  def businessentityid: IdField[BusinessentityId, EmployeeRow]
+class EmployeeFields(val `_path`: java.util.List[Path]) extends TupleExpr15[BusinessentityId, String, String, String, LocalDate, String, String, LocalDate, Flag, Short, Short, Flag, UUID, LocalDateTime, String] with RelationStructure[EmployeeFields, EmployeeRow]  with FieldsBase[EmployeeRow] {
+  def businessentityid: IdField[BusinessentityId, EmployeeRow] = {
+    new IdField[BusinessentityId, EmployeeRow](
+      _path,
+      "businessentityid",
+      _.businessentityid,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(businessentityid = value),
+      BusinessentityId.dbType
+    )
+  }
 
-  def nationalidnumber: Field[String, EmployeeRow]
+  def nationalidnumber: Field[String, EmployeeRow] = {
+    new Field[String, EmployeeRow](
+      _path,
+      "nationalidnumber",
+      _.nationalidnumber,
+      None,
+      None,
+      (row, value) => row.copy(nationalidnumber = value),
+      PgTypes.text
+    )
+  }
 
-  def loginid: Field[String, EmployeeRow]
+  def loginid: Field[String, EmployeeRow] = {
+    new Field[String, EmployeeRow](
+      _path,
+      "loginid",
+      _.loginid,
+      None,
+      None,
+      (row, value) => row.copy(loginid = value),
+      PgTypes.text
+    )
+  }
 
-  def jobtitle: Field[String, EmployeeRow]
+  def jobtitle: Field[String, EmployeeRow] = {
+    new Field[String, EmployeeRow](
+      _path,
+      "jobtitle",
+      _.jobtitle,
+      None,
+      None,
+      (row, value) => row.copy(jobtitle = value),
+      PgTypes.text
+    )
+  }
 
-  def birthdate: Field[LocalDate, EmployeeRow]
+  def birthdate: Field[LocalDate, EmployeeRow] = {
+    new Field[LocalDate, EmployeeRow](
+      _path,
+      "birthdate",
+      _.birthdate,
+      None,
+      Some("date"),
+      (row, value) => row.copy(birthdate = value),
+      PgTypes.date
+    )
+  }
 
-  def maritalstatus: Field[String, EmployeeRow]
+  def maritalstatus: Field[String, EmployeeRow] = {
+    new Field[String, EmployeeRow](
+      _path,
+      "maritalstatus",
+      _.maritalstatus,
+      None,
+      Some("bpchar"),
+      (row, value) => row.copy(maritalstatus = value),
+      PgTypes.bpchar
+    )
+  }
 
-  def gender: Field[String, EmployeeRow]
+  def gender: Field[String, EmployeeRow] = {
+    new Field[String, EmployeeRow](
+      _path,
+      "gender",
+      _.gender,
+      None,
+      Some("bpchar"),
+      (row, value) => row.copy(gender = value),
+      PgTypes.bpchar
+    )
+  }
 
-  def hiredate: Field[LocalDate, EmployeeRow]
+  def hiredate: Field[LocalDate, EmployeeRow] = {
+    new Field[LocalDate, EmployeeRow](
+      _path,
+      "hiredate",
+      _.hiredate,
+      None,
+      Some("date"),
+      (row, value) => row.copy(hiredate = value),
+      PgTypes.date
+    )
+  }
 
-  def salariedflag: Field[Flag, EmployeeRow]
+  def salariedflag: Field[Flag, EmployeeRow] = {
+    new Field[Flag, EmployeeRow](
+      _path,
+      "salariedflag",
+      _.salariedflag,
+      None,
+      Some("bool"),
+      (row, value) => row.copy(salariedflag = value),
+      Flag.dbType
+    )
+  }
 
-  def vacationhours: Field[Short, EmployeeRow]
+  def vacationhours: Field[Short, EmployeeRow] = {
+    new Field[Short, EmployeeRow](
+      _path,
+      "vacationhours",
+      _.vacationhours,
+      None,
+      Some("int2"),
+      (row, value) => row.copy(vacationhours = value),
+      ScalaDbTypes.PgTypes.int2
+    )
+  }
 
-  def sickleavehours: Field[Short, EmployeeRow]
+  def sickleavehours: Field[Short, EmployeeRow] = {
+    new Field[Short, EmployeeRow](
+      _path,
+      "sickleavehours",
+      _.sickleavehours,
+      None,
+      Some("int2"),
+      (row, value) => row.copy(sickleavehours = value),
+      ScalaDbTypes.PgTypes.int2
+    )
+  }
 
-  def currentflag: Field[Flag, EmployeeRow]
+  def currentflag: Field[Flag, EmployeeRow] = {
+    new Field[Flag, EmployeeRow](
+      _path,
+      "currentflag",
+      _.currentflag,
+      None,
+      Some("bool"),
+      (row, value) => row.copy(currentflag = value),
+      Flag.dbType
+    )
+  }
 
-  def rowguid: Field[UUID, EmployeeRow]
+  def rowguid: Field[UUID, EmployeeRow] = {
+    new Field[UUID, EmployeeRow](
+      _path,
+      "rowguid",
+      _.rowguid,
+      None,
+      Some("uuid"),
+      (row, value) => row.copy(rowguid = value),
+      PgTypes.uuid
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, EmployeeRow]
+  def modifieddate: Field[LocalDateTime, EmployeeRow] = {
+    new Field[LocalDateTime, EmployeeRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      None,
+      Some("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
-  def organizationnode: OptField[String, EmployeeRow]
+  def organizationnode: OptField[String, EmployeeRow] = {
+    new OptField[String, EmployeeRow](
+      _path,
+      "organizationnode",
+      _.organizationnode,
+      None,
+      None,
+      (row, value) => row.copy(organizationnode = value),
+      PgTypes.text
+    )
+  }
 
   def fkPersonPerson: ForeignKey[PersonFields, PersonRow] = ForeignKey.of[PersonFields, PersonRow]("humanresources.FK_Employee_Person_BusinessEntityID").withColumnPair[BusinessentityId](businessentityid, _.businessentityid)
 
-  override def columns: java.util.List[FieldLike[?, EmployeeRow]]
+  override def columns: java.util.List[FieldLike[?, EmployeeRow]] = java.util.List.of(this.businessentityid.underlying, this.nationalidnumber.underlying, this.loginid.underlying, this.jobtitle.underlying, this.birthdate.underlying, this.maritalstatus.underlying, this.gender.underlying, this.hiredate.underlying, this.salariedflag.underlying, this.vacationhours.underlying, this.sickleavehours.underlying, this.currentflag.underlying, this.rowguid.underlying, this.modifieddate.underlying, this.organizationnode.underlying)
 
   override def rowParser: RowParser[EmployeeRow] = EmployeeRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[EmployeeFields, EmployeeRow] = new EmployeeFields(`_path`)
+
+  override def `_1`: SqlExpr[BusinessentityId] = businessentityid
+
+  override def `_2`: SqlExpr[String] = nationalidnumber
+
+  override def `_3`: SqlExpr[String] = loginid
+
+  override def `_4`: SqlExpr[String] = jobtitle
+
+  override def `_5`: SqlExpr[LocalDate] = birthdate
+
+  override def `_6`: SqlExpr[String] = maritalstatus
+
+  override def `_7`: SqlExpr[String] = gender
+
+  override def `_8`: SqlExpr[LocalDate] = hiredate
+
+  override def `_9`: SqlExpr[Flag] = salariedflag
+
+  override def `_10`: SqlExpr[Short] = vacationhours
+
+  override def `_11`: SqlExpr[Short] = sickleavehours
+
+  override def `_12`: SqlExpr[Flag] = currentflag
+
+  override def `_13`: SqlExpr[UUID] = rowguid
+
+  override def `_14`: SqlExpr[LocalDateTime] = modifieddate
+
+  override def `_15`: SqlExpr[String] = organizationnode
 }
 
 object EmployeeFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends EmployeeFields with RelationStructure[EmployeeFields, EmployeeRow] {
-
-    override def businessentityid: IdField[BusinessentityId, EmployeeRow] = {
-      new IdField[BusinessentityId, EmployeeRow](
-        _path,
-        "businessentityid",
-        _.businessentityid,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(businessentityid = value),
-        BusinessentityId.pgType
-      )
-    }
-
-    override def nationalidnumber: Field[String, EmployeeRow] = {
-      new Field[String, EmployeeRow](
-        _path,
-        "nationalidnumber",
-        _.nationalidnumber,
-        None,
-        None,
-        (row, value) => row.copy(nationalidnumber = value),
-        PgTypes.text
-      )
-    }
-
-    override def loginid: Field[String, EmployeeRow] = {
-      new Field[String, EmployeeRow](
-        _path,
-        "loginid",
-        _.loginid,
-        None,
-        None,
-        (row, value) => row.copy(loginid = value),
-        PgTypes.text
-      )
-    }
-
-    override def jobtitle: Field[String, EmployeeRow] = {
-      new Field[String, EmployeeRow](
-        _path,
-        "jobtitle",
-        _.jobtitle,
-        None,
-        None,
-        (row, value) => row.copy(jobtitle = value),
-        PgTypes.text
-      )
-    }
-
-    override def birthdate: Field[LocalDate, EmployeeRow] = {
-      new Field[LocalDate, EmployeeRow](
-        _path,
-        "birthdate",
-        _.birthdate,
-        None,
-        Some("date"),
-        (row, value) => row.copy(birthdate = value),
-        PgTypes.date
-      )
-    }
-
-    override def maritalstatus: Field[String, EmployeeRow] = {
-      new Field[String, EmployeeRow](
-        _path,
-        "maritalstatus",
-        _.maritalstatus,
-        None,
-        Some("bpchar"),
-        (row, value) => row.copy(maritalstatus = value),
-        PgTypes.bpchar
-      )
-    }
-
-    override def gender: Field[String, EmployeeRow] = {
-      new Field[String, EmployeeRow](
-        _path,
-        "gender",
-        _.gender,
-        None,
-        Some("bpchar"),
-        (row, value) => row.copy(gender = value),
-        PgTypes.bpchar
-      )
-    }
-
-    override def hiredate: Field[LocalDate, EmployeeRow] = {
-      new Field[LocalDate, EmployeeRow](
-        _path,
-        "hiredate",
-        _.hiredate,
-        None,
-        Some("date"),
-        (row, value) => row.copy(hiredate = value),
-        PgTypes.date
-      )
-    }
-
-    override def salariedflag: Field[Flag, EmployeeRow] = {
-      new Field[Flag, EmployeeRow](
-        _path,
-        "salariedflag",
-        _.salariedflag,
-        None,
-        Some("bool"),
-        (row, value) => row.copy(salariedflag = value),
-        Flag.pgType
-      )
-    }
-
-    override def vacationhours: Field[Short, EmployeeRow] = {
-      new Field[Short, EmployeeRow](
-        _path,
-        "vacationhours",
-        _.vacationhours,
-        None,
-        Some("int2"),
-        (row, value) => row.copy(vacationhours = value),
-        ScalaDbTypes.PgTypes.int2
-      )
-    }
-
-    override def sickleavehours: Field[Short, EmployeeRow] = {
-      new Field[Short, EmployeeRow](
-        _path,
-        "sickleavehours",
-        _.sickleavehours,
-        None,
-        Some("int2"),
-        (row, value) => row.copy(sickleavehours = value),
-        ScalaDbTypes.PgTypes.int2
-      )
-    }
-
-    override def currentflag: Field[Flag, EmployeeRow] = {
-      new Field[Flag, EmployeeRow](
-        _path,
-        "currentflag",
-        _.currentflag,
-        None,
-        Some("bool"),
-        (row, value) => row.copy(currentflag = value),
-        Flag.pgType
-      )
-    }
-
-    override def rowguid: Field[UUID, EmployeeRow] = {
-      new Field[UUID, EmployeeRow](
-        _path,
-        "rowguid",
-        _.rowguid,
-        None,
-        Some("uuid"),
-        (row, value) => row.copy(rowguid = value),
-        PgTypes.uuid
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, EmployeeRow] = {
-      new Field[LocalDateTime, EmployeeRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        None,
-        Some("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def organizationnode: OptField[String, EmployeeRow] = {
-      new OptField[String, EmployeeRow](
-        _path,
-        "organizationnode",
-        _.organizationnode,
-        None,
-        None,
-        (row, value) => row.copy(organizationnode = value),
-        PgTypes.text
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, EmployeeRow]] = java.util.List.of(this.businessentityid.underlying, this.nationalidnumber.underlying, this.loginid.underlying, this.jobtitle.underlying, this.birthdate.underlying, this.maritalstatus.underlying, this.gender.underlying, this.hiredate.underlying, this.salariedflag.underlying, this.vacationhours.underlying, this.sickleavehours.underlying, this.currentflag.underlying, this.rowguid.underlying, this.modifieddate.underlying, this.organizationnode.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[EmployeeFields, EmployeeRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: EmployeeFields = new EmployeeFields(java.util.Collections.emptyList())
 }

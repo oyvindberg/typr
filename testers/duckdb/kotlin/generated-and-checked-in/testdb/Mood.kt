@@ -17,7 +17,7 @@ enum class Mood(val value: kotlin.String) {
     companion object {
         val Names: kotlin.String = entries.joinToString(", ") { it.value }
         val ByName: kotlin.collections.Map<kotlin.String, Mood> = entries.associateBy { it.value }
-        val pgTypeArray: DuckDbType<Array<Mood>> =
+        val dbTypeArray: DuckDbType<Array<Mood>> =
           DuckDbTypes.varcharArray
               .bimap({ xs -> arrayMap.map(xs, Mood::force, Mood::class.java) }, { xs -> arrayMap.map(xs, Mood::value, String::class.java) })
             .renamedDropPrecision("mood")

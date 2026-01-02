@@ -26,5 +26,4 @@ public class CustomerSummarySqlRepoImpl implements CustomerSummarySqlRepo {
         .query(CustomerSummarySqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

@@ -7,6 +7,8 @@ package testdb.product_images
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple8
+import dev.typr.foundations.data.Uint1
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -39,7 +41,7 @@ case class ProductImagesRow(
   /** 
    * Default: 0
    */
-  @JsonProperty("sort_order") sortOrder: Short,
+  @JsonProperty("sort_order") sortOrder: Uint1,
   /** 
    * Default: 0
    */
@@ -48,13 +50,13 @@ case class ProductImagesRow(
    * Default: NULL
    */
   @JsonProperty("image_data") imageData: Option[Array[Byte]]
-) {
+) extends Tuple8[ProductImagesId, ProductsId, String, Option[String], Option[String], Uint1, Boolean, Option[Array[Byte]]] {
   def id: ProductImagesId = imageId
 
   def toUnsavedRow(
     thumbnailUrl: Defaulted[Option[String]] = Defaulted.Provided(this.thumbnailUrl),
     altText: Defaulted[Option[String]] = Defaulted.Provided(this.altText),
-    sortOrder: Defaulted[Short] = Defaulted.Provided(this.sortOrder),
+    sortOrder: Defaulted[Uint1] = Defaulted.Provided(this.sortOrder),
     isPrimary: Defaulted[Boolean] = Defaulted.Provided(this.isPrimary),
     imageData: Defaulted[Option[Array[Byte]]] = Defaulted.Provided(this.imageData)
   ): ProductImagesRowUnsaved = {
@@ -68,8 +70,24 @@ case class ProductImagesRow(
       imageData
     )
   }
+
+  override def `_1`: ProductImagesId = imageId
+
+  override def `_2`: ProductsId = productId
+
+  override def `_3`: String = imageUrl
+
+  override def `_4`: Option[String] = thumbnailUrl
+
+  override def `_5`: Option[String] = altText
+
+  override def `_6`: Uint1 = sortOrder
+
+  override def `_7`: Boolean = isPrimary
+
+  override def `_8`: Option[Array[Byte]] = imageData
 }
 
 object ProductImagesRow {
-  val `_rowParser`: RowParser[ProductImagesRow] = RowParsers.of(ProductImagesId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.tinyintUnsigned, ScalaDbTypes.MariaTypes.bool, MariaTypes.longblob.nullable)(ProductImagesRow.apply)(row => Array[Any](row.imageId, row.productId, row.imageUrl, row.thumbnailUrl, row.altText, row.sortOrder, row.isPrimary, row.imageData))
+  val `_rowParser`: RowParser[ProductImagesRow] = RowParsers.of(ProductImagesId.dbType, ProductsId.dbType, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.varchar.nullable, MariaTypes.tinyintUnsigned, ScalaDbTypes.MariaTypes.bool, MariaTypes.longblob.nullable)(ProductImagesRow.apply)(row => Array[Any](row.imageId, row.productId, row.imageUrl, row.thumbnailUrl, row.altText, row.sortOrder, row.isPrimary, row.imageData))
 }

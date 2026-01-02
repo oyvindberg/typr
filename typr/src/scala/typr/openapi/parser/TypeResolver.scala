@@ -9,7 +9,7 @@ import scala.jdk.CollectionConverters._
 object TypeResolver {
 
   /** Convert an OpenAPI Schema to TypeInfo */
-  def resolve(schema: Schema[_], required: Boolean): TypeInfo = {
+  def resolve(schema: Schema[?], required: Boolean): TypeInfo = {
     val baseType = resolveBase(schema)
     // OpenAPI 3.0 uses nullable: true, OpenAPI 3.1 uses type: ["string", "null"]
     val nullable = Option(schema.getNullable).contains(java.lang.Boolean.TRUE) ||
@@ -20,12 +20,12 @@ object TypeResolver {
   }
 
   /** Check if schema has null in its type array (OpenAPI 3.1 style) */
-  private def hasNullType(schema: Schema[_]): Boolean = {
+  private def hasNullType(schema: Schema[?]): Boolean = {
     Option(schema.getTypes).exists(_.asScala.contains("null"))
   }
 
   /** Convert an OpenAPI Schema to TypeInfo without wrapping in Optional */
-  def resolveBase(schema: Schema[_]): TypeInfo = {
+  def resolveBase(schema: Schema[?]): TypeInfo = {
     if (schema == null) return TypeInfo.Any
 
     // Handle $ref first
@@ -73,7 +73,7 @@ object TypeResolver {
     }
   }
 
-  private def resolveStringType(schema: Schema[_]): TypeInfo = {
+  private def resolveStringType(schema: Schema[?]): TypeInfo = {
     val format = Option(schema.getFormat)
     TypeInfo.Primitive(format match {
       case Some("date")      => PrimitiveType.Date
@@ -88,7 +88,7 @@ object TypeResolver {
     })
   }
 
-  private def resolveIntegerType(schema: Schema[_]): TypeInfo = {
+  private def resolveIntegerType(schema: Schema[?]): TypeInfo = {
     val format = Option(schema.getFormat)
     TypeInfo.Primitive(format match {
       case Some("int32") => PrimitiveType.Int32
@@ -97,7 +97,7 @@ object TypeResolver {
     })
   }
 
-  private def resolveNumberType(schema: Schema[_]): TypeInfo = {
+  private def resolveNumberType(schema: Schema[?]): TypeInfo = {
     val format = Option(schema.getFormat)
     TypeInfo.Primitive(format match {
       case Some("float")   => PrimitiveType.Float
@@ -107,13 +107,13 @@ object TypeResolver {
     })
   }
 
-  private def resolveArrayType(schema: Schema[_]): TypeInfo = {
+  private def resolveArrayType(schema: Schema[?]): TypeInfo = {
     val itemSchema = schema.getItems
     val itemType = if (itemSchema != null) resolveBase(itemSchema) else TypeInfo.Any
     TypeInfo.ListOf(itemType)
   }
 
-  private def resolveObjectType(schema: Schema[_]): TypeInfo = {
+  private def resolveObjectType(schema: Schema[?]): TypeInfo = {
     // Check for additionalProperties (map type)
     val additionalProps = schema.getAdditionalProperties
     additionalProps match {

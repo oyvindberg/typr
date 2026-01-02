@@ -7,60 +7,56 @@ package adventureworks.public.only_pk_columns
 
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
 import dev.typr.foundations.dsl.SqlExpr
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
+import dev.typr.foundations.dsl.TupleExpr
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr2
 import java.util.Optional
 
-trait OnlyPkColumnsFields extends FieldsExpr0[OnlyPkColumnsRow] {
-  def keyColumn1: IdField[String, OnlyPkColumnsRow]
+class OnlyPkColumnsFields(val `_path`: java.util.List[Path]) extends TupleExpr2[String, Integer] with RelationStructure[OnlyPkColumnsFields, OnlyPkColumnsRow]  with FieldsBase[OnlyPkColumnsRow] {
+  def keyColumn1: IdField[String, OnlyPkColumnsRow] = {
+    new IdField[String, OnlyPkColumnsRow](
+      _path,
+      "key_column_1",
+      _.keyColumn1,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(keyColumn1 = value),
+      PgTypes.text
+    )
+  }
 
-  def keyColumn2: IdField[Integer, OnlyPkColumnsRow]
+  def keyColumn2: IdField[Integer, OnlyPkColumnsRow] = {
+    new IdField[Integer, OnlyPkColumnsRow](
+      _path,
+      "key_column_2",
+      _.keyColumn2,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(keyColumn2 = value),
+      PgTypes.int4
+    )
+  }
 
   def compositeIdIs(compositeId: OnlyPkColumnsId): SqlExpr[java.lang.Boolean] = SqlExpr.all(keyColumn1.isEqual(compositeId.keyColumn1), keyColumn2.isEqual(compositeId.keyColumn2))
 
-  def compositeIdIn(compositeIds: java.util.List[OnlyPkColumnsId]): SqlExpr[java.lang.Boolean] = CompositeIn(java.util.List.of(CompositeIn.Part[String, OnlyPkColumnsId, OnlyPkColumnsRow](keyColumn1, _.keyColumn1, PgTypes.text), CompositeIn.Part[Integer, OnlyPkColumnsId, OnlyPkColumnsRow](keyColumn2, _.keyColumn2, PgTypes.int4)), compositeIds)
+  def compositeIdIn(compositeIds: java.util.List[OnlyPkColumnsId]): SqlExpr[java.lang.Boolean] = TupleExpr.of(keyColumn1, keyColumn2).among(compositeIds)
 
-  override def columns: java.util.List[FieldLike[?, OnlyPkColumnsRow]]
+  override def columns: java.util.List[FieldLike[?, OnlyPkColumnsRow]] = java.util.List.of(this.keyColumn1, this.keyColumn2)
 
   override def rowParser: RowParser[OnlyPkColumnsRow] = OnlyPkColumnsRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OnlyPkColumnsFields, OnlyPkColumnsRow] = new OnlyPkColumnsFields(`_path`)
+
+  override def `_1`: SqlExpr[String] = keyColumn1
+
+  override def `_2`: SqlExpr[Integer] = keyColumn2
 }
 
 object OnlyPkColumnsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends OnlyPkColumnsFields with RelationStructure[OnlyPkColumnsFields, OnlyPkColumnsRow] {
-
-    override def keyColumn1: IdField[String, OnlyPkColumnsRow] = {
-      new IdField[String, OnlyPkColumnsRow](
-        _path,
-        "key_column_1",
-        _.keyColumn1,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(keyColumn1 = value),
-        PgTypes.text
-      )
-    }
-
-    override def keyColumn2: IdField[Integer, OnlyPkColumnsRow] = {
-      new IdField[Integer, OnlyPkColumnsRow](
-        _path,
-        "key_column_2",
-        _.keyColumn2,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(keyColumn2 = value),
-        PgTypes.int4
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, OnlyPkColumnsRow]] = java.util.List.of(this.keyColumn1, this.keyColumn2)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OnlyPkColumnsFields, OnlyPkColumnsRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: OnlyPkColumnsFields = new OnlyPkColumnsFields(java.util.Collections.emptyList())
 }

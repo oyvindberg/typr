@@ -23,12 +23,12 @@ public record YesOrNo(@JsonValue String value) {
 
   public static Bijection<YesOrNo, String> bijection = Bijection.of(YesOrNo::value, YesOrNo::new);
 
-  public static PgType<YesOrNo> pgType =
+  public static PgType<YesOrNo> dbType =
       PgTypes.text
           .bimap(YesOrNo::new, YesOrNo::value)
           .renamed("\"information_schema\".\"yes_or_no\"");
 
-  public static PgType<YesOrNo[]> pgTypeArray =
+  public static PgType<YesOrNo[]> dbTypeArray =
       PgTypes.textArray
           .bimap(
               xs -> arrayMap.map(xs, YesOrNo::new, YesOrNo.class),

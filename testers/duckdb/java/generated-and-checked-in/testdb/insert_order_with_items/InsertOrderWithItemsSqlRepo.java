@@ -8,11 +8,12 @@ package testdb.insert_order_with_items;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import testdb.customers.CustomersId;
 
 public interface InsertOrderWithItemsSqlRepo {
-  Integer apply(
+  List<InsertOrderWithItemsSqlRow> apply(
       Integer orderId,
       /* user-picked */ CustomersId customerId,
       Optional<LocalDate> orderDate,

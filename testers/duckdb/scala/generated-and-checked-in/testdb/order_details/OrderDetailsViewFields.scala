@@ -7,125 +7,122 @@ package testdb.order_details
 
 import dev.typr.foundations.DuckDbTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr7
 import java.time.LocalDate
 
-trait OrderDetailsViewFields extends FieldsExpr0[OrderDetailsViewRow] {
-  def orderId: OptField[Int, OrderDetailsViewRow]
+class OrderDetailsViewFields(val `_path`: java.util.List[Path]) extends TupleExpr7[Int, LocalDate, String, String, Int, BigDecimal, BigDecimal] with RelationStructure[OrderDetailsViewFields, OrderDetailsViewRow]  with FieldsBase[OrderDetailsViewRow] {
+  def orderId: OptField[Int, OrderDetailsViewRow] = {
+    new OptField[Int, OrderDetailsViewRow](
+      _path,
+      "order_id",
+      _.orderId,
+      None,
+      Some("INTEGER"),
+      (row, value) => row.copy(orderId = value),
+      ScalaDbTypes.DuckDbTypes.integer
+    )
+  }
 
-  def orderDate: OptField[LocalDate, OrderDetailsViewRow]
+  def orderDate: OptField[LocalDate, OrderDetailsViewRow] = {
+    new OptField[LocalDate, OrderDetailsViewRow](
+      _path,
+      "order_date",
+      _.orderDate,
+      None,
+      Some("DATE"),
+      (row, value) => row.copy(orderDate = value),
+      DuckDbTypes.date
+    )
+  }
 
-  def customerName: OptField[String, OrderDetailsViewRow]
+  def customerName: OptField[String, OrderDetailsViewRow] = {
+    new OptField[String, OrderDetailsViewRow](
+      _path,
+      "customer_name",
+      _.customerName,
+      None,
+      None,
+      (row, value) => row.copy(customerName = value),
+      DuckDbTypes.varchar
+    )
+  }
 
-  def productName: OptField[String, OrderDetailsViewRow]
+  def productName: OptField[String, OrderDetailsViewRow] = {
+    new OptField[String, OrderDetailsViewRow](
+      _path,
+      "product_name",
+      _.productName,
+      None,
+      None,
+      (row, value) => row.copy(productName = value),
+      DuckDbTypes.varchar
+    )
+  }
 
-  def quantity: OptField[Int, OrderDetailsViewRow]
+  def quantity: OptField[Int, OrderDetailsViewRow] = {
+    new OptField[Int, OrderDetailsViewRow](
+      _path,
+      "quantity",
+      _.quantity,
+      None,
+      Some("INTEGER"),
+      (row, value) => row.copy(quantity = value),
+      ScalaDbTypes.DuckDbTypes.integer
+    )
+  }
 
-  def unitPrice: OptField[BigDecimal, OrderDetailsViewRow]
+  def unitPrice: OptField[BigDecimal, OrderDetailsViewRow] = {
+    new OptField[BigDecimal, OrderDetailsViewRow](
+      _path,
+      "unit_price",
+      _.unitPrice,
+      None,
+      Some("DECIMAL(10,2)"),
+      (row, value) => row.copy(unitPrice = value),
+      ScalaDbTypes.DuckDbTypes.numeric
+    )
+  }
 
-  def lineTotal: OptField[BigDecimal, OrderDetailsViewRow]
+  def lineTotal: OptField[BigDecimal, OrderDetailsViewRow] = {
+    new OptField[BigDecimal, OrderDetailsViewRow](
+      _path,
+      "line_total",
+      _.lineTotal,
+      None,
+      Some("DECIMAL(18,2)"),
+      (row, value) => row.copy(lineTotal = value),
+      ScalaDbTypes.DuckDbTypes.numeric
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, OrderDetailsViewRow]]
+  override def columns: java.util.List[FieldLike[?, OrderDetailsViewRow]] = java.util.List.of(this.orderId.underlying, this.orderDate.underlying, this.customerName.underlying, this.productName.underlying, this.quantity.underlying, this.unitPrice.underlying, this.lineTotal.underlying)
 
   override def rowParser: RowParser[OrderDetailsViewRow] = OrderDetailsViewRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OrderDetailsViewFields, OrderDetailsViewRow] = new OrderDetailsViewFields(`_path`)
+
+  override def `_1`: SqlExpr[Int] = orderId
+
+  override def `_2`: SqlExpr[LocalDate] = orderDate
+
+  override def `_3`: SqlExpr[String] = customerName
+
+  override def `_4`: SqlExpr[String] = productName
+
+  override def `_5`: SqlExpr[Int] = quantity
+
+  override def `_6`: SqlExpr[BigDecimal] = unitPrice
+
+  override def `_7`: SqlExpr[BigDecimal] = lineTotal
 }
 
 object OrderDetailsViewFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends OrderDetailsViewFields with RelationStructure[OrderDetailsViewFields, OrderDetailsViewRow] {
-
-    override def orderId: OptField[Int, OrderDetailsViewRow] = {
-      new OptField[Int, OrderDetailsViewRow](
-        _path,
-        "order_id",
-        _.orderId,
-        None,
-        Some("INTEGER"),
-        (row, value) => row.copy(orderId = value),
-        ScalaDbTypes.DuckDbTypes.integer
-      )
-    }
-
-    override def orderDate: OptField[LocalDate, OrderDetailsViewRow] = {
-      new OptField[LocalDate, OrderDetailsViewRow](
-        _path,
-        "order_date",
-        _.orderDate,
-        None,
-        Some("DATE"),
-        (row, value) => row.copy(orderDate = value),
-        DuckDbTypes.date
-      )
-    }
-
-    override def customerName: OptField[String, OrderDetailsViewRow] = {
-      new OptField[String, OrderDetailsViewRow](
-        _path,
-        "customer_name",
-        _.customerName,
-        None,
-        None,
-        (row, value) => row.copy(customerName = value),
-        DuckDbTypes.varchar
-      )
-    }
-
-    override def productName: OptField[String, OrderDetailsViewRow] = {
-      new OptField[String, OrderDetailsViewRow](
-        _path,
-        "product_name",
-        _.productName,
-        None,
-        None,
-        (row, value) => row.copy(productName = value),
-        DuckDbTypes.varchar
-      )
-    }
-
-    override def quantity: OptField[Int, OrderDetailsViewRow] = {
-      new OptField[Int, OrderDetailsViewRow](
-        _path,
-        "quantity",
-        _.quantity,
-        None,
-        Some("INTEGER"),
-        (row, value) => row.copy(quantity = value),
-        ScalaDbTypes.DuckDbTypes.integer
-      )
-    }
-
-    override def unitPrice: OptField[BigDecimal, OrderDetailsViewRow] = {
-      new OptField[BigDecimal, OrderDetailsViewRow](
-        _path,
-        "unit_price",
-        _.unitPrice,
-        None,
-        Some("DECIMAL(10,2)"),
-        (row, value) => row.copy(unitPrice = value),
-        ScalaDbTypes.DuckDbTypes.numeric
-      )
-    }
-
-    override def lineTotal: OptField[BigDecimal, OrderDetailsViewRow] = {
-      new OptField[BigDecimal, OrderDetailsViewRow](
-        _path,
-        "line_total",
-        _.lineTotal,
-        None,
-        Some("DECIMAL(18,2)"),
-        (row, value) => row.copy(lineTotal = value),
-        ScalaDbTypes.DuckDbTypes.numeric
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, OrderDetailsViewRow]] = java.util.List.of(this.orderId.underlying, this.orderDate.underlying, this.customerName.underlying, this.productName.underlying, this.quantity.underlying, this.unitPrice.underlying, this.lineTotal.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OrderDetailsViewFields, OrderDetailsViewRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: OrderDetailsViewFields = new OrderDetailsViewFields(java.util.Collections.emptyList())
 }

@@ -8,6 +8,10 @@ package testdb.all_scalar_types
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.microsoft.sqlserver.jdbc.Geography
 import com.microsoft.sqlserver.jdbc.Geometry
+import dev.typr.foundations.data.HierarchyId
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Xml
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -19,7 +23,7 @@ import testdb.customtypes.Defaulted.UseDefault
 
 /** This class corresponds to a row in table `all_scalar_types` which has not been persisted yet */
 data class AllScalarTypesRowUnsaved(
-  @JsonProperty("col_tinyint") val colTinyint: Short? = null,
+  @JsonProperty("col_tinyint") val colTinyint: Uint1? = null,
   @JsonProperty("col_smallint") val colSmallint: Short? = null,
   @JsonProperty("col_int") val colInt: Int? = null,
   @JsonProperty("col_bigint") val colBigint: Long? = null,
@@ -49,9 +53,9 @@ data class AllScalarTypesRowUnsaved(
   @JsonProperty("col_datetime2") val colDatetime2: LocalDateTime? = null,
   @JsonProperty("col_datetimeoffset") val colDatetimeoffset: OffsetDateTime? = null,
   @JsonProperty("col_uniqueidentifier") val colUniqueidentifier: UUID? = null,
-  @JsonProperty("col_xml") val colXml: /* XML */ String? = null,
-  @JsonProperty("col_json") val colJson: String? = null,
-  @JsonProperty("col_hierarchyid") val colHierarchyid: /* HIERARCHYID */ String? = null,
+  @JsonProperty("col_xml") val colXml: Xml? = null,
+  @JsonProperty("col_json") val colJson: Json? = null,
+  @JsonProperty("col_hierarchyid") val colHierarchyid: HierarchyId? = null,
   @JsonProperty("col_geography") val colGeography: Geography? = null,
   @JsonProperty("col_geometry") val colGeometry: Geometry? = null,
   /** Default: ('default_value') */

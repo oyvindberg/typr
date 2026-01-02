@@ -23,57 +23,51 @@ import java.util.Optional;
 public class TitleRepoImpl implements TitleRepo {
   @Override
   public DeleteBuilder<TitleFields, TitleRow> delete() {
-    return DeleteBuilder.of("\"public\".\"title\"", TitleFields.structure(), Dialect.POSTGRESQL);
+    return DeleteBuilder.of("\"public\".\"title\"", TitleFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(TitleId code, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"public\".\"title\" where \"code\" = "),
-                Fragment.encode(TitleId.pgType, code),
+                Fragment.encode(TitleId.dbType, code),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(TitleId[] codes, Connection c) {
     return interpolate(
             Fragment.lit("delete\nfrom \"public\".\"title\"\nwhere \"code\" = ANY("),
-            Fragment.encode(TitleId.pgTypeArray, codes),
+            Fragment.encode(TitleId.dbTypeArray, codes),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public TitleRow insert(TitleRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit("insert into \"public\".\"title\"(\"code\")\nvalues ("),
-            Fragment.encode(TitleId.pgType, unsaved.code()),
+            Fragment.encode(TitleId.dbType, unsaved.code()),
             Fragment.lit(")\nRETURNING \"code\"\n"))
         .updateReturning(TitleRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<TitleRow> unsaved, Integer batchSize, Connection c) {
     return streamingInsert.insertUnchecked(
         "COPY \"public\".\"title\"(\"code\") FROM STDIN", batchSize, unsaved, c, TitleRow.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<TitleFields, TitleRow> select() {
     return SelectBuilder.of(
-        "\"public\".\"title\"", TitleFields.structure(), TitleRow._rowParser, Dialect.POSTGRESQL);
+        "\"public\".\"title\"", TitleFields.structure, TitleRow._rowParser, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<TitleRow> selectAll(Connection c) {
@@ -81,29 +75,26 @@ public class TitleRepoImpl implements TitleRepo {
         .query(TitleRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<TitleRow> selectById(TitleId code, Connection c) {
     return interpolate(
             Fragment.lit("select \"code\"\nfrom \"public\".\"title\"\nwhere \"code\" = "),
-            Fragment.encode(TitleId.pgType, code),
+            Fragment.encode(TitleId.dbType, code),
             Fragment.lit(""))
         .query(TitleRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<TitleRow> selectByIds(TitleId[] codes, Connection c) {
     return interpolate(
             Fragment.lit("select \"code\"\nfrom \"public\".\"title\"\nwhere \"code\" = ANY("),
-            Fragment.encode(TitleId.pgTypeArray, codes),
+            Fragment.encode(TitleId.dbTypeArray, codes),
             Fragment.lit(")"))
         .query(TitleRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<TitleId, TitleRow> selectByIdsTracked(TitleId[] codes, Connection c) {
@@ -111,20 +102,18 @@ public class TitleRepoImpl implements TitleRepo {
     selectByIds(codes, c).forEach(row -> ret.put(row.code(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<TitleFields, TitleRow> update() {
     return UpdateBuilder.of(
-        "\"public\".\"title\"", TitleFields.structure(), TitleRow._rowParser, Dialect.POSTGRESQL);
+        "\"public\".\"title\"", TitleFields.structure, TitleRow._rowParser, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public TitleRow upsert(TitleRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit("insert into \"public\".\"title\"(\"code\")\nvalues ("),
-            Fragment.encode(TitleId.pgType, unsaved.code()),
+            Fragment.encode(TitleId.dbType, unsaved.code()),
             Fragment.lit(
                 ")\n"
                     + "on conflict (\"code\")\n"
@@ -133,7 +122,6 @@ public class TitleRepoImpl implements TitleRepo {
         .updateReturning(TitleRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<TitleRow> upsertBatch(Iterator<TitleRow> unsaved, Connection c) {
@@ -147,7 +135,6 @@ public class TitleRepoImpl implements TitleRepo {
         .updateManyReturning(TitleRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -170,5 +157,4 @@ public class TitleRepoImpl implements TitleRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

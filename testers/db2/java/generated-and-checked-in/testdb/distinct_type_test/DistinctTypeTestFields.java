@@ -6,93 +6,99 @@
 package testdb.distinct_type_test;
 
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr3;
 import java.util.List;
 import java.util.Optional;
 import testdb.EmailAddress;
 import testdb.MoneyAmount;
 
-public interface DistinctTypeTestFields extends FieldsExpr<DistinctTypeTestRow> {
-  record Impl(List<Path> _path)
-      implements DistinctTypeTestFields,
-          RelationStructure<DistinctTypeTestFields, DistinctTypeTestRow> {
-    @Override
-    public IdField<DistinctTypeTestId, DistinctTypeTestRow> id() {
-      return new IdField<DistinctTypeTestId, DistinctTypeTestRow>(
-          _path,
-          "ID",
-          DistinctTypeTestRow::id,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withId(value),
-          DistinctTypeTestId.pgType);
-    }
-    ;
+public class DistinctTypeTestFields
+    extends TupleExpr3<DistinctTypeTestId, EmailAddress, MoneyAmount>
+    implements RelationStructure<DistinctTypeTestFields, DistinctTypeTestRow>,
+        FieldsBase<DistinctTypeTestRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<EmailAddress, DistinctTypeTestRow> email() {
-      return new Field<EmailAddress, DistinctTypeTestRow>(
-          _path,
-          "EMAIL",
-          DistinctTypeTestRow::email,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withEmail(value),
-          EmailAddress.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<MoneyAmount, DistinctTypeTestRow> balance() {
-      return new OptField<MoneyAmount, DistinctTypeTestRow>(
-          _path,
-          "BALANCE",
-          DistinctTypeTestRow::balance,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withBalance(value),
-          MoneyAmount.pgType);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, DistinctTypeTestRow>> columns() {
-      return java.util.List.of(this.id(), this.email(), this.balance());
-    }
-    ;
-
-    @Override
-    public RelationStructure<DistinctTypeTestFields, DistinctTypeTestRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public DistinctTypeTestFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static DistinctTypeTestFields structure =
+      new DistinctTypeTestFields(java.util.Collections.emptyList());
+
+  public IdField<DistinctTypeTestId, DistinctTypeTestRow> id() {
+    return new IdField<DistinctTypeTestId, DistinctTypeTestRow>(
+        _path,
+        "ID",
+        DistinctTypeTestRow::id,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withId(value),
+        DistinctTypeTestId.dbType);
   }
-  ;
 
-  IdField<DistinctTypeTestId, DistinctTypeTestRow> id();
+  public Field<EmailAddress, DistinctTypeTestRow> email() {
+    return new Field<EmailAddress, DistinctTypeTestRow>(
+        _path,
+        "EMAIL",
+        DistinctTypeTestRow::email,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withEmail(value),
+        EmailAddress.dbType);
+  }
 
-  Field<EmailAddress, DistinctTypeTestRow> email();
-
-  OptField<MoneyAmount, DistinctTypeTestRow> balance();
+  public OptField<MoneyAmount, DistinctTypeTestRow> balance() {
+    return new OptField<MoneyAmount, DistinctTypeTestRow>(
+        _path,
+        "BALANCE",
+        DistinctTypeTestRow::balance,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withBalance(value),
+        MoneyAmount.dbType);
+  }
 
   @Override
-  List<FieldLike<?, DistinctTypeTestRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<DistinctTypeTestRow> rowParser() {
+  public List<FieldLike<?, DistinctTypeTestRow>> columns() {
+    return java.util.List.of(this.id(), this.email(), this.balance());
+  }
+
+  @Override
+  public RowParser<DistinctTypeTestRow> rowParser() {
     return DistinctTypeTestRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<DistinctTypeTestFields, DistinctTypeTestRow> withPaths(
+      List<Path> _path) {
+    return new DistinctTypeTestFields(_path);
+  }
+
+  @Override
+  public SqlExpr<DistinctTypeTestId> _1() {
+    return id();
+  }
+
+  @Override
+  public SqlExpr<EmailAddress> _2() {
+    return email();
+  }
+
+  @Override
+  public SqlExpr<MoneyAmount> _3() {
+    return balance();
+  }
 }

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple5
 import java.time.LocalDateTime
 import java.util.Optional
 import oracledb.AddressT
@@ -26,7 +27,7 @@ case class CustomersRow(
   @JsonProperty("CREDIT_LIMIT") creditLimit: Optional[MoneyT],
   /** Default: SYSTIMESTAMP  */
   @JsonProperty("CREATED_AT") createdAt: LocalDateTime
-) {
+) extends Tuple5[CustomersId, String, AddressT, Optional[MoneyT], LocalDateTime] {
   def id: CustomersId = customerId
 
   def toUnsavedRow(
@@ -41,6 +42,16 @@ case class CustomersRow(
       createdAt
     )
   }
+
+  override def `_1`: CustomersId = customerId
+
+  override def `_2`: String = name
+
+  override def `_3`: AddressT = billingAddress
+
+  override def `_4`: Optional[MoneyT] = creditLimit
+
+  override def `_5`: LocalDateTime = createdAt
 }
 
 object CustomersRow {

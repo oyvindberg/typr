@@ -7,6 +7,7 @@ package testdb.departments
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -20,7 +21,15 @@ data class DepartmentsRow(
   @JsonProperty("dept_region") val deptRegion: String,
   @JsonProperty("dept_name") val deptName: String,
   val budget: BigDecimal?
-) {
+) : Tuple4<String, String, String, BigDecimal?> {
+  override fun _1(): String = deptCode
+
+  override fun _2(): String = deptRegion
+
+  override fun _3(): String = deptName
+
+  override fun _4(): BigDecimal? = budget
+
   fun compositeId(): DepartmentsId = DepartmentsId(deptCode, deptRegion)
 
   fun id(): DepartmentsId = this.compositeId()

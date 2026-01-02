@@ -18,11 +18,10 @@ public class VProductCatalogViewRepoImpl implements VProductCatalogViewRepo {
   public SelectBuilder<VProductCatalogViewFields, VProductCatalogViewRow> select() {
     return SelectBuilder.of(
         "`v_product_catalog`",
-        VProductCatalogViewFields.structure(),
+        VProductCatalogViewFields.structure,
         VProductCatalogViewRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<VProductCatalogViewRow> selectAll(Connection c) {
@@ -34,5 +33,4 @@ public class VProductCatalogViewRepoImpl implements VProductCatalogViewRepo {
         .query(VProductCatalogViewRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

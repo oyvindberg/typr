@@ -7,47 +7,45 @@ package testdb.products
 
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.SqlServerTypes
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr4
 import java.math.BigDecimal
 import kotlin.collections.List
 
-interface ProductsFields : FieldsExpr<ProductsRow> {
-  abstract override fun columns(): List<FieldLike<*, ProductsRow>>
+data class ProductsFields(val _path: List<Path>) : TupleExpr4<ProductsId, String, BigDecimal, String>, RelationStructure<ProductsFields, ProductsRow>, FieldsBase<ProductsRow> {
+  override fun _1(): SqlExpr<ProductsId> = productId()
 
-  abstract fun description(): OptField<String, ProductsRow>
+  override fun _2(): SqlExpr<String> = name()
 
-  abstract fun name(): Field<String, ProductsRow>
+  override fun _3(): SqlExpr<BigDecimal> = price()
 
-  abstract fun price(): Field<BigDecimal, ProductsRow>
+  override fun _4(): SqlExpr<String> = description()
 
-  abstract fun productId(): IdField<ProductsId, ProductsRow>
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, ProductsRow>> = listOf(this.productId().underlying, this.name().underlying, this.price().underlying, this.description().underlying)
+
+  fun description(): OptField<String, ProductsRow> = OptField<String, ProductsRow>(_path, "description", ProductsRow::description, null, null, { row, value -> row.copy(description = value) }, SqlServerTypes.nvarchar)
+
+  fun name(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "name", ProductsRow::name, null, null, { row, value -> row.copy(name = value) }, SqlServerTypes.nvarchar)
+
+  fun price(): Field<BigDecimal, ProductsRow> = Field<BigDecimal, ProductsRow>(_path, "price", ProductsRow::price, null, null, { row, value -> row.copy(price = value) }, KotlinDbTypes.SqlServerTypes.money)
+
+  fun productId(): IdField<ProductsId, ProductsRow> = IdField<ProductsId, ProductsRow>(_path, "product_id", ProductsRow::productId, null, null, { row, value -> row.copy(productId = value) }, ProductsId.sqlServerType)
 
   override fun rowParser(): RowParser<ProductsRow> = ProductsRow._rowParser.underlying
 
+  override fun withPaths(_path: List<Path>): RelationStructure<ProductsFields, ProductsRow> = ProductsFields(_path)
+
   companion object {
-    data class Impl(val _path: List<Path>) : ProductsFields, RelationStructure<ProductsFields, ProductsRow> {
-      override fun productId(): IdField<ProductsId, ProductsRow> = IdField<ProductsId, ProductsRow>(_path, "product_id", ProductsRow::productId, null, null, { row, value -> row.copy(productId = value) }, ProductsId.sqlServerType)
-
-      override fun name(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "name", ProductsRow::name, null, null, { row, value -> row.copy(name = value) }, SqlServerTypes.nvarchar)
-
-      override fun price(): Field<BigDecimal, ProductsRow> = Field<BigDecimal, ProductsRow>(_path, "price", ProductsRow::price, null, null, { row, value -> row.copy(price = value) }, KotlinDbTypes.SqlServerTypes.money)
-
-      override fun description(): OptField<String, ProductsRow> = OptField<String, ProductsRow>(_path, "description", ProductsRow::description, null, null, { row, value -> row.copy(description = value) }, SqlServerTypes.nvarchar)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, ProductsRow>> = listOf(this.productId().underlying, this.name().underlying, this.price().underlying, this.description().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<ProductsFields, ProductsRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: ProductsFields = ProductsFields(emptyList<Path>())
   }
 }

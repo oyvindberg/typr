@@ -7,206 +7,220 @@ package testdb.audit_log;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
+import dev.typr.foundations.data.Json;
 import dev.typr.foundations.data.maria.Inet6;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr10;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface AuditLogFields extends FieldsExpr<AuditLogRow> {
-  record Impl(List<Path> _path)
-      implements AuditLogFields, RelationStructure<AuditLogFields, AuditLogRow> {
-    @Override
-    public IdField<AuditLogId, AuditLogRow> logId() {
-      return new IdField<AuditLogId, AuditLogRow>(
-          _path,
-          "log_id",
-          AuditLogRow::logId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withLogId(value),
-          AuditLogId.pgType);
-    }
-    ;
+public class AuditLogFields
+    extends TupleExpr10<
+        AuditLogId, String, String, String, Json, Json, String, LocalDateTime, Inet6, byte[]>
+    implements RelationStructure<AuditLogFields, AuditLogRow>, FieldsBase<AuditLogRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, AuditLogRow> tableName() {
-      return new Field<String, AuditLogRow>(
-          _path,
-          "table_name",
-          AuditLogRow::tableName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTableName(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, AuditLogRow> recordId() {
-      return new Field<String, AuditLogRow>(
-          _path,
-          "record_id",
-          AuditLogRow::recordId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withRecordId(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, AuditLogRow> action() {
-      return new Field<String, AuditLogRow>(
-          _path,
-          "action",
-          AuditLogRow::action,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withAction(value),
-          MariaTypes.text);
-    }
-    ;
-
-    @Override
-    public OptField<String, AuditLogRow> oldValues() {
-      return new OptField<String, AuditLogRow>(
-          _path,
-          "old_values",
-          AuditLogRow::oldValues,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOldValues(value),
-          MariaTypes.longtext);
-    }
-    ;
-
-    @Override
-    public OptField<String, AuditLogRow> newValues() {
-      return new OptField<String, AuditLogRow>(
-          _path,
-          "new_values",
-          AuditLogRow::newValues,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withNewValues(value),
-          MariaTypes.longtext);
-    }
-    ;
-
-    @Override
-    public OptField<String, AuditLogRow> changedBy() {
-      return new OptField<String, AuditLogRow>(
-          _path,
-          "changed_by",
-          AuditLogRow::changedBy,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withChangedBy(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, AuditLogRow> changedAt() {
-      return new Field<LocalDateTime, AuditLogRow>(
-          _path,
-          "changed_at",
-          AuditLogRow::changedAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withChangedAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public OptField<Inet6, AuditLogRow> clientIp() {
-      return new OptField<Inet6, AuditLogRow>(
-          _path,
-          "client_ip",
-          AuditLogRow::clientIp,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withClientIp(value),
-          MariaTypes.inet6);
-    }
-    ;
-
-    @Override
-    public OptField<byte[], AuditLogRow> sessionId() {
-      return new OptField<byte[], AuditLogRow>(
-          _path,
-          "session_id",
-          AuditLogRow::sessionId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withSessionId(value),
-          MariaTypes.varbinary);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, AuditLogRow>> columns() {
-      return java.util.List.of(
-          this.logId(),
-          this.tableName(),
-          this.recordId(),
-          this.action(),
-          this.oldValues(),
-          this.newValues(),
-          this.changedBy(),
-          this.changedAt(),
-          this.clientIp(),
-          this.sessionId());
-    }
-    ;
-
-    @Override
-    public RelationStructure<AuditLogFields, AuditLogRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public AuditLogFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static AuditLogFields structure = new AuditLogFields(java.util.Collections.emptyList());
+
+  public IdField<AuditLogId, AuditLogRow> logId() {
+    return new IdField<AuditLogId, AuditLogRow>(
+        _path,
+        "log_id",
+        AuditLogRow::logId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withLogId(value),
+        AuditLogId.dbType);
   }
-  ;
 
-  IdField<AuditLogId, AuditLogRow> logId();
+  public Field<String, AuditLogRow> tableName() {
+    return new Field<String, AuditLogRow>(
+        _path,
+        "table_name",
+        AuditLogRow::tableName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTableName(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, AuditLogRow> tableName();
+  public Field<String, AuditLogRow> recordId() {
+    return new Field<String, AuditLogRow>(
+        _path,
+        "record_id",
+        AuditLogRow::recordId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withRecordId(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, AuditLogRow> recordId();
+  public Field<String, AuditLogRow> action() {
+    return new Field<String, AuditLogRow>(
+        _path,
+        "action",
+        AuditLogRow::action,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withAction(value),
+        MariaTypes.text);
+  }
 
-  Field<String, AuditLogRow> action();
+  public OptField<Json, AuditLogRow> oldValues() {
+    return new OptField<Json, AuditLogRow>(
+        _path,
+        "old_values",
+        AuditLogRow::oldValues,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOldValues(value),
+        MariaTypes.json);
+  }
 
-  OptField<String, AuditLogRow> oldValues();
+  public OptField<Json, AuditLogRow> newValues() {
+    return new OptField<Json, AuditLogRow>(
+        _path,
+        "new_values",
+        AuditLogRow::newValues,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withNewValues(value),
+        MariaTypes.json);
+  }
 
-  OptField<String, AuditLogRow> newValues();
+  public OptField<String, AuditLogRow> changedBy() {
+    return new OptField<String, AuditLogRow>(
+        _path,
+        "changed_by",
+        AuditLogRow::changedBy,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withChangedBy(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, AuditLogRow> changedBy();
+  public Field<LocalDateTime, AuditLogRow> changedAt() {
+    return new Field<LocalDateTime, AuditLogRow>(
+        _path,
+        "changed_at",
+        AuditLogRow::changedAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withChangedAt(value),
+        MariaTypes.datetime);
+  }
 
-  Field<LocalDateTime, AuditLogRow> changedAt();
+  public OptField<Inet6, AuditLogRow> clientIp() {
+    return new OptField<Inet6, AuditLogRow>(
+        _path,
+        "client_ip",
+        AuditLogRow::clientIp,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withClientIp(value),
+        MariaTypes.inet6);
+  }
 
-  OptField<Inet6, AuditLogRow> clientIp();
-
-  OptField<byte[], AuditLogRow> sessionId();
+  public OptField<byte[], AuditLogRow> sessionId() {
+    return new OptField<byte[], AuditLogRow>(
+        _path,
+        "session_id",
+        AuditLogRow::sessionId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withSessionId(value),
+        MariaTypes.varbinary);
+  }
 
   @Override
-  List<FieldLike<?, AuditLogRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<AuditLogRow> rowParser() {
+  public List<FieldLike<?, AuditLogRow>> columns() {
+    return java.util.List.of(
+        this.logId(),
+        this.tableName(),
+        this.recordId(),
+        this.action(),
+        this.oldValues(),
+        this.newValues(),
+        this.changedBy(),
+        this.changedAt(),
+        this.clientIp(),
+        this.sessionId());
+  }
+
+  @Override
+  public RowParser<AuditLogRow> rowParser() {
     return AuditLogRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<AuditLogFields, AuditLogRow> withPaths(List<Path> _path) {
+    return new AuditLogFields(_path);
+  }
+
+  @Override
+  public SqlExpr<AuditLogId> _1() {
+    return logId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return tableName();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return recordId();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return action();
+  }
+
+  @Override
+  public SqlExpr<Json> _5() {
+    return oldValues();
+  }
+
+  @Override
+  public SqlExpr<Json> _6() {
+    return newValues();
+  }
+
+  @Override
+  public SqlExpr<String> _7() {
+    return changedBy();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _8() {
+    return changedAt();
+  }
+
+  @Override
+  public SqlExpr<Inet6> _9() {
+    return clientIp();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _10() {
+    return sessionId();
+  }
 }

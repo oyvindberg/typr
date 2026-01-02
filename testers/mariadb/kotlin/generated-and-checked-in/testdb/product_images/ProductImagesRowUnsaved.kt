@@ -6,6 +6,7 @@
 package testdb.product_images
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Uint1
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.products.ProductsId
@@ -29,7 +30,7 @@ data class ProductImagesRowUnsaved(
   /** Default: 0
 
     */
-  @JsonProperty("sort_order") val sortOrder: Defaulted<Short> = UseDefault(),
+  @JsonProperty("sort_order") val sortOrder: Defaulted<Uint1> = UseDefault(),
   /** Default: 0
 
     */
@@ -42,7 +43,7 @@ data class ProductImagesRowUnsaved(
   fun toRow(
     thumbnailUrlDefault: () -> String?,
     altTextDefault: () -> String?,
-    sortOrderDefault: () -> Short,
+    sortOrderDefault: () -> Uint1,
     isPrimaryDefault: () -> Boolean,
     imageDataDefault: () -> ByteArray?,
     imageIdDefault: () -> ProductImagesId

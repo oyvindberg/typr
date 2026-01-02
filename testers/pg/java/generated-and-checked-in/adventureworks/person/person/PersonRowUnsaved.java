@@ -371,17 +371,17 @@ public record PersonRowUnsaved(
   public static PgText<PersonRowUnsaved> pgText =
       PgText.instance(
           (row, sb) -> {
-            BusinessentityId.pgType.text().unsafeEncode(row.businessentityid, sb);
+            BusinessentityId.dbType.text().unsafeEncode(row.businessentityid, sb);
             sb.append(PgText.DELIMETER);
             PgTypes.bpchar.text().unsafeEncode(row.persontype, sb);
             sb.append(PgText.DELIMETER);
             PgTypes.text.opt().text().unsafeEncode(row.title, sb);
             sb.append(PgText.DELIMETER);
-            FirstName.pgType.text().unsafeEncode(row.firstname, sb);
+            FirstName.dbType.text().unsafeEncode(row.firstname, sb);
             sb.append(PgText.DELIMETER);
-            Name.pgType.opt().text().unsafeEncode(row.middlename, sb);
+            Name.dbType.opt().text().unsafeEncode(row.middlename, sb);
             sb.append(PgText.DELIMETER);
-            Name.pgType.text().unsafeEncode(row.lastname, sb);
+            Name.dbType.text().unsafeEncode(row.lastname, sb);
             sb.append(PgText.DELIMETER);
             PgTypes.text.opt().text().unsafeEncode(row.suffix, sb);
             sb.append(PgText.DELIMETER);
@@ -389,7 +389,7 @@ public record PersonRowUnsaved(
             sb.append(PgText.DELIMETER);
             PgTypes.xml.opt().text().unsafeEncode(row.demographics, sb);
             sb.append(PgText.DELIMETER);
-            Defaulted.pgText(NameStyle.pgType.text()).unsafeEncode(row.namestyle, sb);
+            Defaulted.pgText(NameStyle.dbType.text()).unsafeEncode(row.namestyle, sb);
             sb.append(PgText.DELIMETER);
             Defaulted.pgText(PgTypes.int4.text()).unsafeEncode(row.emailpromotion, sb);
             sb.append(PgText.DELIMETER);

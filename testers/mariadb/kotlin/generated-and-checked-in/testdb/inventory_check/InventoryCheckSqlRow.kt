@@ -7,6 +7,7 @@ package testdb.inventory_check
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple12
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -35,14 +36,38 @@ data class InventoryCheckSqlRow(
   @JsonProperty("quantity_on_hand") val quantityOnHand: Int,
   /** Points to [testdb.inventory.InventoryRow.quantityReserved] */
   @JsonProperty("quantity_reserved") val quantityReserved: Int,
-  /** Points to [testdb.inventory.InventoryRow.quantityOnHand] */
+  /** Points to [testdb.inventory.InventoryRow.quantityReserved] */
   val available: Int,
   /** Points to [testdb.inventory.InventoryRow.reorderPoint] */
   @JsonProperty("reorder_point") val reorderPoint: Int,
   /** Points to [testdb.inventory.InventoryRow.binLocation] */
   @JsonProperty("bin_location") val binLocation: String?
-) {
+) : Tuple12<InventoryId, ProductsId, String, String, WarehousesId, String, String, Int, Int, Int, Int, String?> {
+  override fun _1(): InventoryId = inventoryId
+
+  override fun _10(): Int = available
+
+  override fun _11(): Int = reorderPoint
+
+  override fun _12(): String? = binLocation
+
+  override fun _2(): ProductsId = productId
+
+  override fun _3(): String = sku
+
+  override fun _4(): String = productName
+
+  override fun _5(): WarehousesId = warehouseId
+
+  override fun _6(): String = warehouseCode
+
+  override fun _7(): String = warehouseName
+
+  override fun _8(): Int = quantityOnHand
+
+  override fun _9(): Int = quantityReserved
+
   companion object {
-    val _rowParser: RowParser<InventoryCheckSqlRow> = RowParsers.of(InventoryId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, MariaTypes.varchar.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> InventoryCheckSqlRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) }, { row -> arrayOf<Any?>(row.inventoryId, row.productId, row.sku, row.productName, row.warehouseId, row.warehouseCode, row.warehouseName, row.quantityOnHand, row.quantityReserved, row.available, row.reorderPoint, row.binLocation) })
+    val _rowParser: RowParser<InventoryCheckSqlRow> = RowParsers.of(InventoryId.dbType, ProductsId.dbType, MariaTypes.varchar, MariaTypes.varchar, WarehousesId.dbType, MariaTypes.char_, MariaTypes.varchar, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, MariaTypes.varchar.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 -> InventoryCheckSqlRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) }, { row -> arrayOf<Any?>(row.inventoryId, row.productId, row.sku, row.productName, row.warehouseId, row.warehouseCode, row.warehouseName, row.quantityOnHand, row.quantityReserved, row.available, row.reorderPoint, row.binLocation) })
   }
 }

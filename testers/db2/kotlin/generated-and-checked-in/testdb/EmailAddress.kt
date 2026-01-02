@@ -18,7 +18,7 @@ data class EmailAddress(@JsonValue val value: String) {
     val bijection: Bijection<EmailAddress, String> =
       Bijection.of(EmailAddress::value, ::EmailAddress)
 
-    val pgType: Db2Type<EmailAddress> =
+    val dbType: Db2Type<EmailAddress> =
       Db2Types.varchar.bimap(::EmailAddress, EmailAddress::value).renamed("\"EMAIL_ADDRESS\"")
   }
 }

@@ -25,27 +25,25 @@ import testdb.products.ProductsId;
 public class ProductImagesRepoImpl implements ProductImagesRepo {
   @Override
   public DeleteBuilder<ProductImagesFields, ProductImagesRow> delete() {
-    return DeleteBuilder.of("`product_images`", ProductImagesFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`product_images`", ProductImagesFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(ProductImagesId imageId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `product_images` where `image_id` = "),
-                Fragment.encode(ProductImagesId.pgType, imageId),
+                Fragment.encode(ProductImagesId.dbType, imageId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(ProductImagesId[] imageIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : imageIds) {
-      fragments.add(Fragment.encode(ProductImagesId.pgType, id));
+      fragments.add(Fragment.encode(ProductImagesId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -55,7 +53,6 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductImagesRow insert(ProductImagesRow unsaved, Connection c) {
@@ -64,7 +61,7 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
                 "insert into `product_images`(`product_id`, `image_url`, `thumbnail_url`,"
                     + " `alt_text`, `sort_order`, `is_primary`, `image_data`)\n"
                     + "values ("),
-            Fragment.encode(ProductsId.pgType, unsaved.productId()),
+            Fragment.encode(ProductsId.dbType, unsaved.productId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.imageUrl()),
             Fragment.lit(", "),
@@ -84,7 +81,6 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
         .updateReturning(ProductImagesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductImagesRow insert(ProductImagesRowUnsaved unsaved, Connection c) {
@@ -94,7 +90,7 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
     ;
     columns.add(Fragment.lit("`product_id`"));
     values.add(
-        interpolate(Fragment.encode(ProductsId.pgType, unsaved.productId()), Fragment.lit("")));
+        interpolate(Fragment.encode(ProductsId.dbType, unsaved.productId()), Fragment.lit("")));
     columns.add(Fragment.lit("`image_url`"));
     values.add(
         interpolate(Fragment.encode(MariaTypes.varchar, unsaved.imageUrl()), Fragment.lit("")));
@@ -161,17 +157,15 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
     ;
     return q.updateReturning(ProductImagesRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<ProductImagesFields, ProductImagesRow> select() {
     return SelectBuilder.of(
         "`product_images`",
-        ProductImagesFields.structure(),
+        ProductImagesFields.structure,
         ProductImagesRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<ProductImagesRow> selectAll(Connection c) {
@@ -183,7 +177,6 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
         .query(ProductImagesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<ProductImagesRow> selectById(ProductImagesId imageId, Connection c) {
@@ -193,18 +186,17 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
                     + " `sort_order`, `is_primary`, `image_data`\n"
                     + "from `product_images`\n"
                     + "where `image_id` = "),
-            Fragment.encode(ProductImagesId.pgType, imageId),
+            Fragment.encode(ProductImagesId.dbType, imageId),
             Fragment.lit(""))
         .query(ProductImagesRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductImagesRow> selectByIds(ProductImagesId[] imageIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : imageIds) {
-      fragments.add(Fragment.encode(ProductImagesId.pgType, id));
+      fragments.add(Fragment.encode(ProductImagesId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -217,7 +209,6 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
         .query(ProductImagesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<ProductImagesId, ProductImagesRow> selectByIdsTracked(
@@ -227,17 +218,15 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
     selectByIds(imageIds, c).forEach(row -> ret.put(row.imageId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<ProductImagesFields, ProductImagesRow> update() {
     return UpdateBuilder.of(
         "`product_images`",
-        ProductImagesFields.structure(),
+        ProductImagesFields.structure,
         ProductImagesRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(ProductImagesRow row, Connection c) {
@@ -245,7 +234,7 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
     ;
     return interpolate(
                 Fragment.lit("update `product_images`\nset `product_id` = "),
-                Fragment.encode(ProductsId.pgType, row.productId()),
+                Fragment.encode(ProductsId.dbType, row.productId()),
                 Fragment.lit(",\n`image_url` = "),
                 Fragment.encode(MariaTypes.varchar, row.imageUrl()),
                 Fragment.lit(",\n`thumbnail_url` = "),
@@ -259,22 +248,23 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
                 Fragment.lit(",\n`image_data` = "),
                 Fragment.encode(MariaTypes.longblob.opt(), row.imageData()),
                 Fragment.lit("\nwhere `image_id` = "),
-                Fragment.encode(ProductImagesId.pgType, imageId),
+                Fragment.encode(ProductImagesId.dbType, imageId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public ProductImagesRow upsert(ProductImagesRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `product_images`(`product_id`, `image_url`, `thumbnail_url`,"
-                    + " `alt_text`, `sort_order`, `is_primary`, `image_data`)\n"
+                "INSERT INTO `product_images`(`image_id`, `product_id`, `image_url`,"
+                    + " `thumbnail_url`, `alt_text`, `sort_order`, `is_primary`, `image_data`)\n"
                     + "VALUES ("),
-            Fragment.encode(ProductsId.pgType, unsaved.productId()),
+            Fragment.encode(ProductImagesId.dbType, unsaved.imageId()),
+            Fragment.lit(", "),
+            Fragment.encode(ProductsId.dbType, unsaved.productId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.imageUrl()),
             Fragment.lit(", "),
@@ -301,7 +291,6 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
         .updateReturning(ProductImagesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductImagesRow> upsertBatch(Iterator<ProductImagesRow> unsaved, Connection c) {
@@ -322,5 +311,4 @@ public class ProductImagesRepoImpl implements ProductImagesRepo {
         .updateReturningEach(ProductImagesRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

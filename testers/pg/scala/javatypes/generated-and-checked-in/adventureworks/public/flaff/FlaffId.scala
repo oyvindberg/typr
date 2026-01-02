@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple4
 
 /** Type for the composite primary key of table `public.flaff` */
 case class FlaffId(
@@ -17,8 +18,16 @@ case class FlaffId(
   @JsonProperty("another_code") anotherCode: String,
   @JsonProperty("some_number") someNumber: Integer,
   specifier: ShortText
-)
+) extends Tuple4[ShortText, String, Integer, ShortText] {
+  override def `_1`: ShortText = code
+
+  override def `_2`: String = anotherCode
+
+  override def `_3`: Integer = someNumber
+
+  override def `_4`: ShortText = specifier
+}
 
 object FlaffId {
-  val `_rowParser`: RowParser[FlaffId] = RowParsers.of(ShortText.pgType, PgTypes.text, PgTypes.int4, ShortText.pgType, FlaffId.apply, row => Array[Any](row.code, row.anotherCode, row.someNumber, row.specifier))
+  val `_rowParser`: RowParser[FlaffId] = RowParsers.of(ShortText.dbType, PgTypes.text, PgTypes.int4, ShortText.dbType, FlaffId.apply, row => Array[Any](row.code, row.anotherCode, row.someNumber, row.specifier))
 }

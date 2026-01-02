@@ -24,9 +24,8 @@ public class TitledpersonRepoImpl implements TitledpersonRepo {
   @Override
   public DeleteBuilder<TitledpersonFields, TitledpersonRow> delete() {
     return DeleteBuilder.of(
-        "\"public\".\"titledperson\"", TitledpersonFields.structure(), Dialect.POSTGRESQL);
+        "\"public\".\"titledperson\"", TitledpersonFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public TitledpersonRow insert(TitledpersonRow unsaved, Connection c) {
@@ -34,16 +33,15 @@ public class TitledpersonRepoImpl implements TitledpersonRepo {
             Fragment.lit(
                 "insert into \"public\".\"titledperson\"(\"title_short\", \"title\", \"name\")\n"
                     + "values ("),
-            Fragment.encode(TitleDomainId.pgType, unsaved.titleShort()),
+            Fragment.encode(TitleDomainId.dbType, unsaved.titleShort()),
             Fragment.lit("::text, "),
-            Fragment.encode(TitleId.pgType, unsaved.title()),
+            Fragment.encode(TitleId.dbType, unsaved.title()),
             Fragment.lit(", "),
             Fragment.encode(PgTypes.text, unsaved.name()),
             Fragment.lit(")\nRETURNING \"title_short\", \"title\", \"name\"\n"))
         .updateReturning(TitledpersonRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<TitledpersonRow> unsaved, Integer batchSize, Connection c) {
@@ -54,17 +52,15 @@ public class TitledpersonRepoImpl implements TitledpersonRepo {
         c,
         TitledpersonRow.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<TitledpersonFields, TitledpersonRow> select() {
     return SelectBuilder.of(
         "\"public\".\"titledperson\"",
-        TitledpersonFields.structure(),
+        TitledpersonFields.structure,
         TitledpersonRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<TitledpersonRow> selectAll(Connection c) {
@@ -74,15 +70,13 @@ public class TitledpersonRepoImpl implements TitledpersonRepo {
         .query(TitledpersonRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<TitledpersonFields, TitledpersonRow> update() {
     return UpdateBuilder.of(
         "\"public\".\"titledperson\"",
-        TitledpersonFields.structure(),
+        TitledpersonFields.structure,
         TitledpersonRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 }

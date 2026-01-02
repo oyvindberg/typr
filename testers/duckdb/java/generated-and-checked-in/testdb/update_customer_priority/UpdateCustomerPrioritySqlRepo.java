@@ -6,11 +6,12 @@
 package testdb.update_customer_priority;
 
 import java.sql.Connection;
+import java.util.List;
 import testdb.Priority;
 import testdb.customers.CustomersId;
 
 public interface UpdateCustomerPrioritySqlRepo {
-  Integer apply(
+  List<UpdateCustomerPrioritySqlRow> apply(
       /* user-picked */ Priority newPriority,
       /* user-picked */ CustomersId customerId,
       Connection c);

@@ -7,6 +7,10 @@ package testdb.reviews
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple18
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -39,7 +43,7 @@ data class ReviewsRow(
     */
   @JsonProperty("order_item_id") val orderItemId: OrderItemsId?,
   /**  */
-  val rating: Short,
+  val rating: Uint1,
   /** 
     * Default: NULL
     */
@@ -51,15 +55,15 @@ data class ReviewsRow(
   /** 
     * Default: NULL
     */
-  val pros: String?,
+  val pros: Json?,
   /** 
     * Default: NULL
     */
-  val cons: String?,
+  val cons: Json?,
   /** Array of image URLs
     * Default: NULL
     */
-  val images: String?,
+  val images: Json?,
   /** 
     * Default: 0
     */
@@ -71,11 +75,11 @@ data class ReviewsRow(
   /** 
     * Default: 0
     */
-  @JsonProperty("helpful_votes") val helpfulVotes: Long,
+  @JsonProperty("helpful_votes") val helpfulVotes: Uint4,
   /** 
     * Default: 0
     */
-  @JsonProperty("unhelpful_votes") val unhelpfulVotes: Long,
+  @JsonProperty("unhelpful_votes") val unhelpfulVotes: Uint4,
   /** 
     * Default: NULL
     */
@@ -92,20 +96,56 @@ data class ReviewsRow(
     * Default: current_timestamp(6)
     */
   @JsonProperty("updated_at") val updatedAt: LocalDateTime
-) {
+) : Tuple18<ReviewsId, ProductsId, CustomersId, OrderItemsId?, Uint1, String?, String?, Json?, Json?, Json?, Boolean, Boolean, Uint4, Uint4, String?, LocalDateTime?, LocalDateTime, LocalDateTime> {
+  override fun _1(): ReviewsId = reviewId
+
+  override fun _10(): Json? = images
+
+  override fun _11(): Boolean = isVerifiedPurchase
+
+  override fun _12(): Boolean = isApproved
+
+  override fun _13(): Uint4 = helpfulVotes
+
+  override fun _14(): Uint4 = unhelpfulVotes
+
+  override fun _15(): String? = adminResponse
+
+  override fun _16(): LocalDateTime? = respondedAt
+
+  override fun _17(): LocalDateTime = createdAt
+
+  override fun _18(): LocalDateTime = updatedAt
+
+  override fun _2(): ProductsId = productId
+
+  override fun _3(): CustomersId = customerId
+
+  override fun _4(): OrderItemsId? = orderItemId
+
+  override fun _5(): Uint1 = rating
+
+  override fun _6(): String? = title
+
+  override fun _7(): String? = content
+
+  override fun _8(): Json? = pros
+
+  override fun _9(): Json? = cons
+
   fun id(): ReviewsId = reviewId
 
   fun toUnsavedRow(
     orderItemId: Defaulted<OrderItemsId?> = Defaulted.Provided(this.orderItemId),
     title: Defaulted<String?> = Defaulted.Provided(this.title),
     content: Defaulted<String?> = Defaulted.Provided(this.content),
-    pros: Defaulted<String?> = Defaulted.Provided(this.pros),
-    cons: Defaulted<String?> = Defaulted.Provided(this.cons),
-    images: Defaulted<String?> = Defaulted.Provided(this.images),
+    pros: Defaulted<Json?> = Defaulted.Provided(this.pros),
+    cons: Defaulted<Json?> = Defaulted.Provided(this.cons),
+    images: Defaulted<Json?> = Defaulted.Provided(this.images),
     isVerifiedPurchase: Defaulted<Boolean> = Defaulted.Provided(this.isVerifiedPurchase),
     isApproved: Defaulted<Boolean> = Defaulted.Provided(this.isApproved),
-    helpfulVotes: Defaulted<Long> = Defaulted.Provided(this.helpfulVotes),
-    unhelpfulVotes: Defaulted<Long> = Defaulted.Provided(this.unhelpfulVotes),
+    helpfulVotes: Defaulted<Uint4> = Defaulted.Provided(this.helpfulVotes),
+    unhelpfulVotes: Defaulted<Uint4> = Defaulted.Provided(this.unhelpfulVotes),
     adminResponse: Defaulted<String?> = Defaulted.Provided(this.adminResponse),
     respondedAt: Defaulted<LocalDateTime?> = Defaulted.Provided(this.respondedAt),
     createdAt: Defaulted<LocalDateTime> = Defaulted.Provided(this.createdAt),
@@ -113,6 +153,6 @@ data class ReviewsRow(
   ): ReviewsRowUnsaved = ReviewsRowUnsaved(productId, customerId, rating, orderItemId, title, content, pros, cons, images, isVerifiedPurchase, isApproved, helpfulVotes, unhelpfulVotes, adminResponse, respondedAt, createdAt, updatedAt)
 
   companion object {
-    val _rowParser: RowParser<ReviewsRow> = RowParsers.of(ReviewsId.pgType, ProductsId.pgType, CustomersId.pgType, OrderItemsId.pgType.nullable(), KotlinDbTypes.MariaTypes.tinyintUnsigned, MariaTypes.varchar.nullable(), MariaTypes.text.nullable(), MariaTypes.longtext.nullable(), MariaTypes.longtext.nullable(), MariaTypes.longtext.nullable(), KotlinDbTypes.MariaTypes.bool, KotlinDbTypes.MariaTypes.bool, KotlinDbTypes.MariaTypes.intUnsigned, KotlinDbTypes.MariaTypes.intUnsigned, MariaTypes.text.nullable(), MariaTypes.datetime.nullable(), MariaTypes.datetime, MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17 -> ReviewsRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) }, { row -> arrayOf<Any?>(row.reviewId, row.productId, row.customerId, row.orderItemId, row.rating, row.title, row.content, row.pros, row.cons, row.images, row.isVerifiedPurchase, row.isApproved, row.helpfulVotes, row.unhelpfulVotes, row.adminResponse, row.respondedAt, row.createdAt, row.updatedAt) })
+    val _rowParser: RowParser<ReviewsRow> = RowParsers.of(ReviewsId.dbType, ProductsId.dbType, CustomersId.dbType, OrderItemsId.dbType.nullable(), MariaTypes.tinyintUnsigned, MariaTypes.varchar.nullable(), MariaTypes.text.nullable(), MariaTypes.json.nullable(), MariaTypes.json.nullable(), MariaTypes.json.nullable(), KotlinDbTypes.MariaTypes.bool, KotlinDbTypes.MariaTypes.bool, MariaTypes.intUnsigned, MariaTypes.intUnsigned, MariaTypes.text.nullable(), MariaTypes.datetime.nullable(), MariaTypes.datetime, MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17 -> ReviewsRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) }, { row -> arrayOf<Any?>(row.reviewId, row.productId, row.customerId, row.orderItemId, row.rating, row.title, row.content, row.pros, row.cons, row.images, row.isVerifiedPurchase, row.isApproved, row.helpfulVotes, row.unhelpfulVotes, row.adminResponse, row.respondedAt, row.createdAt, row.updatedAt) })
   }
 }

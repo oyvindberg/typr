@@ -9,6 +9,7 @@ import adventureworks.customtypes.Defaulted
 import adventureworks.person.businessentity.BusinessentityId
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import java.time.LocalDateTime
@@ -29,7 +30,17 @@ data class PasswordRow(
   val rowguid: UUID,
   /** Default: now() */
   val modifieddate: LocalDateTime
-) {
+) : Tuple5<BusinessentityId, String, String, UUID, LocalDateTime> {
+  override fun _1(): BusinessentityId = businessentityid
+
+  override fun _2(): String = passwordhash
+
+  override fun _3(): String = passwordsalt
+
+  override fun _4(): UUID = rowguid
+
+  override fun _5(): LocalDateTime = modifieddate
+
   fun id(): BusinessentityId = businessentityid
 
   fun toUnsavedRow(
@@ -38,7 +49,7 @@ data class PasswordRow(
   ): PasswordRowUnsaved = PasswordRowUnsaved(businessentityid, passwordhash, passwordsalt, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<PasswordRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> PasswordRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.businessentityid, row.passwordhash, row.passwordsalt, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<PasswordRow> = RowParsers.of(BusinessentityId.dbType, PgTypes.text, PgTypes.text, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> PasswordRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.businessentityid, row.passwordhash, row.passwordsalt, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<PasswordRow> =
       PgText.from(_rowParser.underlying)

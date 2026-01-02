@@ -27,11 +27,8 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
   @Override
   public DeleteBuilder<ProductcategoryFields, ProductcategoryRow> delete() {
     return DeleteBuilder.of(
-        "\"production\".\"productcategory\"",
-        ProductcategoryFields.structure(),
-        Dialect.POSTGRESQL);
+        "\"production\".\"productcategory\"", ProductcategoryFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(ProductcategoryId productcategoryid, Connection c) {
@@ -39,13 +36,12 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
                 Fragment.lit(
                     "delete from \"production\".\"productcategory\" where \"productcategoryid\" ="
                         + " "),
-                Fragment.encode(ProductcategoryId.pgType, productcategoryid),
+                Fragment.encode(ProductcategoryId.dbType, productcategoryid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(ProductcategoryId[] productcategoryids, Connection c) {
@@ -54,12 +50,11 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
                 "delete\n"
                     + "from \"production\".\"productcategory\"\n"
                     + "where \"productcategoryid\" = ANY("),
-            Fragment.encode(ProductcategoryId.pgTypeArray, productcategoryids),
+            Fragment.encode(ProductcategoryId.dbTypeArray, productcategoryids),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductcategoryRow insert(ProductcategoryRow unsaved, Connection c) {
@@ -68,9 +63,9 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
                 "insert into \"production\".\"productcategory\"(\"productcategoryid\", \"name\","
                     + " \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(ProductcategoryId.pgType, unsaved.productcategoryid()),
+            Fragment.encode(ProductcategoryId.dbType, unsaved.productcategoryid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.uuid, unsaved.rowguid()),
             Fragment.lit("::uuid, "),
@@ -81,7 +76,6 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
         .updateReturning(ProductcategoryRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductcategoryRow insert(ProductcategoryRowUnsaved unsaved, Connection c) {
@@ -91,7 +85,7 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
     ;
     columns.add(Fragment.lit("\"name\""));
     values.add(
-        interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
+        interpolate(Fragment.encode(Name.dbType, unsaved.name()), Fragment.lit("::varchar")));
     unsaved
         .productcategoryid()
         .visit(
@@ -100,7 +94,7 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
               columns.add(Fragment.lit("\"productcategoryid\""));
               values.add(
                   interpolate(
-                      Fragment.encode(ProductcategoryId.pgType, value), Fragment.lit("::int4")));
+                      Fragment.encode(ProductcategoryId.dbType, value), Fragment.lit("::int4")));
             });
     ;
     unsaved
@@ -134,7 +128,6 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
     ;
     return q.updateReturning(ProductcategoryRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(
@@ -147,7 +140,6 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
         c,
         ProductcategoryRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -161,17 +153,15 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
         c,
         ProductcategoryRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<ProductcategoryFields, ProductcategoryRow> select() {
     return SelectBuilder.of(
         "\"production\".\"productcategory\"",
-        ProductcategoryFields.structure(),
+        ProductcategoryFields.structure,
         ProductcategoryRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<ProductcategoryRow> selectAll(Connection c) {
@@ -182,7 +172,6 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
         .query(ProductcategoryRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<ProductcategoryRow> selectById(
@@ -192,12 +181,11 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
                 "select \"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\"\n"
                     + "from \"production\".\"productcategory\"\n"
                     + "where \"productcategoryid\" = "),
-            Fragment.encode(ProductcategoryId.pgType, productcategoryid),
+            Fragment.encode(ProductcategoryId.dbType, productcategoryid),
             Fragment.lit(""))
         .query(ProductcategoryRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductcategoryRow> selectByIds(
@@ -207,12 +195,11 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
                 "select \"productcategoryid\", \"name\", \"rowguid\", \"modifieddate\"\n"
                     + "from \"production\".\"productcategory\"\n"
                     + "where \"productcategoryid\" = ANY("),
-            Fragment.encode(ProductcategoryId.pgTypeArray, productcategoryids),
+            Fragment.encode(ProductcategoryId.dbTypeArray, productcategoryids),
             Fragment.lit(")"))
         .query(ProductcategoryRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<ProductcategoryId, ProductcategoryRow> selectByIdsTracked(
@@ -222,17 +209,15 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
     selectByIds(productcategoryids, c).forEach(row -> ret.put(row.productcategoryid(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<ProductcategoryFields, ProductcategoryRow> update() {
     return UpdateBuilder.of(
         "\"production\".\"productcategory\"",
-        ProductcategoryFields.structure(),
+        ProductcategoryFields.structure,
         ProductcategoryRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(ProductcategoryRow row, Connection c) {
@@ -240,19 +225,18 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
     ;
     return interpolate(
                 Fragment.lit("update \"production\".\"productcategory\"\nset \"name\" = "),
-                Fragment.encode(Name.pgType, row.name()),
+                Fragment.encode(Name.dbType, row.name()),
                 Fragment.lit("::varchar,\n\"rowguid\" = "),
                 Fragment.encode(PgTypes.uuid, row.rowguid()),
                 Fragment.lit("::uuid,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"productcategoryid\" = "),
-                Fragment.encode(ProductcategoryId.pgType, productcategoryid),
+                Fragment.encode(ProductcategoryId.dbType, productcategoryid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public ProductcategoryRow upsert(ProductcategoryRow unsaved, Connection c) {
@@ -261,9 +245,9 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
                 "insert into \"production\".\"productcategory\"(\"productcategoryid\", \"name\","
                     + " \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(ProductcategoryId.pgType, unsaved.productcategoryid()),
+            Fragment.encode(ProductcategoryId.dbType, unsaved.productcategoryid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.uuid, unsaved.rowguid()),
             Fragment.lit("::uuid, "),
@@ -279,7 +263,6 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
         .updateReturning(ProductcategoryRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductcategoryRow> upsertBatch(Iterator<ProductcategoryRow> unsaved, Connection c) {
@@ -297,7 +280,6 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
         .updateManyReturning(ProductcategoryRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -331,5 +313,4 @@ public class ProductcategoryRepoImpl implements ProductcategoryRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

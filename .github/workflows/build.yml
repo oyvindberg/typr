@@ -55,20 +55,6 @@ jobs:
       - name: Run general tests
         run: bleep test tests
 
-  build-scala212:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v4
-      - uses: bleep-build/bleep-setup-action@0.0.1
-      - uses: coursier/cache-action@v6
-        with:
-          extraFiles: bleep.yaml
-
-      - name: Compile for 2.12
-        run: bleep compile typr@jvm212
-
   build-postgres:
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -106,10 +92,8 @@ jobs:
             sleep 2
           done
 
-      - name: Compile all Scala versions
-        run: |
-          bleep compile typr@jvm213
-          bleep compile typr@jvm3
+      - name: Compile typr
+        run: bleep compile typr
 
       - name: Run Scala 2.13 Postgres tests
         env:
@@ -360,7 +344,11 @@ jobs:
         run: |
           docker compose up -d db2
           echo "Waiting for DB2 to be healthy (this may take several minutes)..."
+          # Stream logs in background while waiting
+          docker compose logs -f db2 &
+          LOGS_PID=$!
           docker compose up -d --wait db2
+          kill $LOGS_PID 2>/dev/null || true
 
       - name: Run DB2 Scala tests
         env:

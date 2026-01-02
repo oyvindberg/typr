@@ -7,10 +7,11 @@ package testdb.employee_salary_update;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.util.List;
 import java.util.Optional;
 
 public interface EmployeeSalaryUpdateSqlRepo {
-  Integer apply(
+  List<EmployeeSalaryUpdateSqlRow> apply(
       Optional<BigDecimal> raisePercentage,
       BigDecimal newSalary,
       Integer empNumber,

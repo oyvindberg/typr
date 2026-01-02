@@ -103,6 +103,8 @@ public sealed interface SqlServerWrite<A> extends DbWrite<A> permits SqlServerWr
       primitive((ps, idx, s) -> ps.setObject(idx, s, java.sql.Types.LONGNVARCHAR));
   SqlServerWrite<Boolean> writeBoolean = primitive(PreparedStatement::setBoolean);
   SqlServerWrite<Short> writeShort = primitive(PreparedStatement::setShort);
+  SqlServerWrite<dev.typr.foundations.data.Uint1> writeUint1 =
+      writeShort.contramap(dev.typr.foundations.data.Uint1::value);
   SqlServerWrite<Integer> writeInteger = primitive(PreparedStatement::setInt);
   SqlServerWrite<Long> writeLong = primitive(PreparedStatement::setLong);
   SqlServerWrite<Float> writeFloat = primitive(PreparedStatement::setFloat);
@@ -126,19 +128,22 @@ public sealed interface SqlServerWrite<A> extends DbWrite<A> permits SqlServerWr
   SqlServerWrite<UUID> writeUUID = primitive((ps, idx, uuid) -> ps.setString(idx, uuid.toString()));
 
   // XML
-  SqlServerWrite<String> writeXml =
+  SqlServerWrite<dev.typr.foundations.data.Xml> writeXml =
       primitive(
           (ps, idx, xml) -> {
             java.sql.SQLXML sqlxml = ps.getConnection().createSQLXML();
-            sqlxml.setString(xml);
+            sqlxml.setString(xml.value());
             ps.setSQLXML(idx, sqlxml);
           });
 
   // JSON - SQL Server stores JSON as NVARCHAR
-  SqlServerWrite<String> writeJson = writeString;
+  SqlServerWrite<dev.typr.foundations.data.Json> writeJson =
+      writeString.contramap(dev.typr.foundations.data.Json::value);
 
-  // HIERARCHYID - write as string
-  SqlServerWrite<String> writeHierarchyId = writeString;
+  // HIERARCHYID - write as string path, let SQL Server parse it
+  // SQL Server will convert the string to proper binary format via implicit cast
+  SqlServerWrite<dev.typr.foundations.data.HierarchyId> writeHierarchyId =
+      writeString.contramap(dev.typr.foundations.data.HierarchyId::toString);
 
   // SQL_VARIANT - write as object
   SqlServerWrite<Object> writeObject = primitive(PreparedStatement::setObject);

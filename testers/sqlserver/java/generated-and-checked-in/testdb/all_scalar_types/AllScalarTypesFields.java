@@ -9,13 +9,19 @@ import com.microsoft.sqlserver.jdbc.Geography;
 import com.microsoft.sqlserver.jdbc.Geometry;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.SqlServerTypes;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.data.HierarchyId;
+import dev.typr.foundations.data.Json;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Xml;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr38;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,642 +31,720 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface AllScalarTypesFields extends FieldsExpr<AllScalarTypesRow> {
-  record Impl(List<Path> _path)
-      implements AllScalarTypesFields, RelationStructure<AllScalarTypesFields, AllScalarTypesRow> {
-    @Override
-    public IdField<AllScalarTypesId, AllScalarTypesRow> id() {
-      return new IdField<AllScalarTypesId, AllScalarTypesRow>(
-          _path,
-          "id",
-          AllScalarTypesRow::id,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withId(value),
-          AllScalarTypesId.sqlServerType);
-    }
-    ;
+public class AllScalarTypesFields
+    extends TupleExpr38<
+        AllScalarTypesId,
+        Uint1,
+        Short,
+        Integer,
+        Long,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        Float,
+        Double,
+        Boolean,
+        String,
+        String,
+        String,
+        String,
+        String,
+        String,
+        String,
+        String,
+        byte[],
+        byte[],
+        byte[],
+        byte[],
+        LocalDate,
+        LocalTime,
+        LocalDateTime,
+        LocalDateTime,
+        LocalDateTime,
+        OffsetDateTime,
+        UUID,
+        Xml,
+        Json,
+        byte[],
+        HierarchyId,
+        Geography,
+        Geometry,
+        String>
+    implements RelationStructure<AllScalarTypesFields, AllScalarTypesRow>,
+        FieldsBase<AllScalarTypesRow> {
+  List<Path> _path;
 
-    @Override
-    public OptField<Short, AllScalarTypesRow> colTinyint() {
-      return new OptField<Short, AllScalarTypesRow>(
-          _path,
-          "col_tinyint",
-          AllScalarTypesRow::colTinyint,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColTinyint(value),
-          SqlServerTypes.tinyint);
-    }
-    ;
-
-    @Override
-    public OptField<Short, AllScalarTypesRow> colSmallint() {
-      return new OptField<Short, AllScalarTypesRow>(
-          _path,
-          "col_smallint",
-          AllScalarTypesRow::colSmallint,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColSmallint(value),
-          SqlServerTypes.smallint);
-    }
-    ;
-
-    @Override
-    public OptField<Integer, AllScalarTypesRow> colInt() {
-      return new OptField<Integer, AllScalarTypesRow>(
-          _path,
-          "col_int",
-          AllScalarTypesRow::colInt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColInt(value),
-          SqlServerTypes.int_);
-    }
-    ;
-
-    @Override
-    public OptField<Long, AllScalarTypesRow> colBigint() {
-      return new OptField<Long, AllScalarTypesRow>(
-          _path,
-          "col_bigint",
-          AllScalarTypesRow::colBigint,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColBigint(value),
-          SqlServerTypes.bigint);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, AllScalarTypesRow> colDecimal() {
-      return new OptField<BigDecimal, AllScalarTypesRow>(
-          _path,
-          "col_decimal",
-          AllScalarTypesRow::colDecimal,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColDecimal(value),
-          SqlServerTypes.decimal);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, AllScalarTypesRow> colNumeric() {
-      return new OptField<BigDecimal, AllScalarTypesRow>(
-          _path,
-          "col_numeric",
-          AllScalarTypesRow::colNumeric,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColNumeric(value),
-          SqlServerTypes.decimal);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, AllScalarTypesRow> colMoney() {
-      return new OptField<BigDecimal, AllScalarTypesRow>(
-          _path,
-          "col_money",
-          AllScalarTypesRow::colMoney,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColMoney(value),
-          SqlServerTypes.money);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, AllScalarTypesRow> colSmallmoney() {
-      return new OptField<BigDecimal, AllScalarTypesRow>(
-          _path,
-          "col_smallmoney",
-          AllScalarTypesRow::colSmallmoney,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColSmallmoney(value),
-          SqlServerTypes.smallmoney);
-    }
-    ;
-
-    @Override
-    public OptField<Float, AllScalarTypesRow> colReal() {
-      return new OptField<Float, AllScalarTypesRow>(
-          _path,
-          "col_real",
-          AllScalarTypesRow::colReal,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColReal(value),
-          SqlServerTypes.real);
-    }
-    ;
-
-    @Override
-    public OptField<Double, AllScalarTypesRow> colFloat() {
-      return new OptField<Double, AllScalarTypesRow>(
-          _path,
-          "col_float",
-          AllScalarTypesRow::colFloat,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColFloat(value),
-          SqlServerTypes.float_);
-    }
-    ;
-
-    @Override
-    public OptField<Boolean, AllScalarTypesRow> colBit() {
-      return new OptField<Boolean, AllScalarTypesRow>(
-          _path,
-          "col_bit",
-          AllScalarTypesRow::colBit,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColBit(value),
-          SqlServerTypes.bit);
-    }
-    ;
-
-    @Override
-    public OptField<String, AllScalarTypesRow> colChar() {
-      return new OptField<String, AllScalarTypesRow>(
-          _path,
-          "col_char",
-          AllScalarTypesRow::colChar,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColChar(value),
-          SqlServerTypes.char_);
-    }
-    ;
-
-    @Override
-    public OptField<String, AllScalarTypesRow> colVarchar() {
-      return new OptField<String, AllScalarTypesRow>(
-          _path,
-          "col_varchar",
-          AllScalarTypesRow::colVarchar,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColVarchar(value),
-          SqlServerTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, AllScalarTypesRow> colVarcharMax() {
-      return new OptField<String, AllScalarTypesRow>(
-          _path,
-          "col_varchar_max",
-          AllScalarTypesRow::colVarcharMax,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColVarcharMax(value),
-          SqlServerTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, AllScalarTypesRow> colText() {
-      return new OptField<String, AllScalarTypesRow>(
-          _path,
-          "col_text",
-          AllScalarTypesRow::colText,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColText(value),
-          SqlServerTypes.text);
-    }
-    ;
-
-    @Override
-    public OptField<String, AllScalarTypesRow> colNchar() {
-      return new OptField<String, AllScalarTypesRow>(
-          _path,
-          "col_nchar",
-          AllScalarTypesRow::colNchar,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColNchar(value),
-          SqlServerTypes.nchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, AllScalarTypesRow> colNvarchar() {
-      return new OptField<String, AllScalarTypesRow>(
-          _path,
-          "col_nvarchar",
-          AllScalarTypesRow::colNvarchar,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColNvarchar(value),
-          SqlServerTypes.nvarchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, AllScalarTypesRow> colNvarcharMax() {
-      return new OptField<String, AllScalarTypesRow>(
-          _path,
-          "col_nvarchar_max",
-          AllScalarTypesRow::colNvarcharMax,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColNvarcharMax(value),
-          SqlServerTypes.nvarchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, AllScalarTypesRow> colNtext() {
-      return new OptField<String, AllScalarTypesRow>(
-          _path,
-          "col_ntext",
-          AllScalarTypesRow::colNtext,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColNtext(value),
-          SqlServerTypes.ntext);
-    }
-    ;
-
-    @Override
-    public OptField<byte[], AllScalarTypesRow> colBinary() {
-      return new OptField<byte[], AllScalarTypesRow>(
-          _path,
-          "col_binary",
-          AllScalarTypesRow::colBinary,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColBinary(value),
-          SqlServerTypes.binary);
-    }
-    ;
-
-    @Override
-    public OptField<byte[], AllScalarTypesRow> colVarbinary() {
-      return new OptField<byte[], AllScalarTypesRow>(
-          _path,
-          "col_varbinary",
-          AllScalarTypesRow::colVarbinary,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColVarbinary(value),
-          SqlServerTypes.varbinary);
-    }
-    ;
-
-    @Override
-    public OptField<byte[], AllScalarTypesRow> colVarbinaryMax() {
-      return new OptField<byte[], AllScalarTypesRow>(
-          _path,
-          "col_varbinary_max",
-          AllScalarTypesRow::colVarbinaryMax,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColVarbinaryMax(value),
-          SqlServerTypes.varbinary);
-    }
-    ;
-
-    @Override
-    public OptField<byte[], AllScalarTypesRow> colImage() {
-      return new OptField<byte[], AllScalarTypesRow>(
-          _path,
-          "col_image",
-          AllScalarTypesRow::colImage,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColImage(value),
-          SqlServerTypes.image);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDate, AllScalarTypesRow> colDate() {
-      return new OptField<LocalDate, AllScalarTypesRow>(
-          _path,
-          "col_date",
-          AllScalarTypesRow::colDate,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColDate(value),
-          SqlServerTypes.date);
-    }
-    ;
-
-    @Override
-    public OptField<LocalTime, AllScalarTypesRow> colTime() {
-      return new OptField<LocalTime, AllScalarTypesRow>(
-          _path,
-          "col_time",
-          AllScalarTypesRow::colTime,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColTime(value),
-          SqlServerTypes.time);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, AllScalarTypesRow> colDatetime() {
-      return new OptField<LocalDateTime, AllScalarTypesRow>(
-          _path,
-          "col_datetime",
-          AllScalarTypesRow::colDatetime,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColDatetime(value),
-          SqlServerTypes.datetime);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, AllScalarTypesRow> colSmalldatetime() {
-      return new OptField<LocalDateTime, AllScalarTypesRow>(
-          _path,
-          "col_smalldatetime",
-          AllScalarTypesRow::colSmalldatetime,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColSmalldatetime(value),
-          SqlServerTypes.smalldatetime);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, AllScalarTypesRow> colDatetime2() {
-      return new OptField<LocalDateTime, AllScalarTypesRow>(
-          _path,
-          "col_datetime2",
-          AllScalarTypesRow::colDatetime2,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColDatetime2(value),
-          SqlServerTypes.datetime2);
-    }
-    ;
-
-    @Override
-    public OptField<OffsetDateTime, AllScalarTypesRow> colDatetimeoffset() {
-      return new OptField<OffsetDateTime, AllScalarTypesRow>(
-          _path,
-          "col_datetimeoffset",
-          AllScalarTypesRow::colDatetimeoffset,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColDatetimeoffset(value),
-          SqlServerTypes.datetimeoffset);
-    }
-    ;
-
-    @Override
-    public OptField<UUID, AllScalarTypesRow> colUniqueidentifier() {
-      return new OptField<UUID, AllScalarTypesRow>(
-          _path,
-          "col_uniqueidentifier",
-          AllScalarTypesRow::colUniqueidentifier,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColUniqueidentifier(value),
-          SqlServerTypes.uniqueidentifier);
-    }
-    ;
-
-    @Override
-    public OptField<String, AllScalarTypesRow> colXml() {
-      return new OptField<String, AllScalarTypesRow>(
-          _path,
-          "col_xml",
-          AllScalarTypesRow::colXml,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColXml(value),
-          SqlServerTypes.xml);
-    }
-    ;
-
-    @Override
-    public OptField<String, AllScalarTypesRow> colJson() {
-      return new OptField<String, AllScalarTypesRow>(
-          _path,
-          "col_json",
-          AllScalarTypesRow::colJson,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColJson(value),
-          SqlServerTypes.nvarchar);
-    }
-    ;
-
-    @Override
-    public Field<byte[], AllScalarTypesRow> colRowversion() {
-      return new Field<byte[], AllScalarTypesRow>(
-          _path,
-          "col_rowversion",
-          AllScalarTypesRow::colRowversion,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColRowversion(value),
-          SqlServerTypes.rowversion);
-    }
-    ;
-
-    @Override
-    public OptField<String, AllScalarTypesRow> colHierarchyid() {
-      return new OptField<String, AllScalarTypesRow>(
-          _path,
-          "col_hierarchyid",
-          AllScalarTypesRow::colHierarchyid,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColHierarchyid(value),
-          SqlServerTypes.hierarchyid);
-    }
-    ;
-
-    @Override
-    public OptField<Geography, AllScalarTypesRow> colGeography() {
-      return new OptField<Geography, AllScalarTypesRow>(
-          _path,
-          "col_geography",
-          AllScalarTypesRow::colGeography,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColGeography(value),
-          SqlServerTypes.geography);
-    }
-    ;
-
-    @Override
-    public OptField<Geometry, AllScalarTypesRow> colGeometry() {
-      return new OptField<Geometry, AllScalarTypesRow>(
-          _path,
-          "col_geometry",
-          AllScalarTypesRow::colGeometry,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColGeometry(value),
-          SqlServerTypes.geometry);
-    }
-    ;
-
-    @Override
-    public Field<String, AllScalarTypesRow> colNotNull() {
-      return new Field<String, AllScalarTypesRow>(
-          _path,
-          "col_not_null",
-          AllScalarTypesRow::colNotNull,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColNotNull(value),
-          SqlServerTypes.nvarchar);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, AllScalarTypesRow>> columns() {
-      return java.util.List.of(
-          this.id(),
-          this.colTinyint(),
-          this.colSmallint(),
-          this.colInt(),
-          this.colBigint(),
-          this.colDecimal(),
-          this.colNumeric(),
-          this.colMoney(),
-          this.colSmallmoney(),
-          this.colReal(),
-          this.colFloat(),
-          this.colBit(),
-          this.colChar(),
-          this.colVarchar(),
-          this.colVarcharMax(),
-          this.colText(),
-          this.colNchar(),
-          this.colNvarchar(),
-          this.colNvarcharMax(),
-          this.colNtext(),
-          this.colBinary(),
-          this.colVarbinary(),
-          this.colVarbinaryMax(),
-          this.colImage(),
-          this.colDate(),
-          this.colTime(),
-          this.colDatetime(),
-          this.colSmalldatetime(),
-          this.colDatetime2(),
-          this.colDatetimeoffset(),
-          this.colUniqueidentifier(),
-          this.colXml(),
-          this.colJson(),
-          this.colRowversion(),
-          this.colHierarchyid(),
-          this.colGeography(),
-          this.colGeometry(),
-          this.colNotNull());
-    }
-    ;
-
-    @Override
-    public RelationStructure<AllScalarTypesFields, AllScalarTypesRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public AllScalarTypesFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static AllScalarTypesFields structure =
+      new AllScalarTypesFields(java.util.Collections.emptyList());
+
+  public IdField<AllScalarTypesId, AllScalarTypesRow> id() {
+    return new IdField<AllScalarTypesId, AllScalarTypesRow>(
+        _path,
+        "id",
+        AllScalarTypesRow::id,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withId(value),
+        AllScalarTypesId.sqlServerType);
   }
-  ;
 
-  IdField<AllScalarTypesId, AllScalarTypesRow> id();
+  public OptField<Uint1, AllScalarTypesRow> colTinyint() {
+    return new OptField<Uint1, AllScalarTypesRow>(
+        _path,
+        "col_tinyint",
+        AllScalarTypesRow::colTinyint,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColTinyint(value),
+        SqlServerTypes.tinyint);
+  }
 
-  OptField<Short, AllScalarTypesRow> colTinyint();
+  public OptField<Short, AllScalarTypesRow> colSmallint() {
+    return new OptField<Short, AllScalarTypesRow>(
+        _path,
+        "col_smallint",
+        AllScalarTypesRow::colSmallint,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColSmallint(value),
+        SqlServerTypes.smallint);
+  }
 
-  OptField<Short, AllScalarTypesRow> colSmallint();
+  public OptField<Integer, AllScalarTypesRow> colInt() {
+    return new OptField<Integer, AllScalarTypesRow>(
+        _path,
+        "col_int",
+        AllScalarTypesRow::colInt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColInt(value),
+        SqlServerTypes.int_);
+  }
 
-  OptField<Integer, AllScalarTypesRow> colInt();
+  public OptField<Long, AllScalarTypesRow> colBigint() {
+    return new OptField<Long, AllScalarTypesRow>(
+        _path,
+        "col_bigint",
+        AllScalarTypesRow::colBigint,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColBigint(value),
+        SqlServerTypes.bigint);
+  }
 
-  OptField<Long, AllScalarTypesRow> colBigint();
+  public OptField<BigDecimal, AllScalarTypesRow> colDecimal() {
+    return new OptField<BigDecimal, AllScalarTypesRow>(
+        _path,
+        "col_decimal",
+        AllScalarTypesRow::colDecimal,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColDecimal(value),
+        SqlServerTypes.decimal);
+  }
 
-  OptField<BigDecimal, AllScalarTypesRow> colDecimal();
+  public OptField<BigDecimal, AllScalarTypesRow> colNumeric() {
+    return new OptField<BigDecimal, AllScalarTypesRow>(
+        _path,
+        "col_numeric",
+        AllScalarTypesRow::colNumeric,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColNumeric(value),
+        SqlServerTypes.decimal);
+  }
 
-  OptField<BigDecimal, AllScalarTypesRow> colNumeric();
+  public OptField<BigDecimal, AllScalarTypesRow> colMoney() {
+    return new OptField<BigDecimal, AllScalarTypesRow>(
+        _path,
+        "col_money",
+        AllScalarTypesRow::colMoney,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColMoney(value),
+        SqlServerTypes.money);
+  }
 
-  OptField<BigDecimal, AllScalarTypesRow> colMoney();
+  public OptField<BigDecimal, AllScalarTypesRow> colSmallmoney() {
+    return new OptField<BigDecimal, AllScalarTypesRow>(
+        _path,
+        "col_smallmoney",
+        AllScalarTypesRow::colSmallmoney,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColSmallmoney(value),
+        SqlServerTypes.smallmoney);
+  }
 
-  OptField<BigDecimal, AllScalarTypesRow> colSmallmoney();
+  public OptField<Float, AllScalarTypesRow> colReal() {
+    return new OptField<Float, AllScalarTypesRow>(
+        _path,
+        "col_real",
+        AllScalarTypesRow::colReal,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColReal(value),
+        SqlServerTypes.real);
+  }
 
-  OptField<Float, AllScalarTypesRow> colReal();
+  public OptField<Double, AllScalarTypesRow> colFloat() {
+    return new OptField<Double, AllScalarTypesRow>(
+        _path,
+        "col_float",
+        AllScalarTypesRow::colFloat,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColFloat(value),
+        SqlServerTypes.float_);
+  }
 
-  OptField<Double, AllScalarTypesRow> colFloat();
+  public OptField<Boolean, AllScalarTypesRow> colBit() {
+    return new OptField<Boolean, AllScalarTypesRow>(
+        _path,
+        "col_bit",
+        AllScalarTypesRow::colBit,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColBit(value),
+        SqlServerTypes.bit);
+  }
 
-  OptField<Boolean, AllScalarTypesRow> colBit();
+  public OptField<String, AllScalarTypesRow> colChar() {
+    return new OptField<String, AllScalarTypesRow>(
+        _path,
+        "col_char",
+        AllScalarTypesRow::colChar,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColChar(value),
+        SqlServerTypes.char_);
+  }
 
-  OptField<String, AllScalarTypesRow> colChar();
+  public OptField<String, AllScalarTypesRow> colVarchar() {
+    return new OptField<String, AllScalarTypesRow>(
+        _path,
+        "col_varchar",
+        AllScalarTypesRow::colVarchar,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColVarchar(value),
+        SqlServerTypes.varchar);
+  }
 
-  OptField<String, AllScalarTypesRow> colVarchar();
+  public OptField<String, AllScalarTypesRow> colVarcharMax() {
+    return new OptField<String, AllScalarTypesRow>(
+        _path,
+        "col_varchar_max",
+        AllScalarTypesRow::colVarcharMax,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColVarcharMax(value),
+        SqlServerTypes.varchar);
+  }
 
-  OptField<String, AllScalarTypesRow> colVarcharMax();
+  public OptField<String, AllScalarTypesRow> colText() {
+    return new OptField<String, AllScalarTypesRow>(
+        _path,
+        "col_text",
+        AllScalarTypesRow::colText,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColText(value),
+        SqlServerTypes.text);
+  }
 
-  OptField<String, AllScalarTypesRow> colText();
+  public OptField<String, AllScalarTypesRow> colNchar() {
+    return new OptField<String, AllScalarTypesRow>(
+        _path,
+        "col_nchar",
+        AllScalarTypesRow::colNchar,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColNchar(value),
+        SqlServerTypes.nchar);
+  }
 
-  OptField<String, AllScalarTypesRow> colNchar();
+  public OptField<String, AllScalarTypesRow> colNvarchar() {
+    return new OptField<String, AllScalarTypesRow>(
+        _path,
+        "col_nvarchar",
+        AllScalarTypesRow::colNvarchar,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColNvarchar(value),
+        SqlServerTypes.nvarchar);
+  }
 
-  OptField<String, AllScalarTypesRow> colNvarchar();
+  public OptField<String, AllScalarTypesRow> colNvarcharMax() {
+    return new OptField<String, AllScalarTypesRow>(
+        _path,
+        "col_nvarchar_max",
+        AllScalarTypesRow::colNvarcharMax,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColNvarcharMax(value),
+        SqlServerTypes.nvarchar);
+  }
 
-  OptField<String, AllScalarTypesRow> colNvarcharMax();
+  public OptField<String, AllScalarTypesRow> colNtext() {
+    return new OptField<String, AllScalarTypesRow>(
+        _path,
+        "col_ntext",
+        AllScalarTypesRow::colNtext,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColNtext(value),
+        SqlServerTypes.ntext);
+  }
 
-  OptField<String, AllScalarTypesRow> colNtext();
+  public OptField<byte[], AllScalarTypesRow> colBinary() {
+    return new OptField<byte[], AllScalarTypesRow>(
+        _path,
+        "col_binary",
+        AllScalarTypesRow::colBinary,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColBinary(value),
+        SqlServerTypes.binary);
+  }
 
-  OptField<byte[], AllScalarTypesRow> colBinary();
+  public OptField<byte[], AllScalarTypesRow> colVarbinary() {
+    return new OptField<byte[], AllScalarTypesRow>(
+        _path,
+        "col_varbinary",
+        AllScalarTypesRow::colVarbinary,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColVarbinary(value),
+        SqlServerTypes.varbinary);
+  }
 
-  OptField<byte[], AllScalarTypesRow> colVarbinary();
+  public OptField<byte[], AllScalarTypesRow> colVarbinaryMax() {
+    return new OptField<byte[], AllScalarTypesRow>(
+        _path,
+        "col_varbinary_max",
+        AllScalarTypesRow::colVarbinaryMax,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColVarbinaryMax(value),
+        SqlServerTypes.varbinary);
+  }
 
-  OptField<byte[], AllScalarTypesRow> colVarbinaryMax();
+  public OptField<byte[], AllScalarTypesRow> colImage() {
+    return new OptField<byte[], AllScalarTypesRow>(
+        _path,
+        "col_image",
+        AllScalarTypesRow::colImage,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColImage(value),
+        SqlServerTypes.image);
+  }
 
-  OptField<byte[], AllScalarTypesRow> colImage();
+  public OptField<LocalDate, AllScalarTypesRow> colDate() {
+    return new OptField<LocalDate, AllScalarTypesRow>(
+        _path,
+        "col_date",
+        AllScalarTypesRow::colDate,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColDate(value),
+        SqlServerTypes.date);
+  }
 
-  OptField<LocalDate, AllScalarTypesRow> colDate();
+  public OptField<LocalTime, AllScalarTypesRow> colTime() {
+    return new OptField<LocalTime, AllScalarTypesRow>(
+        _path,
+        "col_time",
+        AllScalarTypesRow::colTime,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColTime(value),
+        SqlServerTypes.time);
+  }
 
-  OptField<LocalTime, AllScalarTypesRow> colTime();
+  public OptField<LocalDateTime, AllScalarTypesRow> colDatetime() {
+    return new OptField<LocalDateTime, AllScalarTypesRow>(
+        _path,
+        "col_datetime",
+        AllScalarTypesRow::colDatetime,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColDatetime(value),
+        SqlServerTypes.datetime);
+  }
 
-  OptField<LocalDateTime, AllScalarTypesRow> colDatetime();
+  public OptField<LocalDateTime, AllScalarTypesRow> colSmalldatetime() {
+    return new OptField<LocalDateTime, AllScalarTypesRow>(
+        _path,
+        "col_smalldatetime",
+        AllScalarTypesRow::colSmalldatetime,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColSmalldatetime(value),
+        SqlServerTypes.smalldatetime);
+  }
 
-  OptField<LocalDateTime, AllScalarTypesRow> colSmalldatetime();
+  public OptField<LocalDateTime, AllScalarTypesRow> colDatetime2() {
+    return new OptField<LocalDateTime, AllScalarTypesRow>(
+        _path,
+        "col_datetime2",
+        AllScalarTypesRow::colDatetime2,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColDatetime2(value),
+        SqlServerTypes.datetime2);
+  }
 
-  OptField<LocalDateTime, AllScalarTypesRow> colDatetime2();
+  public OptField<OffsetDateTime, AllScalarTypesRow> colDatetimeoffset() {
+    return new OptField<OffsetDateTime, AllScalarTypesRow>(
+        _path,
+        "col_datetimeoffset",
+        AllScalarTypesRow::colDatetimeoffset,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColDatetimeoffset(value),
+        SqlServerTypes.datetimeoffset);
+  }
 
-  OptField<OffsetDateTime, AllScalarTypesRow> colDatetimeoffset();
+  public OptField<UUID, AllScalarTypesRow> colUniqueidentifier() {
+    return new OptField<UUID, AllScalarTypesRow>(
+        _path,
+        "col_uniqueidentifier",
+        AllScalarTypesRow::colUniqueidentifier,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColUniqueidentifier(value),
+        SqlServerTypes.uniqueidentifier);
+  }
 
-  OptField<UUID, AllScalarTypesRow> colUniqueidentifier();
+  public OptField<Xml, AllScalarTypesRow> colXml() {
+    return new OptField<Xml, AllScalarTypesRow>(
+        _path,
+        "col_xml",
+        AllScalarTypesRow::colXml,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColXml(value),
+        SqlServerTypes.xml);
+  }
 
-  OptField</* XML */ String, AllScalarTypesRow> colXml();
+  public OptField<Json, AllScalarTypesRow> colJson() {
+    return new OptField<Json, AllScalarTypesRow>(
+        _path,
+        "col_json",
+        AllScalarTypesRow::colJson,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColJson(value),
+        SqlServerTypes.json);
+  }
 
-  OptField<String, AllScalarTypesRow> colJson();
+  public Field<byte[], AllScalarTypesRow> colRowversion() {
+    return new Field<byte[], AllScalarTypesRow>(
+        _path,
+        "col_rowversion",
+        AllScalarTypesRow::colRowversion,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColRowversion(value),
+        SqlServerTypes.rowversion);
+  }
 
-  Field<byte[], AllScalarTypesRow> colRowversion();
+  public OptField<HierarchyId, AllScalarTypesRow> colHierarchyid() {
+    return new OptField<HierarchyId, AllScalarTypesRow>(
+        _path,
+        "col_hierarchyid",
+        AllScalarTypesRow::colHierarchyid,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColHierarchyid(value),
+        SqlServerTypes.hierarchyid);
+  }
 
-  OptField</* HIERARCHYID */ String, AllScalarTypesRow> colHierarchyid();
+  public OptField<Geography, AllScalarTypesRow> colGeography() {
+    return new OptField<Geography, AllScalarTypesRow>(
+        _path,
+        "col_geography",
+        AllScalarTypesRow::colGeography,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColGeography(value),
+        SqlServerTypes.geography);
+  }
 
-  OptField<Geography, AllScalarTypesRow> colGeography();
+  public OptField<Geometry, AllScalarTypesRow> colGeometry() {
+    return new OptField<Geometry, AllScalarTypesRow>(
+        _path,
+        "col_geometry",
+        AllScalarTypesRow::colGeometry,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColGeometry(value),
+        SqlServerTypes.geometry);
+  }
 
-  OptField<Geometry, AllScalarTypesRow> colGeometry();
-
-  Field<String, AllScalarTypesRow> colNotNull();
+  public Field<String, AllScalarTypesRow> colNotNull() {
+    return new Field<String, AllScalarTypesRow>(
+        _path,
+        "col_not_null",
+        AllScalarTypesRow::colNotNull,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColNotNull(value),
+        SqlServerTypes.nvarchar);
+  }
 
   @Override
-  List<FieldLike<?, AllScalarTypesRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<AllScalarTypesRow> rowParser() {
+  public List<FieldLike<?, AllScalarTypesRow>> columns() {
+    return java.util.List.of(
+        this.id(),
+        this.colTinyint(),
+        this.colSmallint(),
+        this.colInt(),
+        this.colBigint(),
+        this.colDecimal(),
+        this.colNumeric(),
+        this.colMoney(),
+        this.colSmallmoney(),
+        this.colReal(),
+        this.colFloat(),
+        this.colBit(),
+        this.colChar(),
+        this.colVarchar(),
+        this.colVarcharMax(),
+        this.colText(),
+        this.colNchar(),
+        this.colNvarchar(),
+        this.colNvarcharMax(),
+        this.colNtext(),
+        this.colBinary(),
+        this.colVarbinary(),
+        this.colVarbinaryMax(),
+        this.colImage(),
+        this.colDate(),
+        this.colTime(),
+        this.colDatetime(),
+        this.colSmalldatetime(),
+        this.colDatetime2(),
+        this.colDatetimeoffset(),
+        this.colUniqueidentifier(),
+        this.colXml(),
+        this.colJson(),
+        this.colRowversion(),
+        this.colHierarchyid(),
+        this.colGeography(),
+        this.colGeometry(),
+        this.colNotNull());
+  }
+
+  @Override
+  public RowParser<AllScalarTypesRow> rowParser() {
     return AllScalarTypesRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<AllScalarTypesFields, AllScalarTypesRow> withPaths(List<Path> _path) {
+    return new AllScalarTypesFields(_path);
+  }
+
+  @Override
+  public SqlExpr<AllScalarTypesId> _1() {
+    return id();
+  }
+
+  @Override
+  public SqlExpr<Uint1> _2() {
+    return colTinyint();
+  }
+
+  @Override
+  public SqlExpr<Short> _3() {
+    return colSmallint();
+  }
+
+  @Override
+  public SqlExpr<Integer> _4() {
+    return colInt();
+  }
+
+  @Override
+  public SqlExpr<Long> _5() {
+    return colBigint();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _6() {
+    return colDecimal();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _7() {
+    return colNumeric();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _8() {
+    return colMoney();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _9() {
+    return colSmallmoney();
+  }
+
+  @Override
+  public SqlExpr<Float> _10() {
+    return colReal();
+  }
+
+  @Override
+  public SqlExpr<Double> _11() {
+    return colFloat();
+  }
+
+  @Override
+  public SqlExpr<Boolean> _12() {
+    return colBit();
+  }
+
+  @Override
+  public SqlExpr<String> _13() {
+    return colChar();
+  }
+
+  @Override
+  public SqlExpr<String> _14() {
+    return colVarchar();
+  }
+
+  @Override
+  public SqlExpr<String> _15() {
+    return colVarcharMax();
+  }
+
+  @Override
+  public SqlExpr<String> _16() {
+    return colText();
+  }
+
+  @Override
+  public SqlExpr<String> _17() {
+    return colNchar();
+  }
+
+  @Override
+  public SqlExpr<String> _18() {
+    return colNvarchar();
+  }
+
+  @Override
+  public SqlExpr<String> _19() {
+    return colNvarcharMax();
+  }
+
+  @Override
+  public SqlExpr<String> _20() {
+    return colNtext();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _21() {
+    return colBinary();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _22() {
+    return colVarbinary();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _23() {
+    return colVarbinaryMax();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _24() {
+    return colImage();
+  }
+
+  @Override
+  public SqlExpr<LocalDate> _25() {
+    return colDate();
+  }
+
+  @Override
+  public SqlExpr<LocalTime> _26() {
+    return colTime();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _27() {
+    return colDatetime();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _28() {
+    return colSmalldatetime();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _29() {
+    return colDatetime2();
+  }
+
+  @Override
+  public SqlExpr<OffsetDateTime> _30() {
+    return colDatetimeoffset();
+  }
+
+  @Override
+  public SqlExpr<UUID> _31() {
+    return colUniqueidentifier();
+  }
+
+  @Override
+  public SqlExpr<Xml> _32() {
+    return colXml();
+  }
+
+  @Override
+  public SqlExpr<Json> _33() {
+    return colJson();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _34() {
+    return colRowversion();
+  }
+
+  @Override
+  public SqlExpr<HierarchyId> _35() {
+    return colHierarchyid();
+  }
+
+  @Override
+  public SqlExpr<Geography> _36() {
+    return colGeography();
+  }
+
+  @Override
+  public SqlExpr<Geometry> _37() {
+    return colGeometry();
+  }
+
+  @Override
+  public SqlExpr<String> _38() {
+    return colNotNull();
+  }
 }

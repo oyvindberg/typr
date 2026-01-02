@@ -7,6 +7,7 @@ package testdb.customers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -25,12 +26,22 @@ data class CustomersRow(
   @JsonProperty("created_at") val createdAt: LocalDateTime,
   /** Default: 'medium' */
   val priority: Priority?
-) {
+) : Tuple5<CustomersId, String, String?, LocalDateTime, Priority?> {
+  override fun _1(): CustomersId = customerId
+
+  override fun _2(): String = name
+
+  override fun _3(): String? = email
+
+  override fun _4(): LocalDateTime = createdAt
+
+  override fun _5(): Priority? = priority
+
   fun id(): CustomersId = customerId
 
   fun toUnsavedRow(
-    createdAt: Defaulted<LocalDateTime>,
-    priority: Defaulted<Priority?>
+    createdAt: Defaulted<LocalDateTime> = Defaulted.Provided(this.createdAt),
+    priority: Defaulted<Priority?> = Defaulted.Provided(this.priority)
   ): CustomersRowUnsaved = CustomersRowUnsaved(customerId, name, email, createdAt, priority)
 
   companion object {

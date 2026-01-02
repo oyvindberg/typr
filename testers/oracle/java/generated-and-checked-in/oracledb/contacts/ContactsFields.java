@@ -7,106 +7,111 @@ package oracledb.contacts;
 
 import dev.typr.foundations.OracleTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr4;
 import java.util.List;
 import java.util.Optional;
 import oracledb.EmailTableT;
 import oracledb.TagVarrayT;
 
-public interface ContactsFields extends FieldsExpr<ContactsRow> {
-  record Impl(List<Path> _path)
-      implements ContactsFields, RelationStructure<ContactsFields, ContactsRow> {
-    @Override
-    public IdField<ContactsId, ContactsRow> contactId() {
-      return new IdField<ContactsId, ContactsRow>(
-          _path,
-          "CONTACT_ID",
-          ContactsRow::contactId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withContactId(value),
-          ContactsId.oracleType);
-    }
-    ;
+public class ContactsFields extends TupleExpr4<ContactsId, String, EmailTableT, TagVarrayT>
+    implements RelationStructure<ContactsFields, ContactsRow>, FieldsBase<ContactsRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, ContactsRow> name() {
-      return new Field<String, ContactsRow>(
-          _path,
-          "NAME",
-          ContactsRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          OracleTypes.varchar2);
-    }
-    ;
-
-    @Override
-    public OptField<EmailTableT, ContactsRow> emails() {
-      return new OptField<EmailTableT, ContactsRow>(
-          _path,
-          "EMAILS",
-          ContactsRow::emails,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withEmails(value),
-          EmailTableT.oracleType);
-    }
-    ;
-
-    @Override
-    public OptField<TagVarrayT, ContactsRow> tags() {
-      return new OptField<TagVarrayT, ContactsRow>(
-          _path,
-          "TAGS",
-          ContactsRow::tags,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTags(value),
-          TagVarrayT.oracleType);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, ContactsRow>> columns() {
-      return java.util.List.of(this.contactId(), this.name(), this.emails(), this.tags());
-    }
-    ;
-
-    @Override
-    public RelationStructure<ContactsFields, ContactsRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public ContactsFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static ContactsFields structure = new ContactsFields(java.util.Collections.emptyList());
+
+  public IdField<ContactsId, ContactsRow> contactId() {
+    return new IdField<ContactsId, ContactsRow>(
+        _path,
+        "CONTACT_ID",
+        ContactsRow::contactId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withContactId(value),
+        ContactsId.oracleType);
   }
-  ;
 
-  IdField<ContactsId, ContactsRow> contactId();
+  public Field<String, ContactsRow> name() {
+    return new Field<String, ContactsRow>(
+        _path,
+        "NAME",
+        ContactsRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        OracleTypes.varchar2);
+  }
 
-  Field<String, ContactsRow> name();
+  public OptField<EmailTableT, ContactsRow> emails() {
+    return new OptField<EmailTableT, ContactsRow>(
+        _path,
+        "EMAILS",
+        ContactsRow::emails,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withEmails(value),
+        EmailTableT.oracleType);
+  }
 
-  OptField<EmailTableT, ContactsRow> emails();
-
-  OptField<TagVarrayT, ContactsRow> tags();
+  public OptField<TagVarrayT, ContactsRow> tags() {
+    return new OptField<TagVarrayT, ContactsRow>(
+        _path,
+        "TAGS",
+        ContactsRow::tags,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTags(value),
+        TagVarrayT.oracleType);
+  }
 
   @Override
-  List<FieldLike<?, ContactsRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<ContactsRow> rowParser() {
+  public List<FieldLike<?, ContactsRow>> columns() {
+    return java.util.List.of(this.contactId(), this.name(), this.emails(), this.tags());
+  }
+
+  @Override
+  public RowParser<ContactsRow> rowParser() {
     return ContactsRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<ContactsFields, ContactsRow> withPaths(List<Path> _path) {
+    return new ContactsFields(_path);
+  }
+
+  @Override
+  public SqlExpr<ContactsId> _1() {
+    return contactId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<EmailTableT> _3() {
+    return emails();
+  }
+
+  @Override
+  public SqlExpr<TagVarrayT> _4() {
+    return tags();
+  }
 }

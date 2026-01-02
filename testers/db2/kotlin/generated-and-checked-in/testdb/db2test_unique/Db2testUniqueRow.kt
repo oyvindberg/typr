@@ -7,6 +7,7 @@ package testdb.db2test_unique
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 
@@ -19,10 +20,18 @@ data class Db2testUniqueRow(
   @JsonProperty("EMAIL") val email: String,
   @JsonProperty("CODE") val code: String,
   @JsonProperty("CATEGORY") val category: String
-) {
+) : Tuple4<Db2testUniqueId, String, String, String> {
+  override fun _1(): Db2testUniqueId = id
+
+  override fun _2(): String = email
+
+  override fun _3(): String = code
+
+  override fun _4(): String = category
+
   fun toUnsavedRow(): Db2testUniqueRowUnsaved = Db2testUniqueRowUnsaved(email, code, category)
 
   companion object {
-    val _rowParser: RowParser<Db2testUniqueRow> = RowParsers.of(Db2testUniqueId.pgType, Db2Types.varchar, Db2Types.varchar, Db2Types.varchar, { t0, t1, t2, t3 -> Db2testUniqueRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.id, row.email, row.code, row.category) })
+    val _rowParser: RowParser<Db2testUniqueRow> = RowParsers.of(Db2testUniqueId.dbType, Db2Types.varchar, Db2Types.varchar, Db2Types.varchar, { t0, t1, t2, t3 -> Db2testUniqueRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.id, row.email, row.code, row.category) })
   }
 }

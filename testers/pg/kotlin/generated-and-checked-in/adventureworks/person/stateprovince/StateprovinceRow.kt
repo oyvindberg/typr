@@ -12,6 +12,7 @@ import adventureworks.public.Name
 import adventureworks.sales.salesterritory.SalesterritoryId
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple8
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import java.time.LocalDateTime
@@ -46,7 +47,23 @@ data class StateprovinceRow(
   val rowguid: UUID,
   /** Default: now() */
   val modifieddate: LocalDateTime
-) {
+) : Tuple8<StateprovinceId, String, CountryregionId, Flag, Name, SalesterritoryId, UUID, LocalDateTime> {
+  override fun _1(): StateprovinceId = stateprovinceid
+
+  override fun _2(): String = stateprovincecode
+
+  override fun _3(): CountryregionId = countryregioncode
+
+  override fun _4(): Flag = isonlystateprovinceflag
+
+  override fun _5(): Name = name
+
+  override fun _6(): SalesterritoryId = territoryid
+
+  override fun _7(): UUID = rowguid
+
+  override fun _8(): LocalDateTime = modifieddate
+
   fun id(): StateprovinceId = stateprovinceid
 
   fun toUnsavedRow(
@@ -57,7 +74,7 @@ data class StateprovinceRow(
   ): StateprovinceRowUnsaved = StateprovinceRowUnsaved(stateprovincecode, countryregioncode, name, territoryid, stateprovinceid, isonlystateprovinceflag, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<StateprovinceRow> = RowParsers.of(StateprovinceId.pgType, PgTypes.bpchar, CountryregionId.pgType, Flag.pgType, Name.pgType, SalesterritoryId.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7 -> StateprovinceRow(t0, t1, t2, t3, t4, t5, t6, t7) }, { row -> arrayOf<Any?>(row.stateprovinceid, row.stateprovincecode, row.countryregioncode, row.isonlystateprovinceflag, row.name, row.territoryid, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<StateprovinceRow> = RowParsers.of(StateprovinceId.dbType, PgTypes.bpchar, CountryregionId.dbType, Flag.dbType, Name.dbType, SalesterritoryId.dbType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7 -> StateprovinceRow(t0, t1, t2, t3, t4, t5, t6, t7) }, { row -> arrayOf<Any?>(row.stateprovinceid, row.stateprovincecode, row.countryregioncode, row.isonlystateprovinceflag, row.name, row.territoryid, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<StateprovinceRow> =
       PgText.from(_rowParser.underlying)

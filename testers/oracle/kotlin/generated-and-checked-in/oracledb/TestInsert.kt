@@ -5,7 +5,6 @@
  */
 package oracledb
 
-import dev.typr.foundations.data.Json
 import java.math.BigDecimal
 import java.sql.Connection
 import java.time.LocalDate
@@ -23,6 +22,7 @@ import oracledb.customers.CustomersId
 import oracledb.customers.CustomersRepoImpl
 import oracledb.customers.CustomersRowUnsaved
 import oracledb.customtypes.Defaulted
+import oracledb.customtypes.Defaulted.UseDefault
 import oracledb.departments.DepartmentsId
 import oracledb.departments.DepartmentsRepoImpl
 import oracledb.departments.DepartmentsRow
@@ -32,9 +32,6 @@ import oracledb.employees.EmployeesRowUnsaved
 import oracledb.products.ProductsId
 import oracledb.products.ProductsRepoImpl
 import oracledb.products.ProductsRowUnsaved
-import oracledb.test_genkeys_1766794419639.TestGenkeys1766794419639RepoImpl
-import oracledb.test_genkeys_1766794419639.TestGenkeys1766794419639Row
-import oracledb.test_genkeys_1766794419639.TestGenkeys1766794419639RowUnsaved
 
 /** Methods to generate random data for `Ident(TestInsert)` */
 data class TestInsert(val random: Random) {
@@ -45,7 +42,7 @@ data class TestInsert(val random: Random) {
     colDate: LocalDateTime? = if (random.nextBoolean()) null else LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
     colTimestamp: LocalDateTime? = if (random.nextBoolean()) null else LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
     colClob: String? = null,
-    id: Defaulted<AllScalarTypesId> = Defaulted.UseDefault(),
+    id: Defaulted<AllScalarTypesId> = UseDefault(),
     c: Connection
   ): AllScalarTypesRow = (AllScalarTypesRepoImpl()).insert(AllScalarTypesRowUnsaved(colVarchar2 = colVarchar2, colNumber = colNumber, colDate = colDate, colTimestamp = colTimestamp, colClob = colClob, colNotNull = colNotNull, id = id), c)
 
@@ -53,7 +50,7 @@ data class TestInsert(val random: Random) {
     name: String,
     emails: EmailTableT? = null,
     tags: TagVarrayT? = null,
-    contactId: Defaulted<ContactsId> = Defaulted.UseDefault(),
+    contactId: Defaulted<ContactsId> = UseDefault(),
     c: Connection
   ): ContactsId = (ContactsRepoImpl()).insert(ContactsRowUnsaved(name = name, emails = emails, tags = tags, contactId = contactId), c)
 
@@ -61,8 +58,8 @@ data class TestInsert(val random: Random) {
     name: String,
     billingAddress: AddressT,
     creditLimit: MoneyT? = null,
-    customerId: Defaulted<CustomersId> = Defaulted.UseDefault(),
-    createdAt: Defaulted<LocalDateTime> = Defaulted.UseDefault(),
+    customerId: Defaulted<CustomersId> = UseDefault(),
+    createdAt: Defaulted<LocalDateTime> = UseDefault(),
     c: Connection
   ): CustomersId = (CustomersRepoImpl()).insert(CustomersRowUnsaved(name = name, billingAddress = billingAddress, creditLimit = creditLimit, customerId = customerId, createdAt = createdAt), c)
 
@@ -80,7 +77,7 @@ data class TestInsert(val random: Random) {
     empName: String,
     empNumber: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
     salary: MoneyT? = null,
-    hireDate: Defaulted<LocalDateTime> = Defaulted.UseDefault(),
+    hireDate: Defaulted<LocalDateTime> = UseDefault(),
     c: Connection
   ): EmployeesId = (EmployeesRepoImpl()).insert(EmployeesRowUnsaved(empNumber = empNumber, empSuffix = empSuffix, deptCode = DepartmentsId.deptCode, deptRegion = DepartmentsId.deptRegion, empName = empName, salary = salary, hireDate = hireDate), c)
 
@@ -89,13 +86,7 @@ data class TestInsert(val random: Random) {
     name: String,
     price: MoneyT,
     tags: TagVarrayT? = null,
-    productId: Defaulted<ProductsId> = Defaulted.UseDefault(),
+    productId: Defaulted<ProductsId> = UseDefault(),
     c: Connection
   ): ProductsId = (ProductsRepoImpl()).insert(ProductsRowUnsaved(sku = sku, name = name, price = price, tags = tags, productId = productId), c)
-
-  fun TestGenkeys1766794419639(
-    v: Json? = if (random.nextBoolean()) null else Json("{}"),
-    id: Defaulted<BigDecimal> = Defaulted.UseDefault(),
-    c: Connection
-  ): TestGenkeys1766794419639Row = (TestGenkeys1766794419639RepoImpl()).insert(TestGenkeys1766794419639RowUnsaved(v = v, id = id), c)
 }

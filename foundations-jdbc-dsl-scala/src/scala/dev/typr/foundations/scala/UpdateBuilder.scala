@@ -1,6 +1,6 @@
 package dev.typr.foundations.scala
 
-import dev.typr.foundations.dsl.{UpdateBuilder as JavaUpdateBuilder}
+import dev.typr.foundations.dsl
 import dev.typr.foundations.{DbType, Fragment}
 
 import java.sql.Connection
@@ -8,10 +8,10 @@ import _root_.scala.jdk.CollectionConverters.*
 import _root_.scala.jdk.OptionConverters.*
 
 class UpdateBuilder[Fields, Row] private[scala] (
-    private val javaBuilder: JavaUpdateBuilder[Fields, Row]
+    private val javaBuilder: dsl.UpdateBuilder[Fields, Row]
 ) {
 
-  private def copy(newJavaBuilder: JavaUpdateBuilder[Fields, Row]): UpdateBuilder[Fields, Row] =
+  private def copy(newJavaBuilder: dsl.UpdateBuilder[Fields, Row]): UpdateBuilder[Fields, Row] =
     new UpdateBuilder(newJavaBuilder)
 
   def set[T](field: Fields => SqlExpr.FieldLike[T, Row], value: T, dbType: DbType[T]): UpdateBuilder[Fields, Row] = {
@@ -22,28 +22,26 @@ class UpdateBuilder[Fields, Row] private[scala] (
     copy(javaBuilder.setValue((fields: Fields) => field(fields).underlying, value))
   }
 
-  def setExpr[T](field: Fields => SqlExpr.FieldLike[T, Row], expr: dev.typr.foundations.dsl.SqlExpr[T]): UpdateBuilder[Fields, Row] = {
+  def setExpr[T](field: Fields => SqlExpr.FieldLike[T, Row], expr: dsl.SqlExpr[T]): UpdateBuilder[Fields, Row] = {
     copy(javaBuilder.setExpr((fields: Fields) => field(fields).underlying, expr))
   }
 
   def setComputedValue[T](
       field: Fields => SqlExpr.FieldLike[T, Row],
-      compute: SqlExpr.FieldLike[T, Row] => dev.typr.foundations.dsl.SqlExpr[T]
+      compute: SqlExpr.FieldLike[T, Row] => dsl.SqlExpr[T]
   ): UpdateBuilder[Fields, Row] = {
     copy(
       javaBuilder.setComputedValue(
         (fields: Fields) => field(fields).underlying,
-        (javaFieldLike: dev.typr.foundations.dsl.SqlExpr.FieldLike[T, Row]) => {
-          val scalaFieldLike = new GenericFieldLikeWrapper(javaFieldLike)
+        (javaFieldLike: dsl.SqlExpr.FieldLike[T, Row]) => {
+          val scalaFieldLike = SqlExpr.FieldLike.wrap(javaFieldLike)
           compute(scalaFieldLike)
         }
       )
     )
   }
 
-  private class GenericFieldLikeWrapper[T](override val underlying: dev.typr.foundations.dsl.SqlExpr.FieldLike[T, Row]) extends SqlExpr.FieldLike[T, Row]
-
-  def where(predicate: Fields => dev.typr.foundations.dsl.SqlExpr[Boolean]): UpdateBuilder[Fields, Row] = {
+  def where(predicate: Fields => dsl.SqlExpr[Boolean]): UpdateBuilder[Fields, Row] = {
     copy(javaBuilder.where((fields: Fields) => predicate(fields).underlying(Bijections.scalaBooleanToJavaBoolean)))
   }
 
@@ -61,15 +59,15 @@ class UpdateBuilder[Fields, Row] private[scala] (
 }
 
 object UpdateBuilder {
-  def apply[Fields, Row](javaBuilder: JavaUpdateBuilder[Fields, Row]): UpdateBuilder[Fields, Row] =
+  def apply[Fields, Row](javaBuilder: dsl.UpdateBuilder[Fields, Row]): UpdateBuilder[Fields, Row] =
     new UpdateBuilder(javaBuilder)
 
   def of[Fields, Row](
       tableName: String,
       structure: RelationStructure[Fields, Row],
       rowParser: RowParser[Row],
-      dialect: dev.typr.foundations.dsl.Dialect
+      dialect: dsl.Dialect
   ): UpdateBuilder[Fields, Row] = {
-    new UpdateBuilder(JavaUpdateBuilder.of(tableName, structure, rowParser.underlying, dialect))
+    new UpdateBuilder(dsl.UpdateBuilder.of(tableName, structure, rowParser.underlying, dialect))
   }
 }

@@ -98,6 +98,25 @@ object SqlServerMetaDb {
     }
   }
 
+  /** CHECK constraint with its definition clause */
+  case class SqlServerCheckConstraint(
+      constraintSchema: Option[String],
+      constraintName: String,
+      checkClause: String
+  )
+
+  object SqlServerCheckConstraint {
+    def rowParser(idx: Int): RowParser[SqlServerCheckConstraint] = RowParser[SqlServerCheckConstraint] { row =>
+      Success(
+        SqlServerCheckConstraint(
+          constraintSchema = row(idx + 0)(Column.columnToOption(Column.columnToString)),
+          constraintName = row(idx + 1)(Column.columnToString),
+          checkClause = row(idx + 2)(Column.columnToString)
+        )
+      )
+    }
+  }
+
   case class SqlServerKeyColumn(
       constraintSchema: Option[String],
       constraintName: String,
@@ -207,10 +226,26 @@ object SqlServerMetaDb {
       columns: List[SqlServerColumn],
       constraints: List[SqlServerConstraint],
       keyColumns: List[SqlServerKeyColumn],
+      checkConstraints: List[SqlServerCheckConstraint],
       analyzedViews: Map[db.RelationName, AnalyzedView],
       aliasTypes: List[SqlServerAliasType],
       clrTypes: List[SqlServerClrType]
   ) {
+
+    /** Check if a column has an ISJSON constraint */
+    def hasIsJsonConstraint(tableSchema: Option[String], tableName: String, columnName: String): Boolean = {
+      // Find CHECK constraints that reference this column with ISJSON
+      val tableConstraints = constraints.filter { c =>
+        c.constraintType == "CHECK" && c.tableSchema == tableSchema && c.tableName == tableName
+      }
+      tableConstraints.exists { c =>
+        checkConstraints.find(_.constraintName == c.constraintName).exists { cc =>
+          val clause = cc.checkClause.toLowerCase
+          clause.contains("isjson") && clause.contains(columnName.toLowerCase)
+        }
+      }
+    }
+
     def filter(schemaMode: SchemaMode): Input = {
       schemaMode match {
         case SchemaMode.MultiSchema => this
@@ -226,6 +261,7 @@ object SqlServerMetaDb {
               case k if keep(k.tableSchema) || keep(k.constraintSchema) =>
                 k.copy(tableSchema = None, constraintSchema = None, referencedTableSchema = if (keep(k.referencedTableSchema)) None else k.referencedTableSchema)
             },
+            checkConstraints = checkConstraints.collect { case c if keep(c.constraintSchema) => c.copy(constraintSchema = None) },
             analyzedViews = analyzedViews.collect {
               case (k, v) if keep(k.schema) =>
                 k.copy(schema = None) -> v.copy(row = v.row.copy(tableSchema = None))
@@ -244,11 +280,12 @@ object SqlServerMetaDb {
         columns <- logger.timed("fetching columns")(ds.run(implicit c => fetchColumns(c)))
         constraints <- logger.timed("fetching constraints")(ds.run(implicit c => fetchConstraints(c)))
         keyColumns <- logger.timed("fetching keyColumns")(ds.run(implicit c => fetchKeyColumns(c)))
+        checkConstraints <- logger.timed("fetching check constraints")(ds.run(implicit c => fetchCheckConstraints(c)))
         analyzedViews <- logger.timed("fetching and analyzing views")(analyzeViews(ds, viewSelector))
         aliasTypes <- logger.timed("fetching alias types")(ds.run(implicit c => fetchAliasTypes(c)))
         clrTypes <- logger.timed("fetching CLR types")(ds.run(implicit c => fetchClrTypes(c)))
       } yield {
-        val input = Input(tables, columns, constraints, keyColumns, analyzedViews, aliasTypes, clrTypes)
+        val input = Input(tables, columns, constraints, keyColumns, checkConstraints, analyzedViews, aliasTypes, clrTypes)
         input.filter(schemaMode)
       }
     }
@@ -330,6 +367,14 @@ object SqlServerMetaDb {
                       WHERE TABLE_SCHEMA NOT IN ('sys', 'INFORMATION_SCHEMA')
                       ORDER BY TABLE_SCHEMA, TABLE_NAME, CONSTRAINT_NAME"""
       sql.as(SqlServerConstraint.rowParser(1).*)
+    }
+
+    private def fetchCheckConstraints(implicit conn: Connection): List[SqlServerCheckConstraint] = {
+      val sql = SQL"""SELECT CONSTRAINT_SCHEMA, CONSTRAINT_NAME, CHECK_CLAUSE
+                      FROM INFORMATION_SCHEMA.CHECK_CONSTRAINTS
+                      WHERE CONSTRAINT_SCHEMA NOT IN ('sys', 'INFORMATION_SCHEMA')
+                      ORDER BY CONSTRAINT_SCHEMA, CONSTRAINT_NAME"""
+      sql.as(SqlServerCheckConstraint.rowParser(1).*)
     }
 
     private def fetchKeyColumns(implicit conn: Connection): List[SqlServerKeyColumn] = {
@@ -533,7 +578,7 @@ object SqlServerMetaDb {
                 case _     => Nullability.NullableUnknown
               }
 
-              val tpe = typeMapper.col(
+              val baseTpe = typeMapper.col(
                 udtSchema = c.udtSchema,
                 udtName = c.udtName,
                 dataType = c.dataType,
@@ -542,6 +587,11 @@ object SqlServerMetaDb {
                 numericScale = c.numericScale,
                 datetimePrecision = c.datetimePrecision
               )
+
+              // Detect ISJSON constraint and override type to Json
+              val tpe = if (input.hasIsJsonConstraint(c.tableSchema, c.tableName, c.columnName)) {
+                db.SqlServerType.Json
+              } else baseTpe
 
               // Detect IDENTITY and ROWVERSION columns
               val generated: Option[db.Generated] =

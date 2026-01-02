@@ -1,8 +1,9 @@
 package dev.typr.foundations.scala
 
 import dev.typr.foundations.dsl.Bijection
+
 import java.util.Optional
-import _root_.scala.jdk.OptionConverters._
+import _root_.scala.jdk.OptionConverters.*
 
 object Bijections {
 

@@ -7,6 +7,7 @@ package testdb.v_inventory_status
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple14
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -83,8 +84,36 @@ case class VInventoryStatusViewRow(
    * Points to [[testdb.inventory.InventoryRow.lastCountedAt]]
    */
   @JsonProperty("last_counted_at") lastCountedAt: Option[LocalDateTime]
-)
+) extends Tuple14[ProductsId, String, String, WarehousesId, String, String, Int, Int, Int, Long, Int, String, Option[String], Option[LocalDateTime]] {
+  override def `_1`: ProductsId = productId
+
+  override def `_2`: String = sku
+
+  override def `_3`: String = productName
+
+  override def `_4`: WarehousesId = warehouseId
+
+  override def `_5`: String = warehouseCode
+
+  override def `_6`: String = warehouseName
+
+  override def `_7`: Int = quantityOnHand
+
+  override def `_8`: Int = quantityReserved
+
+  override def `_9`: Int = quantityOnOrder
+
+  override def `_10`: Long = available
+
+  override def `_11`: Int = reorderPoint
+
+  override def `_12`: String = stockStatus
+
+  override def `_13`: Option[String] = binLocation
+
+  override def `_14`: Option[LocalDateTime] = lastCountedAt
+}
 
 object VInventoryStatusViewRow {
-  val `_rowParser`: RowParser[VInventoryStatusViewRow] = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.int_, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.datetime.nullable)(VInventoryStatusViewRow.apply)(row => Array[Any](row.productId, row.sku, row.productName, row.warehouseId, row.warehouseCode, row.warehouseName, row.quantityOnHand, row.quantityReserved, row.quantityOnOrder, row.available, row.reorderPoint, row.stockStatus, row.binLocation, row.lastCountedAt))
+  val `_rowParser`: RowParser[VInventoryStatusViewRow] = RowParsers.of(ProductsId.dbType, MariaTypes.varchar, MariaTypes.varchar, WarehousesId.dbType, MariaTypes.char_, MariaTypes.varchar, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.int_, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.datetime.nullable)(VInventoryStatusViewRow.apply)(row => Array[Any](row.productId, row.sku, row.productName, row.warehouseId, row.warehouseCode, row.warehouseName, row.quantityOnHand, row.quantityReserved, row.quantityOnOrder, row.available, row.reorderPoint, row.stockStatus, row.binLocation, row.lastCountedAt))
 }

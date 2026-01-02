@@ -7,6 +7,7 @@ package oracledb.employees
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -31,7 +32,21 @@ data class EmployeesRow(
   @JsonProperty("SALARY") val salary: MoneyT?,
   /** Default: SYSDATE  */
   @JsonProperty("HIRE_DATE") val hireDate: LocalDateTime
-) {
+) : Tuple7<BigDecimal, String, String, String, String, MoneyT?, LocalDateTime> {
+  override fun _1(): BigDecimal = empNumber
+
+  override fun _2(): String = empSuffix
+
+  override fun _3(): String = deptCode
+
+  override fun _4(): String = deptRegion
+
+  override fun _5(): String = empName
+
+  override fun _6(): MoneyT? = salary
+
+  override fun _7(): LocalDateTime = hireDate
+
   fun compositeId(): EmployeesId = EmployeesId(empNumber, empSuffix)
 
   fun extractDepartmentsId(): DepartmentsId = DepartmentsId(deptCode = deptCode, deptRegion = deptRegion)

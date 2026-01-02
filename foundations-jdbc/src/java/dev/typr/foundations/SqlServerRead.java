@@ -138,8 +138,10 @@ public sealed interface SqlServerRead<A> extends DbRead<A>
   SqlServerRead<String> readString = of(ResultSet::getString);
   SqlServerRead<Boolean> readBoolean = of(ResultSet::getBoolean);
 
-  // SQL Server TINYINT is UNSIGNED (0-255), so we read as Short
+  // SQL Server TINYINT is UNSIGNED (0-255), wrap in Uint1
   SqlServerRead<Short> readShort = of(ResultSet::getShort);
+  SqlServerRead<dev.typr.foundations.data.Uint1> readUint1 =
+      readShort.map(dev.typr.foundations.data.Uint1::new);
   SqlServerRead<Integer> readInteger = of(ResultSet::getInt);
   SqlServerRead<Long> readLong = of(ResultSet::getLong);
   SqlServerRead<Float> readFloat = of(ResultSet::getFloat);
@@ -183,19 +185,34 @@ public sealed interface SqlServerRead<A> extends DbRead<A>
           });
 
   // XML
-  SqlServerRead<String> readXml =
+  SqlServerRead<dev.typr.foundations.data.Xml> readXml =
       of(
           (rs, idx) -> {
             java.sql.SQLXML sqlxml = rs.getSQLXML(idx);
             if (sqlxml == null) return null;
-            return sqlxml.getString();
+            return new dev.typr.foundations.data.Xml(sqlxml.getString());
           });
 
   // JSON - SQL Server stores JSON as NVARCHAR
-  SqlServerRead<String> readJson = readString;
+  SqlServerRead<dev.typr.foundations.data.Json> readJson =
+      readString.map(dev.typr.foundations.data.Json::new);
 
-  // HIERARCHYID - read as string representation
-  SqlServerRead<String> readHierarchyId = readString;
+  // HIERARCHYID - read as HierarchyId wrapper type that stores segments and provides toString()
+  SqlServerRead<dev.typr.foundations.data.HierarchyId> readHierarchyId =
+      of(
+          (rs, idx) -> {
+            Object obj = rs.getObject(idx);
+            if (obj == null) return null;
+            if (obj instanceof byte[] bytes) {
+              return dev.typr.foundations.data.HierarchyId.fromBytes(bytes);
+            }
+            // Fallback: if getString returns something, try to parse it
+            String str = rs.getString(idx);
+            if (str != null && !str.isEmpty()) {
+              return dev.typr.foundations.data.HierarchyId.parse(str);
+            }
+            return dev.typr.foundations.data.HierarchyId.ROOT;
+          });
 
   // SQL_VARIANT - read as Object
   SqlServerRead<Object> readObject = of(ResultSet::getObject);

@@ -8,120 +8,127 @@ package adventureworks.humanresources.shift;
 import adventureworks.public_.Name;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface ShiftFields extends FieldsExpr<ShiftRow> {
-  record Impl(List<Path> _path) implements ShiftFields, RelationStructure<ShiftFields, ShiftRow> {
-    @Override
-    public IdField<ShiftId, ShiftRow> shiftid() {
-      return new IdField<ShiftId, ShiftRow>(
-          _path,
-          "shiftid",
-          ShiftRow::shiftid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withShiftid(value),
-          ShiftId.pgType);
-    }
-    ;
+public class ShiftFields extends TupleExpr5<ShiftId, Name, LocalTime, LocalTime, LocalDateTime>
+    implements RelationStructure<ShiftFields, ShiftRow>, FieldsBase<ShiftRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<Name, ShiftRow> name() {
-      return new Field<Name, ShiftRow>(
-          _path,
-          "name",
-          ShiftRow::name,
-          Optional.empty(),
-          Optional.of("varchar"),
-          (row, value) -> row.withName(value),
-          Name.pgType);
-    }
-    ;
-
-    @Override
-    public Field<LocalTime, ShiftRow> starttime() {
-      return new Field<LocalTime, ShiftRow>(
-          _path,
-          "starttime",
-          ShiftRow::starttime,
-          Optional.empty(),
-          Optional.of("time"),
-          (row, value) -> row.withStarttime(value),
-          PgTypes.time);
-    }
-    ;
-
-    @Override
-    public Field<LocalTime, ShiftRow> endtime() {
-      return new Field<LocalTime, ShiftRow>(
-          _path,
-          "endtime",
-          ShiftRow::endtime,
-          Optional.empty(),
-          Optional.of("time"),
-          (row, value) -> row.withEndtime(value),
-          PgTypes.time);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, ShiftRow> modifieddate() {
-      return new Field<LocalDateTime, ShiftRow>(
-          _path,
-          "modifieddate",
-          ShiftRow::modifieddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withModifieddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, ShiftRow>> columns() {
-      return java.util.List.of(
-          this.shiftid(), this.name(), this.starttime(), this.endtime(), this.modifieddate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<ShiftFields, ShiftRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public ShiftFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static ShiftFields structure = new ShiftFields(java.util.Collections.emptyList());
+
+  public IdField<ShiftId, ShiftRow> shiftid() {
+    return new IdField<ShiftId, ShiftRow>(
+        _path,
+        "shiftid",
+        ShiftRow::shiftid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withShiftid(value),
+        ShiftId.dbType);
   }
-  ;
 
-  IdField<ShiftId, ShiftRow> shiftid();
+  public Field<Name, ShiftRow> name() {
+    return new Field<Name, ShiftRow>(
+        _path,
+        "name",
+        ShiftRow::name,
+        Optional.empty(),
+        Optional.of("varchar"),
+        (row, value) -> row.withName(value),
+        Name.dbType);
+  }
 
-  Field<Name, ShiftRow> name();
+  public Field<LocalTime, ShiftRow> starttime() {
+    return new Field<LocalTime, ShiftRow>(
+        _path,
+        "starttime",
+        ShiftRow::starttime,
+        Optional.empty(),
+        Optional.of("time"),
+        (row, value) -> row.withStarttime(value),
+        PgTypes.time);
+  }
 
-  Field<LocalTime, ShiftRow> starttime();
+  public Field<LocalTime, ShiftRow> endtime() {
+    return new Field<LocalTime, ShiftRow>(
+        _path,
+        "endtime",
+        ShiftRow::endtime,
+        Optional.empty(),
+        Optional.of("time"),
+        (row, value) -> row.withEndtime(value),
+        PgTypes.time);
+  }
 
-  Field<LocalTime, ShiftRow> endtime();
-
-  Field<LocalDateTime, ShiftRow> modifieddate();
+  public Field<LocalDateTime, ShiftRow> modifieddate() {
+    return new Field<LocalDateTime, ShiftRow>(
+        _path,
+        "modifieddate",
+        ShiftRow::modifieddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withModifieddate(value),
+        PgTypes.timestamp);
+  }
 
   @Override
-  List<FieldLike<?, ShiftRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<ShiftRow> rowParser() {
+  public List<FieldLike<?, ShiftRow>> columns() {
+    return java.util.List.of(
+        this.shiftid(), this.name(), this.starttime(), this.endtime(), this.modifieddate());
+  }
+
+  @Override
+  public RowParser<ShiftRow> rowParser() {
     return ShiftRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<ShiftFields, ShiftRow> withPaths(List<Path> _path) {
+    return new ShiftFields(_path);
+  }
+
+  @Override
+  public SqlExpr<ShiftId> _1() {
+    return shiftid();
+  }
+
+  @Override
+  public SqlExpr<Name> _2() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<LocalTime> _3() {
+    return starttime();
+  }
+
+  @Override
+  public SqlExpr<LocalTime> _4() {
+    return endtime();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _5() {
+    return modifieddate();
+  }
 }

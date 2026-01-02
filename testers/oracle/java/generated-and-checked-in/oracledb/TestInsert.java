@@ -5,13 +5,15 @@
  */
 package oracledb;
 
-import dev.typr.foundations.data.Json;
+import dev.typr.foundations.Inserter;
+import dev.typr.foundations.internal.RandomHelper;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 import java.util.Random;
-import oracledb.all_scalar_types.AllScalarTypesId;
 import oracledb.all_scalar_types.AllScalarTypesRepoImpl;
 import oracledb.all_scalar_types.AllScalarTypesRow;
 import oracledb.all_scalar_types.AllScalarTypesRowUnsaved;
@@ -21,7 +23,7 @@ import oracledb.contacts.ContactsRowUnsaved;
 import oracledb.customers.CustomersId;
 import oracledb.customers.CustomersRepoImpl;
 import oracledb.customers.CustomersRowUnsaved;
-import oracledb.customtypes.Defaulted;
+import oracledb.customtypes.Defaulted.UseDefault;
 import oracledb.departments.DepartmentsId;
 import oracledb.departments.DepartmentsRepoImpl;
 import oracledb.departments.DepartmentsRow;
@@ -31,9 +33,6 @@ import oracledb.employees.EmployeesRowUnsaved;
 import oracledb.products.ProductsId;
 import oracledb.products.ProductsRepoImpl;
 import oracledb.products.ProductsRowUnsaved;
-import oracledb.test_genkeys_1766794419639.TestGenkeys1766794419639RepoImpl;
-import oracledb.test_genkeys_1766794419639.TestGenkeys1766794419639Row;
-import oracledb.test_genkeys_1766794419639.TestGenkeys1766794419639RowUnsaved;
 
 /** Methods to generate random data for `Ident(TestInsert)` */
 public record TestInsert(Random random) {
@@ -42,92 +41,94 @@ public record TestInsert(Random random) {
   }
   ;
 
-  public AllScalarTypesRow AllScalarTypes(
-      Optional<String> colVarchar2,
-      Optional<BigDecimal> colNumber,
-      Optional<LocalDateTime> colDate,
-      Optional<LocalDateTime> colTimestamp,
-      Optional<String> colClob,
-      String colNotNull,
-      Defaulted<AllScalarTypesId> id,
-      Connection c) {
-    return (new AllScalarTypesRepoImpl())
-        .insert(
-            new AllScalarTypesRowUnsaved(
-                colVarchar2, colNumber, colDate, colTimestamp, colClob, colNotNull, id),
-            c);
+  public Inserter<AllScalarTypesRowUnsaved, AllScalarTypesRow> AllScalarTypes() {
+    return Inserter.of(
+        new AllScalarTypesRowUnsaved(
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(RandomHelper.alphanumeric(random, 20))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(BigDecimal.valueOf(random.nextDouble()))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(
+                    LocalDateTime.of(
+                        LocalDate.ofEpochDay((long) (random.nextInt(30000))),
+                        LocalTime.ofSecondOfDay((long) (random.nextInt(24 * 60 * 60)))))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(
+                    LocalDateTime.of(
+                        LocalDate.ofEpochDay((long) (random.nextInt(30000))),
+                        LocalTime.ofSecondOfDay((long) (random.nextInt(24 * 60 * 60)))))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(RandomHelper.alphanumeric(random, 20))),
+            RandomHelper.alphanumeric(random, 20),
+            new UseDefault()),
+        (AllScalarTypesRowUnsaved row, Connection c) ->
+            (new AllScalarTypesRepoImpl()).insert(row, c));
   }
   ;
 
-  public ContactsId Contacts(
-      String name,
-      Optional<EmailTableT> emails,
-      Optional<TagVarrayT> tags,
-      Defaulted<ContactsId> contactId,
-      Connection c) {
-    return (new ContactsRepoImpl())
-        .insert(new ContactsRowUnsaved(name, emails, tags, contactId), c);
+  public Inserter<ContactsRowUnsaved, ContactsId> Contacts() {
+    return Inserter.of(
+        new ContactsRowUnsaved(
+            RandomHelper.alphanumeric(random, 20),
+            Optional.empty(),
+            Optional.empty(),
+            new UseDefault()),
+        (ContactsRowUnsaved row, Connection c) -> (new ContactsRepoImpl()).insert(row, c));
   }
   ;
 
-  public CustomersId Customers(
-      AddressT billingAddress,
-      String name,
-      Optional<MoneyT> creditLimit,
-      Defaulted<CustomersId> customerId,
-      Defaulted<LocalDateTime> createdAt,
-      Connection c) {
-    return (new CustomersRepoImpl())
-        .insert(
-            new CustomersRowUnsaved(name, billingAddress, creditLimit, customerId, createdAt), c);
+  public Inserter<CustomersRowUnsaved, CustomersId> Customers(AddressT billingAddress) {
+    return Inserter.of(
+        new CustomersRowUnsaved(
+            RandomHelper.alphanumeric(random, 20),
+            billingAddress,
+            Optional.empty(),
+            new UseDefault(),
+            new UseDefault()),
+        (CustomersRowUnsaved row, Connection c) -> (new CustomersRepoImpl()).insert(row, c));
   }
   ;
 
-  public DepartmentsId Departments(
-      String deptCode, String deptRegion, String deptName, Optional<MoneyT> budget, Connection c) {
-    return (new DepartmentsRepoImpl())
-        .insert(new DepartmentsRow(deptCode, deptRegion, deptName, budget), c);
+  public Inserter<DepartmentsRow, DepartmentsId> Departments() {
+    return Inserter.of(
+        new DepartmentsRow(
+            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 20),
+            Optional.empty()),
+        (DepartmentsRow row, Connection c) -> (new DepartmentsRepoImpl()).insert(row, c));
   }
   ;
 
-  public EmployeesId Employees(
-      DepartmentsId DepartmentsId,
-      BigDecimal empNumber,
-      String empSuffix,
-      String empName,
-      Optional<MoneyT> salary,
-      Defaulted<LocalDateTime> hireDate,
-      Connection c) {
-    return (new EmployeesRepoImpl())
-        .insert(
-            new EmployeesRowUnsaved(
-                empNumber,
-                empSuffix,
-                DepartmentsId.deptCode(),
-                DepartmentsId.deptRegion(),
-                empName,
-                salary,
-                hireDate),
-            c);
+  public Inserter<EmployeesRowUnsaved, EmployeesId> Employees(DepartmentsId DepartmentsId) {
+    return Inserter.of(
+        new EmployeesRowUnsaved(
+            BigDecimal.valueOf(random.nextDouble()),
+            RandomHelper.alphanumeric(random, 20),
+            DepartmentsId.deptCode(),
+            DepartmentsId.deptRegion(),
+            RandomHelper.alphanumeric(random, 20),
+            Optional.empty(),
+            new UseDefault()),
+        (EmployeesRowUnsaved row, Connection c) -> (new EmployeesRepoImpl()).insert(row, c));
   }
   ;
 
-  public ProductsId Products(
-      MoneyT price,
-      String sku,
-      String name,
-      Optional<TagVarrayT> tags,
-      Defaulted<ProductsId> productId,
-      Connection c) {
-    return (new ProductsRepoImpl())
-        .insert(new ProductsRowUnsaved(sku, name, price, tags, productId), c);
-  }
-  ;
-
-  public TestGenkeys1766794419639Row TestGenkeys1766794419639(
-      Optional<Json> v, Defaulted<BigDecimal> id, Connection c) {
-    return (new TestGenkeys1766794419639RepoImpl())
-        .insert(new TestGenkeys1766794419639RowUnsaved(v, id), c);
+  public Inserter<ProductsRowUnsaved, ProductsId> Products(MoneyT price) {
+    return Inserter.of(
+        new ProductsRowUnsaved(
+            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 20),
+            price,
+            Optional.empty(),
+            new UseDefault()),
+        (ProductsRowUnsaved row, Connection c) -> (new ProductsRepoImpl()).insert(row, c));
   }
   ;
 }

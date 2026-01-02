@@ -11,6 +11,7 @@ import adventureworks.humanresources.shift.ShiftId
 import adventureworks.person.businessentity.BusinessentityId
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple6
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -44,7 +45,19 @@ data class EmployeedepartmenthistoryRow(
   val enddate: LocalDate?,
   /** Default: now() */
   val modifieddate: LocalDateTime
-) {
+) : Tuple6<BusinessentityId, DepartmentId, ShiftId, LocalDate, LocalDate?, LocalDateTime> {
+  override fun _1(): BusinessentityId = businessentityid
+
+  override fun _2(): DepartmentId = departmentid
+
+  override fun _3(): ShiftId = shiftid
+
+  override fun _4(): LocalDate = startdate
+
+  override fun _5(): LocalDate? = enddate
+
+  override fun _6(): LocalDateTime = modifieddate
+
   fun compositeId(): EmployeedepartmenthistoryId = EmployeedepartmenthistoryId(businessentityid, startdate, departmentid, shiftid)
 
   fun id(): EmployeedepartmenthistoryId = this.compositeId()
@@ -52,7 +65,7 @@ data class EmployeedepartmenthistoryRow(
   fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime> = Defaulted.Provided(this.modifieddate)): EmployeedepartmenthistoryRowUnsaved = EmployeedepartmenthistoryRowUnsaved(businessentityid, departmentid, shiftid, startdate, enddate, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<EmployeedepartmenthistoryRow> = RowParsers.of(BusinessentityId.pgType, DepartmentId.pgType, ShiftId.pgType, PgTypes.date, PgTypes.date.nullable(), PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> EmployeedepartmenthistoryRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.businessentityid, row.departmentid, row.shiftid, row.startdate, row.enddate, row.modifieddate) })
+    val _rowParser: RowParser<EmployeedepartmenthistoryRow> = RowParsers.of(BusinessentityId.dbType, DepartmentId.dbType, ShiftId.dbType, PgTypes.date, PgTypes.date.nullable(), PgTypes.timestamp, { t0, t1, t2, t3, t4, t5 -> EmployeedepartmenthistoryRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.businessentityid, row.departmentid, row.shiftid, row.startdate, row.enddate, row.modifieddate) })
 
     fun apply(
       compositeId: EmployeedepartmenthistoryId,

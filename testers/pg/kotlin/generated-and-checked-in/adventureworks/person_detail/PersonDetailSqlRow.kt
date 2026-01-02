@@ -9,6 +9,7 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Name
 import adventureworks.userdefined.FirstName
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple10
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -36,8 +37,28 @@ data class PersonDetailSqlRow(
   val postalcode: String?,
   /** Points to [adventureworks.person.address.AddressRow.rowguid] */
   val rowguid: UUID?
-) {
+) : Tuple10<BusinessentityId, /* max 8 chars */ String?, /* user-picked */ FirstName, Name?, Name, String, String?, String?, String?, UUID?> {
+  override fun _1(): BusinessentityId = businessentityid
+
+  override fun _10(): UUID? = rowguid
+
+  override fun _2(): /* max 8 chars */ String? = title
+
+  override fun _3(): /* user-picked */ FirstName = firstname
+
+  override fun _4(): Name? = middlename
+
+  override fun _5(): Name = lastname
+
+  override fun _6(): String = jobtitle
+
+  override fun _7(): String? = addressline1
+
+  override fun _8(): String? = city
+
+  override fun _9(): String? = postalcode
+
   companion object {
-    val _rowParser: RowParser<PersonDetailSqlRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text.nullable(), FirstName.pgType, Name.pgType.nullable(), Name.pgType, PgTypes.text, PgTypes.text.nullable(), PgTypes.text.nullable(), PgTypes.text.nullable(), PgTypes.uuid.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> PersonDetailSqlRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.jobtitle, row.addressline1, row.city, row.postalcode, row.rowguid) })
+    val _rowParser: RowParser<PersonDetailSqlRow> = RowParsers.of(BusinessentityId.dbType, PgTypes.text.nullable(), FirstName.dbType, Name.dbType.nullable(), Name.dbType, PgTypes.text, PgTypes.text.nullable(), PgTypes.text.nullable(), PgTypes.text.nullable(), PgTypes.uuid.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> PersonDetailSqlRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.jobtitle, row.addressline1, row.city, row.postalcode, row.rowguid) })
   }
 }

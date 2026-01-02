@@ -9,6 +9,7 @@ import adventureworks.humanresources.department.DepartmentId
 import adventureworks.humanresources.shift.ShiftId
 import adventureworks.person.businessentity.BusinessentityId
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import java.time.LocalDate
@@ -19,8 +20,16 @@ case class EmployeedepartmenthistoryId(
   startdate: LocalDate,
   departmentid: DepartmentId,
   shiftid: ShiftId
-)
+) extends Tuple4[BusinessentityId, LocalDate, DepartmentId, ShiftId] {
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: LocalDate = startdate
+
+  override def `_3`: DepartmentId = departmentid
+
+  override def `_4`: ShiftId = shiftid
+}
 
 object EmployeedepartmenthistoryId {
-  val `_rowParser`: RowParser[EmployeedepartmenthistoryId] = RowParsers.of(BusinessentityId.pgType, PgTypes.date, DepartmentId.pgType, ShiftId.pgType)(EmployeedepartmenthistoryId.apply)(row => Array[Any](row.businessentityid, row.startdate, row.departmentid, row.shiftid))
+  val `_rowParser`: RowParser[EmployeedepartmenthistoryId] = RowParsers.of(BusinessentityId.dbType, PgTypes.date, DepartmentId.dbType, ShiftId.dbType)(EmployeedepartmenthistoryId.apply)(row => Array[Any](row.businessentityid, row.startdate, row.departmentid, row.shiftid))
 }

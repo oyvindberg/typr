@@ -9,6 +9,7 @@ import adventureworks.customtypes.Defaulted
 import adventureworks.person.stateprovince.StateprovinceId
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple9
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -42,7 +43,25 @@ data class AddressRow(
   val rowguid: UUID,
   /** Default: now() */
   val modifieddate: LocalDateTime
-) {
+) : Tuple9<AddressId, String, /* max 60 chars */ String?, String, StateprovinceId, String, ByteArray?, UUID, LocalDateTime> {
+  override fun _1(): AddressId = addressid
+
+  override fun _2(): String = addressline1
+
+  override fun _3(): /* max 60 chars */ String? = addressline2
+
+  override fun _4(): String = city
+
+  override fun _5(): StateprovinceId = stateprovinceid
+
+  override fun _6(): String = postalcode
+
+  override fun _7(): ByteArray? = spatiallocation
+
+  override fun _8(): UUID = rowguid
+
+  override fun _9(): LocalDateTime = modifieddate
+
   fun id(): AddressId = addressid
 
   fun toUnsavedRow(
@@ -52,7 +71,7 @@ data class AddressRow(
   ): AddressRowUnsaved = AddressRowUnsaved(addressline1, addressline2, city, stateprovinceid, postalcode, spatiallocation, addressid, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<AddressRow> = RowParsers.of(AddressId.pgType, PgTypes.text, PgTypes.text.nullable(), PgTypes.text, StateprovinceId.pgType, PgTypes.text, PgTypes.bytea.nullable(), PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> AddressRow(t0, t1, t2, t3, t4, t5, t6, t7, t8) }, { row -> arrayOf<Any?>(row.addressid, row.addressline1, row.addressline2, row.city, row.stateprovinceid, row.postalcode, row.spatiallocation, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<AddressRow> = RowParsers.of(AddressId.dbType, PgTypes.text, PgTypes.text.nullable(), PgTypes.text, StateprovinceId.dbType, PgTypes.text, PgTypes.bytea.nullable(), PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> AddressRow(t0, t1, t2, t3, t4, t5, t6, t7, t8) }, { row -> arrayOf<Any?>(row.addressid, row.addressline1, row.addressline2, row.city, row.stateprovinceid, row.postalcode, row.spatiallocation, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<AddressRow> =
       PgText.from(_rowParser.underlying)

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.OracleTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
 import java.util.Optional;
 import oracledb.MoneyT;
 import oracledb.TagVarrayT;
@@ -21,7 +22,8 @@ public record ProductsRow(
     @JsonProperty("SKU") String sku,
     @JsonProperty("NAME") String name,
     @JsonProperty("PRICE") MoneyT price,
-    @JsonProperty("TAGS") Optional<TagVarrayT> tags) {
+    @JsonProperty("TAGS") Optional<TagVarrayT> tags)
+    implements Tuple5<ProductsId, String, String, MoneyT, Optional<TagVarrayT>> {
   /** Default: "TYPR"."ISEQ$$_72846".nextval */
   public ProductsRow withProductId(ProductsId productId) {
     return new ProductsRow(productId, sku, name, price, tags);
@@ -57,6 +59,36 @@ public record ProductsRow(
           TagVarrayT.oracleType.opt(),
           ProductsRow::new,
           row -> new Object[] {row.productId(), row.sku(), row.name(), row.price(), row.tags()});
+  ;
+
+  @Override
+  public ProductsId _1() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return sku;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return name;
+  }
+  ;
+
+  @Override
+  public MoneyT _4() {
+    return price;
+  }
+  ;
+
+  @Override
+  public Optional<TagVarrayT> _5() {
+    return tags;
+  }
   ;
 
   public ProductsId id() {

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -17,7 +18,8 @@ public record DepartmentsRow(
     @JsonProperty("dept_code") String deptCode,
     @JsonProperty("dept_region") String deptRegion,
     @JsonProperty("dept_name") String deptName,
-    Optional<BigDecimal> budget) {
+    Optional<BigDecimal> budget)
+    implements Tuple4<String, String, String, Optional<BigDecimal>> {
   public DepartmentsRow withDeptCode(String deptCode) {
     return new DepartmentsRow(deptCode, deptRegion, deptName, budget);
   }
@@ -51,6 +53,30 @@ public record DepartmentsRow(
   public static DepartmentsRow apply(
       DepartmentsId compositeId, String deptName, Optional<BigDecimal> budget) {
     return new DepartmentsRow(compositeId.deptCode(), compositeId.deptRegion(), deptName, budget);
+  }
+  ;
+
+  @Override
+  public String _1() {
+    return deptCode;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return deptRegion;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return deptName;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _4() {
+    return budget;
   }
   ;
 

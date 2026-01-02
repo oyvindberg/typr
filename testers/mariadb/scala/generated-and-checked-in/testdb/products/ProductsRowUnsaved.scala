@@ -6,6 +6,7 @@
 package testdb.products
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.MariaSet
 import java.time.LocalDateTime
 import testdb.brands.BrandsId
@@ -43,7 +44,7 @@ case class ProductsRowUnsaved(
   /** Default: NULL
    * length, width, height in cm
    */
-  @JsonProperty("dimensions_json") dimensionsJson: Defaulted[Option[String]] = new UseDefault(),
+  @JsonProperty("dimensions_json") dimensionsJson: Defaulted[Option[Json]] = new UseDefault(),
   /** Default: 'draft'
 
    */
@@ -59,11 +60,11 @@ case class ProductsRowUnsaved(
   /** Default: NULL
 
    */
-  attributes: Defaulted[Option[String]] = new UseDefault(),
+  attributes: Defaulted[Option[Json]] = new UseDefault(),
   /** Default: NULL
 
    */
-  @JsonProperty("seo_metadata") seoMetadata: Defaulted[Option[String]] = new UseDefault(),
+  @JsonProperty("seo_metadata") seoMetadata: Defaulted[Option[Json]] = new UseDefault(),
   /** Default: current_timestamp(6)
 
    */
@@ -83,12 +84,12 @@ case class ProductsRowUnsaved(
     fullDescriptionDefault: => Option[String],
     costPriceDefault: => Option[BigDecimal],
     weightKgDefault: => Option[BigDecimal],
-    dimensionsJsonDefault: => Option[String],
+    dimensionsJsonDefault: => Option[Json],
     statusDefault: => String,
     taxClassDefault: => String,
     tagsDefault: => Option[MariaSet],
-    attributesDefault: => Option[String],
-    seoMetadataDefault: => Option[String],
+    attributesDefault: => Option[Json],
+    seoMetadataDefault: => Option[Json],
     createdAtDefault: => LocalDateTime,
     updatedAtDefault: => LocalDateTime,
     publishedAtDefault: => Option[LocalDateTime],

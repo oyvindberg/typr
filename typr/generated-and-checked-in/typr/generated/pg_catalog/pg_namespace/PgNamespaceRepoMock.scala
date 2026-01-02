@@ -11,11 +11,11 @@ import java.sql.Connection
 import scala.annotation.nowarn
 
 case class PgNamespaceRepoMock(map: scala.collection.mutable.Map[PgNamespaceId, PgNamespaceRow] = scala.collection.mutable.Map.empty[PgNamespaceId, PgNamespaceRow]) extends PgNamespaceRepo {
-  override def deleteById(oid: PgNamespaceId)(implicit c: Connection): Boolean = map.remove(oid).isDefined
+  override def deleteById(oid: PgNamespaceId)(using c: Connection): Boolean = map.remove(oid).isDefined
 
-  override def deleteByIds(oids: Array[PgNamespaceId])(implicit c: Connection): Int = oids.map(id => map.remove(id)).count(_.isDefined)
+  override def deleteByIds(oids: Array[PgNamespaceId])(using c: Connection): Int = oids.map(id => map.remove(id)).count(_.isDefined)
 
-  override def insert(unsaved: PgNamespaceRow)(implicit c: Connection): PgNamespaceRow = {
+  override def insert(unsaved: PgNamespaceRow)(using c: Connection): PgNamespaceRow = {
     val _ = if (map.contains(unsaved.oid))
       sys.error(s"id ${unsaved.oid} already exists")
     else
@@ -27,39 +27,39 @@ case class PgNamespaceRepoMock(map: scala.collection.mutable.Map[PgNamespaceId, 
   override def insertStreaming(
     unsaved: Iterator[PgNamespaceRow],
     batchSize: Int = 10000
-  )(implicit c: Connection): Long = {
+  )(using c: Connection): Long = {
     unsaved.foreach { row =>
       map += (row.oid -> row)
     }
     unsaved.size.toLong
   }
 
-  override def selectAll(implicit c: Connection): List[PgNamespaceRow] = map.values.toList
+  override def selectAll(using c: Connection): List[PgNamespaceRow] = map.values.toList
 
-  override def selectById(oid: PgNamespaceId)(implicit c: Connection): Option[PgNamespaceRow] = map.get(oid)
+  override def selectById(oid: PgNamespaceId)(using c: Connection): Option[PgNamespaceRow] = map.get(oid)
 
-  override def selectByIds(oids: Array[PgNamespaceId])(implicit c: Connection): List[PgNamespaceRow] = oids.flatMap(map.get).toList
+  override def selectByIds(oids: Array[PgNamespaceId])(using c: Connection): List[PgNamespaceRow] = oids.flatMap(map.get).toList
 
-  override def selectByIdsTracked(oids: Array[PgNamespaceId])(implicit c: Connection): Map[PgNamespaceId, PgNamespaceRow] = {
+  override def selectByIdsTracked(oids: Array[PgNamespaceId])(using c: Connection): Map[PgNamespaceId, PgNamespaceRow] = {
     val byId = selectByIds(oids).view.map(x => (x.oid, x)).toMap
     oids.view.flatMap(id => byId.get(id).map(x => (id, x))).toMap
   }
 
-  override def selectByUniqueNspname(nspname: String)(implicit c: Connection): Option[PgNamespaceRow] = map.values.find(v => nspname == v.nspname)
+  override def selectByUniqueNspname(nspname: String)(using c: Connection): Option[PgNamespaceRow] = map.values.find(v => nspname == v.nspname)
 
-  override def update(row: PgNamespaceRow)(implicit c: Connection): Option[PgNamespaceRow] = {
+  override def update(row: PgNamespaceRow)(using c: Connection): Option[PgNamespaceRow] = {
     map.get(row.oid).map { _ =>
       map.put(row.oid, row): @nowarn
       row
     }
   }
 
-  override def upsert(unsaved: PgNamespaceRow)(implicit c: Connection): PgNamespaceRow = {
+  override def upsert(unsaved: PgNamespaceRow)(using c: Connection): PgNamespaceRow = {
     map.put(unsaved.oid, unsaved): @nowarn
     unsaved
   }
 
-  override def upsertBatch(unsaved: Iterable[PgNamespaceRow])(implicit c: Connection): List[PgNamespaceRow] = {
+  override def upsertBatch(unsaved: Iterable[PgNamespaceRow])(using c: Connection): List[PgNamespaceRow] = {
     unsaved.map { row =>
       map += (row.oid -> row)
       row
@@ -70,7 +70,7 @@ case class PgNamespaceRepoMock(map: scala.collection.mutable.Map[PgNamespaceId, 
   override def upsertStreaming(
     unsaved: Iterator[PgNamespaceRow],
     batchSize: Int = 10000
-  )(implicit c: Connection): Int = {
+  )(using c: Connection): Int = {
     unsaved.foreach { row =>
       map += (row.oid -> row)
     }

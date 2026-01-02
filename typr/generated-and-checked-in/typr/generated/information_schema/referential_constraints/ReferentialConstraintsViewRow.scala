@@ -42,19 +42,19 @@ case class ReferentialConstraintsViewRow(
 )
 
 object ReferentialConstraintsViewRow {
-  implicit lazy val reads: Reads[ReferentialConstraintsViewRow] = {
+  given reads: Reads[ReferentialConstraintsViewRow] = {
     Reads[ReferentialConstraintsViewRow](json => JsResult.fromTry(
         Try(
           ReferentialConstraintsViewRow(
-            constraintCatalog = json.\("constraint_catalog").toOption.map(_.as(Reads.StringReads)),
-            constraintSchema = json.\("constraint_schema").toOption.map(_.as(Reads.StringReads)),
-            constraintName = json.\("constraint_name").toOption.map(_.as(Reads.StringReads)),
-            uniqueConstraintCatalog = json.\("unique_constraint_catalog").toOption.map(_.as(Reads.StringReads)),
-            uniqueConstraintSchema = json.\("unique_constraint_schema").toOption.map(_.as(Reads.StringReads)),
-            uniqueConstraintName = json.\("unique_constraint_name").toOption.map(_.as(Reads.StringReads)),
-            matchOption = json.\("match_option").toOption.map(_.as(Reads.StringReads)),
-            updateRule = json.\("update_rule").toOption.map(_.as(Reads.StringReads)),
-            deleteRule = json.\("delete_rule").toOption.map(_.as(Reads.StringReads))
+            constraintCatalog = json.\("constraint_catalog").toOption.map(_.as(using Reads.StringReads)),
+            constraintSchema = json.\("constraint_schema").toOption.map(_.as(using Reads.StringReads)),
+            constraintName = json.\("constraint_name").toOption.map(_.as(using Reads.StringReads)),
+            uniqueConstraintCatalog = json.\("unique_constraint_catalog").toOption.map(_.as(using Reads.StringReads)),
+            uniqueConstraintSchema = json.\("unique_constraint_schema").toOption.map(_.as(using Reads.StringReads)),
+            uniqueConstraintName = json.\("unique_constraint_name").toOption.map(_.as(using Reads.StringReads)),
+            matchOption = json.\("match_option").toOption.map(_.as(using Reads.StringReads)),
+            updateRule = json.\("update_rule").toOption.map(_.as(using Reads.StringReads)),
+            deleteRule = json.\("delete_rule").toOption.map(_.as(using Reads.StringReads))
           )
         )
       ),
@@ -65,32 +65,32 @@ object ReferentialConstraintsViewRow {
     RowParser[ReferentialConstraintsViewRow] { row =>
       Success(
         ReferentialConstraintsViewRow(
-          constraintCatalog = row(idx + 0)(Column.columnToOption(Column.columnToString)),
-          constraintSchema = row(idx + 1)(Column.columnToOption(Column.columnToString)),
-          constraintName = row(idx + 2)(Column.columnToOption(Column.columnToString)),
-          uniqueConstraintCatalog = row(idx + 3)(Column.columnToOption(Column.columnToString)),
-          uniqueConstraintSchema = row(idx + 4)(Column.columnToOption(Column.columnToString)),
-          uniqueConstraintName = row(idx + 5)(Column.columnToOption(Column.columnToString)),
-          matchOption = row(idx + 6)(Column.columnToOption(Column.columnToString)),
-          updateRule = row(idx + 7)(Column.columnToOption(Column.columnToString)),
-          deleteRule = row(idx + 8)(Column.columnToOption(Column.columnToString))
+          constraintCatalog = row(idx + 0)(using Column.columnToOption(using Column.columnToString)),
+          constraintSchema = row(idx + 1)(using Column.columnToOption(using Column.columnToString)),
+          constraintName = row(idx + 2)(using Column.columnToOption(using Column.columnToString)),
+          uniqueConstraintCatalog = row(idx + 3)(using Column.columnToOption(using Column.columnToString)),
+          uniqueConstraintSchema = row(idx + 4)(using Column.columnToOption(using Column.columnToString)),
+          uniqueConstraintName = row(idx + 5)(using Column.columnToOption(using Column.columnToString)),
+          matchOption = row(idx + 6)(using Column.columnToOption(using Column.columnToString)),
+          updateRule = row(idx + 7)(using Column.columnToOption(using Column.columnToString)),
+          deleteRule = row(idx + 8)(using Column.columnToOption(using Column.columnToString))
         )
       )
     }
   }
 
-  implicit lazy val writes: OWrites[ReferentialConstraintsViewRow] = {
+  given writes: OWrites[ReferentialConstraintsViewRow] = {
     OWrites[ReferentialConstraintsViewRow](o =>
       new JsObject(ListMap[String, JsValue](
-        "constraint_catalog" -> Writes.OptionWrites(Writes.StringWrites).writes(o.constraintCatalog),
-        "constraint_schema" -> Writes.OptionWrites(Writes.StringWrites).writes(o.constraintSchema),
-        "constraint_name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.constraintName),
-        "unique_constraint_catalog" -> Writes.OptionWrites(Writes.StringWrites).writes(o.uniqueConstraintCatalog),
-        "unique_constraint_schema" -> Writes.OptionWrites(Writes.StringWrites).writes(o.uniqueConstraintSchema),
-        "unique_constraint_name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.uniqueConstraintName),
-        "match_option" -> Writes.OptionWrites(Writes.StringWrites).writes(o.matchOption),
-        "update_rule" -> Writes.OptionWrites(Writes.StringWrites).writes(o.updateRule),
-        "delete_rule" -> Writes.OptionWrites(Writes.StringWrites).writes(o.deleteRule)
+        "constraint_catalog" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.constraintCatalog),
+        "constraint_schema" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.constraintSchema),
+        "constraint_name" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.constraintName),
+        "unique_constraint_catalog" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.uniqueConstraintCatalog),
+        "unique_constraint_schema" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.uniqueConstraintSchema),
+        "unique_constraint_name" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.uniqueConstraintName),
+        "match_option" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.matchOption),
+        "update_rule" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.updateRule),
+        "delete_rule" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.deleteRule)
       ))
     )
   }

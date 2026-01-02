@@ -8,41 +8,39 @@ package adventureworks.person.countryregion
 import adventureworks.public.Name
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
+import dev.typr.foundations.kotlin.TupleExpr3
 import java.time.LocalDateTime
 import kotlin.collections.List
 
-interface CountryregionFields : FieldsExpr<CountryregionRow> {
-  abstract override fun columns(): List<FieldLike<*, CountryregionRow>>
+data class CountryregionFields(val _path: List<Path>) : TupleExpr3<CountryregionId, Name, LocalDateTime>, RelationStructure<CountryregionFields, CountryregionRow>, FieldsBase<CountryregionRow> {
+  override fun _1(): SqlExpr<CountryregionId> = countryregioncode()
 
-  abstract fun countryregioncode(): IdField<CountryregionId, CountryregionRow>
+  override fun _2(): SqlExpr<Name> = name()
 
-  abstract fun modifieddate(): Field<LocalDateTime, CountryregionRow>
+  override fun _3(): SqlExpr<LocalDateTime> = modifieddate()
 
-  abstract fun name(): Field<Name, CountryregionRow>
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, CountryregionRow>> = listOf(this.countryregioncode().underlying, this.name().underlying, this.modifieddate().underlying)
+
+  fun countryregioncode(): IdField<CountryregionId, CountryregionRow> = IdField<CountryregionId, CountryregionRow>(_path, "countryregioncode", CountryregionRow::countryregioncode, null, null, { row, value -> row.copy(countryregioncode = value) }, CountryregionId.dbType)
+
+  fun modifieddate(): Field<LocalDateTime, CountryregionRow> = Field<LocalDateTime, CountryregionRow>(_path, "modifieddate", CountryregionRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
+
+  fun name(): Field<Name, CountryregionRow> = Field<Name, CountryregionRow>(_path, "name", CountryregionRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.dbType)
 
   override fun rowParser(): RowParser<CountryregionRow> = CountryregionRow._rowParser.underlying
 
+  override fun withPaths(_path: List<Path>): RelationStructure<CountryregionFields, CountryregionRow> = CountryregionFields(_path)
+
   companion object {
-    data class Impl(val _path: List<Path>) : CountryregionFields, RelationStructure<CountryregionFields, CountryregionRow> {
-      override fun countryregioncode(): IdField<CountryregionId, CountryregionRow> = IdField<CountryregionId, CountryregionRow>(_path, "countryregioncode", CountryregionRow::countryregioncode, null, null, { row, value -> row.copy(countryregioncode = value) }, CountryregionId.pgType)
-
-      override fun name(): Field<Name, CountryregionRow> = Field<Name, CountryregionRow>(_path, "name", CountryregionRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.pgType)
-
-      override fun modifieddate(): Field<LocalDateTime, CountryregionRow> = Field<LocalDateTime, CountryregionRow>(_path, "modifieddate", CountryregionRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, CountryregionRow>> = listOf(this.countryregioncode().underlying, this.name().underlying, this.modifieddate().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<CountryregionFields, CountryregionRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: CountryregionFields = CountryregionFields(emptyList<Path>())
   }
 }

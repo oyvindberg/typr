@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import testdb.Priority;
@@ -22,7 +23,8 @@ public record CustomersRow(
     /** Default: current_timestamp */
     @JsonProperty("created_at") LocalDateTime createdAt,
     /** Default: 'medium' */
-    Optional<Priority> priority) {
+    Optional<Priority> priority)
+    implements Tuple5<CustomersId, String, Optional<String>, LocalDateTime, Optional<Priority>> {
   public CustomersRow withCustomerId(CustomersId customerId) {
     return new CustomersRow(customerId, name, email, createdAt, priority);
   }
@@ -62,6 +64,36 @@ public record CustomersRow(
               new Object[] {
                 row.customerId(), row.name(), row.email(), row.createdAt(), row.priority()
               });
+  ;
+
+  @Override
+  public CustomersId _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public Optional<String> _3() {
+    return email;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _4() {
+    return createdAt;
+  }
+  ;
+
+  @Override
+  public Optional<Priority> _5() {
+    return priority;
+  }
   ;
 
   public CustomersId id() {

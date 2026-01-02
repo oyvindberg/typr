@@ -26,6 +26,6 @@ public record IdentityParamsTestId(@JsonValue Integer value) {
   public static Bijection<IdentityParamsTestId, Integer> bijection =
       Bijection.of(IdentityParamsTestId::value, IdentityParamsTestId::new);
 
-  public static Db2Type<IdentityParamsTestId> pgType =
+  public static Db2Type<IdentityParamsTestId> dbType =
       Db2Types.integer.bimap(IdentityParamsTestId::new, IdentityParamsTestId::value);
 }

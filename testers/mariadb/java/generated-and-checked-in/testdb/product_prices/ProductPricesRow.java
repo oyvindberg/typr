@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple7;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -31,7 +32,15 @@ public record ProductPricesRow(
     /** */
     @JsonProperty("valid_from") LocalDate validFrom,
     /** Default: NULL */
-    @JsonProperty("valid_to") Optional<LocalDate> validTo) {
+    @JsonProperty("valid_to") Optional<LocalDate> validTo)
+    implements Tuple7<
+        ProductPricesId,
+        ProductsId,
+        Optional<PriceTiersId>,
+        BigDecimal,
+        String,
+        LocalDate,
+        Optional<LocalDate>> {
   /** AUTO_INCREMENT */
   public ProductPricesRow withPriceId(ProductPricesId priceId) {
     return new ProductPricesRow(
@@ -83,9 +92,9 @@ public record ProductPricesRow(
 
   public static RowParser<ProductPricesRow> _rowParser =
       RowParsers.of(
-          ProductPricesId.pgType,
-          ProductsId.pgType,
-          PriceTiersId.pgType.opt(),
+          ProductPricesId.dbType,
+          ProductsId.dbType,
+          PriceTiersId.dbType.opt(),
           MariaTypes.numeric,
           MariaTypes.char_,
           MariaTypes.date,
@@ -101,6 +110,48 @@ public record ProductPricesRow(
                 row.validFrom(),
                 row.validTo()
               });
+  ;
+
+  @Override
+  public ProductPricesId _1() {
+    return priceId;
+  }
+  ;
+
+  @Override
+  public ProductsId _2() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public Optional<PriceTiersId> _3() {
+    return tierId;
+  }
+  ;
+
+  @Override
+  public BigDecimal _4() {
+    return price;
+  }
+  ;
+
+  @Override
+  public String _5() {
+    return currencyCode;
+  }
+  ;
+
+  @Override
+  public LocalDate _6() {
+    return validFrom;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDate> _7() {
+    return validTo;
+  }
   ;
 
   public ProductPricesId id() {

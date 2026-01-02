@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.math.BigDecimal;
 
 /** Materialized View: CUSTOMER_STATS */
@@ -16,7 +17,8 @@ public record CustomerStatsMVRow(
     @JsonProperty("CUSTOMER_ID") Integer customerId,
     @JsonProperty("CUSTOMER_NAME") String customerName,
     @JsonProperty("TOTAL_ORDERS") Integer totalOrders,
-    @JsonProperty("TOTAL_REVENUE") BigDecimal totalRevenue) {
+    @JsonProperty("TOTAL_REVENUE") BigDecimal totalRevenue)
+    implements Tuple4<Integer, String, Integer, BigDecimal> {
   public CustomerStatsMVRow withCustomerId(Integer customerId) {
     return new CustomerStatsMVRow(customerId, customerName, totalOrders, totalRevenue);
   }
@@ -48,5 +50,29 @@ public record CustomerStatsMVRow(
               new Object[] {
                 row.customerId(), row.customerName(), row.totalOrders(), row.totalRevenue()
               });
+  ;
+
+  @Override
+  public Integer _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return customerName;
+  }
+  ;
+
+  @Override
+  public Integer _3() {
+    return totalOrders;
+  }
+  ;
+
+  @Override
+  public BigDecimal _4() {
+    return totalRevenue;
+  }
   ;
 }

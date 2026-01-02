@@ -1,6 +1,6 @@
 package scripts
 
-import bleep.{FileWatching, cli}
+import bleep.FileWatching
 import ryddig.{Formatter, LogLevel, LogPatterns, Loggers}
 import typr.*
 import typr.internal.external.{ExternalTools, ExternalToolsConfig}
@@ -39,8 +39,8 @@ object GeneratedDuckDb {
       .use { logger =>
         // DuckDB is embedded - create in-memory database and load schema
         val ds = TypoDataSource.hikariDuckDbInMemory(":memory:")
-        val schemaPath = buildDir.resolve("db/duckdb/00-schema.sql")
-        val scriptsPath = buildDir.resolve("duckdb_sql")
+        val schemaPath = buildDir.resolve("sql-init/duckdb/00-schema.sql")
+        val scriptsPath = buildDir.resolve("sql-scripts/duckdb")
         val selector = Selector.All
         val typoLogger = TypoLogger.Console
         val externalTools = ExternalTools.init(typoLogger, ExternalToolsConfig.default)
@@ -101,13 +101,7 @@ object GeneratedDuckDb {
 
             logger.warn(s"Generated ${changedFiles.size} files for $projectPath")
 
-            cli(
-              "add files to git",
-              buildDir,
-              List("git", "add", "-f", targetSources.toString),
-              logger = logger,
-              cli.Out.Raw
-            )
+            GitOps.gitAdd("add files to git", buildDir, List(targetSources.toString), logger)
           }
         }
 

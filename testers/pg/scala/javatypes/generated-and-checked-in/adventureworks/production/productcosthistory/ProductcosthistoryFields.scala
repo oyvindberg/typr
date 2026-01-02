@@ -10,108 +10,104 @@ import adventureworks.production.product.ProductId
 import adventureworks.production.product.ProductRow
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.ForeignKey
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
 import dev.typr.foundations.dsl.SqlExpr
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
 import dev.typr.foundations.dsl.SqlExpr.OptField
+import dev.typr.foundations.dsl.TupleExpr
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5
 import java.time.LocalDateTime
 import java.util.Optional
 
-trait ProductcosthistoryFields extends FieldsExpr0[ProductcosthistoryRow] {
-  def productid: IdField[ProductId, ProductcosthistoryRow]
+class ProductcosthistoryFields(val `_path`: java.util.List[Path]) extends TupleExpr5[ProductId, LocalDateTime, LocalDateTime, java.math.BigDecimal, LocalDateTime] with RelationStructure[ProductcosthistoryFields, ProductcosthistoryRow]  with FieldsBase[ProductcosthistoryRow] {
+  def productid: IdField[ProductId, ProductcosthistoryRow] = {
+    new IdField[ProductId, ProductcosthistoryRow](
+      _path,
+      "productid",
+      _.productid,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(productid = value),
+      ProductId.dbType
+    )
+  }
 
-  def startdate: IdField[LocalDateTime, ProductcosthistoryRow]
+  def startdate: IdField[LocalDateTime, ProductcosthistoryRow] = {
+    new IdField[LocalDateTime, ProductcosthistoryRow](
+      _path,
+      "startdate",
+      _.startdate,
+      Optional.empty(),
+      Optional.of("timestamp"),
+      (row, value) => row.copy(startdate = value),
+      PgTypes.timestamp
+    )
+  }
 
-  def enddate: OptField[LocalDateTime, ProductcosthistoryRow]
+  def enddate: OptField[LocalDateTime, ProductcosthistoryRow] = {
+    new OptField[LocalDateTime, ProductcosthistoryRow](
+      _path,
+      "enddate",
+      _.enddate,
+      Optional.empty(),
+      Optional.of("timestamp"),
+      (row, value) => row.copy(enddate = value),
+      PgTypes.timestamp
+    )
+  }
 
-  def standardcost: Field[java.math.BigDecimal, ProductcosthistoryRow]
+  def standardcost: Field[java.math.BigDecimal, ProductcosthistoryRow] = {
+    new Field[java.math.BigDecimal, ProductcosthistoryRow](
+      _path,
+      "standardcost",
+      _.standardcost,
+      Optional.empty(),
+      Optional.of("numeric"),
+      (row, value) => row.copy(standardcost = value),
+      PgTypes.numeric
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, ProductcosthistoryRow]
+  def modifieddate: Field[LocalDateTime, ProductcosthistoryRow] = {
+    new Field[LocalDateTime, ProductcosthistoryRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      Optional.empty(),
+      Optional.of("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
   def fkProduct: ForeignKey[ProductFields, ProductRow] = ForeignKey.of[ProductFields, ProductRow]("production.FK_ProductCostHistory_Product_ProductID").withColumnPair[ProductId](productid, _.productid)
 
   def compositeIdIs(compositeId: ProductcosthistoryId): SqlExpr[java.lang.Boolean] = SqlExpr.all(productid.isEqual(compositeId.productid), startdate.isEqual(compositeId.startdate))
 
-  def compositeIdIn(compositeIds: java.util.List[ProductcosthistoryId]): SqlExpr[java.lang.Boolean] = CompositeIn(java.util.List.of(CompositeIn.Part[ProductId, ProductcosthistoryId, ProductcosthistoryRow](productid, _.productid, ProductId.pgType), CompositeIn.Part[LocalDateTime, ProductcosthistoryId, ProductcosthistoryRow](startdate, _.startdate, PgTypes.timestamp)), compositeIds)
+  def compositeIdIn(compositeIds: java.util.List[ProductcosthistoryId]): SqlExpr[java.lang.Boolean] = TupleExpr.of(productid, startdate).among(compositeIds)
 
-  override def columns: java.util.List[FieldLike[?, ProductcosthistoryRow]]
+  override def columns: java.util.List[FieldLike[?, ProductcosthistoryRow]] = java.util.List.of(this.productid, this.startdate, this.enddate, this.standardcost, this.modifieddate)
 
   override def rowParser: RowParser[ProductcosthistoryRow] = ProductcosthistoryRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductcosthistoryFields, ProductcosthistoryRow] = new ProductcosthistoryFields(`_path`)
+
+  override def `_1`: SqlExpr[ProductId] = productid
+
+  override def `_2`: SqlExpr[LocalDateTime] = startdate
+
+  override def `_3`: SqlExpr[LocalDateTime] = enddate
+
+  override def `_4`: SqlExpr[java.math.BigDecimal] = standardcost
+
+  override def `_5`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object ProductcosthistoryFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ProductcosthistoryFields with RelationStructure[ProductcosthistoryFields, ProductcosthistoryRow] {
-
-    override def productid: IdField[ProductId, ProductcosthistoryRow] = {
-      new IdField[ProductId, ProductcosthistoryRow](
-        _path,
-        "productid",
-        _.productid,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(productid = value),
-        ProductId.pgType
-      )
-    }
-
-    override def startdate: IdField[LocalDateTime, ProductcosthistoryRow] = {
-      new IdField[LocalDateTime, ProductcosthistoryRow](
-        _path,
-        "startdate",
-        _.startdate,
-        Optional.empty(),
-        Optional.of("timestamp"),
-        (row, value) => row.copy(startdate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def enddate: OptField[LocalDateTime, ProductcosthistoryRow] = {
-      new OptField[LocalDateTime, ProductcosthistoryRow](
-        _path,
-        "enddate",
-        _.enddate,
-        Optional.empty(),
-        Optional.of("timestamp"),
-        (row, value) => row.copy(enddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def standardcost: Field[java.math.BigDecimal, ProductcosthistoryRow] = {
-      new Field[java.math.BigDecimal, ProductcosthistoryRow](
-        _path,
-        "standardcost",
-        _.standardcost,
-        Optional.empty(),
-        Optional.of("numeric"),
-        (row, value) => row.copy(standardcost = value),
-        PgTypes.numeric
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, ProductcosthistoryRow] = {
-      new Field[LocalDateTime, ProductcosthistoryRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        Optional.empty(),
-        Optional.of("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, ProductcosthistoryRow]] = java.util.List.of(this.productid, this.startdate, this.enddate, this.standardcost, this.modifieddate)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductcosthistoryFields, ProductcosthistoryRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: ProductcosthistoryFields = new ProductcosthistoryFields(java.util.Collections.emptyList())
 }

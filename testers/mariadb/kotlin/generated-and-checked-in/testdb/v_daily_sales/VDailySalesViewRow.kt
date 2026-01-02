@@ -7,6 +7,7 @@ package testdb.v_daily_sales
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple10
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -58,7 +59,27 @@ data class VDailySalesViewRow(
     * Default: NULL
     */
   @JsonProperty("avg_order_value") val avgOrderValue: BigDecimal?
-) {
+) : Tuple10<LocalDate?, Long, Long, BigDecimal?, BigDecimal?, BigDecimal?, BigDecimal?, BigDecimal?, BigDecimal?, BigDecimal?> {
+  override fun _1(): LocalDate? = orderDate
+
+  override fun _10(): BigDecimal? = avgOrderValue
+
+  override fun _2(): Long = orderCount
+
+  override fun _3(): Long = uniqueCustomers
+
+  override fun _4(): BigDecimal? = itemsSold
+
+  override fun _5(): BigDecimal? = grossSales
+
+  override fun _6(): BigDecimal? = totalDiscounts
+
+  override fun _7(): BigDecimal? = totalShipping
+
+  override fun _8(): BigDecimal? = totalTax
+
+  override fun _9(): BigDecimal? = netSales
+
   companion object {
     val _rowParser: RowParser<VDailySalesViewRow> = RowParsers.of(MariaTypes.date.nullable(), KotlinDbTypes.MariaTypes.bigint, KotlinDbTypes.MariaTypes.bigint, KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> VDailySalesViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.orderDate, row.orderCount, row.uniqueCustomers, row.itemsSold, row.grossSales, row.totalDiscounts, row.totalShipping, row.totalTax, row.netSales, row.avgOrderValue) })
   }

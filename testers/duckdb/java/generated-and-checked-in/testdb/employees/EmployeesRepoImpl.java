@@ -24,9 +24,8 @@ import java.util.Optional;
 public class EmployeesRepoImpl implements EmployeesRepo {
   @Override
   public DeleteBuilder<EmployeesFields, EmployeesRow> delete() {
-    return DeleteBuilder.of("\"employees\"", EmployeesFields.structure(), Dialect.DUCKDB);
+    return DeleteBuilder.of("\"employees\"", EmployeesFields.structure, Dialect.DUCKDB);
   }
-  ;
 
   @Override
   public Boolean deleteById(EmployeesId compositeId, Connection c) {
@@ -40,7 +39,6 @@ public class EmployeesRepoImpl implements EmployeesRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(EmployeesId[] compositeIds, Connection c) {
@@ -64,7 +62,6 @@ public class EmployeesRepoImpl implements EmployeesRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public EmployeesRow insert(EmployeesRow unsaved, Connection c) {
@@ -93,7 +90,6 @@ public class EmployeesRepoImpl implements EmployeesRepo {
         .updateReturning(EmployeesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public EmployeesRow insert(EmployeesRowUnsaved unsaved, Connection c) {
@@ -142,14 +138,12 @@ public class EmployeesRepoImpl implements EmployeesRepo {
     ;
     return q.updateReturning(EmployeesRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<EmployeesFields, EmployeesRow> select() {
     return SelectBuilder.of(
-        "\"employees\"", EmployeesFields.structure(), EmployeesRow._rowParser, Dialect.DUCKDB);
+        "\"employees\"", EmployeesFields.structure, EmployeesRow._rowParser, Dialect.DUCKDB);
   }
-  ;
 
   @Override
   public List<EmployeesRow> selectAll(Connection c) {
@@ -161,7 +155,6 @@ public class EmployeesRepoImpl implements EmployeesRepo {
         .query(EmployeesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<EmployeesRow> selectById(EmployeesId compositeId, Connection c) {
@@ -178,7 +171,6 @@ public class EmployeesRepoImpl implements EmployeesRepo {
         .query(EmployeesRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<EmployeesRow> selectByIds(EmployeesId[] compositeIds, Connection c) {
@@ -206,7 +198,6 @@ public class EmployeesRepoImpl implements EmployeesRepo {
         .query(EmployeesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<EmployeesId, EmployeesRow> selectByIdsTracked(
@@ -215,14 +206,12 @@ public class EmployeesRepoImpl implements EmployeesRepo {
     selectByIds(compositeIds, c).forEach(row -> ret.put(row.compositeId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<EmployeesFields, EmployeesRow> update() {
     return UpdateBuilder.of(
-        "\"employees\"", EmployeesFields.structure(), EmployeesRow._rowParser, Dialect.DUCKDB);
+        "\"employees\"", EmployeesFields.structure, EmployeesRow._rowParser, Dialect.DUCKDB);
   }
-  ;
 
   @Override
   public Boolean update(EmployeesRow row, Connection c) {
@@ -248,7 +237,6 @@ public class EmployeesRepoImpl implements EmployeesRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public EmployeesRow upsert(EmployeesRow unsaved, Connection c) {
@@ -284,7 +272,6 @@ public class EmployeesRepoImpl implements EmployeesRepo {
         .updateReturning(EmployeesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<EmployeesRow> upsertBatch(Iterator<EmployeesRow> unsaved, Connection c) {
@@ -305,5 +292,4 @@ public class EmployeesRepoImpl implements EmployeesRepo {
         .updateReturningEach(EmployeesRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

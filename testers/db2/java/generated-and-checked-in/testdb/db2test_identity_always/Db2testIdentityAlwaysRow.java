@@ -9,11 +9,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple2;
 
 /** Table: DB2TEST_IDENTITY_ALWAYS Primary key: ID */
 public record Db2testIdentityAlwaysRow(
     /** Identity ALWAYS */
-    @JsonProperty("ID") Db2testIdentityAlwaysId id, @JsonProperty("NAME") String name) {
+    @JsonProperty("ID") Db2testIdentityAlwaysId id, @JsonProperty("NAME") String name)
+    implements Tuple2<Db2testIdentityAlwaysId, String> {
   /** Identity ALWAYS */
   public Db2testIdentityAlwaysRow withId(Db2testIdentityAlwaysId id) {
     return new Db2testIdentityAlwaysRow(id, name);
@@ -27,10 +29,22 @@ public record Db2testIdentityAlwaysRow(
 
   public static RowParser<Db2testIdentityAlwaysRow> _rowParser =
       RowParsers.of(
-          Db2testIdentityAlwaysId.pgType,
+          Db2testIdentityAlwaysId.dbType,
           Db2Types.varchar,
           Db2testIdentityAlwaysRow::new,
           row -> new Object[] {row.id(), row.name()});
+  ;
+
+  @Override
+  public Db2testIdentityAlwaysId _1() {
+    return id;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return name;
+  }
   ;
 
   public Db2testIdentityAlwaysRowUnsaved toUnsavedRow() {

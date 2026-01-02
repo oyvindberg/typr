@@ -5,13 +5,14 @@
  */
 package testdb.inventory_check
 
-import java.math.BigInteger
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint8
 import java.sql.Connection
 
 trait InventoryCheckSqlRepo {
   def apply(
-    warehouseId: Option[Short],
-    productId: Option[BigInteger],
+    warehouseId: Option[Uint1],
+    productId: Option[Uint8],
     lowStockOnly: Option[Boolean]
   )(using c: Connection): List[InventoryCheckSqlRow]
 }

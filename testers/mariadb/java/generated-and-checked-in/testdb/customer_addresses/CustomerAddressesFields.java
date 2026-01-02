@@ -7,14 +7,16 @@ package testdb.customer_addresses;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr14;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -23,266 +25,294 @@ import testdb.customers.CustomersFields;
 import testdb.customers.CustomersId;
 import testdb.customers.CustomersRow;
 
-public interface CustomerAddressesFields extends FieldsExpr<CustomerAddressesRow> {
-  record Impl(List<Path> _path)
-      implements CustomerAddressesFields,
-          RelationStructure<CustomerAddressesFields, CustomerAddressesRow> {
-    @Override
-    public IdField<CustomerAddressesId, CustomerAddressesRow> addressId() {
-      return new IdField<CustomerAddressesId, CustomerAddressesRow>(
-          _path,
-          "address_id",
-          CustomerAddressesRow::addressId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withAddressId(value),
-          CustomerAddressesId.pgType);
-    }
-    ;
+public class CustomerAddressesFields
+    extends TupleExpr14<
+        CustomerAddressesId,
+        CustomersId,
+        String,
+        Boolean,
+        String,
+        String,
+        String,
+        String,
+        String,
+        String,
+        String,
+        Point,
+        String,
+        LocalDateTime>
+    implements RelationStructure<CustomerAddressesFields, CustomerAddressesRow>,
+        FieldsBase<CustomerAddressesRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<CustomersId, CustomerAddressesRow> customerId() {
-      return new Field<CustomersId, CustomerAddressesRow>(
-          _path,
-          "customer_id",
-          CustomerAddressesRow::customerId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerId(value),
-          CustomersId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<String, CustomerAddressesRow> addressType() {
-      return new Field<String, CustomerAddressesRow>(
-          _path,
-          "address_type",
-          CustomerAddressesRow::addressType,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withAddressType(value),
-          MariaTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<Boolean, CustomerAddressesRow> isDefault() {
-      return new Field<Boolean, CustomerAddressesRow>(
-          _path,
-          "is_default",
-          CustomerAddressesRow::isDefault,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withIsDefault(value),
-          MariaTypes.bool);
-    }
-    ;
-
-    @Override
-    public Field<String, CustomerAddressesRow> recipientName() {
-      return new Field<String, CustomerAddressesRow>(
-          _path,
-          "recipient_name",
-          CustomerAddressesRow::recipientName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withRecipientName(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, CustomerAddressesRow> streetLine1() {
-      return new Field<String, CustomerAddressesRow>(
-          _path,
-          "street_line1",
-          CustomerAddressesRow::streetLine1,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withStreetLine1(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, CustomerAddressesRow> streetLine2() {
-      return new OptField<String, CustomerAddressesRow>(
-          _path,
-          "street_line2",
-          CustomerAddressesRow::streetLine2,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withStreetLine2(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, CustomerAddressesRow> city() {
-      return new Field<String, CustomerAddressesRow>(
-          _path,
-          "city",
-          CustomerAddressesRow::city,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCity(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, CustomerAddressesRow> stateProvince() {
-      return new OptField<String, CustomerAddressesRow>(
-          _path,
-          "state_province",
-          CustomerAddressesRow::stateProvince,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withStateProvince(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, CustomerAddressesRow> postalCode() {
-      return new Field<String, CustomerAddressesRow>(
-          _path,
-          "postal_code",
-          CustomerAddressesRow::postalCode,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPostalCode(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, CustomerAddressesRow> countryCode() {
-      return new Field<String, CustomerAddressesRow>(
-          _path,
-          "country_code",
-          CustomerAddressesRow::countryCode,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCountryCode(value),
-          MariaTypes.char_);
-    }
-    ;
-
-    @Override
-    public OptField<Point, CustomerAddressesRow> location() {
-      return new OptField<Point, CustomerAddressesRow>(
-          _path,
-          "location",
-          CustomerAddressesRow::location,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withLocation(value),
-          MariaTypes.point);
-    }
-    ;
-
-    @Override
-    public OptField<String, CustomerAddressesRow> deliveryNotes() {
-      return new OptField<String, CustomerAddressesRow>(
-          _path,
-          "delivery_notes",
-          CustomerAddressesRow::deliveryNotes,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDeliveryNotes(value),
-          MariaTypes.tinytext);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, CustomerAddressesRow> createdAt() {
-      return new Field<LocalDateTime, CustomerAddressesRow>(
-          _path,
-          "created_at",
-          CustomerAddressesRow::createdAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCreatedAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, CustomerAddressesRow>> columns() {
-      return java.util.List.of(
-          this.addressId(),
-          this.customerId(),
-          this.addressType(),
-          this.isDefault(),
-          this.recipientName(),
-          this.streetLine1(),
-          this.streetLine2(),
-          this.city(),
-          this.stateProvince(),
-          this.postalCode(),
-          this.countryCode(),
-          this.location(),
-          this.deliveryNotes(),
-          this.createdAt());
-    }
-    ;
-
-    @Override
-    public RelationStructure<CustomerAddressesFields, CustomerAddressesRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public CustomerAddressesFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static CustomerAddressesFields structure =
+      new CustomerAddressesFields(java.util.Collections.emptyList());
+
+  public IdField<CustomerAddressesId, CustomerAddressesRow> addressId() {
+    return new IdField<CustomerAddressesId, CustomerAddressesRow>(
+        _path,
+        "address_id",
+        CustomerAddressesRow::addressId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withAddressId(value),
+        CustomerAddressesId.dbType);
   }
-  ;
 
-  IdField<CustomerAddressesId, CustomerAddressesRow> addressId();
+  public Field<CustomersId, CustomerAddressesRow> customerId() {
+    return new Field<CustomersId, CustomerAddressesRow>(
+        _path,
+        "customer_id",
+        CustomerAddressesRow::customerId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerId(value),
+        CustomersId.dbType);
+  }
 
-  Field<CustomersId, CustomerAddressesRow> customerId();
+  public Field<String, CustomerAddressesRow> addressType() {
+    return new Field<String, CustomerAddressesRow>(
+        _path,
+        "address_type",
+        CustomerAddressesRow::addressType,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withAddressType(value),
+        MariaTypes.text);
+  }
 
-  Field<String, CustomerAddressesRow> addressType();
+  public Field<Boolean, CustomerAddressesRow> isDefault() {
+    return new Field<Boolean, CustomerAddressesRow>(
+        _path,
+        "is_default",
+        CustomerAddressesRow::isDefault,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withIsDefault(value),
+        MariaTypes.bool);
+  }
 
-  Field<Boolean, CustomerAddressesRow> isDefault();
+  public Field<String, CustomerAddressesRow> recipientName() {
+    return new Field<String, CustomerAddressesRow>(
+        _path,
+        "recipient_name",
+        CustomerAddressesRow::recipientName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withRecipientName(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, CustomerAddressesRow> recipientName();
+  public Field<String, CustomerAddressesRow> streetLine1() {
+    return new Field<String, CustomerAddressesRow>(
+        _path,
+        "street_line1",
+        CustomerAddressesRow::streetLine1,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withStreetLine1(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, CustomerAddressesRow> streetLine1();
+  public OptField<String, CustomerAddressesRow> streetLine2() {
+    return new OptField<String, CustomerAddressesRow>(
+        _path,
+        "street_line2",
+        CustomerAddressesRow::streetLine2,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withStreetLine2(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, CustomerAddressesRow> streetLine2();
+  public Field<String, CustomerAddressesRow> city() {
+    return new Field<String, CustomerAddressesRow>(
+        _path,
+        "city",
+        CustomerAddressesRow::city,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCity(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, CustomerAddressesRow> city();
+  public OptField<String, CustomerAddressesRow> stateProvince() {
+    return new OptField<String, CustomerAddressesRow>(
+        _path,
+        "state_province",
+        CustomerAddressesRow::stateProvince,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withStateProvince(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, CustomerAddressesRow> stateProvince();
+  public Field<String, CustomerAddressesRow> postalCode() {
+    return new Field<String, CustomerAddressesRow>(
+        _path,
+        "postal_code",
+        CustomerAddressesRow::postalCode,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPostalCode(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, CustomerAddressesRow> postalCode();
+  public Field<String, CustomerAddressesRow> countryCode() {
+    return new Field<String, CustomerAddressesRow>(
+        _path,
+        "country_code",
+        CustomerAddressesRow::countryCode,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCountryCode(value),
+        MariaTypes.char_);
+  }
 
-  Field<String, CustomerAddressesRow> countryCode();
+  public OptField<Point, CustomerAddressesRow> location() {
+    return new OptField<Point, CustomerAddressesRow>(
+        _path,
+        "location",
+        CustomerAddressesRow::location,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withLocation(value),
+        MariaTypes.point);
+  }
 
-  OptField<Point, CustomerAddressesRow> location();
+  public OptField<String, CustomerAddressesRow> deliveryNotes() {
+    return new OptField<String, CustomerAddressesRow>(
+        _path,
+        "delivery_notes",
+        CustomerAddressesRow::deliveryNotes,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDeliveryNotes(value),
+        MariaTypes.tinytext);
+  }
 
-  OptField<String, CustomerAddressesRow> deliveryNotes();
+  public Field<LocalDateTime, CustomerAddressesRow> createdAt() {
+    return new Field<LocalDateTime, CustomerAddressesRow>(
+        _path,
+        "created_at",
+        CustomerAddressesRow::createdAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCreatedAt(value),
+        MariaTypes.datetime);
+  }
 
-  Field<LocalDateTime, CustomerAddressesRow> createdAt();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<CustomersFields, CustomersRow> fkCustomers() {
+  public ForeignKey<CustomersFields, CustomersRow> fkCustomers() {
     return ForeignKey.<CustomersFields, CustomersRow>of("fk_address_customer")
         .<CustomersId>withColumnPair(customerId(), CustomersFields::customerId);
   }
-  ;
 
   @Override
-  List<FieldLike<?, CustomerAddressesRow>> columns();
+  public List<FieldLike<?, CustomerAddressesRow>> columns() {
+    return java.util.List.of(
+        this.addressId(),
+        this.customerId(),
+        this.addressType(),
+        this.isDefault(),
+        this.recipientName(),
+        this.streetLine1(),
+        this.streetLine2(),
+        this.city(),
+        this.stateProvince(),
+        this.postalCode(),
+        this.countryCode(),
+        this.location(),
+        this.deliveryNotes(),
+        this.createdAt());
+  }
 
   @Override
-  default RowParser<CustomerAddressesRow> rowParser() {
+  public RowParser<CustomerAddressesRow> rowParser() {
     return CustomerAddressesRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<CustomerAddressesFields, CustomerAddressesRow> withPaths(
+      List<Path> _path) {
+    return new CustomerAddressesFields(_path);
+  }
+
+  @Override
+  public SqlExpr<CustomerAddressesId> _1() {
+    return addressId();
+  }
+
+  @Override
+  public SqlExpr<CustomersId> _2() {
+    return customerId();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return addressType();
+  }
+
+  @Override
+  public SqlExpr<Boolean> _4() {
+    return isDefault();
+  }
+
+  @Override
+  public SqlExpr<String> _5() {
+    return recipientName();
+  }
+
+  @Override
+  public SqlExpr<String> _6() {
+    return streetLine1();
+  }
+
+  @Override
+  public SqlExpr<String> _7() {
+    return streetLine2();
+  }
+
+  @Override
+  public SqlExpr<String> _8() {
+    return city();
+  }
+
+  @Override
+  public SqlExpr<String> _9() {
+    return stateProvince();
+  }
+
+  @Override
+  public SqlExpr<String> _10() {
+    return postalCode();
+  }
+
+  @Override
+  public SqlExpr<String> _11() {
+    return countryCode();
+  }
+
+  @Override
+  public SqlExpr<Point> _12() {
+    return location();
+  }
+
+  @Override
+  public SqlExpr<String> _13() {
+    return deliveryNotes();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _14() {
+    return createdAt();
+  }
 }

@@ -8,11 +8,12 @@ package testdb.price_tiers;
 import com.fasterxml.jackson.annotation.JsonValue;
 import dev.typr.foundations.MariaType;
 import dev.typr.foundations.MariaTypes;
+import dev.typr.foundations.data.Uint1;
 import dev.typr.foundations.dsl.Bijection;
 
 /** Type for the primary key of table `price_tiers` */
-public record PriceTiersId(@JsonValue Short value) {
-  public PriceTiersId withValue(Short value) {
+public record PriceTiersId(@JsonValue Uint1 value) {
+  public PriceTiersId withValue(Uint1 value) {
     return new PriceTiersId(value);
   }
   ;
@@ -23,9 +24,9 @@ public record PriceTiersId(@JsonValue Short value) {
   }
   ;
 
-  public static Bijection<PriceTiersId, Short> bijection =
+  public static Bijection<PriceTiersId, Uint1> bijection =
       Bijection.of(PriceTiersId::value, PriceTiersId::new);
 
-  public static MariaType<PriceTiersId> pgType =
+  public static MariaType<PriceTiersId> dbType =
       MariaTypes.tinyintUnsigned.bimap(PriceTiersId::new, PriceTiersId::value);
 }

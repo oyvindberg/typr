@@ -19,10 +19,10 @@ data class Name(@JsonValue val value: String) {
     val bijection: Bijection<Name, String> =
       Bijection.of(Name::value, ::Name)
 
-    val pgType: PgType<Name> =
+    val dbType: PgType<Name> =
       PgTypes.text.bimap(::Name, Name::value).renamed("\"public\".\"Name\"")
 
-    val pgTypeArray: PgType<Array<Name>> =
+    val dbTypeArray: PgType<Array<Name>> =
       PgTypes.textArray.bimap({ xs -> arrayMap.map(xs, ::Name, Name::class.java) }, { xs -> arrayMap.map(xs, Name::value, String::class.java) }).renamed("\"public\".\"Name\"[]")
   }
 }

@@ -14,6 +14,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple13;
 import dev.typr.foundations.data.Xml;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -69,7 +70,21 @@ public record PersonRow(
     /** Default: uuid_generate_v1() */
     UUID rowguid,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple13<
+        BusinessentityId,
+        String,
+        NameStyle,
+        Optional</* max 8 chars */ String>, /* user-picked */
+        FirstName,
+        Optional<Name>,
+        Name,
+        Optional</* max 10 chars */ String>,
+        Integer,
+        Optional<Xml>,
+        Optional<Xml>,
+        UUID,
+        LocalDateTime> {
   /**
    * Primary key for Person records. Points to {@link
    * adventureworks.person.businessentity.BusinessentityRow#businessentityid()}
@@ -339,13 +354,13 @@ public record PersonRow(
 
   public static RowParser<PersonRow> _rowParser =
       RowParsers.of(
-          BusinessentityId.pgType,
+          BusinessentityId.dbType,
           PgTypes.bpchar,
-          NameStyle.pgType,
+          NameStyle.dbType,
           PgTypes.text.opt(),
-          FirstName.pgType,
-          Name.pgType.opt(),
-          Name.pgType,
+          FirstName.dbType,
+          Name.dbType.opt(),
+          Name.dbType,
           PgTypes.text.opt(),
           PgTypes.int4,
           PgTypes.xml.opt(),
@@ -372,6 +387,84 @@ public record PersonRow(
   ;
 
   public static PgText<PersonRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public BusinessentityId _1() {
+    return businessentityid;
+  }
+  ;
+
+  @Override
+  public Optional<Xml> _10() {
+    return additionalcontactinfo;
+  }
+  ;
+
+  @Override
+  public Optional<Xml> _11() {
+    return demographics;
+  }
+  ;
+
+  @Override
+  public UUID _12() {
+    return rowguid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _13() {
+    return modifieddate;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return persontype;
+  }
+  ;
+
+  @Override
+  public NameStyle _3() {
+    return namestyle;
+  }
+  ;
+
+  @Override
+  public Optional</* max 8 chars */ String> _4() {
+    return title;
+  }
+  ;
+
+  @Override
+  public /* user-picked */ FirstName _5() {
+    return firstname;
+  }
+  ;
+
+  @Override
+  public Optional<Name> _6() {
+    return middlename;
+  }
+  ;
+
+  @Override
+  public Name _7() {
+    return lastname;
+  }
+  ;
+
+  @Override
+  public Optional</* max 10 chars */ String> _8() {
+    return suffix;
+  }
+  ;
+
+  @Override
+  public Integer _9() {
+    return emailpromotion;
+  }
+  ;
 
   public BusinessentityId id() {
     return businessentityid;

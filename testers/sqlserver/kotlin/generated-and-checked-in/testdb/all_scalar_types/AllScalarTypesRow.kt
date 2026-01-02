@@ -9,6 +9,11 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.microsoft.sqlserver.jdbc.Geography
 import com.microsoft.sqlserver.jdbc.Geometry
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.Tuple.Tuple38
+import dev.typr.foundations.data.HierarchyId
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Xml
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -27,7 +32,7 @@ import testdb.customtypes.Defaulted
 data class AllScalarTypesRow(
   /** IDENTITY(1, 1) */
   val id: AllScalarTypesId,
-  @JsonProperty("col_tinyint") val colTinyint: Short?,
+  @JsonProperty("col_tinyint") val colTinyint: Uint1?,
   @JsonProperty("col_smallint") val colSmallint: Short?,
   @JsonProperty("col_int") val colInt: Int?,
   @JsonProperty("col_bigint") val colBigint: Long?,
@@ -57,19 +62,95 @@ data class AllScalarTypesRow(
   @JsonProperty("col_datetime2") val colDatetime2: LocalDateTime?,
   @JsonProperty("col_datetimeoffset") val colDatetimeoffset: OffsetDateTime?,
   @JsonProperty("col_uniqueidentifier") val colUniqueidentifier: UUID?,
-  @JsonProperty("col_xml") val colXml: /* XML */ String?,
-  @JsonProperty("col_json") val colJson: String?,
+  @JsonProperty("col_xml") val colXml: Xml?,
+  @JsonProperty("col_json") val colJson: Json?,
   /** ROWVERSION */
   @JsonProperty("col_rowversion") val colRowversion: ByteArray,
-  @JsonProperty("col_hierarchyid") val colHierarchyid: /* HIERARCHYID */ String?,
+  @JsonProperty("col_hierarchyid") val colHierarchyid: HierarchyId?,
   @JsonProperty("col_geography") val colGeography: Geography?,
   @JsonProperty("col_geometry") val colGeometry: Geometry?,
   /** Default: ('default_value') */
   @JsonProperty("col_not_null") val colNotNull: String
-) {
-  fun toUnsavedRow(colNotNull: Defaulted<String>): AllScalarTypesRowUnsaved = AllScalarTypesRowUnsaved(colTinyint, colSmallint, colInt, colBigint, colDecimal, colNumeric, colMoney, colSmallmoney, colReal, colFloat, colBit, colChar, colVarchar, colVarcharMax, colText, colNchar, colNvarchar, colNvarcharMax, colNtext, colBinary, colVarbinary, colVarbinaryMax, colImage, colDate, colTime, colDatetime, colSmalldatetime, colDatetime2, colDatetimeoffset, colUniqueidentifier, colXml, colJson, colHierarchyid, colGeography, colGeometry, colNotNull)
+) : Tuple38<AllScalarTypesId, Uint1?, Short?, Int?, Long?, BigDecimal?, BigDecimal?, BigDecimal?, BigDecimal?, Float?, Double?, Boolean?, String?, String?, String?, String?, String?, String?, String?, String?, ByteArray?, ByteArray?, ByteArray?, ByteArray?, LocalDate?, LocalTime?, LocalDateTime?, LocalDateTime?, LocalDateTime?, OffsetDateTime?, UUID?, Xml?, Json?, ByteArray, HierarchyId?, Geography?, Geometry?, String> {
+  override fun _1(): AllScalarTypesId = id
+
+  override fun _10(): Float? = colReal
+
+  override fun _11(): Double? = colFloat
+
+  override fun _12(): Boolean? = colBit
+
+  override fun _13(): String? = colChar
+
+  override fun _14(): String? = colVarchar
+
+  override fun _15(): String? = colVarcharMax
+
+  override fun _16(): String? = colText
+
+  override fun _17(): String? = colNchar
+
+  override fun _18(): String? = colNvarchar
+
+  override fun _19(): String? = colNvarcharMax
+
+  override fun _2(): Uint1? = colTinyint
+
+  override fun _20(): String? = colNtext
+
+  override fun _21(): ByteArray? = colBinary
+
+  override fun _22(): ByteArray? = colVarbinary
+
+  override fun _23(): ByteArray? = colVarbinaryMax
+
+  override fun _24(): ByteArray? = colImage
+
+  override fun _25(): LocalDate? = colDate
+
+  override fun _26(): LocalTime? = colTime
+
+  override fun _27(): LocalDateTime? = colDatetime
+
+  override fun _28(): LocalDateTime? = colSmalldatetime
+
+  override fun _29(): LocalDateTime? = colDatetime2
+
+  override fun _3(): Short? = colSmallint
+
+  override fun _30(): OffsetDateTime? = colDatetimeoffset
+
+  override fun _31(): UUID? = colUniqueidentifier
+
+  override fun _32(): Xml? = colXml
+
+  override fun _33(): Json? = colJson
+
+  override fun _34(): ByteArray = colRowversion
+
+  override fun _35(): HierarchyId? = colHierarchyid
+
+  override fun _36(): Geography? = colGeography
+
+  override fun _37(): Geometry? = colGeometry
+
+  override fun _38(): String = colNotNull
+
+  override fun _4(): Int? = colInt
+
+  override fun _5(): Long? = colBigint
+
+  override fun _6(): BigDecimal? = colDecimal
+
+  override fun _7(): BigDecimal? = colNumeric
+
+  override fun _8(): BigDecimal? = colMoney
+
+  override fun _9(): BigDecimal? = colSmallmoney
+
+  fun toUnsavedRow(colNotNull: Defaulted<String> = Defaulted.Provided(this.colNotNull)): AllScalarTypesRowUnsaved = AllScalarTypesRowUnsaved(colTinyint, colSmallint, colInt, colBigint, colDecimal, colNumeric, colMoney, colSmallmoney, colReal, colFloat, colBit, colChar, colVarchar, colVarcharMax, colText, colNchar, colNvarchar, colNvarcharMax, colNtext, colBinary, colVarbinary, colVarbinaryMax, colImage, colDate, colTime, colDatetime, colSmalldatetime, colDatetime2, colDatetimeoffset, colUniqueidentifier, colXml, colJson, colHierarchyid, colGeography, colGeometry, colNotNull)
 
   companion object {
-    val _rowParser: RowParser<AllScalarTypesRow> = RowParsers.of(AllScalarTypesId.sqlServerType, KotlinDbTypes.SqlServerTypes.tinyint.nullable(), KotlinDbTypes.SqlServerTypes.smallint.nullable(), KotlinDbTypes.SqlServerTypes.int_.nullable(), KotlinDbTypes.SqlServerTypes.bigint.nullable(), KotlinDbTypes.SqlServerTypes.decimal.nullable(), KotlinDbTypes.SqlServerTypes.decimal.nullable(), KotlinDbTypes.SqlServerTypes.money.nullable(), KotlinDbTypes.SqlServerTypes.smallmoney.nullable(), KotlinDbTypes.SqlServerTypes.real.nullable(), KotlinDbTypes.SqlServerTypes.float_.nullable(), KotlinDbTypes.SqlServerTypes.bit.nullable(), SqlServerTypes.char_.nullable(), SqlServerTypes.varchar.nullable(), SqlServerTypes.varchar.nullable(), SqlServerTypes.text.nullable(), SqlServerTypes.nchar.nullable(), SqlServerTypes.nvarchar.nullable(), SqlServerTypes.nvarchar.nullable(), SqlServerTypes.ntext.nullable(), SqlServerTypes.binary.nullable(), SqlServerTypes.varbinary.nullable(), SqlServerTypes.varbinary.nullable(), SqlServerTypes.image.nullable(), SqlServerTypes.date.nullable(), SqlServerTypes.time.nullable(), SqlServerTypes.datetime.nullable(), SqlServerTypes.smalldatetime.nullable(), SqlServerTypes.datetime2.nullable(), SqlServerTypes.datetimeoffset.nullable(), SqlServerTypes.uniqueidentifier.nullable(), SqlServerTypes.xml.nullable(), SqlServerTypes.nvarchar.nullable(), SqlServerTypes.rowversion, SqlServerTypes.hierarchyid.nullable(), SqlServerTypes.geography.nullable(), SqlServerTypes.geometry.nullable(), SqlServerTypes.nvarchar, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33, t34, t35, t36, t37 -> AllScalarTypesRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33, t34, t35, t36, t37) }, { row -> arrayOf<Any?>(row.id, row.colTinyint, row.colSmallint, row.colInt, row.colBigint, row.colDecimal, row.colNumeric, row.colMoney, row.colSmallmoney, row.colReal, row.colFloat, row.colBit, row.colChar, row.colVarchar, row.colVarcharMax, row.colText, row.colNchar, row.colNvarchar, row.colNvarcharMax, row.colNtext, row.colBinary, row.colVarbinary, row.colVarbinaryMax, row.colImage, row.colDate, row.colTime, row.colDatetime, row.colSmalldatetime, row.colDatetime2, row.colDatetimeoffset, row.colUniqueidentifier, row.colXml, row.colJson, row.colRowversion, row.colHierarchyid, row.colGeography, row.colGeometry, row.colNotNull) })
+    val _rowParser: RowParser<AllScalarTypesRow> = RowParsers.of(AllScalarTypesId.sqlServerType, SqlServerTypes.tinyint.nullable(), KotlinDbTypes.SqlServerTypes.smallint.nullable(), KotlinDbTypes.SqlServerTypes.int_.nullable(), KotlinDbTypes.SqlServerTypes.bigint.nullable(), KotlinDbTypes.SqlServerTypes.decimal.nullable(), KotlinDbTypes.SqlServerTypes.decimal.nullable(), KotlinDbTypes.SqlServerTypes.money.nullable(), KotlinDbTypes.SqlServerTypes.smallmoney.nullable(), KotlinDbTypes.SqlServerTypes.real.nullable(), KotlinDbTypes.SqlServerTypes.float_.nullable(), KotlinDbTypes.SqlServerTypes.bit.nullable(), SqlServerTypes.char_.nullable(), SqlServerTypes.varchar.nullable(), SqlServerTypes.varchar.nullable(), SqlServerTypes.text.nullable(), SqlServerTypes.nchar.nullable(), SqlServerTypes.nvarchar.nullable(), SqlServerTypes.nvarchar.nullable(), SqlServerTypes.ntext.nullable(), SqlServerTypes.binary.nullable(), SqlServerTypes.varbinary.nullable(), SqlServerTypes.varbinary.nullable(), SqlServerTypes.image.nullable(), SqlServerTypes.date.nullable(), SqlServerTypes.time.nullable(), SqlServerTypes.datetime.nullable(), SqlServerTypes.smalldatetime.nullable(), SqlServerTypes.datetime2.nullable(), SqlServerTypes.datetimeoffset.nullable(), SqlServerTypes.uniqueidentifier.nullable(), SqlServerTypes.xml.nullable(), SqlServerTypes.json.nullable(), SqlServerTypes.rowversion, SqlServerTypes.hierarchyid.nullable(), SqlServerTypes.geography.nullable(), SqlServerTypes.geometry.nullable(), SqlServerTypes.nvarchar, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33, t34, t35, t36, t37 -> AllScalarTypesRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33, t34, t35, t36, t37) }, { row -> arrayOf<Any?>(row.id, row.colTinyint, row.colSmallint, row.colInt, row.colBigint, row.colDecimal, row.colNumeric, row.colMoney, row.colSmallmoney, row.colReal, row.colFloat, row.colBit, row.colChar, row.colVarchar, row.colVarcharMax, row.colText, row.colNchar, row.colNvarchar, row.colNvarcharMax, row.colNtext, row.colBinary, row.colVarbinary, row.colVarbinaryMax, row.colImage, row.colDate, row.colTime, row.colDatetime, row.colSmalldatetime, row.colDatetime2, row.colDatetimeoffset, row.colUniqueidentifier, row.colXml, row.colJson, row.colRowversion, row.colHierarchyid, row.colGeography, row.colGeometry, row.colNotNull) })
   }
 }

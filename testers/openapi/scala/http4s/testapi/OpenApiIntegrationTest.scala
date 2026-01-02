@@ -5,7 +5,6 @@ import cats.effect.unsafe.implicits.global
 import com.comcast.ip4s._
 import io.circe.Json
 import org.http4s.Uri
-import org.http4s.client.Client
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits._
@@ -13,10 +12,7 @@ import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 import testapi.api._
 import testapi.model._
-import org.http4s.circe.CirceEntityDecoder.circeEntityDecoder
-import org.http4s.circe.CirceEntityEncoder.circeEntityEncoder
 
-import java.lang.Void
 import java.time.OffsetDateTime
 
 /** Integration tests for the OpenAPI generated Scala HTTP4s server and client code.
@@ -61,7 +57,7 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
     }
 
     override def deletePet(petId: PetId): IO[Unit] = {
-      pets.remove(petId)
+      val _ = pets.remove(petId)
       IO.unit
     }
 
@@ -95,7 +91,7 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
 
   // Shared server and client - started once for all tests
   private val serverImpl = new TestPetsApiServer
-  private lazy val (httpClient, cleanup) = {
+  private lazy val (httpClient, _) = {
     val resources = for {
       client <- EmberClientBuilder.default[IO].build
       srv <- EmberServerBuilder
@@ -121,8 +117,8 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
       .getPet(PetId("pet-123"))
       .map { response =>
         val ok = response.asInstanceOf[Ok[Pet]]
-        ok.value.name shouldBe "Fluffy"
-        ok.value.id shouldBe PetId("pet-123")
+        val _ = ok.value.name shouldBe "Fluffy"
+        val _ = ok.value.id shouldBe PetId("pet-123")
         ok.value.status shouldBe PetStatus.available
       }
       .unsafeRunSync()
@@ -152,8 +148,8 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
       .createPet(newPet)
       .map { response =>
         val created = response.asInstanceOf[Created[Pet]]
-        created.value.name shouldBe "Buddy"
-        created.value.status shouldBe PetStatus.pending
+        val _ = created.value.name shouldBe "Buddy"
+        val _ = created.value.status shouldBe PetStatus.pending
         created.value.tags shouldBe Some(List("playful"))
       }
       .unsafeRunSync()
@@ -172,7 +168,7 @@ class OpenApiIntegrationTest extends AnyFunSuite with Matchers {
     httpClient
       .listPets(None, None)
       .map { pets =>
-        pets should not be empty
+        val _ = pets should not be empty
         pets.exists(_.name == "Fluffy") shouldBe true
       }
       .unsafeRunSync()

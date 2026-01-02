@@ -6,6 +6,7 @@
 package testdb.customers
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.MariaSet
 import java.time.LocalDateTime
 import testdb.customer_status.CustomerStatusId
@@ -37,7 +38,7 @@ case class CustomersRowUnsaved(
   /** Default: NULL
 
    */
-  preferences: Defaulted[Option[String]] = new UseDefault(),
+  preferences: Defaulted[Option[Json]] = new UseDefault(),
   /** Default: NULL
 
    */
@@ -63,7 +64,7 @@ case class CustomersRowUnsaved(
     phoneDefault: => Option[String],
     statusDefault: => CustomerStatusId,
     tierDefault: => String,
-    preferencesDefault: => Option[String],
+    preferencesDefault: => Option[Json],
     marketingFlagsDefault: => Option[MariaSet],
     notesDefault: => Option[String],
     createdAtDefault: => LocalDateTime,

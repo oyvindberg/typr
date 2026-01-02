@@ -7,11 +7,12 @@ package testdb.order_items_bulk_insert;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.util.List;
 import testdb.orders.OrdersId;
 import testdb.products.ProductsId;
 
 public interface OrderItemsBulkInsertSqlRepo {
-  Integer apply(
+  List<OrderItemsBulkInsertSqlRow> apply(
       /* user-picked */ OrdersId orderId,
       /* user-picked */ ProductsId productId,
       Integer quantity,

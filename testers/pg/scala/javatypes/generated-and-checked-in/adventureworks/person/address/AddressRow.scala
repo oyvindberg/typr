@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple9
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
@@ -42,7 +43,7 @@ case class AddressRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple9[AddressId, String, Optional[/* max 60 chars */ String], String, StateprovinceId, String, Optional[Array[scala.Byte]], UUID, LocalDateTime] {
   def id: AddressId = addressid
 
   def toUnsavedRow(
@@ -62,10 +63,28 @@ case class AddressRow(
       modifieddate
     )
   }
+
+  override def `_1`: AddressId = addressid
+
+  override def `_2`: String = addressline1
+
+  override def `_3`: Optional[/* max 60 chars */ String] = addressline2
+
+  override def `_4`: String = city
+
+  override def `_5`: StateprovinceId = stateprovinceid
+
+  override def `_6`: String = postalcode
+
+  override def `_7`: Optional[Array[scala.Byte]] = spatiallocation
+
+  override def `_8`: UUID = rowguid
+
+  override def `_9`: LocalDateTime = modifieddate
 }
 
 object AddressRow {
-  val `_rowParser`: RowParser[AddressRow] = RowParsers.of(AddressId.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.text, StateprovinceId.pgType, PgTypes.text, PgTypes.bytea.opt(), PgTypes.uuid, PgTypes.timestamp, AddressRow.apply, row => Array[Any](row.addressid, row.addressline1, row.addressline2, row.city, row.stateprovinceid, row.postalcode, row.spatiallocation, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[AddressRow] = RowParsers.of(AddressId.dbType, PgTypes.text, PgTypes.text.opt(), PgTypes.text, StateprovinceId.dbType, PgTypes.text, PgTypes.bytea.opt(), PgTypes.uuid, PgTypes.timestamp, AddressRow.apply, row => Array[Any](row.addressid, row.addressline1, row.addressline2, row.city, row.stateprovinceid, row.postalcode, row.spatiallocation, row.rowguid, row.modifieddate))
 
   given pgText: PgText[AddressRow] = PgText.from(`_rowParser`)
 }

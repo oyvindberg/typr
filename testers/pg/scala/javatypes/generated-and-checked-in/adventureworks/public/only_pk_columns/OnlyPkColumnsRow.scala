@@ -10,6 +10,7 @@ import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple2
 
 /** Table: public.only_pk_columns
  * Composite primary key: key_column_1, key_column_2
@@ -17,10 +18,14 @@ import dev.typr.foundations.RowParsers
 case class OnlyPkColumnsRow(
   @JsonProperty("key_column_1") keyColumn1: String,
   @JsonProperty("key_column_2") keyColumn2: Integer
-) {
+) extends Tuple2[String, Integer] {
   def compositeId: OnlyPkColumnsId = new OnlyPkColumnsId(keyColumn1, keyColumn2)
 
   def id: OnlyPkColumnsId = this.compositeId
+
+  override def `_1`: String = keyColumn1
+
+  override def `_2`: Integer = keyColumn2
 }
 
 object OnlyPkColumnsRow {

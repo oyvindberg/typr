@@ -7,6 +7,7 @@ package oracledb.customer_products
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
+import dev.typr.foundations.Tuple.Tuple6
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -23,7 +24,19 @@ data class CustomerProductsViewRow(
   @JsonProperty("PRODUCT_ID") val productId: BigDecimal,
   @JsonProperty("PRODUCT_NAME") val productName: String,
   @JsonProperty("PRICE") val price: MoneyT?
-) {
+) : Tuple6<BigDecimal, String, AddressT?, BigDecimal, String, MoneyT?> {
+  override fun _1(): BigDecimal = customerId
+
+  override fun _2(): String = customerName
+
+  override fun _3(): AddressT? = billingAddress
+
+  override fun _4(): BigDecimal = productId
+
+  override fun _5(): String = productName
+
+  override fun _6(): MoneyT? = price
+
   companion object {
     val _rowParser: RowParser<CustomerProductsViewRow> = RowParsers.of(KotlinDbTypes.OracleTypes.number, OracleTypes.varchar2, AddressT.oracleType.nullable(), KotlinDbTypes.OracleTypes.number, OracleTypes.varchar2, MoneyT.oracleType.nullable(), { t0, t1, t2, t3, t4, t5 -> CustomerProductsViewRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.customerId, row.customerName, row.billingAddress, row.productId, row.productName, row.price) })
   }

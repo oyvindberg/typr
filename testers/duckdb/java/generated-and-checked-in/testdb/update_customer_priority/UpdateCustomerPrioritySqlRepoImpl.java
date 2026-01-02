@@ -9,12 +9,13 @@ import static dev.typr.foundations.Fragment.interpolate;
 
 import dev.typr.foundations.Fragment;
 import java.sql.Connection;
+import java.util.List;
 import testdb.Priority;
 import testdb.customers.CustomersId;
 
 public class UpdateCustomerPrioritySqlRepoImpl implements UpdateCustomerPrioritySqlRepo {
   @Override
-  public Integer apply(
+  public List<UpdateCustomerPrioritySqlRow> apply(
       /* user-picked */ Priority newPriority,
       /* user-picked */ CustomersId customerId,
       Connection c) {
@@ -35,8 +36,7 @@ public class UpdateCustomerPrioritySqlRepoImpl implements UpdateCustomerPriority
                     + "    email,\n"
                     + "    created_at,\n"
                     + "    priority"))
-        .update()
+        .query(UpdateCustomerPrioritySqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

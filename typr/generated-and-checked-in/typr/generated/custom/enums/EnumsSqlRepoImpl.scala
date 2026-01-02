@@ -11,7 +11,7 @@ import java.sql.Connection
 import anorm.SqlStringInterpolation
 
 class EnumsSqlRepoImpl extends EnumsSqlRepo {
-  override def apply(implicit c: Connection): List[EnumsSqlRow] = {
+  override def apply(using c: Connection): List[EnumsSqlRow] = {
     val sql =
       SQL"""select n.nspname as "enum_schema?",
              t.typname as enum_name,

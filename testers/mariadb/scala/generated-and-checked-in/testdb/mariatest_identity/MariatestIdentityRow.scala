@@ -6,6 +6,7 @@
 package testdb.mariatest_identity
 
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 
@@ -19,10 +20,14 @@ case class MariatestIdentityRow(
   id: MariatestIdentityId,
   /**  */
   name: String
-) {
+) extends Tuple2[MariatestIdentityId, String] {
   def toUnsavedRow: MariatestIdentityRowUnsaved = new MariatestIdentityRowUnsaved(name)
+
+  override def `_1`: MariatestIdentityId = id
+
+  override def `_2`: String = name
 }
 
 object MariatestIdentityRow {
-  val `_rowParser`: RowParser[MariatestIdentityRow] = RowParsers.of(MariatestIdentityId.pgType, MariaTypes.varchar)(MariatestIdentityRow.apply)(row => Array[Any](row.id, row.name))
+  val `_rowParser`: RowParser[MariatestIdentityRow] = RowParsers.of(MariatestIdentityId.dbType, MariaTypes.varchar)(MariatestIdentityRow.apply)(row => Array[Any](row.id, row.name))
 }

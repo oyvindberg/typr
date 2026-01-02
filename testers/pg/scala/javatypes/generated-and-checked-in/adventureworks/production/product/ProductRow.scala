@@ -16,6 +16,7 @@ import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
 import dev.typr.foundations.RowParsers.Function25
+import dev.typr.foundations.Tuple.Tuple25
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
@@ -111,7 +112,7 @@ case class ProductRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple25[ProductId, Name, String, Flag, Flag, Optional[/* max 15 chars */ String], java.lang.Short, java.lang.Short, java.math.BigDecimal, java.math.BigDecimal, Optional[/* max 5 chars */ String], Optional[UnitmeasureId], Optional[UnitmeasureId], Optional[java.math.BigDecimal], Integer, Optional[/* bpchar, max 2 chars */ String], Optional[/* bpchar, max 2 chars */ String], Optional[/* bpchar, max 2 chars */ String], Optional[ProductsubcategoryId], Optional[ProductmodelId], LocalDateTime, Optional[LocalDateTime], Optional[LocalDateTime], UUID, LocalDateTime] {
   def id: ProductId = productid
 
   def toUnsavedRow(
@@ -149,11 +150,61 @@ case class ProductRow(
       modifieddate
     )
   }
+
+  override def `_1`: ProductId = productid
+
+  override def `_2`: Name = name
+
+  override def `_3`: String = productnumber
+
+  override def `_4`: Flag = makeflag
+
+  override def `_5`: Flag = finishedgoodsflag
+
+  override def `_6`: Optional[/* max 15 chars */ String] = color
+
+  override def `_7`: java.lang.Short = safetystocklevel
+
+  override def `_8`: java.lang.Short = reorderpoint
+
+  override def `_9`: java.math.BigDecimal = standardcost
+
+  override def `_10`: java.math.BigDecimal = listprice
+
+  override def `_11`: Optional[/* max 5 chars */ String] = size
+
+  override def `_12`: Optional[UnitmeasureId] = sizeunitmeasurecode
+
+  override def `_13`: Optional[UnitmeasureId] = weightunitmeasurecode
+
+  override def `_14`: Optional[java.math.BigDecimal] = weight
+
+  override def `_15`: Integer = daystomanufacture
+
+  override def `_16`: Optional[/* bpchar, max 2 chars */ String] = productline
+
+  override def `_17`: Optional[/* bpchar, max 2 chars */ String] = `class`
+
+  override def `_18`: Optional[/* bpchar, max 2 chars */ String] = style
+
+  override def `_19`: Optional[ProductsubcategoryId] = productsubcategoryid
+
+  override def `_20`: Optional[ProductmodelId] = productmodelid
+
+  override def `_21`: LocalDateTime = sellstartdate
+
+  override def `_22`: Optional[LocalDateTime] = sellenddate
+
+  override def `_23`: Optional[LocalDateTime] = discontinueddate
+
+  override def `_24`: UUID = rowguid
+
+  override def `_25`: LocalDateTime = modifieddate
 }
 
 object ProductRow {
   val `_rowParser`: RowParser[ProductRow] = {
-    RowParsers.of(ProductId.pgType, Name.pgType, PgTypes.text, Flag.pgType, Flag.pgType, PgTypes.text.opt(), PgTypes.int2, PgTypes.int2, PgTypes.numeric, PgTypes.numeric, PgTypes.text.opt(), UnitmeasureId.pgType.opt(), UnitmeasureId.pgType.opt(), PgTypes.numeric.opt(), PgTypes.int4, PgTypes.bpchar.opt(), PgTypes.bpchar.opt(), PgTypes.bpchar.opt(), ProductsubcategoryId.pgType.opt(), ProductmodelId.pgType.opt(), PgTypes.timestamp, PgTypes.timestamp.opt(), PgTypes.timestamp.opt(), PgTypes.uuid, PgTypes.timestamp, new Function25[ProductId, Name, String, Flag, Flag, Optional[/* max 15 chars */ String], java.lang.Short, java.lang.Short, java.math.BigDecimal, java.math.BigDecimal, Optional[/* max 5 chars */ String], Optional[UnitmeasureId], Optional[UnitmeasureId], Optional[java.math.BigDecimal], Integer, Optional[/* bpchar, max 2 chars */ String], Optional[/* bpchar, max 2 chars */ String], Optional[/* bpchar, max 2 chars */ String], Optional[ProductsubcategoryId], Optional[ProductmodelId], LocalDateTime, Optional[LocalDateTime], Optional[LocalDateTime], UUID, LocalDateTime, ProductRow] {
+    RowParsers.of(ProductId.dbType, Name.dbType, PgTypes.text, Flag.dbType, Flag.dbType, PgTypes.text.opt(), PgTypes.int2, PgTypes.int2, PgTypes.numeric, PgTypes.numeric, PgTypes.text.opt(), UnitmeasureId.dbType.opt(), UnitmeasureId.dbType.opt(), PgTypes.numeric.opt(), PgTypes.int4, PgTypes.bpchar.opt(), PgTypes.bpchar.opt(), PgTypes.bpchar.opt(), ProductsubcategoryId.dbType.opt(), ProductmodelId.dbType.opt(), PgTypes.timestamp, PgTypes.timestamp.opt(), PgTypes.timestamp.opt(), PgTypes.uuid, PgTypes.timestamp, new Function25[ProductId, Name, String, Flag, Flag, Optional[/* max 15 chars */ String], java.lang.Short, java.lang.Short, java.math.BigDecimal, java.math.BigDecimal, Optional[/* max 5 chars */ String], Optional[UnitmeasureId], Optional[UnitmeasureId], Optional[java.math.BigDecimal], Integer, Optional[/* bpchar, max 2 chars */ String], Optional[/* bpchar, max 2 chars */ String], Optional[/* bpchar, max 2 chars */ String], Optional[ProductsubcategoryId], Optional[ProductmodelId], LocalDateTime, Optional[LocalDateTime], Optional[LocalDateTime], UUID, LocalDateTime, ProductRow] {
       override def apply(
         t0: ProductId,
         t1: Name,

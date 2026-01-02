@@ -7,143 +7,152 @@ package testdb.customer_orders_view;
 
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.SqlServerTypes;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr6;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface CustomerOrdersViewViewFields extends FieldsExpr<CustomerOrdersViewViewRow> {
-  record Impl(List<Path> _path)
-      implements CustomerOrdersViewViewFields,
-          RelationStructure<CustomerOrdersViewViewFields, CustomerOrdersViewViewRow> {
-    @Override
-    public Field<Integer, CustomerOrdersViewViewRow> customerId() {
-      return new Field<Integer, CustomerOrdersViewViewRow>(
-          _path,
-          "customer_id",
-          CustomerOrdersViewViewRow::customerId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerId(value),
-          SqlServerTypes.int_);
-    }
-    ;
+public class CustomerOrdersViewViewFields
+    extends TupleExpr6<Integer, String, String, Integer, LocalDateTime, BigDecimal>
+    implements RelationStructure<CustomerOrdersViewViewFields, CustomerOrdersViewViewRow>,
+        FieldsBase<CustomerOrdersViewViewRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, CustomerOrdersViewViewRow> customerName() {
-      return new Field<String, CustomerOrdersViewViewRow>(
-          _path,
-          "customer_name",
-          CustomerOrdersViewViewRow::customerName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerName(value),
-          SqlServerTypes.nvarchar);
-    }
-    ;
-
-    @Override
-    public Field<String, CustomerOrdersViewViewRow> customerEmail() {
-      return new Field<String, CustomerOrdersViewViewRow>(
-          _path,
-          "customer_email",
-          CustomerOrdersViewViewRow::customerEmail,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerEmail(value),
-          SqlServerTypes.nvarchar);
-    }
-    ;
-
-    @Override
-    public Field<Integer, CustomerOrdersViewViewRow> orderId() {
-      return new Field<Integer, CustomerOrdersViewViewRow>(
-          _path,
-          "order_id",
-          CustomerOrdersViewViewRow::orderId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderId(value),
-          SqlServerTypes.int_);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, CustomerOrdersViewViewRow> orderDate() {
-      return new OptField<LocalDateTime, CustomerOrdersViewViewRow>(
-          _path,
-          "order_date",
-          CustomerOrdersViewViewRow::orderDate,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderDate(value),
-          SqlServerTypes.datetime2);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, CustomerOrdersViewViewRow> orderTotal() {
-      return new Field<BigDecimal, CustomerOrdersViewViewRow>(
-          _path,
-          "order_total",
-          CustomerOrdersViewViewRow::orderTotal,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderTotal(value),
-          SqlServerTypes.money);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, CustomerOrdersViewViewRow>> columns() {
-      return java.util.List.of(
-          this.customerId(),
-          this.customerName(),
-          this.customerEmail(),
-          this.orderId(),
-          this.orderDate(),
-          this.orderTotal());
-    }
-    ;
-
-    @Override
-    public RelationStructure<CustomerOrdersViewViewFields, CustomerOrdersViewViewRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public CustomerOrdersViewViewFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static CustomerOrdersViewViewFields structure =
+      new CustomerOrdersViewViewFields(java.util.Collections.emptyList());
+
+  public Field<Integer, CustomerOrdersViewViewRow> customerId() {
+    return new Field<Integer, CustomerOrdersViewViewRow>(
+        _path,
+        "customer_id",
+        CustomerOrdersViewViewRow::customerId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerId(value),
+        SqlServerTypes.int_);
   }
-  ;
 
-  Field<Integer, CustomerOrdersViewViewRow> customerId();
+  public Field<String, CustomerOrdersViewViewRow> customerName() {
+    return new Field<String, CustomerOrdersViewViewRow>(
+        _path,
+        "customer_name",
+        CustomerOrdersViewViewRow::customerName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerName(value),
+        SqlServerTypes.nvarchar);
+  }
 
-  Field<String, CustomerOrdersViewViewRow> customerName();
+  public Field<String, CustomerOrdersViewViewRow> customerEmail() {
+    return new Field<String, CustomerOrdersViewViewRow>(
+        _path,
+        "customer_email",
+        CustomerOrdersViewViewRow::customerEmail,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerEmail(value),
+        SqlServerTypes.nvarchar);
+  }
 
-  Field<String, CustomerOrdersViewViewRow> customerEmail();
+  public Field<Integer, CustomerOrdersViewViewRow> orderId() {
+    return new Field<Integer, CustomerOrdersViewViewRow>(
+        _path,
+        "order_id",
+        CustomerOrdersViewViewRow::orderId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderId(value),
+        SqlServerTypes.int_);
+  }
 
-  Field<Integer, CustomerOrdersViewViewRow> orderId();
+  public OptField<LocalDateTime, CustomerOrdersViewViewRow> orderDate() {
+    return new OptField<LocalDateTime, CustomerOrdersViewViewRow>(
+        _path,
+        "order_date",
+        CustomerOrdersViewViewRow::orderDate,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderDate(value),
+        SqlServerTypes.datetime2);
+  }
 
-  OptField<LocalDateTime, CustomerOrdersViewViewRow> orderDate();
-
-  Field<BigDecimal, CustomerOrdersViewViewRow> orderTotal();
+  public Field<BigDecimal, CustomerOrdersViewViewRow> orderTotal() {
+    return new Field<BigDecimal, CustomerOrdersViewViewRow>(
+        _path,
+        "order_total",
+        CustomerOrdersViewViewRow::orderTotal,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderTotal(value),
+        SqlServerTypes.money);
+  }
 
   @Override
-  List<FieldLike<?, CustomerOrdersViewViewRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<CustomerOrdersViewViewRow> rowParser() {
+  public List<FieldLike<?, CustomerOrdersViewViewRow>> columns() {
+    return java.util.List.of(
+        this.customerId(),
+        this.customerName(),
+        this.customerEmail(),
+        this.orderId(),
+        this.orderDate(),
+        this.orderTotal());
+  }
+
+  @Override
+  public RowParser<CustomerOrdersViewViewRow> rowParser() {
     return CustomerOrdersViewViewRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<CustomerOrdersViewViewFields, CustomerOrdersViewViewRow> withPaths(
+      List<Path> _path) {
+    return new CustomerOrdersViewViewFields(_path);
+  }
+
+  @Override
+  public SqlExpr<Integer> _1() {
+    return customerId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return customerName();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return customerEmail();
+  }
+
+  @Override
+  public SqlExpr<Integer> _4() {
+    return orderId();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _5() {
+    return orderDate();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _6() {
+    return orderTotal();
+  }
 }

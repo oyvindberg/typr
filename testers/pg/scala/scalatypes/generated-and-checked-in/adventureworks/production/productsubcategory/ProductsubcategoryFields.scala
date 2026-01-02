@@ -11,101 +11,98 @@ import adventureworks.production.productcategory.ProductcategoryRow
 import adventureworks.public.Name
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
+import dev.typr.foundations.scala.TupleExpr5
 import java.time.LocalDateTime
 import java.util.UUID
 
-trait ProductsubcategoryFields extends FieldsExpr0[ProductsubcategoryRow] {
-  def productsubcategoryid: IdField[ProductsubcategoryId, ProductsubcategoryRow]
+class ProductsubcategoryFields(val `_path`: java.util.List[Path]) extends TupleExpr5[ProductsubcategoryId, ProductcategoryId, Name, UUID, LocalDateTime] with RelationStructure[ProductsubcategoryFields, ProductsubcategoryRow]  with FieldsBase[ProductsubcategoryRow] {
+  def productsubcategoryid: IdField[ProductsubcategoryId, ProductsubcategoryRow] = {
+    new IdField[ProductsubcategoryId, ProductsubcategoryRow](
+      _path,
+      "productsubcategoryid",
+      _.productsubcategoryid,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(productsubcategoryid = value),
+      ProductsubcategoryId.dbType
+    )
+  }
 
-  def productcategoryid: Field[ProductcategoryId, ProductsubcategoryRow]
+  def productcategoryid: Field[ProductcategoryId, ProductsubcategoryRow] = {
+    new Field[ProductcategoryId, ProductsubcategoryRow](
+      _path,
+      "productcategoryid",
+      _.productcategoryid,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(productcategoryid = value),
+      ProductcategoryId.dbType
+    )
+  }
 
-  def name: Field[Name, ProductsubcategoryRow]
+  def name: Field[Name, ProductsubcategoryRow] = {
+    new Field[Name, ProductsubcategoryRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      Some("varchar"),
+      (row, value) => row.copy(name = value),
+      Name.dbType
+    )
+  }
 
-  def rowguid: Field[UUID, ProductsubcategoryRow]
+  def rowguid: Field[UUID, ProductsubcategoryRow] = {
+    new Field[UUID, ProductsubcategoryRow](
+      _path,
+      "rowguid",
+      _.rowguid,
+      None,
+      Some("uuid"),
+      (row, value) => row.copy(rowguid = value),
+      PgTypes.uuid
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, ProductsubcategoryRow]
+  def modifieddate: Field[LocalDateTime, ProductsubcategoryRow] = {
+    new Field[LocalDateTime, ProductsubcategoryRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      None,
+      Some("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
   def fkProductcategory: ForeignKey[ProductcategoryFields, ProductcategoryRow] = ForeignKey.of[ProductcategoryFields, ProductcategoryRow]("production.FK_ProductSubcategory_ProductCategory_ProductCategoryID").withColumnPair[ProductcategoryId](productcategoryid, _.productcategoryid)
 
-  override def columns: java.util.List[FieldLike[?, ProductsubcategoryRow]]
+  override def columns: java.util.List[FieldLike[?, ProductsubcategoryRow]] = java.util.List.of(this.productsubcategoryid.underlying, this.productcategoryid.underlying, this.name.underlying, this.rowguid.underlying, this.modifieddate.underlying)
 
   override def rowParser: RowParser[ProductsubcategoryRow] = ProductsubcategoryRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductsubcategoryFields, ProductsubcategoryRow] = new ProductsubcategoryFields(`_path`)
+
+  override def `_1`: SqlExpr[ProductsubcategoryId] = productsubcategoryid
+
+  override def `_2`: SqlExpr[ProductcategoryId] = productcategoryid
+
+  override def `_3`: SqlExpr[Name] = name
+
+  override def `_4`: SqlExpr[UUID] = rowguid
+
+  override def `_5`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object ProductsubcategoryFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ProductsubcategoryFields with RelationStructure[ProductsubcategoryFields, ProductsubcategoryRow] {
-
-    override def productsubcategoryid: IdField[ProductsubcategoryId, ProductsubcategoryRow] = {
-      new IdField[ProductsubcategoryId, ProductsubcategoryRow](
-        _path,
-        "productsubcategoryid",
-        _.productsubcategoryid,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(productsubcategoryid = value),
-        ProductsubcategoryId.pgType
-      )
-    }
-
-    override def productcategoryid: Field[ProductcategoryId, ProductsubcategoryRow] = {
-      new Field[ProductcategoryId, ProductsubcategoryRow](
-        _path,
-        "productcategoryid",
-        _.productcategoryid,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(productcategoryid = value),
-        ProductcategoryId.pgType
-      )
-    }
-
-    override def name: Field[Name, ProductsubcategoryRow] = {
-      new Field[Name, ProductsubcategoryRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        Some("varchar"),
-        (row, value) => row.copy(name = value),
-        Name.pgType
-      )
-    }
-
-    override def rowguid: Field[UUID, ProductsubcategoryRow] = {
-      new Field[UUID, ProductsubcategoryRow](
-        _path,
-        "rowguid",
-        _.rowguid,
-        None,
-        Some("uuid"),
-        (row, value) => row.copy(rowguid = value),
-        PgTypes.uuid
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, ProductsubcategoryRow] = {
-      new Field[LocalDateTime, ProductsubcategoryRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        None,
-        Some("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, ProductsubcategoryRow]] = java.util.List.of(this.productsubcategoryid.underlying, this.productcategoryid.underlying, this.name.underlying, this.rowguid.underlying, this.modifieddate.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductsubcategoryFields, ProductsubcategoryRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: ProductsubcategoryFields = new ProductsubcategoryFields(java.util.Collections.emptyList())
 }

@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple8;
+import dev.typr.foundations.data.Json;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
@@ -29,9 +31,18 @@ public record OrderHistoryRow(
     /** Default: NULL */
     @JsonProperty("change_reason") Optional<String> changeReason,
     /** Default: NULL */
-    Optional<String> metadata,
+    Optional<Json> metadata,
     /** Default: current_timestamp(6) */
-    @JsonProperty("created_at") LocalDateTime createdAt) {
+    @JsonProperty("created_at") LocalDateTime createdAt)
+    implements Tuple8<
+        OrderHistoryId,
+        OrdersId,
+        Optional<String>,
+        String,
+        Optional<String>,
+        Optional<String>,
+        Optional<Json>,
+        LocalDateTime> {
   /** AUTO_INCREMENT */
   public OrderHistoryRow withHistoryId(OrderHistoryId historyId) {
     return new OrderHistoryRow(
@@ -117,7 +128,7 @@ public record OrderHistoryRow(
   ;
 
   /** Default: NULL */
-  public OrderHistoryRow withMetadata(Optional<String> metadata) {
+  public OrderHistoryRow withMetadata(Optional<Json> metadata) {
     return new OrderHistoryRow(
         historyId,
         orderId,
@@ -146,13 +157,13 @@ public record OrderHistoryRow(
 
   public static RowParser<OrderHistoryRow> _rowParser =
       RowParsers.of(
-          OrderHistoryId.pgType,
-          OrdersId.pgType,
+          OrderHistoryId.dbType,
+          OrdersId.dbType,
           MariaTypes.text.opt(),
           MariaTypes.text,
           MariaTypes.varchar.opt(),
           MariaTypes.varchar.opt(),
-          MariaTypes.longtext.opt(),
+          MariaTypes.json.opt(),
           MariaTypes.datetime,
           OrderHistoryRow::new,
           row ->
@@ -168,6 +179,54 @@ public record OrderHistoryRow(
               });
   ;
 
+  @Override
+  public OrderHistoryId _1() {
+    return historyId;
+  }
+  ;
+
+  @Override
+  public OrdersId _2() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public Optional<String> _3() {
+    return previousStatus;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return newStatus;
+  }
+  ;
+
+  @Override
+  public Optional<String> _5() {
+    return changedBy;
+  }
+  ;
+
+  @Override
+  public Optional<String> _6() {
+    return changeReason;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _7() {
+    return metadata;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _8() {
+    return createdAt;
+  }
+  ;
+
   public OrderHistoryId id() {
     return historyId;
   }
@@ -177,7 +236,7 @@ public record OrderHistoryRow(
       Defaulted<Optional<String>> previousStatus,
       Defaulted<Optional<String>> changedBy,
       Defaulted<Optional<String>> changeReason,
-      Defaulted<Optional<String>> metadata,
+      Defaulted<Optional<Json>> metadata,
       Defaulted<LocalDateTime> createdAt) {
     return new OrderHistoryRowUnsaved(
         orderId, newStatus, previousStatus, changedBy, changeReason, metadata, createdAt);

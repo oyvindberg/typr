@@ -7,6 +7,7 @@ package testdb.inventory
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple11
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -64,7 +65,7 @@ case class InventoryRow(
    * Default: current_timestamp(6)
    */
   @JsonProperty("updated_at") updatedAt: LocalDateTime
-) {
+) extends Tuple11[InventoryId, ProductsId, WarehousesId, Int, Int, Int, Int, Int, Option[String], Option[LocalDateTime], LocalDateTime] {
   def id: InventoryId = inventoryId
 
   def toUnsavedRow(
@@ -90,8 +91,30 @@ case class InventoryRow(
       updatedAt
     )
   }
+
+  override def `_1`: InventoryId = inventoryId
+
+  override def `_2`: ProductsId = productId
+
+  override def `_3`: WarehousesId = warehouseId
+
+  override def `_4`: Int = quantityOnHand
+
+  override def `_5`: Int = quantityReserved
+
+  override def `_6`: Int = quantityOnOrder
+
+  override def `_7`: Int = reorderPoint
+
+  override def `_8`: Int = reorderQuantity
+
+  override def `_9`: Option[String] = binLocation
+
+  override def `_10`: Option[LocalDateTime] = lastCountedAt
+
+  override def `_11`: LocalDateTime = updatedAt
 }
 
 object InventoryRow {
-  val `_rowParser`: RowParser[InventoryRow] = RowParsers.of(InventoryId.pgType, ProductsId.pgType, WarehousesId.pgType, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, MariaTypes.varchar.nullable, MariaTypes.datetime.nullable, MariaTypes.datetime)(InventoryRow.apply)(row => Array[Any](row.inventoryId, row.productId, row.warehouseId, row.quantityOnHand, row.quantityReserved, row.quantityOnOrder, row.reorderPoint, row.reorderQuantity, row.binLocation, row.lastCountedAt, row.updatedAt))
+  val `_rowParser`: RowParser[InventoryRow] = RowParsers.of(InventoryId.dbType, ProductsId.dbType, WarehousesId.dbType, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, MariaTypes.varchar.nullable, MariaTypes.datetime.nullable, MariaTypes.datetime)(InventoryRow.apply)(row => Array[Any](row.inventoryId, row.productId, row.warehouseId, row.quantityOnHand, row.quantityReserved, row.quantityOnOrder, row.reorderPoint, row.reorderQuantity, row.binLocation, row.lastCountedAt, row.updatedAt))
 }

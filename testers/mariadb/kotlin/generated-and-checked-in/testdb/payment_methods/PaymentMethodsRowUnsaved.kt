@@ -6,6 +6,7 @@
 package testdb.payment_methods
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 
@@ -20,7 +21,7 @@ data class PaymentMethodsRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("processor_config") val processorConfig: Defaulted<String?> = UseDefault(),
+  @JsonProperty("processor_config") val processorConfig: Defaulted<Json?> = UseDefault(),
   /** Default: 1
 
     */
@@ -31,7 +32,7 @@ data class PaymentMethodsRowUnsaved(
   @JsonProperty("sort_order") val sortOrder: Defaulted<Byte> = UseDefault()
 ) {
   fun toRow(
-    processorConfigDefault: () -> String?,
+    processorConfigDefault: () -> Json?,
     isActiveDefault: () -> Boolean,
     sortOrderDefault: () -> Byte,
     methodIdDefault: () -> PaymentMethodsId

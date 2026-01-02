@@ -7,15 +7,18 @@ package testdb.shipments
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr17
 import java.time.LocalDate
 import java.time.LocalDateTime
 import testdb.orders.OrdersFields
@@ -28,40 +31,210 @@ import testdb.warehouses.WarehousesFields
 import testdb.warehouses.WarehousesId
 import testdb.warehouses.WarehousesRow
 
-trait ShipmentsFields extends FieldsExpr0[ShipmentsRow] {
-  def shipmentId: IdField[ShipmentsId, ShipmentsRow]
+class ShipmentsFields(val `_path`: java.util.List[Path]) extends TupleExpr17[ShipmentsId, OrdersId, ShippingCarriersId, String, String, BigDecimal, Json, Array[Byte], String, LocalDate, LocalDateTime, BigDecimal, BigDecimal, WarehousesId, LocalDateTime, LocalDateTime, LocalDateTime] with RelationStructure[ShipmentsFields, ShipmentsRow]  with FieldsBase[ShipmentsRow] {
+  def shipmentId: IdField[ShipmentsId, ShipmentsRow] = {
+    new IdField[ShipmentsId, ShipmentsRow](
+      _path,
+      "shipment_id",
+      _.shipmentId,
+      None,
+      None,
+      (row, value) => row.copy(shipmentId = value),
+      ShipmentsId.dbType
+    )
+  }
 
-  def orderId: Field[OrdersId, ShipmentsRow]
+  def orderId: Field[OrdersId, ShipmentsRow] = {
+    new Field[OrdersId, ShipmentsRow](
+      _path,
+      "order_id",
+      _.orderId,
+      None,
+      None,
+      (row, value) => row.copy(orderId = value),
+      OrdersId.dbType
+    )
+  }
 
-  def carrierId: Field[ShippingCarriersId, ShipmentsRow]
+  def carrierId: Field[ShippingCarriersId, ShipmentsRow] = {
+    new Field[ShippingCarriersId, ShipmentsRow](
+      _path,
+      "carrier_id",
+      _.carrierId,
+      None,
+      None,
+      (row, value) => row.copy(carrierId = value),
+      ShippingCarriersId.dbType
+    )
+  }
 
-  def trackingNumber: OptField[String, ShipmentsRow]
+  def trackingNumber: OptField[String, ShipmentsRow] = {
+    new OptField[String, ShipmentsRow](
+      _path,
+      "tracking_number",
+      _.trackingNumber,
+      None,
+      None,
+      (row, value) => row.copy(trackingNumber = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def shippingMethod: Field[String, ShipmentsRow]
+  def shippingMethod: Field[String, ShipmentsRow] = {
+    new Field[String, ShipmentsRow](
+      _path,
+      "shipping_method",
+      _.shippingMethod,
+      None,
+      None,
+      (row, value) => row.copy(shippingMethod = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def weightKg: OptField[BigDecimal, ShipmentsRow]
+  def weightKg: OptField[BigDecimal, ShipmentsRow] = {
+    new OptField[BigDecimal, ShipmentsRow](
+      _path,
+      "weight_kg",
+      _.weightKg,
+      None,
+      None,
+      (row, value) => row.copy(weightKg = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def dimensionsJson: OptField[String, ShipmentsRow]
+  def dimensionsJson: OptField[Json, ShipmentsRow] = {
+    new OptField[Json, ShipmentsRow](
+      _path,
+      "dimensions_json",
+      _.dimensionsJson,
+      None,
+      None,
+      (row, value) => row.copy(dimensionsJson = value),
+      MariaTypes.json
+    )
+  }
 
-  def labelData: OptField[Array[Byte], ShipmentsRow]
+  def labelData: OptField[Array[Byte], ShipmentsRow] = {
+    new OptField[Array[Byte], ShipmentsRow](
+      _path,
+      "label_data",
+      _.labelData,
+      None,
+      None,
+      (row, value) => row.copy(labelData = value),
+      MariaTypes.longblob
+    )
+  }
 
-  def status: Field[String, ShipmentsRow]
+  def status: Field[String, ShipmentsRow] = {
+    new Field[String, ShipmentsRow](
+      _path,
+      "status",
+      _.status,
+      None,
+      None,
+      (row, value) => row.copy(status = value),
+      MariaTypes.text
+    )
+  }
 
-  def estimatedDeliveryDate: OptField[LocalDate, ShipmentsRow]
+  def estimatedDeliveryDate: OptField[LocalDate, ShipmentsRow] = {
+    new OptField[LocalDate, ShipmentsRow](
+      _path,
+      "estimated_delivery_date",
+      _.estimatedDeliveryDate,
+      None,
+      None,
+      (row, value) => row.copy(estimatedDeliveryDate = value),
+      MariaTypes.date
+    )
+  }
 
-  def actualDeliveryAt: OptField[LocalDateTime, ShipmentsRow]
+  def actualDeliveryAt: OptField[LocalDateTime, ShipmentsRow] = {
+    new OptField[LocalDateTime, ShipmentsRow](
+      _path,
+      "actual_delivery_at",
+      _.actualDeliveryAt,
+      None,
+      None,
+      (row, value) => row.copy(actualDeliveryAt = value),
+      MariaTypes.datetime
+    )
+  }
 
-  def shippingCost: Field[BigDecimal, ShipmentsRow]
+  def shippingCost: Field[BigDecimal, ShipmentsRow] = {
+    new Field[BigDecimal, ShipmentsRow](
+      _path,
+      "shipping_cost",
+      _.shippingCost,
+      None,
+      None,
+      (row, value) => row.copy(shippingCost = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def insuranceAmount: OptField[BigDecimal, ShipmentsRow]
+  def insuranceAmount: OptField[BigDecimal, ShipmentsRow] = {
+    new OptField[BigDecimal, ShipmentsRow](
+      _path,
+      "insurance_amount",
+      _.insuranceAmount,
+      None,
+      None,
+      (row, value) => row.copy(insuranceAmount = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def originWarehouseId: OptField[WarehousesId, ShipmentsRow]
+  def originWarehouseId: OptField[WarehousesId, ShipmentsRow] = {
+    new OptField[WarehousesId, ShipmentsRow](
+      _path,
+      "origin_warehouse_id",
+      _.originWarehouseId,
+      None,
+      None,
+      (row, value) => row.copy(originWarehouseId = value),
+      WarehousesId.dbType
+    )
+  }
 
-  def shippedAt: OptField[LocalDateTime, ShipmentsRow]
+  def shippedAt: OptField[LocalDateTime, ShipmentsRow] = {
+    new OptField[LocalDateTime, ShipmentsRow](
+      _path,
+      "shipped_at",
+      _.shippedAt,
+      None,
+      None,
+      (row, value) => row.copy(shippedAt = value),
+      MariaTypes.datetime
+    )
+  }
 
-  def createdAt: Field[LocalDateTime, ShipmentsRow]
+  def createdAt: Field[LocalDateTime, ShipmentsRow] = {
+    new Field[LocalDateTime, ShipmentsRow](
+      _path,
+      "created_at",
+      _.createdAt,
+      None,
+      None,
+      (row, value) => row.copy(createdAt = value),
+      MariaTypes.datetime
+    )
+  }
 
-  def updatedAt: Field[LocalDateTime, ShipmentsRow]
+  def updatedAt: Field[LocalDateTime, ShipmentsRow] = {
+    new Field[LocalDateTime, ShipmentsRow](
+      _path,
+      "updated_at",
+      _.updatedAt,
+      None,
+      None,
+      (row, value) => row.copy(updatedAt = value),
+      MariaTypes.datetime
+    )
+  }
 
   def fkShippingCarriers: ForeignKey[ShippingCarriersFields, ShippingCarriersRow] = ForeignKey.of[ShippingCarriersFields, ShippingCarriersRow]("fk_ship_carrier").withColumnPair[ShippingCarriersId](carrierId, _.carrierId)
 
@@ -69,222 +242,47 @@ trait ShipmentsFields extends FieldsExpr0[ShipmentsRow] {
 
   def fkWarehouses: ForeignKey[WarehousesFields, WarehousesRow] = ForeignKey.of[WarehousesFields, WarehousesRow]("fk_ship_warehouse").withColumnPair[WarehousesId](originWarehouseId, _.warehouseId)
 
-  override def columns: java.util.List[FieldLike[?, ShipmentsRow]]
+  override def columns: java.util.List[FieldLike[?, ShipmentsRow]] = java.util.List.of(this.shipmentId.underlying, this.orderId.underlying, this.carrierId.underlying, this.trackingNumber.underlying, this.shippingMethod.underlying, this.weightKg.underlying, this.dimensionsJson.underlying, this.labelData.underlying, this.status.underlying, this.estimatedDeliveryDate.underlying, this.actualDeliveryAt.underlying, this.shippingCost.underlying, this.insuranceAmount.underlying, this.originWarehouseId.underlying, this.shippedAt.underlying, this.createdAt.underlying, this.updatedAt.underlying)
 
   override def rowParser: RowParser[ShipmentsRow] = ShipmentsRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ShipmentsFields, ShipmentsRow] = new ShipmentsFields(`_path`)
+
+  override def `_1`: SqlExpr[ShipmentsId] = shipmentId
+
+  override def `_2`: SqlExpr[OrdersId] = orderId
+
+  override def `_3`: SqlExpr[ShippingCarriersId] = carrierId
+
+  override def `_4`: SqlExpr[String] = trackingNumber
+
+  override def `_5`: SqlExpr[String] = shippingMethod
+
+  override def `_6`: SqlExpr[BigDecimal] = weightKg
+
+  override def `_7`: SqlExpr[Json] = dimensionsJson
+
+  override def `_8`: SqlExpr[Array[Byte]] = labelData
+
+  override def `_9`: SqlExpr[String] = status
+
+  override def `_10`: SqlExpr[LocalDate] = estimatedDeliveryDate
+
+  override def `_11`: SqlExpr[LocalDateTime] = actualDeliveryAt
+
+  override def `_12`: SqlExpr[BigDecimal] = shippingCost
+
+  override def `_13`: SqlExpr[BigDecimal] = insuranceAmount
+
+  override def `_14`: SqlExpr[WarehousesId] = originWarehouseId
+
+  override def `_15`: SqlExpr[LocalDateTime] = shippedAt
+
+  override def `_16`: SqlExpr[LocalDateTime] = createdAt
+
+  override def `_17`: SqlExpr[LocalDateTime] = updatedAt
 }
 
 object ShipmentsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ShipmentsFields with RelationStructure[ShipmentsFields, ShipmentsRow] {
-
-    override def shipmentId: IdField[ShipmentsId, ShipmentsRow] = {
-      new IdField[ShipmentsId, ShipmentsRow](
-        _path,
-        "shipment_id",
-        _.shipmentId,
-        None,
-        None,
-        (row, value) => row.copy(shipmentId = value),
-        ShipmentsId.pgType
-      )
-    }
-
-    override def orderId: Field[OrdersId, ShipmentsRow] = {
-      new Field[OrdersId, ShipmentsRow](
-        _path,
-        "order_id",
-        _.orderId,
-        None,
-        None,
-        (row, value) => row.copy(orderId = value),
-        OrdersId.pgType
-      )
-    }
-
-    override def carrierId: Field[ShippingCarriersId, ShipmentsRow] = {
-      new Field[ShippingCarriersId, ShipmentsRow](
-        _path,
-        "carrier_id",
-        _.carrierId,
-        None,
-        None,
-        (row, value) => row.copy(carrierId = value),
-        ShippingCarriersId.pgType
-      )
-    }
-
-    override def trackingNumber: OptField[String, ShipmentsRow] = {
-      new OptField[String, ShipmentsRow](
-        _path,
-        "tracking_number",
-        _.trackingNumber,
-        None,
-        None,
-        (row, value) => row.copy(trackingNumber = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def shippingMethod: Field[String, ShipmentsRow] = {
-      new Field[String, ShipmentsRow](
-        _path,
-        "shipping_method",
-        _.shippingMethod,
-        None,
-        None,
-        (row, value) => row.copy(shippingMethod = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def weightKg: OptField[BigDecimal, ShipmentsRow] = {
-      new OptField[BigDecimal, ShipmentsRow](
-        _path,
-        "weight_kg",
-        _.weightKg,
-        None,
-        None,
-        (row, value) => row.copy(weightKg = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def dimensionsJson: OptField[String, ShipmentsRow] = {
-      new OptField[String, ShipmentsRow](
-        _path,
-        "dimensions_json",
-        _.dimensionsJson,
-        None,
-        None,
-        (row, value) => row.copy(dimensionsJson = value),
-        MariaTypes.longtext
-      )
-    }
-
-    override def labelData: OptField[Array[Byte], ShipmentsRow] = {
-      new OptField[Array[Byte], ShipmentsRow](
-        _path,
-        "label_data",
-        _.labelData,
-        None,
-        None,
-        (row, value) => row.copy(labelData = value),
-        MariaTypes.longblob
-      )
-    }
-
-    override def status: Field[String, ShipmentsRow] = {
-      new Field[String, ShipmentsRow](
-        _path,
-        "status",
-        _.status,
-        None,
-        None,
-        (row, value) => row.copy(status = value),
-        MariaTypes.text
-      )
-    }
-
-    override def estimatedDeliveryDate: OptField[LocalDate, ShipmentsRow] = {
-      new OptField[LocalDate, ShipmentsRow](
-        _path,
-        "estimated_delivery_date",
-        _.estimatedDeliveryDate,
-        None,
-        None,
-        (row, value) => row.copy(estimatedDeliveryDate = value),
-        MariaTypes.date
-      )
-    }
-
-    override def actualDeliveryAt: OptField[LocalDateTime, ShipmentsRow] = {
-      new OptField[LocalDateTime, ShipmentsRow](
-        _path,
-        "actual_delivery_at",
-        _.actualDeliveryAt,
-        None,
-        None,
-        (row, value) => row.copy(actualDeliveryAt = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def shippingCost: Field[BigDecimal, ShipmentsRow] = {
-      new Field[BigDecimal, ShipmentsRow](
-        _path,
-        "shipping_cost",
-        _.shippingCost,
-        None,
-        None,
-        (row, value) => row.copy(shippingCost = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def insuranceAmount: OptField[BigDecimal, ShipmentsRow] = {
-      new OptField[BigDecimal, ShipmentsRow](
-        _path,
-        "insurance_amount",
-        _.insuranceAmount,
-        None,
-        None,
-        (row, value) => row.copy(insuranceAmount = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def originWarehouseId: OptField[WarehousesId, ShipmentsRow] = {
-      new OptField[WarehousesId, ShipmentsRow](
-        _path,
-        "origin_warehouse_id",
-        _.originWarehouseId,
-        None,
-        None,
-        (row, value) => row.copy(originWarehouseId = value),
-        WarehousesId.pgType
-      )
-    }
-
-    override def shippedAt: OptField[LocalDateTime, ShipmentsRow] = {
-      new OptField[LocalDateTime, ShipmentsRow](
-        _path,
-        "shipped_at",
-        _.shippedAt,
-        None,
-        None,
-        (row, value) => row.copy(shippedAt = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def createdAt: Field[LocalDateTime, ShipmentsRow] = {
-      new Field[LocalDateTime, ShipmentsRow](
-        _path,
-        "created_at",
-        _.createdAt,
-        None,
-        None,
-        (row, value) => row.copy(createdAt = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def updatedAt: Field[LocalDateTime, ShipmentsRow] = {
-      new Field[LocalDateTime, ShipmentsRow](
-        _path,
-        "updated_at",
-        _.updatedAt,
-        None,
-        None,
-        (row, value) => row.copy(updatedAt = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, ShipmentsRow]] = java.util.List.of(this.shipmentId.underlying, this.orderId.underlying, this.carrierId.underlying, this.trackingNumber.underlying, this.shippingMethod.underlying, this.weightKg.underlying, this.dimensionsJson.underlying, this.labelData.underlying, this.status.underlying, this.estimatedDeliveryDate.underlying, this.actualDeliveryAt.underlying, this.shippingCost.underlying, this.insuranceAmount.underlying, this.originWarehouseId.underlying, this.shippedAt.underlying, this.createdAt.underlying, this.updatedAt.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ShipmentsFields, ShipmentsRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: ShipmentsFields = new ShipmentsFields(java.util.Collections.emptyList())
 }

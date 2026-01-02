@@ -47,7 +47,7 @@ public record MariatestRepoMock(
   @Override
   public DeleteBuilder<MariatestFields, MariatestRow> delete() {
     return new DeleteBuilderMock<>(
-        MariatestFields.structure(),
+        MariatestFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.intCol(),
@@ -96,7 +96,7 @@ public record MariatestRepoMock(
   @Override
   public SelectBuilder<MariatestFields, MariatestRow> select() {
     return new SelectBuilderMock<>(
-        MariatestFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        MariatestFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -137,7 +137,7 @@ public record MariatestRepoMock(
   @Override
   public UpdateBuilder<MariatestFields, MariatestRow> update() {
     return new UpdateBuilderMock<>(
-        MariatestFields.structure(),
+        MariatestFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

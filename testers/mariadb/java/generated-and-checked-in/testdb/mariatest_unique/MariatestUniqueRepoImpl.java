@@ -24,28 +24,25 @@ import java.util.Optional;
 public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
   @Override
   public DeleteBuilder<MariatestUniqueFields, MariatestUniqueRow> delete() {
-    return DeleteBuilder.of(
-        "`mariatest_unique`", MariatestUniqueFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`mariatest_unique`", MariatestUniqueFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(MariatestUniqueId id, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `mariatest_unique` where `id` = "),
-                Fragment.encode(MariatestUniqueId.pgType, id),
+                Fragment.encode(MariatestUniqueId.dbType, id),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(MariatestUniqueId[] ids, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : ids) {
-      fragments.add(Fragment.encode(MariatestUniqueId.pgType, id));
+      fragments.add(Fragment.encode(MariatestUniqueId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -55,7 +52,6 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public MariatestUniqueRow insert(MariatestUniqueRow unsaved, Connection c) {
@@ -70,7 +66,6 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
         .updateReturning(MariatestUniqueRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public MariatestUniqueRow insert(MariatestUniqueRowUnsaved unsaved, Connection c) {
@@ -95,17 +90,15 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
     ;
     return q.updateReturning(MariatestUniqueRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<MariatestUniqueFields, MariatestUniqueRow> select() {
     return SelectBuilder.of(
         "`mariatest_unique`",
-        MariatestUniqueFields.structure(),
+        MariatestUniqueFields.structure,
         MariatestUniqueRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<MariatestUniqueRow> selectAll(Connection c) {
@@ -114,25 +107,23 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
         .query(MariatestUniqueRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<MariatestUniqueRow> selectById(MariatestUniqueId id, Connection c) {
     return interpolate(
             Fragment.lit(
                 "select `id`, `email`, `code`, `category`\nfrom `mariatest_unique`\nwhere `id` = "),
-            Fragment.encode(MariatestUniqueId.pgType, id),
+            Fragment.encode(MariatestUniqueId.dbType, id),
             Fragment.lit(""))
         .query(MariatestUniqueRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<MariatestUniqueRow> selectByIds(MariatestUniqueId[] ids, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : ids) {
-      fragments.add(Fragment.encode(MariatestUniqueId.pgType, id));
+      fragments.add(Fragment.encode(MariatestUniqueId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -143,7 +134,6 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
         .query(MariatestUniqueRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<MariatestUniqueId, MariatestUniqueRow> selectByIdsTracked(
@@ -153,7 +143,6 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
     selectByIds(ids, c).forEach(row -> ret.put(row.id(), row));
     return ret;
   }
-  ;
 
   @Override
   public Optional<MariatestUniqueRow> selectByUniqueCodeAndCategory(
@@ -170,7 +159,6 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
         .query(MariatestUniqueRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<MariatestUniqueRow> selectByUniqueEmail(String email, Connection c) {
@@ -184,17 +172,15 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
         .query(MariatestUniqueRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<MariatestUniqueFields, MariatestUniqueRow> update() {
     return UpdateBuilder.of(
         "`mariatest_unique`",
-        MariatestUniqueFields.structure(),
+        MariatestUniqueFields.structure,
         MariatestUniqueRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(MariatestUniqueRow row, Connection c) {
@@ -208,18 +194,20 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
                 Fragment.lit(",\n`category` = "),
                 Fragment.encode(MariaTypes.varchar, row.category()),
                 Fragment.lit("\nwhere `id` = "),
-                Fragment.encode(MariatestUniqueId.pgType, id),
+                Fragment.encode(MariatestUniqueId.dbType, id),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public MariatestUniqueRow upsert(MariatestUniqueRow unsaved, Connection c) {
     return interpolate(
-            Fragment.lit("INSERT INTO `mariatest_unique`(`email`, `code`, `category`)\nVALUES ("),
+            Fragment.lit(
+                "INSERT INTO `mariatest_unique`(`id`, `email`, `code`, `category`)\nVALUES ("),
+            Fragment.encode(MariatestUniqueId.dbType, unsaved.id()),
+            Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.email()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.code()),
@@ -234,7 +222,6 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
         .updateReturning(MariatestUniqueRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<MariatestUniqueRow> upsertBatch(Iterator<MariatestUniqueRow> unsaved, Connection c) {
@@ -249,5 +236,4 @@ public class MariatestUniqueRepoImpl implements MariatestUniqueRepo {
         .updateReturningEach(MariatestUniqueRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

@@ -7,6 +7,7 @@ package testdb.customer_search
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -26,7 +27,17 @@ data class CustomerSearchSqlRow(
   @JsonProperty("created_at") val createdAt: LocalDateTime,
   /** Points to [testdb.customers.CustomersRow.priority] */
   val priority: Priority?
-) {
+) : Tuple5<CustomersId, String, String?, LocalDateTime, Priority?> {
+  override fun _1(): CustomersId = customerId
+
+  override fun _2(): String = name
+
+  override fun _3(): String? = email
+
+  override fun _4(): LocalDateTime = createdAt
+
+  override fun _5(): Priority? = priority
+
   companion object {
     val _rowParser: RowParser<CustomerSearchSqlRow> = RowParsers.of(CustomersId.duckDbType, DuckDbTypes.varchar, DuckDbTypes.varchar.nullable(), DuckDbTypes.timestamp, Priority.duckDbType.nullable(), { t0, t1, t2, t3, t4 -> CustomerSearchSqlRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.customerId, row.name, row.email, row.createdAt, row.priority) })
   }

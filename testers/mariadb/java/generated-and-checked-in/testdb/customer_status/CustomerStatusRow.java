@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple3;
 import testdb.customtypes.Defaulted;
 
 /** Table: customer_status Primary key: status_code */
@@ -18,7 +19,8 @@ public record CustomerStatusRow(
     /** */
     String description,
     /** Default: 1 */
-    @JsonProperty("is_active") Boolean isActive) {
+    @JsonProperty("is_active") Boolean isActive)
+    implements Tuple3<CustomerStatusId, String, Boolean> {
   /** */
   public CustomerStatusRow withStatusCode(CustomerStatusId statusCode) {
     return new CustomerStatusRow(statusCode, description, isActive);
@@ -39,11 +41,29 @@ public record CustomerStatusRow(
 
   public static RowParser<CustomerStatusRow> _rowParser =
       RowParsers.of(
-          CustomerStatusId.pgType,
+          CustomerStatusId.dbType,
           MariaTypes.varchar,
           MariaTypes.bool,
           CustomerStatusRow::new,
           row -> new Object[] {row.statusCode(), row.description(), row.isActive()});
+  ;
+
+  @Override
+  public CustomerStatusId _1() {
+    return statusCode;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return description;
+  }
+  ;
+
+  @Override
+  public Boolean _3() {
+    return isActive;
+  }
   ;
 
   public CustomerStatusId id() {

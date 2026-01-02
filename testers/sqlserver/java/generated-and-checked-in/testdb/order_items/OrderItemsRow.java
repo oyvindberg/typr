@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
 import dev.typr.foundations.SqlServerTypes;
+import dev.typr.foundations.Tuple.Tuple5;
 import java.math.BigDecimal;
 import testdb.orders.OrdersId;
 import testdb.products.ProductsId;
@@ -22,7 +23,8 @@ public record OrderItemsRow(
     /** Points to {@link testdb.products.ProductsRow#productId()} */
     @JsonProperty("product_id") ProductsId productId,
     Integer quantity,
-    BigDecimal price) {
+    BigDecimal price)
+    implements Tuple5<OrderItemsId, OrdersId, ProductsId, Integer, BigDecimal> {
   /** IDENTITY(1, 1) */
   public OrderItemsRow withOrderItemId(OrderItemsId orderItemId) {
     return new OrderItemsRow(orderItemId, orderId, productId, quantity, price);
@@ -63,6 +65,36 @@ public record OrderItemsRow(
               new Object[] {
                 row.orderItemId(), row.orderId(), row.productId(), row.quantity(), row.price()
               });
+  ;
+
+  @Override
+  public OrderItemsId _1() {
+    return orderItemId;
+  }
+  ;
+
+  @Override
+  public OrdersId _2() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public ProductsId _3() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public Integer _4() {
+    return quantity;
+  }
+  ;
+
+  @Override
+  public BigDecimal _5() {
+    return price;
+  }
   ;
 
   public OrderItemsId id() {

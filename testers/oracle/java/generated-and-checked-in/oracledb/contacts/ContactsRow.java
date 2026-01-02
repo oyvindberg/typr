@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.OracleTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.util.Optional;
 import oracledb.EmailTableT;
 import oracledb.TagVarrayT;
@@ -20,7 +21,8 @@ public record ContactsRow(
     @JsonProperty("CONTACT_ID") ContactsId contactId,
     @JsonProperty("NAME") String name,
     @JsonProperty("EMAILS") Optional<EmailTableT> emails,
-    @JsonProperty("TAGS") Optional<TagVarrayT> tags) {
+    @JsonProperty("TAGS") Optional<TagVarrayT> tags)
+    implements Tuple4<ContactsId, String, Optional<EmailTableT>, Optional<TagVarrayT>> {
   /** Default: "TYPR"."ISEQ$$_72850".nextval */
   public ContactsRow withContactId(ContactsId contactId) {
     return new ContactsRow(contactId, name, emails, tags);
@@ -50,6 +52,30 @@ public record ContactsRow(
           TagVarrayT.oracleType.opt(),
           ContactsRow::new,
           row -> new Object[] {row.contactId(), row.name(), row.emails(), row.tags()});
+  ;
+
+  @Override
+  public ContactsId _1() {
+    return contactId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public Optional<EmailTableT> _3() {
+    return emails;
+  }
+  ;
+
+  @Override
+  public Optional<TagVarrayT> _4() {
+    return tags;
+  }
   ;
 
   public ContactsId id() {

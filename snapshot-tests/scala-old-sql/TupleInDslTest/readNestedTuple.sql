@@ -1,0 +1,3 @@
+select humanresourcesdepartment0."name" , humanresourcesdepartment0."groupname" , humanresourcesdepartment0."departmentid" 
+from (SELECT * FROM "humanresources"."department" humanresourcesdepartment0 WHERE (humanresourcesdepartment0)."name"  IN (?::"public"."Name", ?::"public"."Name", ?::"public"."Name") ORDER BY (humanresourcesdepartment0)."departmentid"  ASC) humanresourcesdepartment0
+order by humanresourcesdepartment0."departmentid"  ASC

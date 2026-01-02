@@ -7,6 +7,7 @@ package testdb.products
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.data.Json
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -22,7 +23,17 @@ data class ProductsRow(
   val name: String,
   val price: BigDecimal,
   val metadata: Json?
-) {
+) : Tuple5<ProductsId, String, String, BigDecimal, Json?> {
+  override fun _1(): ProductsId = productId
+
+  override fun _2(): String = sku
+
+  override fun _3(): String = name
+
+  override fun _4(): BigDecimal = price
+
+  override fun _5(): Json? = metadata
+
   fun id(): ProductsId = productId
 
   companion object {

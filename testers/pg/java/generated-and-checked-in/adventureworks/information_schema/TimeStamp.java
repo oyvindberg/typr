@@ -22,12 +22,12 @@ public record TimeStamp(@JsonValue Instant value) {
   public static Bijection<TimeStamp, Instant> bijection =
       Bijection.of(TimeStamp::value, TimeStamp::new);
 
-  public static PgType<TimeStamp> pgType =
+  public static PgType<TimeStamp> dbType =
       PgTypes.timestamptz
           .bimap(TimeStamp::new, TimeStamp::value)
           .renamed("\"information_schema\".\"time_stamp\"");
 
-  public static PgType<TimeStamp[]> pgTypeArray =
+  public static PgType<TimeStamp[]> dbTypeArray =
       PgTypes.timestamptzArray
           .bimap(
               xs -> arrayMap.map(xs, TimeStamp::new, TimeStamp.class),

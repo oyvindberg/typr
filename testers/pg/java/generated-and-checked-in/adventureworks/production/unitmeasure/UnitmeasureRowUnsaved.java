@@ -53,9 +53,9 @@ public record UnitmeasureRowUnsaved(
   public static PgText<UnitmeasureRowUnsaved> pgText =
       PgText.instance(
           (row, sb) -> {
-            UnitmeasureId.pgType.text().unsafeEncode(row.unitmeasurecode, sb);
+            UnitmeasureId.dbType.text().unsafeEncode(row.unitmeasurecode, sb);
             sb.append(PgText.DELIMETER);
-            Name.pgType.text().unsafeEncode(row.name, sb);
+            Name.dbType.text().unsafeEncode(row.name, sb);
             sb.append(PgText.DELIMETER);
             Defaulted.pgText(PgTypes.timestamp.text()).unsafeEncode(row.modifieddate, sb);
           });

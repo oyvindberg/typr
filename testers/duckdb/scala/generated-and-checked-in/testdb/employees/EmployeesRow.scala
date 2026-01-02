@@ -7,6 +7,7 @@ package testdb.employees
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -26,7 +27,7 @@ case class EmployeesRow(
   salary: Option[BigDecimal],
   /** Default: current_date */
   @JsonProperty("hire_date") hireDate: LocalDate
-) {
+) extends Tuple7[Int, String, String, String, String, Option[BigDecimal], LocalDate] {
   def compositeId: EmployeesId = new EmployeesId(empNumber, empSuffix)
 
   def id: EmployeesId = this.compositeId
@@ -42,6 +43,20 @@ case class EmployeesRow(
       hireDate
     )
   }
+
+  override def `_1`: Int = empNumber
+
+  override def `_2`: String = empSuffix
+
+  override def `_3`: String = deptCode
+
+  override def `_4`: String = deptRegion
+
+  override def `_5`: String = empName
+
+  override def `_6`: Option[BigDecimal] = salary
+
+  override def `_7`: LocalDate = hireDate
 }
 
 object EmployeesRow {

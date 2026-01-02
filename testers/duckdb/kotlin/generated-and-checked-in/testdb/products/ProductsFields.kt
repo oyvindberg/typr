@@ -8,50 +8,48 @@ package testdb.products
 import dev.typr.foundations.DuckDbTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.data.Json
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr5
 import java.math.BigDecimal
 import kotlin.collections.List
 
-interface ProductsFields : FieldsExpr<ProductsRow> {
-  abstract override fun columns(): List<FieldLike<*, ProductsRow>>
+data class ProductsFields(val _path: List<Path>) : TupleExpr5<ProductsId, String, String, BigDecimal, Json>, RelationStructure<ProductsFields, ProductsRow>, FieldsBase<ProductsRow> {
+  override fun _1(): SqlExpr<ProductsId> = productId()
 
-  abstract fun metadata(): OptField<Json, ProductsRow>
+  override fun _2(): SqlExpr<String> = sku()
 
-  abstract fun name(): Field<String, ProductsRow>
+  override fun _3(): SqlExpr<String> = name()
 
-  abstract fun price(): Field<BigDecimal, ProductsRow>
+  override fun _4(): SqlExpr<BigDecimal> = price()
 
-  abstract fun productId(): IdField<ProductsId, ProductsRow>
+  override fun _5(): SqlExpr<Json> = metadata()
+
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, ProductsRow>> = listOf(this.productId().underlying, this.sku().underlying, this.name().underlying, this.price().underlying, this.metadata().underlying)
+
+  fun metadata(): OptField<Json, ProductsRow> = OptField<Json, ProductsRow>(_path, "metadata", ProductsRow::metadata, null, "JSON", { row, value -> row.copy(metadata = value) }, DuckDbTypes.json)
+
+  fun name(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "name", ProductsRow::name, null, null, { row, value -> row.copy(name = value) }, DuckDbTypes.varchar)
+
+  fun price(): Field<BigDecimal, ProductsRow> = Field<BigDecimal, ProductsRow>(_path, "price", ProductsRow::price, null, "DECIMAL(10,2)", { row, value -> row.copy(price = value) }, DuckDbTypes.numeric)
+
+  fun productId(): IdField<ProductsId, ProductsRow> = IdField<ProductsId, ProductsRow>(_path, "product_id", ProductsRow::productId, null, "INTEGER", { row, value -> row.copy(productId = value) }, ProductsId.duckDbType)
 
   override fun rowParser(): RowParser<ProductsRow> = ProductsRow._rowParser.underlying
 
-  abstract fun sku(): Field<String, ProductsRow>
+  fun sku(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "sku", ProductsRow::sku, null, null, { row, value -> row.copy(sku = value) }, DuckDbTypes.varchar)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<ProductsFields, ProductsRow> = ProductsFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : ProductsFields, RelationStructure<ProductsFields, ProductsRow> {
-      override fun productId(): IdField<ProductsId, ProductsRow> = IdField<ProductsId, ProductsRow>(_path, "product_id", ProductsRow::productId, null, "INTEGER", { row, value -> row.copy(productId = value) }, ProductsId.duckDbType)
-
-      override fun sku(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "sku", ProductsRow::sku, null, null, { row, value -> row.copy(sku = value) }, DuckDbTypes.varchar)
-
-      override fun name(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "name", ProductsRow::name, null, null, { row, value -> row.copy(name = value) }, DuckDbTypes.varchar)
-
-      override fun price(): Field<BigDecimal, ProductsRow> = Field<BigDecimal, ProductsRow>(_path, "price", ProductsRow::price, null, "DECIMAL(10,2)", { row, value -> row.copy(price = value) }, DuckDbTypes.numeric)
-
-      override fun metadata(): OptField<Json, ProductsRow> = OptField<Json, ProductsRow>(_path, "metadata", ProductsRow::metadata, null, "JSON", { row, value -> row.copy(metadata = value) }, DuckDbTypes.json)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, ProductsRow>> = listOf(this.productId().underlying, this.sku().underlying, this.name().underlying, this.price().underlying, this.metadata().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<ProductsFields, ProductsRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: ProductsFields = ProductsFields(emptyList<Path>())
   }
 }

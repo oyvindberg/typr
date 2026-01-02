@@ -8,11 +8,12 @@ package testdb.payment_methods;
 import com.fasterxml.jackson.annotation.JsonValue;
 import dev.typr.foundations.MariaType;
 import dev.typr.foundations.MariaTypes;
+import dev.typr.foundations.data.Uint1;
 import dev.typr.foundations.dsl.Bijection;
 
 /** Type for the primary key of table `payment_methods` */
-public record PaymentMethodsId(@JsonValue Short value) {
-  public PaymentMethodsId withValue(Short value) {
+public record PaymentMethodsId(@JsonValue Uint1 value) {
+  public PaymentMethodsId withValue(Uint1 value) {
     return new PaymentMethodsId(value);
   }
   ;
@@ -23,9 +24,9 @@ public record PaymentMethodsId(@JsonValue Short value) {
   }
   ;
 
-  public static Bijection<PaymentMethodsId, Short> bijection =
+  public static Bijection<PaymentMethodsId, Uint1> bijection =
       Bijection.of(PaymentMethodsId::value, PaymentMethodsId::new);
 
-  public static MariaType<PaymentMethodsId> pgType =
+  public static MariaType<PaymentMethodsId> dbType =
       MariaTypes.tinyintUnsigned.bimap(PaymentMethodsId::new, PaymentMethodsId::value);
 }

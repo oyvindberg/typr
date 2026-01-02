@@ -17,13 +17,13 @@ import dev.typr.foundations.PgTypes
 sealed abstract class Myenum(val value: java.lang.String)
 
 object Myenum {
-  given pgTypeArray: PgType[Array[Myenum]] = {
+  given dbTypeArray: PgType[Array[Myenum]] = {
     PgTypes.textArray
       .bimap(xs => xs.map(Myenum.force), xs => xs.map(_.value))
       .renamedDropPrecision("public.myenum")
   }
 
-  given pgType: PgType[Myenum] = {
+  given dbType: PgType[Myenum] = {
     PgTypes.text.bimap(Myenum.force, _.value)
       .renamedDropPrecision("public.myenum")
   }

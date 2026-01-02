@@ -63,15 +63,10 @@ trait DbAdapter {
   /** Dialect reference for DSL (Dialect.POSTGRESQL or Dialect.MARIADB) */
   def dialectRef(lang: Lang): Code
 
-  /** Wrap a type code to make it nullable - adds import and calls appropriate method based on language */
-  protected def nullableType(innerCode: Code, typeSupport: TypeSupport): Code = {
-    val ScalaDbTypeOps = jvm.Type.Qualified("dev.typr.foundations.scala.DbTypeOps")
-    val KotlinNullableExtension = jvm.Type.Qualified("dev.typr.foundations.kotlin.nullable")
-    typeSupport match {
-      case TypeSupportScala  => code"${jvm.Import(ScalaDbTypeOps)}$innerCode.nullable"
-      case TypeSupportKotlin => code"${jvm.Import(KotlinNullableExtension)}$innerCode.nullable()"
-      case _                 => code"$innerCode.opt()"
-    }
+  protected def nullableType(innerCode: Code, typeSupport: TypeSupport): Code = typeSupport match {
+    case TypeSupportScala  => code"${jvm.Import(FoundationsTypes.scala.ScalaDbTypeOps)}$innerCode.nullable"
+    case TypeSupportKotlin => code"${jvm.Import(FoundationsTypes.kotlin.KotlinNullableExtension)}$innerCode.nullable()"
+    case _                 => code"$innerCode.opt()"
   }
 
   /** Lookup runtime type instance for a TypoType */
@@ -151,6 +146,16 @@ trait DbAdapter {
 
   /** Generate temp table creation */
   def createTempTableLike(tempName: String, sourceTable: Code): Code
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LAYER 5: Schema DDL
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Drop schema DDL */
+  def dropSchemaDdl(schemaName: String, cascade: Boolean): String
+
+  /** Create schema DDL */
+  def createSchemaDdl(schemaName: String): String
 
   /** Format columns for use in RETURNING/OUTPUT clause. Most databases use columns as-is, SQL Server needs INSERTED. prefix */
   def returningColumns(cols: NonEmptyList[ComputedColumn]): Code =

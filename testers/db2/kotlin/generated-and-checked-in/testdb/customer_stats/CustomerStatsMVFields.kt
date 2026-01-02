@@ -7,45 +7,43 @@ package testdb.customer_stats
 
 import dev.typr.foundations.Db2Types
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
+import dev.typr.foundations.kotlin.TupleExpr4
 import java.math.BigDecimal
 import kotlin.collections.List
 
-interface CustomerStatsMVFields : FieldsExpr<CustomerStatsMVRow> {
-  abstract override fun columns(): List<FieldLike<*, CustomerStatsMVRow>>
+data class CustomerStatsMVFields(val _path: List<Path>) : TupleExpr4<Int, String, Int, BigDecimal>, RelationStructure<CustomerStatsMVFields, CustomerStatsMVRow>, FieldsBase<CustomerStatsMVRow> {
+  override fun _1(): SqlExpr<Int> = customerId()
 
-  abstract fun customerId(): Field<Int, CustomerStatsMVRow>
+  override fun _2(): SqlExpr<String> = customerName()
 
-  abstract fun customerName(): Field<String, CustomerStatsMVRow>
+  override fun _3(): SqlExpr<Int> = totalOrders()
+
+  override fun _4(): SqlExpr<BigDecimal> = totalRevenue()
+
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, CustomerStatsMVRow>> = listOf(this.customerId().underlying, this.customerName().underlying, this.totalOrders().underlying, this.totalRevenue().underlying)
+
+  fun customerId(): Field<Int, CustomerStatsMVRow> = Field<Int, CustomerStatsMVRow>(_path, "CUSTOMER_ID", CustomerStatsMVRow::customerId, null, null, { row, value -> row.copy(customerId = value) }, KotlinDbTypes.Db2Types.integer)
+
+  fun customerName(): Field<String, CustomerStatsMVRow> = Field<String, CustomerStatsMVRow>(_path, "CUSTOMER_NAME", CustomerStatsMVRow::customerName, null, null, { row, value -> row.copy(customerName = value) }, Db2Types.varchar)
 
   override fun rowParser(): RowParser<CustomerStatsMVRow> = CustomerStatsMVRow._rowParser.underlying
 
-  abstract fun totalOrders(): Field<Int, CustomerStatsMVRow>
+  fun totalOrders(): Field<Int, CustomerStatsMVRow> = Field<Int, CustomerStatsMVRow>(_path, "TOTAL_ORDERS", CustomerStatsMVRow::totalOrders, null, null, { row, value -> row.copy(totalOrders = value) }, KotlinDbTypes.Db2Types.integer)
 
-  abstract fun totalRevenue(): Field<BigDecimal, CustomerStatsMVRow>
+  fun totalRevenue(): Field<BigDecimal, CustomerStatsMVRow> = Field<BigDecimal, CustomerStatsMVRow>(_path, "TOTAL_REVENUE", CustomerStatsMVRow::totalRevenue, null, null, { row, value -> row.copy(totalRevenue = value) }, KotlinDbTypes.Db2Types.decimal)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<CustomerStatsMVFields, CustomerStatsMVRow> = CustomerStatsMVFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : CustomerStatsMVFields, RelationStructure<CustomerStatsMVFields, CustomerStatsMVRow> {
-      override fun customerId(): Field<Int, CustomerStatsMVRow> = Field<Int, CustomerStatsMVRow>(_path, "CUSTOMER_ID", CustomerStatsMVRow::customerId, null, null, { row, value -> row.copy(customerId = value) }, KotlinDbTypes.Db2Types.integer)
-
-      override fun customerName(): Field<String, CustomerStatsMVRow> = Field<String, CustomerStatsMVRow>(_path, "CUSTOMER_NAME", CustomerStatsMVRow::customerName, null, null, { row, value -> row.copy(customerName = value) }, Db2Types.varchar)
-
-      override fun totalOrders(): Field<Int, CustomerStatsMVRow> = Field<Int, CustomerStatsMVRow>(_path, "TOTAL_ORDERS", CustomerStatsMVRow::totalOrders, null, null, { row, value -> row.copy(totalOrders = value) }, KotlinDbTypes.Db2Types.integer)
-
-      override fun totalRevenue(): Field<BigDecimal, CustomerStatsMVRow> = Field<BigDecimal, CustomerStatsMVRow>(_path, "TOTAL_REVENUE", CustomerStatsMVRow::totalRevenue, null, null, { row, value -> row.copy(totalRevenue = value) }, KotlinDbTypes.Db2Types.decimal)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, CustomerStatsMVRow>> = listOf(this.customerId().underlying, this.customerName().underlying, this.totalOrders().underlying, this.totalRevenue().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<CustomerStatsMVFields, CustomerStatsMVRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: CustomerStatsMVFields = CustomerStatsMVFields(emptyList<Path>())
   }
 }

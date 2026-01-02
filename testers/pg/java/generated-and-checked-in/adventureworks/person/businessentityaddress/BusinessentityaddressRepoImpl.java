@@ -31,10 +31,9 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
   public DeleteBuilder<BusinessentityaddressFields, BusinessentityaddressRow> delete() {
     return DeleteBuilder.of(
         "\"person\".\"businessentityaddress\"",
-        BusinessentityaddressFields.structure(),
+        BusinessentityaddressFields.structure,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(BusinessentityaddressId compositeId, Connection c) {
@@ -42,17 +41,16 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
                 Fragment.lit(
                     "delete from \"person\".\"businessentityaddress\" where \"businessentityid\""
                         + " = "),
-                Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid()),
+                Fragment.encode(BusinessentityId.dbType, compositeId.businessentityid()),
                 Fragment.lit(" AND \"addressid\" = "),
-                Fragment.encode(AddressId.pgType, compositeId.addressid()),
+                Fragment.encode(AddressId.dbType, compositeId.addressid()),
                 Fragment.lit(" AND \"addresstypeid\" = "),
-                Fragment.encode(AddresstypeId.pgType, compositeId.addresstypeid()),
+                Fragment.encode(AddresstypeId.dbType, compositeId.addresstypeid()),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(BusinessentityaddressId[] compositeIds, Connection c) {
@@ -72,16 +70,15 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
                     + "from \"person\".\"businessentityaddress\"\n"
                     + "where (\"businessentityid\", \"addressid\", \"addresstypeid\")\n"
                     + "in (select * from unnest("),
-            Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
+            Fragment.encode(BusinessentityId.dbTypeArray, businessentityid),
             Fragment.lit(", "),
-            Fragment.encode(AddressId.pgTypeArray, addressid),
+            Fragment.encode(AddressId.dbTypeArray, addressid),
             Fragment.lit(", "),
-            Fragment.encode(AddresstypeId.pgTypeArray, addresstypeid),
+            Fragment.encode(AddresstypeId.dbTypeArray, addresstypeid),
             Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public BusinessentityaddressRow insert(BusinessentityaddressRow unsaved, Connection c) {
@@ -90,11 +87,11 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
                 "insert into \"person\".\"businessentityaddress\"(\"businessentityid\","
                     + " \"addressid\", \"addresstypeid\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(AddressId.pgType, unsaved.addressid()),
+            Fragment.encode(AddressId.dbType, unsaved.addressid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(AddresstypeId.pgType, unsaved.addresstypeid()),
+            Fragment.encode(AddresstypeId.dbType, unsaved.addresstypeid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.uuid, unsaved.rowguid()),
             Fragment.lit("::uuid, "),
@@ -106,7 +103,6 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
         .updateReturning(BusinessentityaddressRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public BusinessentityaddressRow insert(BusinessentityaddressRowUnsaved unsaved, Connection c) {
@@ -117,16 +113,16 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
     columns.add(Fragment.lit("\"businessentityid\""));
     values.add(
         interpolate(
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"addressid\""));
     values.add(
         interpolate(
-            Fragment.encode(AddressId.pgType, unsaved.addressid()), Fragment.lit("::int4")));
+            Fragment.encode(AddressId.dbType, unsaved.addressid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"addresstypeid\""));
     values.add(
         interpolate(
-            Fragment.encode(AddresstypeId.pgType, unsaved.addresstypeid()),
+            Fragment.encode(AddresstypeId.dbType, unsaved.addresstypeid()),
             Fragment.lit("::int4")));
     unsaved
         .rowguid()
@@ -161,7 +157,6 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
     ;
     return q.updateReturning(BusinessentityaddressRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(
@@ -174,7 +169,6 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
         c,
         BusinessentityaddressRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -189,17 +183,15 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
         c,
         BusinessentityaddressRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<BusinessentityaddressFields, BusinessentityaddressRow> select() {
     return SelectBuilder.of(
         "\"person\".\"businessentityaddress\"",
-        BusinessentityaddressFields.structure(),
+        BusinessentityaddressFields.structure,
         BusinessentityaddressRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<BusinessentityaddressRow> selectAll(Connection c) {
@@ -211,7 +203,6 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
         .query(BusinessentityaddressRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<BusinessentityaddressRow> selectById(
@@ -222,16 +213,15 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
                     + " \"modifieddate\"\n"
                     + "from \"person\".\"businessentityaddress\"\n"
                     + "where \"businessentityid\" = "),
-            Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, compositeId.businessentityid()),
             Fragment.lit(" AND \"addressid\" = "),
-            Fragment.encode(AddressId.pgType, compositeId.addressid()),
+            Fragment.encode(AddressId.dbType, compositeId.addressid()),
             Fragment.lit(" AND \"addresstypeid\" = "),
-            Fragment.encode(AddresstypeId.pgType, compositeId.addresstypeid()),
+            Fragment.encode(AddresstypeId.dbType, compositeId.addresstypeid()),
             Fragment.lit(""))
         .query(BusinessentityaddressRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<BusinessentityaddressRow> selectByIds(
@@ -253,16 +243,15 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
                     + "from \"person\".\"businessentityaddress\"\n"
                     + "where (\"businessentityid\", \"addressid\", \"addresstypeid\")\n"
                     + "in (select * from unnest("),
-            Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
+            Fragment.encode(BusinessentityId.dbTypeArray, businessentityid),
             Fragment.lit(", "),
-            Fragment.encode(AddressId.pgTypeArray, addressid),
+            Fragment.encode(AddressId.dbTypeArray, addressid),
             Fragment.lit(", "),
-            Fragment.encode(AddresstypeId.pgTypeArray, addresstypeid),
+            Fragment.encode(AddresstypeId.dbTypeArray, addresstypeid),
             Fragment.lit("))\n"))
         .query(BusinessentityaddressRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<BusinessentityaddressId, BusinessentityaddressRow> selectByIdsTracked(
@@ -272,17 +261,15 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
     selectByIds(compositeIds, c).forEach(row -> ret.put(row.compositeId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<BusinessentityaddressFields, BusinessentityaddressRow> update() {
     return UpdateBuilder.of(
         "\"person\".\"businessentityaddress\"",
-        BusinessentityaddressFields.structure(),
+        BusinessentityaddressFields.structure,
         BusinessentityaddressRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(BusinessentityaddressRow row, Connection c) {
@@ -294,17 +281,16 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
                 Fragment.lit("::uuid,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"businessentityid\" = "),
-                Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid()),
+                Fragment.encode(BusinessentityId.dbType, compositeId.businessentityid()),
                 Fragment.lit(" AND \"addressid\" = "),
-                Fragment.encode(AddressId.pgType, compositeId.addressid()),
+                Fragment.encode(AddressId.dbType, compositeId.addressid()),
                 Fragment.lit(" AND \"addresstypeid\" = "),
-                Fragment.encode(AddresstypeId.pgType, compositeId.addresstypeid()),
+                Fragment.encode(AddresstypeId.dbType, compositeId.addresstypeid()),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public BusinessentityaddressRow upsert(BusinessentityaddressRow unsaved, Connection c) {
@@ -313,11 +299,11 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
                 "insert into \"person\".\"businessentityaddress\"(\"businessentityid\","
                     + " \"addressid\", \"addresstypeid\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(AddressId.pgType, unsaved.addressid()),
+            Fragment.encode(AddressId.dbType, unsaved.addressid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(AddresstypeId.pgType, unsaved.addresstypeid()),
+            Fragment.encode(AddresstypeId.dbType, unsaved.addresstypeid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.uuid, unsaved.rowguid()),
             Fragment.lit("::uuid, "),
@@ -333,7 +319,6 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
         .updateReturning(BusinessentityaddressRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<BusinessentityaddressRow> upsertBatch(
@@ -352,7 +337,6 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
         .updateManyReturning(BusinessentityaddressRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -385,5 +369,4 @@ public class BusinessentityaddressRepoImpl implements BusinessentityaddressRepo 
         .update()
         .runUnchecked(c);
   }
-  ;
 }

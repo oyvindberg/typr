@@ -20,9 +20,8 @@ import java.util.List;
 public class NullabilityTestRepoImpl implements NullabilityTestRepo {
   @Override
   public DeleteBuilder<NullabilityTestFields, NullabilityTestRow> delete() {
-    return DeleteBuilder.of("\"NULLABILITY_TEST\"", NullabilityTestFields.structure(), Dialect.DB2);
+    return DeleteBuilder.of("\"NULLABILITY_TEST\"", NullabilityTestFields.structure, Dialect.DB2);
   }
-  ;
 
   @Override
   public NullabilityTestRow insert(NullabilityTestRow unsaved, Connection c) {
@@ -43,7 +42,6 @@ public class NullabilityTestRepoImpl implements NullabilityTestRepo {
         .updateReturning(NullabilityTestRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public NullabilityTestRow insert(NullabilityTestRowUnsaved unsaved, Connection c) {
@@ -82,17 +80,15 @@ public class NullabilityTestRepoImpl implements NullabilityTestRepo {
     ;
     return q.updateReturning(NullabilityTestRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<NullabilityTestFields, NullabilityTestRow> select() {
     return SelectBuilder.of(
         "\"NULLABILITY_TEST\"",
-        NullabilityTestFields.structure(),
+        NullabilityTestFields.structure,
         NullabilityTestRow._rowParser,
         Dialect.DB2);
   }
-  ;
 
   @Override
   public List<NullabilityTestRow> selectAll(Connection c) {
@@ -103,15 +99,13 @@ public class NullabilityTestRepoImpl implements NullabilityTestRepo {
         .query(NullabilityTestRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<NullabilityTestFields, NullabilityTestRow> update() {
     return UpdateBuilder.of(
         "\"NULLABILITY_TEST\"",
-        NullabilityTestFields.structure(),
+        NullabilityTestFields.structure,
         NullabilityTestRow._rowParser,
         Dialect.DB2);
   }
-  ;
 }

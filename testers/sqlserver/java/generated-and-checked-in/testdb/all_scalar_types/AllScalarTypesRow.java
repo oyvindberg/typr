@@ -11,6 +11,11 @@ import com.microsoft.sqlserver.jdbc.Geometry;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
 import dev.typr.foundations.SqlServerTypes;
+import dev.typr.foundations.Tuple.Tuple38;
+import dev.typr.foundations.data.HierarchyId;
+import dev.typr.foundations.data.Json;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Xml;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,7 +29,7 @@ import testdb.customtypes.Defaulted;
 public record AllScalarTypesRow(
     /** IDENTITY(1, 1) */
     AllScalarTypesId id,
-    @JsonProperty("col_tinyint") Optional<Short> colTinyint,
+    @JsonProperty("col_tinyint") Optional<Uint1> colTinyint,
     @JsonProperty("col_smallint") Optional<Short> colSmallint,
     @JsonProperty("col_int") Optional<Integer> colInt,
     @JsonProperty("col_bigint") Optional<Long> colBigint,
@@ -54,15 +59,54 @@ public record AllScalarTypesRow(
     @JsonProperty("col_datetime2") Optional<LocalDateTime> colDatetime2,
     @JsonProperty("col_datetimeoffset") Optional<OffsetDateTime> colDatetimeoffset,
     @JsonProperty("col_uniqueidentifier") Optional<UUID> colUniqueidentifier,
-    @JsonProperty("col_xml") Optional</* XML */ String> colXml,
-    @JsonProperty("col_json") Optional<String> colJson,
+    @JsonProperty("col_xml") Optional<Xml> colXml,
+    @JsonProperty("col_json") Optional<Json> colJson,
     /** ROWVERSION */
     @JsonProperty("col_rowversion") byte[] colRowversion,
-    @JsonProperty("col_hierarchyid") Optional</* HIERARCHYID */ String> colHierarchyid,
+    @JsonProperty("col_hierarchyid") Optional<HierarchyId> colHierarchyid,
     @JsonProperty("col_geography") Optional<Geography> colGeography,
     @JsonProperty("col_geometry") Optional<Geometry> colGeometry,
     /** Default: ('default_value') */
-    @JsonProperty("col_not_null") String colNotNull) {
+    @JsonProperty("col_not_null") String colNotNull)
+    implements Tuple38<
+        AllScalarTypesId,
+        Optional<Uint1>,
+        Optional<Short>,
+        Optional<Integer>,
+        Optional<Long>,
+        Optional<BigDecimal>,
+        Optional<BigDecimal>,
+        Optional<BigDecimal>,
+        Optional<BigDecimal>,
+        Optional<Float>,
+        Optional<Double>,
+        Optional<Boolean>,
+        Optional<String>,
+        Optional<String>,
+        Optional<String>,
+        Optional<String>,
+        Optional<String>,
+        Optional<String>,
+        Optional<String>,
+        Optional<String>,
+        Optional<byte[]>,
+        Optional<byte[]>,
+        Optional<byte[]>,
+        Optional<byte[]>,
+        Optional<LocalDate>,
+        Optional<LocalTime>,
+        Optional<LocalDateTime>,
+        Optional<LocalDateTime>,
+        Optional<LocalDateTime>,
+        Optional<OffsetDateTime>,
+        Optional<UUID>,
+        Optional<Xml>,
+        Optional<Json>,
+        byte[],
+        Optional<HierarchyId>,
+        Optional<Geography>,
+        Optional<Geometry>,
+        String> {
   /** IDENTITY(1, 1) */
   public AllScalarTypesRow withId(AllScalarTypesId id) {
     return new AllScalarTypesRow(
@@ -107,7 +151,7 @@ public record AllScalarTypesRow(
   }
   ;
 
-  public AllScalarTypesRow withColTinyint(Optional<Short> colTinyint) {
+  public AllScalarTypesRow withColTinyint(Optional<Uint1> colTinyint) {
     return new AllScalarTypesRow(
         id,
         colTinyint,
@@ -1397,7 +1441,7 @@ public record AllScalarTypesRow(
   }
   ;
 
-  public AllScalarTypesRow withColXml(Optional</* XML */ String> colXml) {
+  public AllScalarTypesRow withColXml(Optional<Xml> colXml) {
     return new AllScalarTypesRow(
         id,
         colTinyint,
@@ -1440,7 +1484,7 @@ public record AllScalarTypesRow(
   }
   ;
 
-  public AllScalarTypesRow withColJson(Optional<String> colJson) {
+  public AllScalarTypesRow withColJson(Optional<Json> colJson) {
     return new AllScalarTypesRow(
         id,
         colTinyint,
@@ -1527,7 +1571,7 @@ public record AllScalarTypesRow(
   }
   ;
 
-  public AllScalarTypesRow withColHierarchyid(Optional</* HIERARCHYID */ String> colHierarchyid) {
+  public AllScalarTypesRow withColHierarchyid(Optional<HierarchyId> colHierarchyid) {
     return new AllScalarTypesRow(
         id,
         colTinyint,
@@ -1734,7 +1778,7 @@ public record AllScalarTypesRow(
           SqlServerTypes.datetimeoffset.opt(),
           SqlServerTypes.uniqueidentifier.opt(),
           SqlServerTypes.xml.opt(),
-          SqlServerTypes.nvarchar.opt(),
+          SqlServerTypes.json.opt(),
           SqlServerTypes.rowversion,
           SqlServerTypes.hierarchyid.opt(),
           SqlServerTypes.geography.opt(),
@@ -1782,6 +1826,234 @@ public record AllScalarTypesRow(
                 row.colGeometry(),
                 row.colNotNull()
               });
+  ;
+
+  @Override
+  public AllScalarTypesId _1() {
+    return id;
+  }
+  ;
+
+  @Override
+  public Optional<Float> _10() {
+    return colReal;
+  }
+  ;
+
+  @Override
+  public Optional<Double> _11() {
+    return colFloat;
+  }
+  ;
+
+  @Override
+  public Optional<Boolean> _12() {
+    return colBit;
+  }
+  ;
+
+  @Override
+  public Optional<String> _13() {
+    return colChar;
+  }
+  ;
+
+  @Override
+  public Optional<String> _14() {
+    return colVarchar;
+  }
+  ;
+
+  @Override
+  public Optional<String> _15() {
+    return colVarcharMax;
+  }
+  ;
+
+  @Override
+  public Optional<String> _16() {
+    return colText;
+  }
+  ;
+
+  @Override
+  public Optional<String> _17() {
+    return colNchar;
+  }
+  ;
+
+  @Override
+  public Optional<String> _18() {
+    return colNvarchar;
+  }
+  ;
+
+  @Override
+  public Optional<String> _19() {
+    return colNvarcharMax;
+  }
+  ;
+
+  @Override
+  public Optional<Uint1> _2() {
+    return colTinyint;
+  }
+  ;
+
+  @Override
+  public Optional<String> _20() {
+    return colNtext;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _21() {
+    return colBinary;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _22() {
+    return colVarbinary;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _23() {
+    return colVarbinaryMax;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _24() {
+    return colImage;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDate> _25() {
+    return colDate;
+  }
+  ;
+
+  @Override
+  public Optional<LocalTime> _26() {
+    return colTime;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _27() {
+    return colDatetime;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _28() {
+    return colSmalldatetime;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _29() {
+    return colDatetime2;
+  }
+  ;
+
+  @Override
+  public Optional<Short> _3() {
+    return colSmallint;
+  }
+  ;
+
+  @Override
+  public Optional<OffsetDateTime> _30() {
+    return colDatetimeoffset;
+  }
+  ;
+
+  @Override
+  public Optional<UUID> _31() {
+    return colUniqueidentifier;
+  }
+  ;
+
+  @Override
+  public Optional<Xml> _32() {
+    return colXml;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _33() {
+    return colJson;
+  }
+  ;
+
+  @Override
+  public byte[] _34() {
+    return colRowversion;
+  }
+  ;
+
+  @Override
+  public Optional<HierarchyId> _35() {
+    return colHierarchyid;
+  }
+  ;
+
+  @Override
+  public Optional<Geography> _36() {
+    return colGeography;
+  }
+  ;
+
+  @Override
+  public Optional<Geometry> _37() {
+    return colGeometry;
+  }
+  ;
+
+  @Override
+  public String _38() {
+    return colNotNull;
+  }
+  ;
+
+  @Override
+  public Optional<Integer> _4() {
+    return colInt;
+  }
+  ;
+
+  @Override
+  public Optional<Long> _5() {
+    return colBigint;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _6() {
+    return colDecimal;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _7() {
+    return colNumeric;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _8() {
+    return colMoney;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _9() {
+    return colSmallmoney;
+  }
   ;
 
   public AllScalarTypesRowUnsaved toUnsavedRow(Defaulted<String> colNotNull) {

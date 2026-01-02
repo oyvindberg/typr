@@ -21,29 +21,29 @@ import typr.generated.Text
 case class YesOrNo(value: String)
 
 object YesOrNo {
-  implicit lazy val arrayColumn: Column[Array[YesOrNo]] = Column.columnToArray(column, implicitly)
+  given arrayColumn: Column[Array[YesOrNo]] = Column.columnToArray(using column, summon)
 
-  implicit lazy val arrayToStatement: ToStatement[Array[YesOrNo]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
+  given arrayToStatement: ToStatement[Array[YesOrNo]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
 
-  implicit lazy val column: Column[YesOrNo] = Column.columnToString.map(YesOrNo.apply)
+  given column: Column[YesOrNo] = Column.columnToString.map(YesOrNo.apply)
 
-  implicit lazy val parameterMetadata: ParameterMetaData[YesOrNo] = {
+  given parameterMetadata: ParameterMetaData[YesOrNo] = {
     new ParameterMetaData[YesOrNo] {
       override def sqlType: String = """"information_schema"."yes_or_no""""
       override def jdbcType: Int = Types.OTHER
     }
   }
 
-  implicit lazy val pgText: Text[YesOrNo] = {
+  given pgText: Text[YesOrNo] = {
     new Text[YesOrNo] {
       override def unsafeEncode(v: YesOrNo, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
       override def unsafeArrayEncode(v: YesOrNo, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
     }
   }
 
-  implicit lazy val reads: Reads[YesOrNo] = Reads.StringReads.map(YesOrNo.apply)
+  given reads: Reads[YesOrNo] = Reads.StringReads.map(YesOrNo.apply)
 
-  implicit lazy val toStatement: ToStatement[YesOrNo] = ToStatement.stringToStatement.contramap(_.value)
+  given toStatement: ToStatement[YesOrNo] = ToStatement.stringToStatement.contramap(_.value)
 
-  implicit lazy val writes: Writes[YesOrNo] = Writes.StringWrites.contramap(_.value)
+  given writes: Writes[YesOrNo] = Writes.StringWrites.contramap(_.value)
 }

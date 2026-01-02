@@ -1,6 +1,6 @@
 package dev.typr.foundations.scala
 
-import dev.typr.foundations.{Db2Type, DuckDbType, MariaType, OracleType, PgType, SqlServerType}
+import dev.typr.foundations.*
 
 import _root_.scala.jdk.CollectionConverters.*
 
@@ -17,11 +17,6 @@ object ScalaDbTypes {
     val double_ : DuckDbType[Double] = dev.typr.foundations.DuckDbTypes.double_.bimap(d => d, d => d)
     val boolean_ : DuckDbType[Boolean] = dev.typr.foundations.DuckDbTypes.boolean_.bimap(b => b, b => b)
     val bool: DuckDbType[Boolean] = dev.typr.foundations.DuckDbTypes.bool.bimap(b => b, b => b)
-
-    // Unsigned integer types
-    val utinyint: DuckDbType[Short] = dev.typr.foundations.DuckDbTypes.utinyint.bimap(s => s, s => s)
-    val usmallint: DuckDbType[Int] = dev.typr.foundations.DuckDbTypes.usmallint.bimap(i => i, i => i)
-    val uinteger: DuckDbType[Long] = dev.typr.foundations.DuckDbTypes.uinteger.bimap(l => l, l => l)
 
     // BigDecimal - convert Java BigDecimal to Scala BigDecimal
     val decimal: DuckDbType[BigDecimal] = dev.typr.foundations.DuckDbTypes.decimal.bimap(jbd => BigDecimal(jbd), sbd => sbd.bigDecimal)
@@ -67,6 +62,14 @@ object ScalaDbTypes {
     val int8: PgType[Long] = dev.typr.foundations.PgTypes.int8.bimap(l => l, l => l)
     val float4: PgType[Float] = dev.typr.foundations.PgTypes.float4.bimap(f => f, f => f)
     val float8: PgType[Double] = dev.typr.foundations.PgTypes.float8.bimap(d => d, d => d)
+
+    // oid - 32-bit unsigned integer wrapped in Oid type
+    val oid: PgType[dev.typr.foundations.data.Oid] = dev.typr.foundations.PgTypes.oid
+    val oidArray: PgType[Array[dev.typr.foundations.data.Oid]] = dev.typr.foundations.PgTypes.oidArray
+
+    // oidvector - vector of oids
+    val oidvector: PgType[dev.typr.foundations.data.OidVector] = dev.typr.foundations.PgTypes.oidvector
+    val oidvectorArray: PgType[Array[dev.typr.foundations.data.OidVector]] = dev.typr.foundations.PgTypes.oidvectorArray
 
     // BigDecimal - convert Java BigDecimal to Scala BigDecimal
     val numeric: PgType[BigDecimal] = dev.typr.foundations.PgTypes.numeric.bimap(jbd => BigDecimal(jbd), sbd => sbd.bigDecimal)
@@ -114,12 +117,6 @@ object ScalaDbTypes {
     val int_ : MariaType[Int] = dev.typr.foundations.MariaTypes.int_.bimap(i => i, i => i)
     val bigint: MariaType[Long] = dev.typr.foundations.MariaTypes.bigint.bimap(l => l, l => l)
 
-    // Unsigned integers
-    val tinyintUnsigned: MariaType[Short] = dev.typr.foundations.MariaTypes.tinyintUnsigned.bimap(s => s, s => s)
-    val smallintUnsigned: MariaType[Int] = dev.typr.foundations.MariaTypes.smallintUnsigned.bimap(i => i, i => i)
-    val mediumintUnsigned: MariaType[Int] = dev.typr.foundations.MariaTypes.mediumintUnsigned.bimap(i => i, i => i)
-    val intUnsigned: MariaType[Long] = dev.typr.foundations.MariaTypes.intUnsigned.bimap(l => l, l => l)
-
     // Floating point
     val float_ : MariaType[Float] = dev.typr.foundations.MariaTypes.float_.bimap(f => f, f => f)
     val double_ : MariaType[Double] = dev.typr.foundations.MariaTypes.double_.bimap(d => d, d => d)
@@ -143,7 +140,6 @@ object ScalaDbTypes {
 
   object SqlServerTypes {
     // Primitives - convert Java boxed types to Scala native types
-    val tinyint: SqlServerType[Short] = dev.typr.foundations.SqlServerTypes.tinyint.bimap(s => s, s => s) // Unsigned!
     val smallint: SqlServerType[Short] = dev.typr.foundations.SqlServerTypes.smallint.bimap(s => s, s => s)
     val int_ : SqlServerType[Int] = dev.typr.foundations.SqlServerTypes.int_.bimap(i => i, i => i)
     val bigint: SqlServerType[Long] = dev.typr.foundations.SqlServerTypes.bigint.bimap(l => l, l => l)

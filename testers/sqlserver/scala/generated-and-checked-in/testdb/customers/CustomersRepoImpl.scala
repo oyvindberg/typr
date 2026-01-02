@@ -101,12 +101,12 @@ class CustomersRepoImpl extends CustomersRepo {
 
   override def upsert(unsaved: CustomersRow)(using c: Connection): CustomersRow = {
   sql"""MERGE INTO [customers] AS target
-    USING (VALUES (${Fragment.encode(SqlServerTypes.nvarchar, unsaved.name)}, ${Fragment.encode(SqlServerTypes.nvarchar, unsaved.email)}, ${Fragment.encode(SqlServerTypes.datetime2.nullable, unsaved.createdAt)})) AS source([name], [email], [created_at])
+    USING (VALUES (${Fragment.encode(CustomersId.sqlServerType, unsaved.customerId)}, ${Fragment.encode(SqlServerTypes.nvarchar, unsaved.name)}, ${Fragment.encode(SqlServerTypes.nvarchar, unsaved.email)}, ${Fragment.encode(SqlServerTypes.datetime2.nullable, unsaved.createdAt)})) AS source([customer_id], [name], [email], [created_at])
     ON target.[customer_id] = source.[customer_id]
     WHEN MATCHED THEN UPDATE SET [name] = source.[name],
     [email] = source.[email],
     [created_at] = source.[created_at]
-    WHEN NOT MATCHED THEN INSERT ([name], [email], [created_at]) VALUES (${Fragment.encode(SqlServerTypes.nvarchar, unsaved.name)}, ${Fragment.encode(SqlServerTypes.nvarchar, unsaved.email)}, ${Fragment.encode(SqlServerTypes.datetime2.nullable, unsaved.createdAt)})
+    WHEN NOT MATCHED THEN INSERT ([customer_id], [name], [email], [created_at]) VALUES (${Fragment.encode(CustomersId.sqlServerType, unsaved.customerId)}, ${Fragment.encode(SqlServerTypes.nvarchar, unsaved.name)}, ${Fragment.encode(SqlServerTypes.nvarchar, unsaved.email)}, ${Fragment.encode(SqlServerTypes.datetime2.nullable, unsaved.createdAt)})
     OUTPUT INSERTED.[customer_id], INSERTED.[name], INSERTED.[email], INSERTED.[created_at];"""
     .updateReturning(CustomersRow.`_rowParser`.exactlyOne())
     .runUnchecked(c)

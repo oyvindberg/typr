@@ -7,6 +7,7 @@ package testdb.employee_salary_update
 
 import java.math.BigDecimal
 import java.sql.Connection
+import kotlin.collections.List
 
 interface EmployeeSalaryUpdateSqlRepo {
   abstract fun apply(
@@ -15,5 +16,5 @@ interface EmployeeSalaryUpdateSqlRepo {
     empNumber: Int,
     empSuffix: String,
     c: Connection
-  ): Int
+  ): List<EmployeeSalaryUpdateSqlRow>
 }

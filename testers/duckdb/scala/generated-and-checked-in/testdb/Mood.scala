@@ -17,7 +17,7 @@ import dev.typr.foundations.DuckDbTypes
 sealed abstract class Mood(val value: java.lang.String)
 
 object Mood {
-  given pgTypeArray: DuckDbType[Array[Mood]] = {
+  given dbTypeArray: DuckDbType[Array[Mood]] = {
     DuckDbTypes.varcharArray
       .bimap(xs => xs.map(Mood.force), xs => xs.map(_.value))
       .renamedDropPrecision("mood")

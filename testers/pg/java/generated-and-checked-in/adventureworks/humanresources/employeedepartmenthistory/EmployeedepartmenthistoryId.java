@@ -11,6 +11,7 @@ import adventureworks.person.businessentity.BusinessentityId;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.time.LocalDate;
 
 /** Type for the composite primary key of table `humanresources.employeedepartmenthistory` */
@@ -18,7 +19,8 @@ public record EmployeedepartmenthistoryId(
     BusinessentityId businessentityid,
     LocalDate startdate,
     DepartmentId departmentid,
-    ShiftId shiftid) {
+    ShiftId shiftid)
+    implements Tuple4<BusinessentityId, LocalDate, DepartmentId, ShiftId> {
   public EmployeedepartmenthistoryId withBusinessentityid(BusinessentityId businessentityid) {
     return new EmployeedepartmenthistoryId(businessentityid, startdate, departmentid, shiftid);
   }
@@ -41,14 +43,38 @@ public record EmployeedepartmenthistoryId(
 
   public static RowParser<EmployeedepartmenthistoryId> _rowParser =
       RowParsers.of(
-          BusinessentityId.pgType,
+          BusinessentityId.dbType,
           PgTypes.date,
-          DepartmentId.pgType,
-          ShiftId.pgType,
+          DepartmentId.dbType,
+          ShiftId.dbType,
           EmployeedepartmenthistoryId::new,
           row ->
               new Object[] {
                 row.businessentityid(), row.startdate(), row.departmentid(), row.shiftid()
               });
+  ;
+
+  @Override
+  public BusinessentityId _1() {
+    return businessentityid;
+  }
+  ;
+
+  @Override
+  public LocalDate _2() {
+    return startdate;
+  }
+  ;
+
+  @Override
+  public DepartmentId _3() {
+    return departmentid;
+  }
+  ;
+
+  @Override
+  public ShiftId _4() {
+    return shiftid;
+  }
   ;
 }

@@ -18,7 +18,7 @@ class OrderItemsBulkInsertSqlRepoImpl extends OrderItemsBulkInsertSqlRepo {
     productId: /* user-picked */ ProductsId,
     quantity: Int,
     unitPrice: BigDecimal
-  )(using c: Connection): Int = {
+  )(using c: Connection): List[OrderItemsBulkInsertSqlRow] = {
     sql"""-- Insert order items with composite key handling
     -- Tests: composite primary key in INSERT, foreign key types, RETURNING with composite key
   
@@ -33,6 +33,6 @@ class OrderItemsBulkInsertSqlRepoImpl extends OrderItemsBulkInsertSqlRepo {
         order_id,
         product_id,
         quantity,
-        unit_price""".update().runUnchecked(c)
+        unit_price""".query(OrderItemsBulkInsertSqlRow.`_rowParser`.all()).runUnchecked(c)
   }
 }

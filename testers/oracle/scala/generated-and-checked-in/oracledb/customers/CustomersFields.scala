@@ -7,101 +7,98 @@ package oracledb.customers
 
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
+import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
 import dev.typr.foundations.dsl.SqlExpr.OptField
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5
 import java.time.LocalDateTime
 import java.util.Optional
 import oracledb.AddressT
 import oracledb.MoneyT
 
-trait CustomersFields extends FieldsExpr0[CustomersRow] {
-  def customerId: IdField[CustomersId, CustomersRow]
+class CustomersFields(val `_path`: java.util.List[Path]) extends TupleExpr5[CustomersId, String, AddressT, MoneyT, LocalDateTime] with RelationStructure[CustomersFields, CustomersRow]  with FieldsBase[CustomersRow] {
+  def customerId: IdField[CustomersId, CustomersRow] = {
+    new IdField[CustomersId, CustomersRow](
+      _path,
+      "CUSTOMER_ID",
+      _.customerId,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(customerId = value),
+      CustomersId.oracleType
+    )
+  }
 
-  def name: Field[String, CustomersRow]
+  def name: Field[String, CustomersRow] = {
+    new Field[String, CustomersRow](
+      _path,
+      "NAME",
+      _.name,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(name = value),
+      OracleTypes.varchar2
+    )
+  }
 
-  def billingAddress: Field[AddressT, CustomersRow]
+  def billingAddress: Field[AddressT, CustomersRow] = {
+    new Field[AddressT, CustomersRow](
+      _path,
+      "BILLING_ADDRESS",
+      _.billingAddress,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(billingAddress = value),
+      AddressT.oracleType
+    )
+  }
 
-  def creditLimit: OptField[MoneyT, CustomersRow]
+  def creditLimit: OptField[MoneyT, CustomersRow] = {
+    new OptField[MoneyT, CustomersRow](
+      _path,
+      "CREDIT_LIMIT",
+      _.creditLimit,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(creditLimit = value),
+      MoneyT.oracleType
+    )
+  }
 
-  def createdAt: Field[LocalDateTime, CustomersRow]
+  def createdAt: Field[LocalDateTime, CustomersRow] = {
+    new Field[LocalDateTime, CustomersRow](
+      _path,
+      "CREATED_AT",
+      _.createdAt,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(createdAt = value),
+      OracleTypes.timestamp
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, CustomersRow]]
+  override def columns: java.util.List[FieldLike[?, CustomersRow]] = java.util.List.of(this.customerId, this.name, this.billingAddress, this.creditLimit, this.createdAt)
 
   override def rowParser: RowParser[CustomersRow] = CustomersRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomersFields, CustomersRow] = new CustomersFields(`_path`)
+
+  override def `_1`: SqlExpr[CustomersId] = customerId
+
+  override def `_2`: SqlExpr[String] = name
+
+  override def `_3`: SqlExpr[AddressT] = billingAddress
+
+  override def `_4`: SqlExpr[MoneyT] = creditLimit
+
+  override def `_5`: SqlExpr[LocalDateTime] = createdAt
 }
 
 object CustomersFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends CustomersFields with RelationStructure[CustomersFields, CustomersRow] {
-
-    override def customerId: IdField[CustomersId, CustomersRow] = {
-      new IdField[CustomersId, CustomersRow](
-        _path,
-        "CUSTOMER_ID",
-        _.customerId,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(customerId = value),
-        CustomersId.oracleType
-      )
-    }
-
-    override def name: Field[String, CustomersRow] = {
-      new Field[String, CustomersRow](
-        _path,
-        "NAME",
-        _.name,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(name = value),
-        OracleTypes.varchar2
-      )
-    }
-
-    override def billingAddress: Field[AddressT, CustomersRow] = {
-      new Field[AddressT, CustomersRow](
-        _path,
-        "BILLING_ADDRESS",
-        _.billingAddress,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(billingAddress = value),
-        AddressT.oracleType
-      )
-    }
-
-    override def creditLimit: OptField[MoneyT, CustomersRow] = {
-      new OptField[MoneyT, CustomersRow](
-        _path,
-        "CREDIT_LIMIT",
-        _.creditLimit,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(creditLimit = value),
-        MoneyT.oracleType
-      )
-    }
-
-    override def createdAt: Field[LocalDateTime, CustomersRow] = {
-      new Field[LocalDateTime, CustomersRow](
-        _path,
-        "CREATED_AT",
-        _.createdAt,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(createdAt = value),
-        OracleTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, CustomersRow]] = java.util.List.of(this.customerId, this.name, this.billingAddress, this.creditLimit, this.createdAt)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomersFields, CustomersRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: CustomersFields = new CustomersFields(java.util.Collections.emptyList())
 }

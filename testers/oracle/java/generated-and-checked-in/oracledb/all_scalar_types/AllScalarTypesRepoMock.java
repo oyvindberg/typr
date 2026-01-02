@@ -48,7 +48,7 @@ public record AllScalarTypesRepoMock(
   @Override
   public DeleteBuilder<AllScalarTypesFields, AllScalarTypesRow> delete() {
     return new DeleteBuilderMock<>(
-        AllScalarTypesFields.structure(),
+        AllScalarTypesFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.id(),
@@ -97,9 +97,7 @@ public record AllScalarTypesRepoMock(
   @Override
   public SelectBuilder<AllScalarTypesFields, AllScalarTypesRow> select() {
     return new SelectBuilderMock<>(
-        AllScalarTypesFields.structure(),
-        () -> new ArrayList<>(map.values()),
-        SelectParams.empty());
+        AllScalarTypesFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -141,7 +139,7 @@ public record AllScalarTypesRepoMock(
   @Override
   public UpdateBuilder<AllScalarTypesFields, AllScalarTypesRow> update() {
     return new UpdateBuilderMock<>(
-        AllScalarTypesFields.structure(),
+        AllScalarTypesFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

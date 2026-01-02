@@ -51,7 +51,7 @@ public record Db2testIdentityAlwaysRepoMock(
   @Override
   public DeleteBuilder<Db2testIdentityAlwaysFields, Db2testIdentityAlwaysRow> delete() {
     return new DeleteBuilderMock<>(
-        Db2testIdentityAlwaysFields.structure(),
+        Db2testIdentityAlwaysFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.id(),
@@ -100,7 +100,7 @@ public record Db2testIdentityAlwaysRepoMock(
   @Override
   public SelectBuilder<Db2testIdentityAlwaysFields, Db2testIdentityAlwaysRow> select() {
     return new SelectBuilderMock<>(
-        Db2testIdentityAlwaysFields.structure(),
+        Db2testIdentityAlwaysFields.structure,
         () -> new ArrayList<>(map.values()),
         SelectParams.empty());
   }
@@ -144,7 +144,7 @@ public record Db2testIdentityAlwaysRepoMock(
   @Override
   public UpdateBuilder<Db2testIdentityAlwaysFields, Db2testIdentityAlwaysRow> update() {
     return new UpdateBuilderMock<>(
-        Db2testIdentityAlwaysFields.structure(),
+        Db2testIdentityAlwaysFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

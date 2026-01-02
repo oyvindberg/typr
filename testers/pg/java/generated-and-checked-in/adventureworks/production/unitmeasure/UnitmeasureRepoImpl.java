@@ -27,34 +27,31 @@ public class UnitmeasureRepoImpl implements UnitmeasureRepo {
   @Override
   public DeleteBuilder<UnitmeasureFields, UnitmeasureRow> delete() {
     return DeleteBuilder.of(
-        "\"production\".\"unitmeasure\"", UnitmeasureFields.structure(), Dialect.POSTGRESQL);
+        "\"production\".\"unitmeasure\"", UnitmeasureFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(UnitmeasureId unitmeasurecode, Connection c) {
     return interpolate(
                 Fragment.lit(
                     "delete from \"production\".\"unitmeasure\" where \"unitmeasurecode\" = "),
-                Fragment.encode(UnitmeasureId.pgType, unitmeasurecode),
+                Fragment.encode(UnitmeasureId.dbType, unitmeasurecode),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(UnitmeasureId[] unitmeasurecodes, Connection c) {
     return interpolate(
             Fragment.lit(
                 "delete\nfrom \"production\".\"unitmeasure\"\nwhere \"unitmeasurecode\" = ANY("),
-            Fragment.encode(UnitmeasureId.pgTypeArray, unitmeasurecodes),
+            Fragment.encode(UnitmeasureId.dbTypeArray, unitmeasurecodes),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UnitmeasureRow insert(UnitmeasureRow unsaved, Connection c) {
@@ -63,9 +60,9 @@ public class UnitmeasureRepoImpl implements UnitmeasureRepo {
                 "insert into \"production\".\"unitmeasure\"(\"unitmeasurecode\", \"name\","
                     + " \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(UnitmeasureId.pgType, unsaved.unitmeasurecode()),
+            Fragment.encode(UnitmeasureId.dbType, unsaved.unitmeasurecode()),
             Fragment.lit("::bpchar, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()),
             Fragment.lit(
@@ -73,7 +70,6 @@ public class UnitmeasureRepoImpl implements UnitmeasureRepo {
         .updateReturning(UnitmeasureRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UnitmeasureRow insert(UnitmeasureRowUnsaved unsaved, Connection c) {
@@ -84,11 +80,11 @@ public class UnitmeasureRepoImpl implements UnitmeasureRepo {
     columns.add(Fragment.lit("\"unitmeasurecode\""));
     values.add(
         interpolate(
-            Fragment.encode(UnitmeasureId.pgType, unsaved.unitmeasurecode()),
+            Fragment.encode(UnitmeasureId.dbType, unsaved.unitmeasurecode()),
             Fragment.lit("::bpchar")));
     columns.add(Fragment.lit("\"name\""));
     values.add(
-        interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
+        interpolate(Fragment.encode(Name.dbType, unsaved.name()), Fragment.lit("::varchar")));
     unsaved
         .modifieddate()
         .visit(
@@ -110,7 +106,6 @@ public class UnitmeasureRepoImpl implements UnitmeasureRepo {
     ;
     return q.updateReturning(UnitmeasureRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<UnitmeasureRow> unsaved, Integer batchSize, Connection c) {
@@ -122,7 +117,6 @@ public class UnitmeasureRepoImpl implements UnitmeasureRepo {
         c,
         UnitmeasureRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -136,17 +130,15 @@ public class UnitmeasureRepoImpl implements UnitmeasureRepo {
         c,
         UnitmeasureRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<UnitmeasureFields, UnitmeasureRow> select() {
     return SelectBuilder.of(
         "\"production\".\"unitmeasure\"",
-        UnitmeasureFields.structure(),
+        UnitmeasureFields.structure,
         UnitmeasureRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<UnitmeasureRow> selectAll(Connection c) {
@@ -157,7 +149,6 @@ public class UnitmeasureRepoImpl implements UnitmeasureRepo {
         .query(UnitmeasureRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<UnitmeasureRow> selectById(UnitmeasureId unitmeasurecode, Connection c) {
@@ -166,12 +157,11 @@ public class UnitmeasureRepoImpl implements UnitmeasureRepo {
                 "select \"unitmeasurecode\", \"name\", \"modifieddate\"\n"
                     + "from \"production\".\"unitmeasure\"\n"
                     + "where \"unitmeasurecode\" = "),
-            Fragment.encode(UnitmeasureId.pgType, unitmeasurecode),
+            Fragment.encode(UnitmeasureId.dbType, unitmeasurecode),
             Fragment.lit(""))
         .query(UnitmeasureRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<UnitmeasureRow> selectByIds(UnitmeasureId[] unitmeasurecodes, Connection c) {
@@ -180,12 +170,11 @@ public class UnitmeasureRepoImpl implements UnitmeasureRepo {
                 "select \"unitmeasurecode\", \"name\", \"modifieddate\"\n"
                     + "from \"production\".\"unitmeasure\"\n"
                     + "where \"unitmeasurecode\" = ANY("),
-            Fragment.encode(UnitmeasureId.pgTypeArray, unitmeasurecodes),
+            Fragment.encode(UnitmeasureId.dbTypeArray, unitmeasurecodes),
             Fragment.lit(")"))
         .query(UnitmeasureRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<UnitmeasureId, UnitmeasureRow> selectByIdsTracked(
@@ -194,17 +183,15 @@ public class UnitmeasureRepoImpl implements UnitmeasureRepo {
     selectByIds(unitmeasurecodes, c).forEach(row -> ret.put(row.unitmeasurecode(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<UnitmeasureFields, UnitmeasureRow> update() {
     return UpdateBuilder.of(
         "\"production\".\"unitmeasure\"",
-        UnitmeasureFields.structure(),
+        UnitmeasureFields.structure,
         UnitmeasureRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(UnitmeasureRow row, Connection c) {
@@ -212,17 +199,16 @@ public class UnitmeasureRepoImpl implements UnitmeasureRepo {
     ;
     return interpolate(
                 Fragment.lit("update \"production\".\"unitmeasure\"\nset \"name\" = "),
-                Fragment.encode(Name.pgType, row.name()),
+                Fragment.encode(Name.dbType, row.name()),
                 Fragment.lit("::varchar,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"unitmeasurecode\" = "),
-                Fragment.encode(UnitmeasureId.pgType, unitmeasurecode),
+                Fragment.encode(UnitmeasureId.dbType, unitmeasurecode),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public UnitmeasureRow upsert(UnitmeasureRow unsaved, Connection c) {
@@ -231,9 +217,9 @@ public class UnitmeasureRepoImpl implements UnitmeasureRepo {
                 "insert into \"production\".\"unitmeasure\"(\"unitmeasurecode\", \"name\","
                     + " \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(UnitmeasureId.pgType, unsaved.unitmeasurecode()),
+            Fragment.encode(UnitmeasureId.dbType, unsaved.unitmeasurecode()),
             Fragment.lit("::bpchar, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()),
             Fragment.lit(
@@ -246,7 +232,6 @@ public class UnitmeasureRepoImpl implements UnitmeasureRepo {
         .updateReturning(UnitmeasureRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<UnitmeasureRow> upsertBatch(Iterator<UnitmeasureRow> unsaved, Connection c) {
@@ -263,7 +248,6 @@ public class UnitmeasureRepoImpl implements UnitmeasureRepo {
         .updateManyReturning(UnitmeasureRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -295,5 +279,4 @@ public class UnitmeasureRepoImpl implements UnitmeasureRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

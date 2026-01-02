@@ -10,109 +10,105 @@ import adventureworks.person.person.PersonFields
 import adventureworks.person.person.PersonRow
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
 import dev.typr.foundations.scala.SqlExpr
-import dev.typr.foundations.scala.SqlExpr.CompositeIn
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr
+import dev.typr.foundations.scala.TupleExpr5
 import java.time.LocalDateTime
 import java.util.UUID
 
-trait EmailaddressFields extends FieldsExpr0[EmailaddressRow] {
-  def businessentityid: IdField[BusinessentityId, EmailaddressRow]
+class EmailaddressFields(val `_path`: java.util.List[Path]) extends TupleExpr5[BusinessentityId, Int, /* max 50 chars */ String, UUID, LocalDateTime] with RelationStructure[EmailaddressFields, EmailaddressRow]  with FieldsBase[EmailaddressRow] {
+  def businessentityid: IdField[BusinessentityId, EmailaddressRow] = {
+    new IdField[BusinessentityId, EmailaddressRow](
+      _path,
+      "businessentityid",
+      _.businessentityid,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(businessentityid = value),
+      BusinessentityId.dbType
+    )
+  }
 
-  def emailaddressid: IdField[Int, EmailaddressRow]
+  def emailaddressid: IdField[Int, EmailaddressRow] = {
+    new IdField[Int, EmailaddressRow](
+      _path,
+      "emailaddressid",
+      _.emailaddressid,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(emailaddressid = value),
+      ScalaDbTypes.PgTypes.int4
+    )
+  }
 
-  def emailaddress: OptField[/* max 50 chars */ String, EmailaddressRow]
+  def emailaddress: OptField[String, EmailaddressRow] = {
+    new OptField[String, EmailaddressRow](
+      _path,
+      "emailaddress",
+      _.emailaddress,
+      None,
+      None,
+      (row, value) => row.copy(emailaddress = value),
+      PgTypes.text
+    )
+  }
 
-  def rowguid: Field[UUID, EmailaddressRow]
+  def rowguid: Field[UUID, EmailaddressRow] = {
+    new Field[UUID, EmailaddressRow](
+      _path,
+      "rowguid",
+      _.rowguid,
+      None,
+      Some("uuid"),
+      (row, value) => row.copy(rowguid = value),
+      PgTypes.uuid
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, EmailaddressRow]
+  def modifieddate: Field[LocalDateTime, EmailaddressRow] = {
+    new Field[LocalDateTime, EmailaddressRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      None,
+      Some("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
   def fkPerson: ForeignKey[PersonFields, PersonRow] = ForeignKey.of[PersonFields, PersonRow]("person.FK_EmailAddress_Person_BusinessEntityID").withColumnPair[BusinessentityId](businessentityid, _.businessentityid)
 
   def compositeIdIs(compositeId: EmailaddressId): SqlExpr[Boolean] = SqlExpr.all(businessentityid.isEqual(compositeId.businessentityid), emailaddressid.isEqual(compositeId.emailaddressid))
 
-  def compositeIdIn(compositeIds: List[EmailaddressId]): SqlExpr[Boolean] = CompositeIn(List(CompositeIn.Part[BusinessentityId, EmailaddressId, EmailaddressRow](businessentityid, _.businessentityid, BusinessentityId.pgType), CompositeIn.Part[Int, EmailaddressId, EmailaddressRow](emailaddressid, _.emailaddressid, ScalaDbTypes.PgTypes.int4)), compositeIds)
+  def compositeIdIn(compositeIds: List[EmailaddressId]): SqlExpr[Boolean] = TupleExpr.of(businessentityid, emailaddressid).among(compositeIds)
 
-  override def columns: java.util.List[FieldLike[?, EmailaddressRow]]
+  override def columns: java.util.List[FieldLike[?, EmailaddressRow]] = java.util.List.of(this.businessentityid.underlying, this.emailaddressid.underlying, this.emailaddress.underlying, this.rowguid.underlying, this.modifieddate.underlying)
 
   override def rowParser: RowParser[EmailaddressRow] = EmailaddressRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[EmailaddressFields, EmailaddressRow] = new EmailaddressFields(`_path`)
+
+  override def `_1`: SqlExpr[BusinessentityId] = businessentityid
+
+  override def `_2`: SqlExpr[Int] = emailaddressid
+
+  override def `_3`: SqlExpr[/* max 50 chars */ String] = emailaddress
+
+  override def `_4`: SqlExpr[UUID] = rowguid
+
+  override def `_5`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object EmailaddressFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends EmailaddressFields with RelationStructure[EmailaddressFields, EmailaddressRow] {
-
-    override def businessentityid: IdField[BusinessentityId, EmailaddressRow] = {
-      new IdField[BusinessentityId, EmailaddressRow](
-        _path,
-        "businessentityid",
-        _.businessentityid,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(businessentityid = value),
-        BusinessentityId.pgType
-      )
-    }
-
-    override def emailaddressid: IdField[Int, EmailaddressRow] = {
-      new IdField[Int, EmailaddressRow](
-        _path,
-        "emailaddressid",
-        _.emailaddressid,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(emailaddressid = value),
-        ScalaDbTypes.PgTypes.int4
-      )
-    }
-
-    override def emailaddress: OptField[String, EmailaddressRow] = {
-      new OptField[String, EmailaddressRow](
-        _path,
-        "emailaddress",
-        _.emailaddress,
-        None,
-        None,
-        (row, value) => row.copy(emailaddress = value),
-        PgTypes.text
-      )
-    }
-
-    override def rowguid: Field[UUID, EmailaddressRow] = {
-      new Field[UUID, EmailaddressRow](
-        _path,
-        "rowguid",
-        _.rowguid,
-        None,
-        Some("uuid"),
-        (row, value) => row.copy(rowguid = value),
-        PgTypes.uuid
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, EmailaddressRow] = {
-      new Field[LocalDateTime, EmailaddressRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        None,
-        Some("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, EmailaddressRow]] = java.util.List.of(this.businessentityid.underlying, this.emailaddressid.underlying, this.emailaddress.underlying, this.rowguid.underlying, this.modifieddate.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[EmailaddressFields, EmailaddressRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: EmailaddressFields = new EmailaddressFields(java.util.Collections.emptyList())
 }

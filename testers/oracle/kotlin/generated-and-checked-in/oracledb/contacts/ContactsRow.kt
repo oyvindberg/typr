@@ -7,6 +7,7 @@ package oracledb.contacts
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -23,7 +24,15 @@ data class ContactsRow(
   @JsonProperty("NAME") val name: String,
   @JsonProperty("EMAILS") val emails: EmailTableT?,
   @JsonProperty("TAGS") val tags: TagVarrayT?
-) {
+) : Tuple4<ContactsId, String, EmailTableT?, TagVarrayT?> {
+  override fun _1(): ContactsId = contactId
+
+  override fun _2(): String = name
+
+  override fun _3(): EmailTableT? = emails
+
+  override fun _4(): TagVarrayT? = tags
+
   fun id(): ContactsId = contactId
 
   fun toUnsavedRow(contactId: Defaulted<ContactsId>): ContactsRowUnsaved = ContactsRowUnsaved(name, emails, tags, contactId)

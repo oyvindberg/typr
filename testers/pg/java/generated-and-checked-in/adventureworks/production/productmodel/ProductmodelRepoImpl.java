@@ -27,34 +27,31 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
   @Override
   public DeleteBuilder<ProductmodelFields, ProductmodelRow> delete() {
     return DeleteBuilder.of(
-        "\"production\".\"productmodel\"", ProductmodelFields.structure(), Dialect.POSTGRESQL);
+        "\"production\".\"productmodel\"", ProductmodelFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(ProductmodelId productmodelid, Connection c) {
     return interpolate(
                 Fragment.lit(
                     "delete from \"production\".\"productmodel\" where \"productmodelid\" = "),
-                Fragment.encode(ProductmodelId.pgType, productmodelid),
+                Fragment.encode(ProductmodelId.dbType, productmodelid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(ProductmodelId[] productmodelids, Connection c) {
     return interpolate(
             Fragment.lit(
                 "delete\nfrom \"production\".\"productmodel\"\nwhere \"productmodelid\" = ANY("),
-            Fragment.encode(ProductmodelId.pgTypeArray, productmodelids),
+            Fragment.encode(ProductmodelId.dbTypeArray, productmodelids),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductmodelRow insert(ProductmodelRow unsaved, Connection c) {
@@ -63,9 +60,9 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
                 "insert into \"production\".\"productmodel\"(\"productmodelid\", \"name\","
                     + " \"catalogdescription\", \"instructions\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(ProductmodelId.pgType, unsaved.productmodelid()),
+            Fragment.encode(ProductmodelId.dbType, unsaved.productmodelid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.xml.opt(), unsaved.catalogdescription()),
             Fragment.lit("::xml, "),
@@ -81,7 +78,6 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
         .updateReturning(ProductmodelRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductmodelRow insert(ProductmodelRowUnsaved unsaved, Connection c) {
@@ -91,7 +87,7 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
     ;
     columns.add(Fragment.lit("\"name\""));
     values.add(
-        interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
+        interpolate(Fragment.encode(Name.dbType, unsaved.name()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"catalogdescription\""));
     values.add(
         interpolate(
@@ -109,7 +105,7 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
               columns.add(Fragment.lit("\"productmodelid\""));
               values.add(
                   interpolate(
-                      Fragment.encode(ProductmodelId.pgType, value), Fragment.lit("::int4")));
+                      Fragment.encode(ProductmodelId.dbType, value), Fragment.lit("::int4")));
             });
     ;
     unsaved
@@ -145,7 +141,6 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
     ;
     return q.updateReturning(ProductmodelRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<ProductmodelRow> unsaved, Integer batchSize, Connection c) {
@@ -157,7 +152,6 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
         c,
         ProductmodelRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -172,17 +166,15 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
         c,
         ProductmodelRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<ProductmodelFields, ProductmodelRow> select() {
     return SelectBuilder.of(
         "\"production\".\"productmodel\"",
-        ProductmodelFields.structure(),
+        ProductmodelFields.structure,
         ProductmodelRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<ProductmodelRow> selectAll(Connection c) {
@@ -194,7 +186,6 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
         .query(ProductmodelRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<ProductmodelRow> selectById(ProductmodelId productmodelid, Connection c) {
@@ -204,12 +195,11 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
                     + " \"rowguid\", \"modifieddate\"\n"
                     + "from \"production\".\"productmodel\"\n"
                     + "where \"productmodelid\" = "),
-            Fragment.encode(ProductmodelId.pgType, productmodelid),
+            Fragment.encode(ProductmodelId.dbType, productmodelid),
             Fragment.lit(""))
         .query(ProductmodelRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductmodelRow> selectByIds(ProductmodelId[] productmodelids, Connection c) {
@@ -219,12 +209,11 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
                     + " \"rowguid\", \"modifieddate\"\n"
                     + "from \"production\".\"productmodel\"\n"
                     + "where \"productmodelid\" = ANY("),
-            Fragment.encode(ProductmodelId.pgTypeArray, productmodelids),
+            Fragment.encode(ProductmodelId.dbTypeArray, productmodelids),
             Fragment.lit(")"))
         .query(ProductmodelRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<ProductmodelId, ProductmodelRow> selectByIdsTracked(
@@ -233,17 +222,15 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
     selectByIds(productmodelids, c).forEach(row -> ret.put(row.productmodelid(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<ProductmodelFields, ProductmodelRow> update() {
     return UpdateBuilder.of(
         "\"production\".\"productmodel\"",
-        ProductmodelFields.structure(),
+        ProductmodelFields.structure,
         ProductmodelRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(ProductmodelRow row, Connection c) {
@@ -251,7 +238,7 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
     ;
     return interpolate(
                 Fragment.lit("update \"production\".\"productmodel\"\nset \"name\" = "),
-                Fragment.encode(Name.pgType, row.name()),
+                Fragment.encode(Name.dbType, row.name()),
                 Fragment.lit("::varchar,\n\"catalogdescription\" = "),
                 Fragment.encode(PgTypes.xml.opt(), row.catalogdescription()),
                 Fragment.lit("::xml,\n\"instructions\" = "),
@@ -261,13 +248,12 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
                 Fragment.lit("::uuid,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"productmodelid\" = "),
-                Fragment.encode(ProductmodelId.pgType, productmodelid),
+                Fragment.encode(ProductmodelId.dbType, productmodelid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public ProductmodelRow upsert(ProductmodelRow unsaved, Connection c) {
@@ -276,9 +262,9 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
                 "insert into \"production\".\"productmodel\"(\"productmodelid\", \"name\","
                     + " \"catalogdescription\", \"instructions\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(ProductmodelId.pgType, unsaved.productmodelid()),
+            Fragment.encode(ProductmodelId.dbType, unsaved.productmodelid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.xml.opt(), unsaved.catalogdescription()),
             Fragment.lit("::xml, "),
@@ -301,7 +287,6 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
         .updateReturning(ProductmodelRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductmodelRow> upsertBatch(Iterator<ProductmodelRow> unsaved, Connection c) {
@@ -322,7 +307,6 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
         .updateManyReturning(ProductmodelRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -358,5 +342,4 @@ public class ProductmodelRepoImpl implements ProductmodelRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

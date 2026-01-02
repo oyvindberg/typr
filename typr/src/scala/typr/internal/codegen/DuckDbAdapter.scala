@@ -74,11 +74,11 @@ object DuckDbAdapter extends DbAdapter {
                   case db.DuckDbType.Double   => code"$ScalaDbTypes.DuckDbTypes.doubleArrayUnboxed"
                   case _                      => code"${lookupType(element, naming, TypeSupportJava)}.array()"
                 }
-              // For Scala, Generated and UserDefined types have a pgTypeArray given
+              // For Scala, Generated and UserDefined types have a dbTypeArray given
               case TypoType.Generated(_, _, qualifiedType) =>
-                code"$qualifiedType.pgTypeArray"
+                code"$qualifiedType.dbTypeArray"
               case TypoType.UserDefined(_, _, Left(qualifiedType)) =>
-                code"$qualifiedType.pgTypeArray"
+                code"$qualifiedType.dbTypeArray"
               case _ => code"${lookupType(element, naming, TypeSupportJava)}.array()"
             }
           case _ =>
@@ -111,11 +111,11 @@ object DuckDbAdapter extends DbAdapter {
                   case db.DuckDbType.Json          => code"$Types.jsonArray"
                   case _                           => code"${lookupType(element, naming, TypeSupportJava)}.array()"
                 }
-              // For Generated and UserDefined types, use the pre-defined pgTypeArray field
+              // For Generated and UserDefined types, use the pre-defined dbTypeArray field
               case TypoType.Generated(_, _, qualifiedType) =>
-                code"$qualifiedType.pgTypeArray"
+                code"$qualifiedType.dbTypeArray"
               case TypoType.UserDefined(_, _, Left(qualifiedType)) =>
-                code"$qualifiedType.pgTypeArray"
+                code"$qualifiedType.dbTypeArray"
               case _ => code"${lookupType(element, naming, TypeSupportJava)}.array()"
             }
         }
@@ -190,11 +190,11 @@ object DuckDbAdapter extends DbAdapter {
               case _                 => primitiveType("numeric")
             }
 
-          // Non-primitive types use base Types (except unsigned ints which map to next larger signed type)
+          // Non-primitive types use base Types
           case db.DuckDbType.HugeInt     => code"$Types.hugeint"
-          case db.DuckDbType.UTinyInt    => primitiveType("smallint") // UByte -> Short
-          case db.DuckDbType.USmallInt   => primitiveType("integer") // UShort -> Int
-          case db.DuckDbType.UInteger    => primitiveType("bigint") // UInt -> Long
+          case db.DuckDbType.UTinyInt    => code"$Types.utinyint"
+          case db.DuckDbType.USmallInt   => code"$Types.usmallint"
+          case db.DuckDbType.UInteger    => code"$Types.uinteger"
           case db.DuckDbType.UBigInt     => code"$Types.ubigint"
           case db.DuckDbType.UHugeInt    => code"$Types.uhugeint"
           case db.DuckDbType.VarChar(_)  => code"$Types.varchar"
@@ -276,12 +276,14 @@ object DuckDbAdapter extends DbAdapter {
           case db.DuckDbType.MapType(keyType, valueType) =>
             code"${lookupByDbType(keyType, naming, TypeSupportJava)}.mapTo(${lookupByDbType(valueType, naming, TypeSupportJava)})"
           case db.DuckDbType.StructType(_) =>
-            sys.error(s"DuckDbAdapter.lookupByDbType: STRUCT type not yet supported")
+            // StructType should be mapped via TypeMapperJvmNew using the struct lookup
+            // This path is only reached for nested structs in lists/maps which aren't supported yet
+            sys.error("DuckDbAdapter.lookupByDbType: StructType in nested context not yet supported")
           case db.DuckDbType.UnionType(_) =>
-            sys.error(s"DuckDbAdapter.lookupByDbType: UNION type not yet supported")
+            // UNION types are read/written as JSON strings for now
+            code"$Types.varchar" // Fallback to varchar (JSON serialization)
 
-          case db.Unknown(_) =>
-            code"$Types.varchar" // Fallback to varchar for unknown types
+          case db.Unknown(_) => code"$Types.unknown"
         }
       case other =>
         sys.error(s"DuckDbAdapter.lookupByDbType: Cannot lookup from other database: $other")
@@ -351,4 +353,16 @@ object DuckDbAdapter extends DbAdapter {
 
   def returningClause(columns: Code): Code =
     code"RETURNING $columns"
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LAYER 5: Schema DDL
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  def dropSchemaDdl(schemaName: String, cascade: Boolean): String = {
+    val cascadeSuffix = if (cascade) " CASCADE" else ""
+    s"DROP SCHEMA IF EXISTS $schemaName$cascadeSuffix"
+  }
+
+  def createSchemaDdl(schemaName: String): String =
+    s"CREATE SCHEMA IF NOT EXISTS $schemaName"
 }

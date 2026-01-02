@@ -38,7 +38,7 @@ public record FlaffRepoMock(HashMap<FlaffId, FlaffRow> map) implements FlaffRepo
   @Override
   public DeleteBuilder<FlaffFields, FlaffRow> delete() {
     return new DeleteBuilderMock<>(
-        FlaffFields.structure(),
+        FlaffFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.compositeId(),
@@ -94,7 +94,7 @@ public record FlaffRepoMock(HashMap<FlaffId, FlaffRow> map) implements FlaffRepo
   @Override
   public SelectBuilder<FlaffFields, FlaffRow> select() {
     return new SelectBuilderMock<>(
-        FlaffFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        FlaffFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -135,7 +135,7 @@ public record FlaffRepoMock(HashMap<FlaffId, FlaffRow> map) implements FlaffRepo
   @Override
   public UpdateBuilder<FlaffFields, FlaffRow> update() {
     return new UpdateBuilderMock<>(
-        FlaffFields.structure(),
+        FlaffFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

@@ -7,6 +7,7 @@ package testdb.customers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -28,7 +29,7 @@ case class CustomersRow(
   @JsonProperty("EMAIL") email: String,
   /** Default: CURRENT TIMESTAMP */
   @JsonProperty("CREATED_AT") createdAt: Option[LocalDateTime]
-) {
+) extends Tuple4[CustomersId, String, String, Option[LocalDateTime]] {
   def id: CustomersId = customerId
 
   def toUnsavedRow(
@@ -42,8 +43,16 @@ case class CustomersRow(
       createdAt
     )
   }
+
+  override def `_1`: CustomersId = customerId
+
+  override def `_2`: String = name
+
+  override def `_3`: String = email
+
+  override def `_4`: Option[LocalDateTime] = createdAt
 }
 
 object CustomersRow {
-  val `_rowParser`: RowParser[CustomersRow] = RowParsers.of(CustomersId.pgType, Db2Types.varchar, Db2Types.varchar, Db2Types.timestamp.nullable)(CustomersRow.apply)(row => Array[Any](row.customerId, row.name, row.email, row.createdAt))
+  val `_rowParser`: RowParser[CustomersRow] = RowParsers.of(CustomersId.dbType, Db2Types.varchar, Db2Types.varchar, Db2Types.timestamp.nullable)(CustomersRow.apply)(row => Array[Any](row.customerId, row.name, row.email, row.createdAt))
 }

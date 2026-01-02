@@ -7,6 +7,7 @@ package testdb.customer_orders_view
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.Tuple.Tuple6
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -21,7 +22,19 @@ case class CustomerOrdersViewViewRow(
   @JsonProperty("order_id") orderId: Int,
   @JsonProperty("order_date") orderDate: Option[LocalDateTime],
   @JsonProperty("order_total") orderTotal: BigDecimal
-)
+) extends Tuple6[Int, String, String, Int, Option[LocalDateTime], BigDecimal] {
+  override def `_1`: Int = customerId
+
+  override def `_2`: String = customerName
+
+  override def `_3`: String = customerEmail
+
+  override def `_4`: Int = orderId
+
+  override def `_5`: Option[LocalDateTime] = orderDate
+
+  override def `_6`: BigDecimal = orderTotal
+}
 
 object CustomerOrdersViewViewRow {
   val `_rowParser`: RowParser[CustomerOrdersViewViewRow] = RowParsers.of(ScalaDbTypes.SqlServerTypes.int_, SqlServerTypes.nvarchar, SqlServerTypes.nvarchar, ScalaDbTypes.SqlServerTypes.int_, SqlServerTypes.datetime2.nullable, ScalaDbTypes.SqlServerTypes.money)(CustomerOrdersViewViewRow.apply)(row => Array[Any](row.customerId, row.customerName, row.customerEmail, row.orderId, row.orderDate, row.orderTotal))

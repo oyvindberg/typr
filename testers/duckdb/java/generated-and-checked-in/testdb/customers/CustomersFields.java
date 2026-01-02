@@ -7,122 +7,129 @@ package testdb.customers;
 
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import testdb.Priority;
 
-public interface CustomersFields extends FieldsExpr<CustomersRow> {
-  record Impl(List<Path> _path)
-      implements CustomersFields, RelationStructure<CustomersFields, CustomersRow> {
-    @Override
-    public IdField<CustomersId, CustomersRow> customerId() {
-      return new IdField<CustomersId, CustomersRow>(
-          _path,
-          "customer_id",
-          CustomersRow::customerId,
-          Optional.empty(),
-          Optional.of("INTEGER"),
-          (row, value) -> row.withCustomerId(value),
-          CustomersId.duckDbType);
-    }
-    ;
+public class CustomersFields
+    extends TupleExpr5<CustomersId, String, String, LocalDateTime, Priority>
+    implements RelationStructure<CustomersFields, CustomersRow>, FieldsBase<CustomersRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, CustomersRow> name() {
-      return new Field<String, CustomersRow>(
-          _path,
-          "name",
-          CustomersRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          DuckDbTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, CustomersRow> email() {
-      return new OptField<String, CustomersRow>(
-          _path,
-          "email",
-          CustomersRow::email,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withEmail(value),
-          DuckDbTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, CustomersRow> createdAt() {
-      return new Field<LocalDateTime, CustomersRow>(
-          _path,
-          "created_at",
-          CustomersRow::createdAt,
-          Optional.empty(),
-          Optional.of("TIMESTAMP"),
-          (row, value) -> row.withCreatedAt(value),
-          DuckDbTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public OptField<Priority, CustomersRow> priority() {
-      return new OptField<Priority, CustomersRow>(
-          _path,
-          "priority",
-          CustomersRow::priority,
-          Optional.empty(),
-          Optional.of("priority"),
-          (row, value) -> row.withPriority(value),
-          Priority.duckDbType);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, CustomersRow>> columns() {
-      return java.util.List.of(
-          this.customerId(), this.name(), this.email(), this.createdAt(), this.priority());
-    }
-    ;
-
-    @Override
-    public RelationStructure<CustomersFields, CustomersRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public CustomersFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static CustomersFields structure = new CustomersFields(java.util.Collections.emptyList());
+
+  public IdField<CustomersId, CustomersRow> customerId() {
+    return new IdField<CustomersId, CustomersRow>(
+        _path,
+        "customer_id",
+        CustomersRow::customerId,
+        Optional.empty(),
+        Optional.of("INTEGER"),
+        (row, value) -> row.withCustomerId(value),
+        CustomersId.duckDbType);
   }
-  ;
 
-  IdField<CustomersId, CustomersRow> customerId();
+  public Field<String, CustomersRow> name() {
+    return new Field<String, CustomersRow>(
+        _path,
+        "name",
+        CustomersRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        DuckDbTypes.varchar);
+  }
 
-  Field<String, CustomersRow> name();
+  public OptField<String, CustomersRow> email() {
+    return new OptField<String, CustomersRow>(
+        _path,
+        "email",
+        CustomersRow::email,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withEmail(value),
+        DuckDbTypes.varchar);
+  }
 
-  OptField<String, CustomersRow> email();
+  public Field<LocalDateTime, CustomersRow> createdAt() {
+    return new Field<LocalDateTime, CustomersRow>(
+        _path,
+        "created_at",
+        CustomersRow::createdAt,
+        Optional.empty(),
+        Optional.of("TIMESTAMP"),
+        (row, value) -> row.withCreatedAt(value),
+        DuckDbTypes.timestamp);
+  }
 
-  Field<LocalDateTime, CustomersRow> createdAt();
-
-  OptField<Priority, CustomersRow> priority();
+  public OptField<Priority, CustomersRow> priority() {
+    return new OptField<Priority, CustomersRow>(
+        _path,
+        "priority",
+        CustomersRow::priority,
+        Optional.empty(),
+        Optional.of("priority"),
+        (row, value) -> row.withPriority(value),
+        Priority.duckDbType);
+  }
 
   @Override
-  List<FieldLike<?, CustomersRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<CustomersRow> rowParser() {
+  public List<FieldLike<?, CustomersRow>> columns() {
+    return java.util.List.of(
+        this.customerId(), this.name(), this.email(), this.createdAt(), this.priority());
+  }
+
+  @Override
+  public RowParser<CustomersRow> rowParser() {
     return CustomersRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<CustomersFields, CustomersRow> withPaths(List<Path> _path) {
+    return new CustomersFields(_path);
+  }
+
+  @Override
+  public SqlExpr<CustomersId> _1() {
+    return customerId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return email();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _4() {
+    return createdAt();
+  }
+
+  @Override
+  public SqlExpr<Priority> _5() {
+    return priority();
+  }
 }

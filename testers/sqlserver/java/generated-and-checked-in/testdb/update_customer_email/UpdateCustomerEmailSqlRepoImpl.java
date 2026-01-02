@@ -23,5 +23,4 @@ public class UpdateCustomerEmailSqlRepoImpl implements UpdateCustomerEmailSqlRep
         .update()
         .runUnchecked(c);
   }
-  ;
 }

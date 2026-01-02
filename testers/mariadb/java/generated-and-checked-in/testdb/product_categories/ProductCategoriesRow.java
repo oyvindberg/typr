@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 import testdb.categories.CategoriesId;
 import testdb.customtypes.Defaulted;
 import testdb.products.ProductsId;
@@ -22,7 +23,8 @@ public record ProductCategoriesRow(
     /** Default: 0 */
     @JsonProperty("is_primary") Boolean isPrimary,
     /** Default: 0 */
-    @JsonProperty("sort_order") Short sortOrder) {
+    @JsonProperty("sort_order") Short sortOrder)
+    implements Tuple4<ProductsId, CategoriesId, Boolean, Short> {
   /** Points to {@link testdb.products.ProductsRow#productId()} */
   public ProductCategoriesRow withProductId(ProductsId productId) {
     return new ProductCategoriesRow(productId, categoryId, isPrimary, sortOrder);
@@ -49,8 +51,8 @@ public record ProductCategoriesRow(
 
   public static RowParser<ProductCategoriesRow> _rowParser =
       RowParsers.of(
-          ProductsId.pgType,
-          CategoriesId.pgType,
+          ProductsId.dbType,
+          CategoriesId.dbType,
           MariaTypes.bool,
           MariaTypes.smallint,
           ProductCategoriesRow::new,
@@ -62,6 +64,30 @@ public record ProductCategoriesRow(
       ProductCategoriesId compositeId, Boolean isPrimary, Short sortOrder) {
     return new ProductCategoriesRow(
         compositeId.productId(), compositeId.categoryId(), isPrimary, sortOrder);
+  }
+  ;
+
+  @Override
+  public ProductsId _1() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public CategoriesId _2() {
+    return categoryId;
+  }
+  ;
+
+  @Override
+  public Boolean _3() {
+    return isPrimary;
+  }
+  ;
+
+  @Override
+  public Short _4() {
+    return sortOrder;
   }
   ;
 

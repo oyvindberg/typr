@@ -27,34 +27,31 @@ public class CountryregionRepoImpl implements CountryregionRepo {
   @Override
   public DeleteBuilder<CountryregionFields, CountryregionRow> delete() {
     return DeleteBuilder.of(
-        "\"person\".\"countryregion\"", CountryregionFields.structure(), Dialect.POSTGRESQL);
+        "\"person\".\"countryregion\"", CountryregionFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(CountryregionId countryregioncode, Connection c) {
     return interpolate(
                 Fragment.lit(
                     "delete from \"person\".\"countryregion\" where \"countryregioncode\" = "),
-                Fragment.encode(CountryregionId.pgType, countryregioncode),
+                Fragment.encode(CountryregionId.dbType, countryregioncode),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(CountryregionId[] countryregioncodes, Connection c) {
     return interpolate(
             Fragment.lit(
                 "delete\nfrom \"person\".\"countryregion\"\nwhere \"countryregioncode\" = ANY("),
-            Fragment.encode(CountryregionId.pgTypeArray, countryregioncodes),
+            Fragment.encode(CountryregionId.dbTypeArray, countryregioncodes),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CountryregionRow insert(CountryregionRow unsaved, Connection c) {
@@ -63,9 +60,9 @@ public class CountryregionRepoImpl implements CountryregionRepo {
                 "insert into \"person\".\"countryregion\"(\"countryregioncode\", \"name\","
                     + " \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode()),
+            Fragment.encode(CountryregionId.dbType, unsaved.countryregioncode()),
             Fragment.lit(", "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()),
             Fragment.lit(
@@ -73,7 +70,6 @@ public class CountryregionRepoImpl implements CountryregionRepo {
         .updateReturning(CountryregionRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CountryregionRow insert(CountryregionRowUnsaved unsaved, Connection c) {
@@ -84,11 +80,11 @@ public class CountryregionRepoImpl implements CountryregionRepo {
     columns.add(Fragment.lit("\"countryregioncode\""));
     values.add(
         interpolate(
-            Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode()),
+            Fragment.encode(CountryregionId.dbType, unsaved.countryregioncode()),
             Fragment.lit("")));
     columns.add(Fragment.lit("\"name\""));
     values.add(
-        interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
+        interpolate(Fragment.encode(Name.dbType, unsaved.name()), Fragment.lit("::varchar")));
     unsaved
         .modifieddate()
         .visit(
@@ -110,7 +106,6 @@ public class CountryregionRepoImpl implements CountryregionRepo {
     ;
     return q.updateReturning(CountryregionRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<CountryregionRow> unsaved, Integer batchSize, Connection c) {
@@ -122,7 +117,6 @@ public class CountryregionRepoImpl implements CountryregionRepo {
         c,
         CountryregionRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -136,17 +130,15 @@ public class CountryregionRepoImpl implements CountryregionRepo {
         c,
         CountryregionRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<CountryregionFields, CountryregionRow> select() {
     return SelectBuilder.of(
         "\"person\".\"countryregion\"",
-        CountryregionFields.structure(),
+        CountryregionFields.structure,
         CountryregionRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<CountryregionRow> selectAll(Connection c) {
@@ -157,7 +149,6 @@ public class CountryregionRepoImpl implements CountryregionRepo {
         .query(CountryregionRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<CountryregionRow> selectById(CountryregionId countryregioncode, Connection c) {
@@ -166,12 +157,11 @@ public class CountryregionRepoImpl implements CountryregionRepo {
                 "select \"countryregioncode\", \"name\", \"modifieddate\"\n"
                     + "from \"person\".\"countryregion\"\n"
                     + "where \"countryregioncode\" = "),
-            Fragment.encode(CountryregionId.pgType, countryregioncode),
+            Fragment.encode(CountryregionId.dbType, countryregioncode),
             Fragment.lit(""))
         .query(CountryregionRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<CountryregionRow> selectByIds(CountryregionId[] countryregioncodes, Connection c) {
@@ -180,12 +170,11 @@ public class CountryregionRepoImpl implements CountryregionRepo {
                 "select \"countryregioncode\", \"name\", \"modifieddate\"\n"
                     + "from \"person\".\"countryregion\"\n"
                     + "where \"countryregioncode\" = ANY("),
-            Fragment.encode(CountryregionId.pgTypeArray, countryregioncodes),
+            Fragment.encode(CountryregionId.dbTypeArray, countryregioncodes),
             Fragment.lit(")"))
         .query(CountryregionRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<CountryregionId, CountryregionRow> selectByIdsTracked(
@@ -195,17 +184,15 @@ public class CountryregionRepoImpl implements CountryregionRepo {
     selectByIds(countryregioncodes, c).forEach(row -> ret.put(row.countryregioncode(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<CountryregionFields, CountryregionRow> update() {
     return UpdateBuilder.of(
         "\"person\".\"countryregion\"",
-        CountryregionFields.structure(),
+        CountryregionFields.structure,
         CountryregionRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(CountryregionRow row, Connection c) {
@@ -213,17 +200,16 @@ public class CountryregionRepoImpl implements CountryregionRepo {
     ;
     return interpolate(
                 Fragment.lit("update \"person\".\"countryregion\"\nset \"name\" = "),
-                Fragment.encode(Name.pgType, row.name()),
+                Fragment.encode(Name.dbType, row.name()),
                 Fragment.lit("::varchar,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"countryregioncode\" = "),
-                Fragment.encode(CountryregionId.pgType, countryregioncode),
+                Fragment.encode(CountryregionId.dbType, countryregioncode),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public CountryregionRow upsert(CountryregionRow unsaved, Connection c) {
@@ -232,9 +218,9 @@ public class CountryregionRepoImpl implements CountryregionRepo {
                 "insert into \"person\".\"countryregion\"(\"countryregioncode\", \"name\","
                     + " \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode()),
+            Fragment.encode(CountryregionId.dbType, unsaved.countryregioncode()),
             Fragment.lit(", "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()),
             Fragment.lit(
@@ -247,7 +233,6 @@ public class CountryregionRepoImpl implements CountryregionRepo {
         .updateReturning(CountryregionRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<CountryregionRow> upsertBatch(Iterator<CountryregionRow> unsaved, Connection c) {
@@ -264,7 +249,6 @@ public class CountryregionRepoImpl implements CountryregionRepo {
         .updateManyReturning(CountryregionRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -296,5 +280,4 @@ public class CountryregionRepoImpl implements CountryregionRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

@@ -7,88 +7,86 @@ package testdb.v_inventory_status
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr14
 import java.time.LocalDateTime
 import kotlin.collections.List
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
 
-interface VInventoryStatusViewFields : FieldsExpr<VInventoryStatusViewRow> {
-  abstract fun available(): Field<Long, VInventoryStatusViewRow>
+data class VInventoryStatusViewFields(val _path: List<Path>) : TupleExpr14<ProductsId, String, String, WarehousesId, String, String, Int, Int, Int, Long, Int, String, String, LocalDateTime>, RelationStructure<VInventoryStatusViewFields, VInventoryStatusViewRow>, FieldsBase<VInventoryStatusViewRow> {
+  override fun _1(): SqlExpr<ProductsId> = productId()
 
-  abstract fun binLocation(): OptField<String, VInventoryStatusViewRow>
+  override fun _10(): SqlExpr<Long> = available()
 
-  abstract override fun columns(): List<FieldLike<*, VInventoryStatusViewRow>>
+  override fun _11(): SqlExpr<Int> = reorderPoint()
 
-  abstract fun lastCountedAt(): OptField<LocalDateTime, VInventoryStatusViewRow>
+  override fun _12(): SqlExpr<String> = stockStatus()
 
-  abstract fun productId(): Field<ProductsId, VInventoryStatusViewRow>
+  override fun _13(): SqlExpr<String> = binLocation()
 
-  abstract fun productName(): Field<String, VInventoryStatusViewRow>
+  override fun _14(): SqlExpr<LocalDateTime> = lastCountedAt()
 
-  abstract fun quantityOnHand(): Field<Int, VInventoryStatusViewRow>
+  override fun _2(): SqlExpr<String> = sku()
 
-  abstract fun quantityOnOrder(): Field<Int, VInventoryStatusViewRow>
+  override fun _3(): SqlExpr<String> = productName()
 
-  abstract fun quantityReserved(): Field<Int, VInventoryStatusViewRow>
+  override fun _4(): SqlExpr<WarehousesId> = warehouseId()
 
-  abstract fun reorderPoint(): Field<Int, VInventoryStatusViewRow>
+  override fun _5(): SqlExpr<String> = warehouseCode()
+
+  override fun _6(): SqlExpr<String> = warehouseName()
+
+  override fun _7(): SqlExpr<Int> = quantityOnHand()
+
+  override fun _8(): SqlExpr<Int> = quantityReserved()
+
+  override fun _9(): SqlExpr<Int> = quantityOnOrder()
+
+  override fun _path(): List<Path> = _path
+
+  fun available(): Field<Long, VInventoryStatusViewRow> = Field<Long, VInventoryStatusViewRow>(_path, "available", VInventoryStatusViewRow::available, null, null, { row, value -> row.copy(available = value) }, KotlinDbTypes.MariaTypes.bigint)
+
+  fun binLocation(): OptField<String, VInventoryStatusViewRow> = OptField<String, VInventoryStatusViewRow>(_path, "bin_location", VInventoryStatusViewRow::binLocation, null, null, { row, value -> row.copy(binLocation = value) }, MariaTypes.varchar)
+
+  override fun columns(): List<FieldLike<*, VInventoryStatusViewRow>> = listOf(this.productId().underlying, this.sku().underlying, this.productName().underlying, this.warehouseId().underlying, this.warehouseCode().underlying, this.warehouseName().underlying, this.quantityOnHand().underlying, this.quantityReserved().underlying, this.quantityOnOrder().underlying, this.available().underlying, this.reorderPoint().underlying, this.stockStatus().underlying, this.binLocation().underlying, this.lastCountedAt().underlying)
+
+  fun lastCountedAt(): OptField<LocalDateTime, VInventoryStatusViewRow> = OptField<LocalDateTime, VInventoryStatusViewRow>(_path, "last_counted_at", VInventoryStatusViewRow::lastCountedAt, null, null, { row, value -> row.copy(lastCountedAt = value) }, MariaTypes.datetime)
+
+  fun productId(): Field<ProductsId, VInventoryStatusViewRow> = Field<ProductsId, VInventoryStatusViewRow>(_path, "product_id", VInventoryStatusViewRow::productId, null, null, { row, value -> row.copy(productId = value) }, ProductsId.dbType)
+
+  fun productName(): Field<String, VInventoryStatusViewRow> = Field<String, VInventoryStatusViewRow>(_path, "product_name", VInventoryStatusViewRow::productName, null, null, { row, value -> row.copy(productName = value) }, MariaTypes.varchar)
+
+  fun quantityOnHand(): Field<Int, VInventoryStatusViewRow> = Field<Int, VInventoryStatusViewRow>(_path, "quantity_on_hand", VInventoryStatusViewRow::quantityOnHand, null, null, { row, value -> row.copy(quantityOnHand = value) }, KotlinDbTypes.MariaTypes.int_)
+
+  fun quantityOnOrder(): Field<Int, VInventoryStatusViewRow> = Field<Int, VInventoryStatusViewRow>(_path, "quantity_on_order", VInventoryStatusViewRow::quantityOnOrder, null, null, { row, value -> row.copy(quantityOnOrder = value) }, KotlinDbTypes.MariaTypes.int_)
+
+  fun quantityReserved(): Field<Int, VInventoryStatusViewRow> = Field<Int, VInventoryStatusViewRow>(_path, "quantity_reserved", VInventoryStatusViewRow::quantityReserved, null, null, { row, value -> row.copy(quantityReserved = value) }, KotlinDbTypes.MariaTypes.int_)
+
+  fun reorderPoint(): Field<Int, VInventoryStatusViewRow> = Field<Int, VInventoryStatusViewRow>(_path, "reorder_point", VInventoryStatusViewRow::reorderPoint, null, null, { row, value -> row.copy(reorderPoint = value) }, KotlinDbTypes.MariaTypes.int_)
 
   override fun rowParser(): RowParser<VInventoryStatusViewRow> = VInventoryStatusViewRow._rowParser.underlying
 
-  abstract fun sku(): Field<String, VInventoryStatusViewRow>
+  fun sku(): Field<String, VInventoryStatusViewRow> = Field<String, VInventoryStatusViewRow>(_path, "sku", VInventoryStatusViewRow::sku, null, null, { row, value -> row.copy(sku = value) }, MariaTypes.varchar)
 
-  abstract fun stockStatus(): Field<String, VInventoryStatusViewRow>
+  fun stockStatus(): Field<String, VInventoryStatusViewRow> = Field<String, VInventoryStatusViewRow>(_path, "stock_status", VInventoryStatusViewRow::stockStatus, null, null, { row, value -> row.copy(stockStatus = value) }, MariaTypes.varchar)
 
-  abstract fun warehouseCode(): Field<String, VInventoryStatusViewRow>
+  fun warehouseCode(): Field<String, VInventoryStatusViewRow> = Field<String, VInventoryStatusViewRow>(_path, "warehouse_code", VInventoryStatusViewRow::warehouseCode, null, null, { row, value -> row.copy(warehouseCode = value) }, MariaTypes.char_)
 
-  abstract fun warehouseId(): Field<WarehousesId, VInventoryStatusViewRow>
+  fun warehouseId(): Field<WarehousesId, VInventoryStatusViewRow> = Field<WarehousesId, VInventoryStatusViewRow>(_path, "warehouse_id", VInventoryStatusViewRow::warehouseId, null, null, { row, value -> row.copy(warehouseId = value) }, WarehousesId.dbType)
 
-  abstract fun warehouseName(): Field<String, VInventoryStatusViewRow>
+  fun warehouseName(): Field<String, VInventoryStatusViewRow> = Field<String, VInventoryStatusViewRow>(_path, "warehouse_name", VInventoryStatusViewRow::warehouseName, null, null, { row, value -> row.copy(warehouseName = value) }, MariaTypes.varchar)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<VInventoryStatusViewFields, VInventoryStatusViewRow> = VInventoryStatusViewFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : VInventoryStatusViewFields, RelationStructure<VInventoryStatusViewFields, VInventoryStatusViewRow> {
-      override fun productId(): Field<ProductsId, VInventoryStatusViewRow> = Field<ProductsId, VInventoryStatusViewRow>(_path, "product_id", VInventoryStatusViewRow::productId, null, null, { row, value -> row.copy(productId = value) }, ProductsId.pgType)
-
-      override fun sku(): Field<String, VInventoryStatusViewRow> = Field<String, VInventoryStatusViewRow>(_path, "sku", VInventoryStatusViewRow::sku, null, null, { row, value -> row.copy(sku = value) }, MariaTypes.varchar)
-
-      override fun productName(): Field<String, VInventoryStatusViewRow> = Field<String, VInventoryStatusViewRow>(_path, "product_name", VInventoryStatusViewRow::productName, null, null, { row, value -> row.copy(productName = value) }, MariaTypes.varchar)
-
-      override fun warehouseId(): Field<WarehousesId, VInventoryStatusViewRow> = Field<WarehousesId, VInventoryStatusViewRow>(_path, "warehouse_id", VInventoryStatusViewRow::warehouseId, null, null, { row, value -> row.copy(warehouseId = value) }, WarehousesId.pgType)
-
-      override fun warehouseCode(): Field<String, VInventoryStatusViewRow> = Field<String, VInventoryStatusViewRow>(_path, "warehouse_code", VInventoryStatusViewRow::warehouseCode, null, null, { row, value -> row.copy(warehouseCode = value) }, MariaTypes.char_)
-
-      override fun warehouseName(): Field<String, VInventoryStatusViewRow> = Field<String, VInventoryStatusViewRow>(_path, "warehouse_name", VInventoryStatusViewRow::warehouseName, null, null, { row, value -> row.copy(warehouseName = value) }, MariaTypes.varchar)
-
-      override fun quantityOnHand(): Field<Int, VInventoryStatusViewRow> = Field<Int, VInventoryStatusViewRow>(_path, "quantity_on_hand", VInventoryStatusViewRow::quantityOnHand, null, null, { row, value -> row.copy(quantityOnHand = value) }, KotlinDbTypes.MariaTypes.int_)
-
-      override fun quantityReserved(): Field<Int, VInventoryStatusViewRow> = Field<Int, VInventoryStatusViewRow>(_path, "quantity_reserved", VInventoryStatusViewRow::quantityReserved, null, null, { row, value -> row.copy(quantityReserved = value) }, KotlinDbTypes.MariaTypes.int_)
-
-      override fun quantityOnOrder(): Field<Int, VInventoryStatusViewRow> = Field<Int, VInventoryStatusViewRow>(_path, "quantity_on_order", VInventoryStatusViewRow::quantityOnOrder, null, null, { row, value -> row.copy(quantityOnOrder = value) }, KotlinDbTypes.MariaTypes.int_)
-
-      override fun available(): Field<Long, VInventoryStatusViewRow> = Field<Long, VInventoryStatusViewRow>(_path, "available", VInventoryStatusViewRow::available, null, null, { row, value -> row.copy(available = value) }, KotlinDbTypes.MariaTypes.bigint)
-
-      override fun reorderPoint(): Field<Int, VInventoryStatusViewRow> = Field<Int, VInventoryStatusViewRow>(_path, "reorder_point", VInventoryStatusViewRow::reorderPoint, null, null, { row, value -> row.copy(reorderPoint = value) }, KotlinDbTypes.MariaTypes.int_)
-
-      override fun stockStatus(): Field<String, VInventoryStatusViewRow> = Field<String, VInventoryStatusViewRow>(_path, "stock_status", VInventoryStatusViewRow::stockStatus, null, null, { row, value -> row.copy(stockStatus = value) }, MariaTypes.varchar)
-
-      override fun binLocation(): OptField<String, VInventoryStatusViewRow> = OptField<String, VInventoryStatusViewRow>(_path, "bin_location", VInventoryStatusViewRow::binLocation, null, null, { row, value -> row.copy(binLocation = value) }, MariaTypes.varchar)
-
-      override fun lastCountedAt(): OptField<LocalDateTime, VInventoryStatusViewRow> = OptField<LocalDateTime, VInventoryStatusViewRow>(_path, "last_counted_at", VInventoryStatusViewRow::lastCountedAt, null, null, { row, value -> row.copy(lastCountedAt = value) }, MariaTypes.datetime)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, VInventoryStatusViewRow>> = listOf(this.productId().underlying, this.sku().underlying, this.productName().underlying, this.warehouseId().underlying, this.warehouseCode().underlying, this.warehouseName().underlying, this.quantityOnHand().underlying, this.quantityReserved().underlying, this.quantityOnOrder().underlying, this.available().underlying, this.reorderPoint().underlying, this.stockStatus().underlying, this.binLocation().underlying, this.lastCountedAt().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<VInventoryStatusViewFields, VInventoryStatusViewRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: VInventoryStatusViewFields = VInventoryStatusViewFields(emptyList<Path>())
   }
 }

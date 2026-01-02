@@ -1,6 +1,7 @@
 package dev.typr.foundations.dsl;
 
 import dev.typr.foundations.Fragment;
+import dev.typr.foundations.Tuple;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Connection;
@@ -44,7 +45,7 @@ public class GroupedBuilderMock<Fields, Row> implements GroupedBuilder<Fields, R
   }
 
   @Override
-  public <NewFields extends Tuples.TupleExpr<NewRow>, NewRow extends Tuples.Tuple>
+  public <NewFields extends TupleExpr<NewRow>, NewRow extends Tuple>
       SelectBuilder<NewFields, NewRow> select(Function<Fields, NewFields> projection) {
     return new GroupedSelectBuilderMock<>(
         source, groupByExprs, havingPredicates, projection, SelectParams.empty());
@@ -57,7 +58,7 @@ public class GroupedBuilderMock<Fields, Row> implements GroupedBuilder<Fields, R
 
   /** SelectBuilder implementation that evaluates grouped queries in memory. */
   record GroupedSelectBuilderMock<
-          Fields, Row, NewFields extends Tuples.TupleExpr<NewRow>, NewRow extends Tuples.Tuple>(
+          Fields, Row, NewFields extends TupleExpr<NewRow>, NewRow extends Tuple>(
       SelectBuilderMock<Fields, Row> source,
       Function<Fields, List<SqlExpr<?>>> groupByExprs,
       List<Function<Fields, SqlExpr<Boolean>>> havingPredicates,
@@ -73,7 +74,7 @@ public class GroupedBuilderMock<Fields, Row> implements GroupedBuilder<Fields, R
     @Override
     public Structure<NewFields, NewRow> structure() {
       NewFields tupleExpr = projection.apply(source.structure().fields());
-      return new GroupedMockStructure<>(tupleExpr, tupleExpr.exprs());
+      return new GroupedMockStructure<>(tupleExpr, tupleExpr.children());
     }
 
     @Override
@@ -105,7 +106,7 @@ public class GroupedBuilderMock<Fields, Row> implements GroupedBuilder<Fields, R
 
       // 3. For each group, evaluate HAVING and projection
       NewFields projectedFields = projection.apply(fields);
-      List<SqlExpr<?>> projectedExprs = projectedFields.exprs();
+      List<SqlExpr<?>> projectedExprs = projectedFields.children();
       List<NewRow> results = new ArrayList<>();
 
       for (var entry : groups.entrySet()) {
@@ -135,7 +136,7 @@ public class GroupedBuilderMock<Fields, Row> implements GroupedBuilder<Fields, R
         }
 
         @SuppressWarnings("unchecked")
-        NewRow tuple = (NewRow) Tuples.createTuple(values);
+        NewRow tuple = (NewRow) Tuple.createTuple(values);
         results.add(tuple);
       }
 
@@ -160,32 +161,35 @@ public class GroupedBuilderMock<Fields, Row> implements GroupedBuilder<Fields, R
     private SelectBuilderMock<NewFields, NewRow> toSelectBuilderMock() {
       Supplier<List<NewRow>> rowSupplier = () -> this.toList(null);
       GroupedMockStructure<NewFields, NewRow> groupedStructure =
-          new GroupedMockStructure<>(structure().fields(), structure().fields().exprs());
+          new GroupedMockStructure<>(structure().fields(), structure().fields().children());
       return new SelectBuilderMock<>(groupedStructure, rowSupplier, SelectParams.empty());
     }
 
     @Override
-    public <Fields2, Row2> SelectBuilder<Tuple2<NewFields, Fields2>, Tuple2<NewRow, Row2>> joinOn(
-        SelectBuilder<Fields2, Row2> other,
-        Function<Tuple2<NewFields, Fields2>, SqlExpr<Boolean>> pred) {
+    public <Fields2, Row2>
+        SelectBuilder<Tuple.Tuple2<NewFields, Fields2>, Tuple.Tuple2<NewRow, Row2>> joinOn(
+            SelectBuilder<Fields2, Row2> other,
+            Function<Tuple.Tuple2<NewFields, Fields2>, SqlExpr<Boolean>> pred) {
       // Convert to regular SelectBuilderMock and delegate
       return toSelectBuilderMock().joinOn(other, pred);
     }
 
     @Override
     public <Fields2, Row2>
-        SelectBuilder<Tuple2<NewFields, Fields2>, Tuple2<NewRow, Optional<Row2>>> leftJoinOn(
-            SelectBuilder<Fields2, Row2> other,
-            Function<Tuple2<NewFields, Fields2>, SqlExpr<Boolean>> pred) {
+        SelectBuilder<Tuple.Tuple2<NewFields, Fields2>, Tuple.Tuple2<NewRow, Optional<Row2>>>
+            leftJoinOn(
+                SelectBuilder<Fields2, Row2> other,
+                Function<Tuple.Tuple2<NewFields, Fields2>, SqlExpr<Boolean>> pred) {
       // Convert to regular SelectBuilderMock and delegate
       return toSelectBuilderMock().leftJoinOn(other, pred);
     }
 
     @Override
     public <Fields2, Row2>
-        SelectBuilder<Tuple2<NewFields, Fields2>, Tuple2<NewRow, List<Row2>>> multisetOn(
-            SelectBuilder<Fields2, Row2> other,
-            Function<Tuple2<NewFields, Fields2>, SqlExpr<Boolean>> pred) {
+        SelectBuilder<Tuple.Tuple2<NewFields, Fields2>, Tuple.Tuple2<NewRow, List<Row2>>>
+            multisetOn(
+                SelectBuilder<Fields2, Row2> other,
+                Function<Tuple.Tuple2<NewFields, Fields2>, SqlExpr<Boolean>> pred) {
       // Convert to regular SelectBuilderMock and delegate
       return toSelectBuilderMock().multisetOn(other, pred);
     }
@@ -198,17 +202,17 @@ public class GroupedBuilderMock<Fields, Row> implements GroupedBuilder<Fields, R
     }
 
     @Override
-    public <NewFields2 extends Tuples.TupleExpr<NewRow2>, NewRow2 extends Tuples.Tuple>
-        SelectBuilder<NewFields2, NewRow2> mapExpr(Function<NewFields, NewFields2> projection) {
+    public <NewFields2 extends TupleExpr<NewRow2>, NewRow2 extends Tuple>
+        SelectBuilder<NewFields2, NewRow2> map(Function<NewFields, NewFields2> projection) {
       // Allow mapping on grouped results
       Supplier<List<NewRow>> rowSupplier = () -> this.toList(null);
       SelectBuilderMock.ProjectedMockStructure<NewFields, NewRow> projectedStructure =
           new SelectBuilderMock.ProjectedMockStructure<>(
-              structure().fields(), structure().fields().exprs());
+              structure().fields(), structure().fields().children());
 
       SelectBuilderMock<NewFields, NewRow> mockBuilder =
           new SelectBuilderMock<>(projectedStructure, rowSupplier, SelectParams.empty());
-      return mockBuilder.mapExpr(projection);
+      return mockBuilder.map(projection);
     }
 
     /** Evaluate the group key for a row. */
@@ -400,8 +404,7 @@ public class GroupedBuilderMock<Fields, Row> implements GroupedBuilder<Fields, R
    * Structure implementation for grouped query results. Supports joins by properly implementing
    * withPath and field access.
    */
-  record GroupedMockStructure<
-          NewFields extends Tuples.TupleExpr<NewRow>, NewRow extends Tuples.Tuple>(
+  record GroupedMockStructure<NewFields extends TupleExpr<NewRow>, NewRow extends Tuple>(
       NewFields fields, List<SqlExpr<?>> projectedExprs, List<Path> path)
       implements Structure<NewFields, NewRow> {
 

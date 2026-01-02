@@ -58,5 +58,4 @@ public class CustomerSearchSqlRepoImpl implements CustomerSearchSqlRepo {
         .query(CustomerSearchSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

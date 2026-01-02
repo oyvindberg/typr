@@ -6,6 +6,7 @@
 package testdb.product_categories
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -33,7 +34,15 @@ data class ProductCategoriesRow(
     * Default: 0
     */
   @JsonProperty("sort_order") val sortOrder: Short
-) {
+) : Tuple4<ProductsId, CategoriesId, Boolean, Short> {
+  override fun _1(): ProductsId = productId
+
+  override fun _2(): CategoriesId = categoryId
+
+  override fun _3(): Boolean = isPrimary
+
+  override fun _4(): Short = sortOrder
+
   fun compositeId(): ProductCategoriesId = ProductCategoriesId(productId, categoryId)
 
   fun id(): ProductCategoriesId = this.compositeId()
@@ -44,7 +53,7 @@ data class ProductCategoriesRow(
   ): ProductCategoriesRowUnsaved = ProductCategoriesRowUnsaved(productId, categoryId, isPrimary, sortOrder)
 
   companion object {
-    val _rowParser: RowParser<ProductCategoriesRow> = RowParsers.of(ProductsId.pgType, CategoriesId.pgType, KotlinDbTypes.MariaTypes.bool, KotlinDbTypes.MariaTypes.smallint, { t0, t1, t2, t3 -> ProductCategoriesRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.productId, row.categoryId, row.isPrimary, row.sortOrder) })
+    val _rowParser: RowParser<ProductCategoriesRow> = RowParsers.of(ProductsId.dbType, CategoriesId.dbType, KotlinDbTypes.MariaTypes.bool, KotlinDbTypes.MariaTypes.smallint, { t0, t1, t2, t3 -> ProductCategoriesRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.productId, row.categoryId, row.isPrimary, row.sortOrder) })
 
     fun apply(
       compositeId: ProductCategoriesId,

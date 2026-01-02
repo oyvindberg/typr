@@ -9,6 +9,7 @@ import adventureworks.public.Mydomain
 import adventureworks.public.Myenum
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple70
 import dev.typr.foundations.data.Inet
 import dev.typr.foundations.data.Int2Vector
 import dev.typr.foundations.data.Json
@@ -106,10 +107,150 @@ case class PgtestRow(
   uuides: Array[UUID],
   varchares: Array[String],
   xmles: Array[Xml]
-)
+) extends Tuple70[Boolean, PGbox, String, Array[Byte], String, PGcircle, LocalDate, Float, Double, Map[String, String], Inet, Short, Int2Vector, Int, Long, PGInterval, Json, Jsonb, PGline, PGlseg, Money, Mydomain, Myenum, String, BigDecimal, PGpath, PGpoint, PGpolygon, String, LocalTime, LocalDateTime, Instant, OffsetTime, UUID, String, Vector, Xml, Array[PGbox], Array[/* bpchar */ String], Array[/* bpchar */ String], Array[PGcircle], Array[LocalDate], Array[Float], Array[Double], Array[Inet], Array[Short], Array[Int2Vector], Array[Int], Array[Long], Array[PGInterval], Array[Json], Array[Jsonb], Array[PGline], Array[PGlseg], Array[Money], Array[Mydomain], Array[Myenum], Array[String], Array[BigDecimal], Array[PGpath], Array[PGpoint], Array[PGpolygon], Array[String], Array[LocalTime], Array[LocalDateTime], Array[Instant], Array[OffsetTime], Array[UUID], Array[String], Array[Xml]] {
+  override def `_1`: Boolean = bool
+
+  override def `_2`: PGbox = box
+
+  override def `_3`: String = bpchar
+
+  override def `_4`: Array[Byte] = bytea
+
+  override def `_5`: String = char
+
+  override def `_6`: PGcircle = circle
+
+  override def `_7`: LocalDate = date
+
+  override def `_8`: Float = float4
+
+  override def `_9`: Double = float8
+
+  override def `_10`: Map[String, String] = hstore
+
+  override def `_11`: Inet = inet
+
+  override def `_12`: Short = int2
+
+  override def `_13`: Int2Vector = int2vector
+
+  override def `_14`: Int = int4
+
+  override def `_15`: Long = int8
+
+  override def `_16`: PGInterval = interval
+
+  override def `_17`: Json = json
+
+  override def `_18`: Jsonb = jsonb
+
+  override def `_19`: PGline = line
+
+  override def `_20`: PGlseg = lseg
+
+  override def `_21`: Money = money
+
+  override def `_22`: Mydomain = mydomain
+
+  override def `_23`: Myenum = myenum
+
+  override def `_24`: String = name
+
+  override def `_25`: BigDecimal = numeric
+
+  override def `_26`: PGpath = path
+
+  override def `_27`: PGpoint = point
+
+  override def `_28`: PGpolygon = polygon
+
+  override def `_29`: String = text
+
+  override def `_30`: LocalTime = time
+
+  override def `_31`: LocalDateTime = timestamp
+
+  override def `_32`: Instant = timestampz
+
+  override def `_33`: OffsetTime = timez
+
+  override def `_34`: UUID = uuid
+
+  override def `_35`: String = varchar
+
+  override def `_36`: Vector = vector
+
+  override def `_37`: Xml = xml
+
+  override def `_38`: Array[PGbox] = boxes
+
+  override def `_39`: Array[/* bpchar */ String] = bpchares
+
+  override def `_40`: Array[/* bpchar */ String] = chares
+
+  override def `_41`: Array[PGcircle] = circlees
+
+  override def `_42`: Array[LocalDate] = datees
+
+  override def `_43`: Array[Float] = float4es
+
+  override def `_44`: Array[Double] = float8es
+
+  override def `_45`: Array[Inet] = inetes
+
+  override def `_46`: Array[Short] = int2es
+
+  override def `_47`: Array[Int2Vector] = int2vectores
+
+  override def `_48`: Array[Int] = int4es
+
+  override def `_49`: Array[Long] = int8es
+
+  override def `_50`: Array[PGInterval] = intervales
+
+  override def `_51`: Array[Json] = jsones
+
+  override def `_52`: Array[Jsonb] = jsonbes
+
+  override def `_53`: Array[PGline] = linees
+
+  override def `_54`: Array[PGlseg] = lseges
+
+  override def `_55`: Array[Money] = moneyes
+
+  override def `_56`: Array[Mydomain] = mydomaines
+
+  override def `_57`: Array[Myenum] = myenumes
+
+  override def `_58`: Array[String] = namees
+
+  override def `_59`: Array[BigDecimal] = numerices
+
+  override def `_60`: Array[PGpath] = pathes
+
+  override def `_61`: Array[PGpoint] = pointes
+
+  override def `_62`: Array[PGpolygon] = polygones
+
+  override def `_63`: Array[String] = textes
+
+  override def `_64`: Array[LocalTime] = timees
+
+  override def `_65`: Array[LocalDateTime] = timestampes
+
+  override def `_66`: Array[Instant] = timestampzes
+
+  override def `_67`: Array[OffsetTime] = timezes
+
+  override def `_68`: Array[UUID] = uuides
+
+  override def `_69`: Array[String] = varchares
+
+  override def `_70`: Array[Xml] = xmles
+}
 
 object PgtestRow {
-  val `_rowParser`: RowParser[PgtestRow] = RowParsers.of(ScalaDbTypes.PgTypes.bool, PgTypes.box, PgTypes.bpchar, PgTypes.bytea, PgTypes.bpchar, PgTypes.circle, PgTypes.date, ScalaDbTypes.PgTypes.float4, ScalaDbTypes.PgTypes.float8, ScalaDbTypes.PgTypes.hstore, PgTypes.inet, ScalaDbTypes.PgTypes.int2, PgTypes.int2vector, ScalaDbTypes.PgTypes.int4, ScalaDbTypes.PgTypes.int8, PgTypes.interval, PgTypes.json, PgTypes.jsonb, PgTypes.line, PgTypes.lseg, PgTypes.money, Mydomain.pgType, Myenum.pgType, PgTypes.name, ScalaDbTypes.PgTypes.numeric, PgTypes.path, PgTypes.point, PgTypes.polygon, PgTypes.text, PgTypes.time, PgTypes.timestamp, PgTypes.timestamptz, PgTypes.timetz, PgTypes.uuid, PgTypes.text, PgTypes.vector, PgTypes.xml, PgTypes.boxArray, PgTypes.bpcharArray, PgTypes.bpcharArray, PgTypes.circleArray, PgTypes.dateArray, PgTypes.float4ArrayUnboxed, PgTypes.float8ArrayUnboxed, PgTypes.inetArray, PgTypes.int2ArrayUnboxed, PgTypes.int2vectorArray, PgTypes.int4ArrayUnboxed, PgTypes.int8ArrayUnboxed, PgTypes.intervalArray, PgTypes.jsonArray, PgTypes.jsonbArray, PgTypes.lineArray, PgTypes.lsegArray, PgTypes.moneyArray, Mydomain.pgTypeArray, Myenum.pgTypeArray, PgTypes.nameArray, ScalaDbTypes.PgTypes.numericArray, PgTypes.pathArray, PgTypes.pointArray, PgTypes.polygonArray, PgTypes.textArray, PgTypes.timeArray, PgTypes.timestampArray, PgTypes.timestamptzArray, PgTypes.timetzArray, PgTypes.uuidArray, PgTypes.textArray, PgTypes.xmlArray)(PgtestRow.apply)(row => Array[Any](row.bool, row.box, row.bpchar, row.bytea, row.char, row.circle, row.date, row.float4, row.float8, row.hstore, row.inet, row.int2, row.int2vector, row.int4, row.int8, row.interval, row.json, row.jsonb, row.line, row.lseg, row.money, row.mydomain, row.myenum, row.name, row.numeric, row.path, row.point, row.polygon, row.text, row.time, row.timestamp, row.timestampz, row.timez, row.uuid, row.varchar, row.vector, row.xml, row.boxes, row.bpchares, row.chares, row.circlees, row.datees, row.float4es, row.float8es, row.inetes, row.int2es, row.int2vectores, row.int4es, row.int8es, row.intervales, row.jsones, row.jsonbes, row.linees, row.lseges, row.moneyes, row.mydomaines, row.myenumes, row.namees, row.numerices, row.pathes, row.pointes, row.polygones, row.textes, row.timees, row.timestampes, row.timestampzes, row.timezes, row.uuides, row.varchares, row.xmles))
+  val `_rowParser`: RowParser[PgtestRow] = RowParsers.of(ScalaDbTypes.PgTypes.bool, PgTypes.box, PgTypes.bpchar, PgTypes.bytea, PgTypes.bpchar, PgTypes.circle, PgTypes.date, ScalaDbTypes.PgTypes.float4, ScalaDbTypes.PgTypes.float8, ScalaDbTypes.PgTypes.hstore, PgTypes.inet, ScalaDbTypes.PgTypes.int2, PgTypes.int2vector, ScalaDbTypes.PgTypes.int4, ScalaDbTypes.PgTypes.int8, PgTypes.interval, PgTypes.json, PgTypes.jsonb, PgTypes.line, PgTypes.lseg, PgTypes.money, Mydomain.dbType, Myenum.dbType, PgTypes.name, ScalaDbTypes.PgTypes.numeric, PgTypes.path, PgTypes.point, PgTypes.polygon, PgTypes.text, PgTypes.time, PgTypes.timestamp, PgTypes.timestamptz, PgTypes.timetz, PgTypes.uuid, PgTypes.text, PgTypes.vector, PgTypes.xml, PgTypes.boxArray, PgTypes.bpcharArray, PgTypes.bpcharArray, PgTypes.circleArray, PgTypes.dateArray, PgTypes.float4ArrayUnboxed, PgTypes.float8ArrayUnboxed, PgTypes.inetArray, PgTypes.int2ArrayUnboxed, PgTypes.int2vectorArray, PgTypes.int4ArrayUnboxed, PgTypes.int8ArrayUnboxed, PgTypes.intervalArray, PgTypes.jsonArray, PgTypes.jsonbArray, PgTypes.lineArray, PgTypes.lsegArray, PgTypes.moneyArray, Mydomain.dbTypeArray, Myenum.dbTypeArray, PgTypes.nameArray, ScalaDbTypes.PgTypes.numericArray, PgTypes.pathArray, PgTypes.pointArray, PgTypes.polygonArray, PgTypes.textArray, PgTypes.timeArray, PgTypes.timestampArray, PgTypes.timestamptzArray, PgTypes.timetzArray, PgTypes.uuidArray, PgTypes.textArray, PgTypes.xmlArray)(PgtestRow.apply)(row => Array[Any](row.bool, row.box, row.bpchar, row.bytea, row.char, row.circle, row.date, row.float4, row.float8, row.hstore, row.inet, row.int2, row.int2vector, row.int4, row.int8, row.interval, row.json, row.jsonb, row.line, row.lseg, row.money, row.mydomain, row.myenum, row.name, row.numeric, row.path, row.point, row.polygon, row.text, row.time, row.timestamp, row.timestampz, row.timez, row.uuid, row.varchar, row.vector, row.xml, row.boxes, row.bpchares, row.chares, row.circlees, row.datees, row.float4es, row.float8es, row.inetes, row.int2es, row.int2vectores, row.int4es, row.int8es, row.intervales, row.jsones, row.jsonbes, row.linees, row.lseges, row.moneyes, row.mydomaines, row.myenumes, row.namees, row.numerices, row.pathes, row.pointes, row.polygones, row.textes, row.timees, row.timestampes, row.timestampzes, row.timezes, row.uuides, row.varchares, row.xmles))
 
   given pgText: PgText[PgtestRow] = PgText.from(`_rowParser`.underlying)
 }

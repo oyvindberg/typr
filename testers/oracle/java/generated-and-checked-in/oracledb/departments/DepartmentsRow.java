@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.OracleTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.util.Optional;
 import oracledb.MoneyT;
 
@@ -17,7 +18,8 @@ public record DepartmentsRow(
     @JsonProperty("DEPT_CODE") String deptCode,
     @JsonProperty("DEPT_REGION") String deptRegion,
     @JsonProperty("DEPT_NAME") String deptName,
-    @JsonProperty("BUDGET") Optional<MoneyT> budget) {
+    @JsonProperty("BUDGET") Optional<MoneyT> budget)
+    implements Tuple4<String, String, String, Optional<MoneyT>> {
   public DepartmentsRow withDeptCode(String deptCode) {
     return new DepartmentsRow(deptCode, deptRegion, deptName, budget);
   }
@@ -51,6 +53,30 @@ public record DepartmentsRow(
   public static DepartmentsRow apply(
       DepartmentsId compositeId, String deptName, Optional<MoneyT> budget) {
     return new DepartmentsRow(compositeId.deptCode(), compositeId.deptRegion(), deptName, budget);
+  }
+  ;
+
+  @Override
+  public String _1() {
+    return deptCode;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return deptRegion;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return deptName;
+  }
+  ;
+
+  @Override
+  public Optional<MoneyT> _4() {
+    return budget;
   }
   ;
 

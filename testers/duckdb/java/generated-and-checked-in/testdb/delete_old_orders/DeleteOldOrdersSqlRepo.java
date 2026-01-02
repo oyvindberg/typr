@@ -7,8 +7,9 @@ package testdb.delete_old_orders;
 
 import java.sql.Connection;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface DeleteOldOrdersSqlRepo {
-  Integer apply(LocalDate cutoffDate, Optional<String> status, Connection c);
+  List<DeleteOldOrdersSqlRow> apply(LocalDate cutoffDate, Optional<String> status, Connection c);
 }

@@ -93,12 +93,12 @@ class ProductsRepoImpl extends ProductsRepo {
 
   override def upsert(unsaved: ProductsRow)(using c: Connection): ProductsRow = {
   sql"""MERGE INTO [products] AS target
-    USING (VALUES (${Fragment.encode(SqlServerTypes.nvarchar, unsaved.name)}, ${Fragment.encode(ScalaDbTypes.SqlServerTypes.money, unsaved.price)}, ${Fragment.encode(SqlServerTypes.nvarchar.nullable, unsaved.description)})) AS source([name], [price], [description])
+    USING (VALUES (${Fragment.encode(ProductsId.sqlServerType, unsaved.productId)}, ${Fragment.encode(SqlServerTypes.nvarchar, unsaved.name)}, ${Fragment.encode(ScalaDbTypes.SqlServerTypes.money, unsaved.price)}, ${Fragment.encode(SqlServerTypes.nvarchar.nullable, unsaved.description)})) AS source([product_id], [name], [price], [description])
     ON target.[product_id] = source.[product_id]
     WHEN MATCHED THEN UPDATE SET [name] = source.[name],
     [price] = source.[price],
     [description] = source.[description]
-    WHEN NOT MATCHED THEN INSERT ([name], [price], [description]) VALUES (${Fragment.encode(SqlServerTypes.nvarchar, unsaved.name)}, ${Fragment.encode(ScalaDbTypes.SqlServerTypes.money, unsaved.price)}, ${Fragment.encode(SqlServerTypes.nvarchar.nullable, unsaved.description)})
+    WHEN NOT MATCHED THEN INSERT ([product_id], [name], [price], [description]) VALUES (${Fragment.encode(ProductsId.sqlServerType, unsaved.productId)}, ${Fragment.encode(SqlServerTypes.nvarchar, unsaved.name)}, ${Fragment.encode(ScalaDbTypes.SqlServerTypes.money, unsaved.price)}, ${Fragment.encode(SqlServerTypes.nvarchar.nullable, unsaved.description)})
     OUTPUT INSERTED.[product_id], INSERTED.[name], INSERTED.[price], INSERTED.[description];"""
     .updateReturning(ProductsRow.`_rowParser`.exactlyOne())
     .runUnchecked(c)

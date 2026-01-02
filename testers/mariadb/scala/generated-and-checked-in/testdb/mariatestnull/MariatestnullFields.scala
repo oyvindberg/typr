@@ -7,622 +7,609 @@ package testdb.mariatestnull
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint2
+import dev.typr.foundations.data.Uint4
+import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.data.maria.Inet4
 import dev.typr.foundations.data.maria.Inet6
 import dev.typr.foundations.data.maria.MariaSet
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.OptField
-import java.math.BigInteger
+import dev.typr.foundations.scala.TupleExpr41
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.Year
 
-trait MariatestnullFields extends FieldsExpr0[MariatestnullRow] {
-  def tinyintCol: OptField[Byte, MariatestnullRow]
+class MariatestnullFields(val `_path`: java.util.List[Path]) extends TupleExpr41[Byte, Short, Int, Int, Long, Uint1, Uint2, Uint4, Uint4, Uint8, BigDecimal, BigDecimal, Float, Double, Boolean, Array[Byte], Array[Byte], String, String, String, String, String, String, Array[Byte], Array[Byte], Array[Byte], Array[Byte], Array[Byte], Array[Byte], LocalDate, LocalTime, LocalTime, LocalDateTime, LocalDateTime, LocalDateTime, LocalDateTime, Year, MariaSet, Json, Inet4, Inet6] with RelationStructure[MariatestnullFields, MariatestnullRow]  with FieldsBase[MariatestnullRow] {
+  def tinyintCol: OptField[Byte, MariatestnullRow] = {
+    new OptField[Byte, MariatestnullRow](
+      _path,
+      "tinyint_col",
+      _.tinyintCol,
+      None,
+      None,
+      (row, value) => row.copy(tinyintCol = value),
+      ScalaDbTypes.MariaTypes.tinyint
+    )
+  }
 
-  def smallintCol: OptField[Short, MariatestnullRow]
+  def smallintCol: OptField[Short, MariatestnullRow] = {
+    new OptField[Short, MariatestnullRow](
+      _path,
+      "smallint_col",
+      _.smallintCol,
+      None,
+      None,
+      (row, value) => row.copy(smallintCol = value),
+      ScalaDbTypes.MariaTypes.smallint
+    )
+  }
 
-  def mediumintCol: OptField[Int, MariatestnullRow]
+  def mediumintCol: OptField[Int, MariatestnullRow] = {
+    new OptField[Int, MariatestnullRow](
+      _path,
+      "mediumint_col",
+      _.mediumintCol,
+      None,
+      None,
+      (row, value) => row.copy(mediumintCol = value),
+      ScalaDbTypes.MariaTypes.mediumint
+    )
+  }
 
-  def intCol: OptField[Int, MariatestnullRow]
+  def intCol: OptField[Int, MariatestnullRow] = {
+    new OptField[Int, MariatestnullRow](
+      _path,
+      "int_col",
+      _.intCol,
+      None,
+      None,
+      (row, value) => row.copy(intCol = value),
+      ScalaDbTypes.MariaTypes.int_
+    )
+  }
 
-  def bigintCol: OptField[Long, MariatestnullRow]
+  def bigintCol: OptField[Long, MariatestnullRow] = {
+    new OptField[Long, MariatestnullRow](
+      _path,
+      "bigint_col",
+      _.bigintCol,
+      None,
+      None,
+      (row, value) => row.copy(bigintCol = value),
+      ScalaDbTypes.MariaTypes.bigint
+    )
+  }
 
-  def tinyintUCol: OptField[Short, MariatestnullRow]
+  def tinyintUCol: OptField[Uint1, MariatestnullRow] = {
+    new OptField[Uint1, MariatestnullRow](
+      _path,
+      "tinyint_u_col",
+      _.tinyintUCol,
+      None,
+      None,
+      (row, value) => row.copy(tinyintUCol = value),
+      MariaTypes.tinyintUnsigned
+    )
+  }
 
-  def smallintUCol: OptField[Int, MariatestnullRow]
+  def smallintUCol: OptField[Uint2, MariatestnullRow] = {
+    new OptField[Uint2, MariatestnullRow](
+      _path,
+      "smallint_u_col",
+      _.smallintUCol,
+      None,
+      None,
+      (row, value) => row.copy(smallintUCol = value),
+      MariaTypes.smallintUnsigned
+    )
+  }
 
-  def mediumintUCol: OptField[Int, MariatestnullRow]
+  def mediumintUCol: OptField[Uint4, MariatestnullRow] = {
+    new OptField[Uint4, MariatestnullRow](
+      _path,
+      "mediumint_u_col",
+      _.mediumintUCol,
+      None,
+      None,
+      (row, value) => row.copy(mediumintUCol = value),
+      MariaTypes.mediumintUnsigned
+    )
+  }
 
-  def intUCol: OptField[Long, MariatestnullRow]
+  def intUCol: OptField[Uint4, MariatestnullRow] = {
+    new OptField[Uint4, MariatestnullRow](
+      _path,
+      "int_u_col",
+      _.intUCol,
+      None,
+      None,
+      (row, value) => row.copy(intUCol = value),
+      MariaTypes.intUnsigned
+    )
+  }
 
-  def bigintUCol: OptField[BigInteger, MariatestnullRow]
+  def bigintUCol: OptField[Uint8, MariatestnullRow] = {
+    new OptField[Uint8, MariatestnullRow](
+      _path,
+      "bigint_u_col",
+      _.bigintUCol,
+      None,
+      None,
+      (row, value) => row.copy(bigintUCol = value),
+      MariaTypes.bigintUnsigned
+    )
+  }
 
-  def decimalCol: OptField[BigDecimal, MariatestnullRow]
+  def decimalCol: OptField[BigDecimal, MariatestnullRow] = {
+    new OptField[BigDecimal, MariatestnullRow](
+      _path,
+      "decimal_col",
+      _.decimalCol,
+      None,
+      None,
+      (row, value) => row.copy(decimalCol = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def numericCol: OptField[BigDecimal, MariatestnullRow]
+  def numericCol: OptField[BigDecimal, MariatestnullRow] = {
+    new OptField[BigDecimal, MariatestnullRow](
+      _path,
+      "numeric_col",
+      _.numericCol,
+      None,
+      None,
+      (row, value) => row.copy(numericCol = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def floatCol: OptField[Float, MariatestnullRow]
+  def floatCol: OptField[Float, MariatestnullRow] = {
+    new OptField[Float, MariatestnullRow](
+      _path,
+      "float_col",
+      _.floatCol,
+      None,
+      None,
+      (row, value) => row.copy(floatCol = value),
+      ScalaDbTypes.MariaTypes.float_
+    )
+  }
 
-  def doubleCol: OptField[Double, MariatestnullRow]
+  def doubleCol: OptField[Double, MariatestnullRow] = {
+    new OptField[Double, MariatestnullRow](
+      _path,
+      "double_col",
+      _.doubleCol,
+      None,
+      None,
+      (row, value) => row.copy(doubleCol = value),
+      ScalaDbTypes.MariaTypes.double_
+    )
+  }
 
-  def boolCol: OptField[Boolean, MariatestnullRow]
+  def boolCol: OptField[Boolean, MariatestnullRow] = {
+    new OptField[Boolean, MariatestnullRow](
+      _path,
+      "bool_col",
+      _.boolCol,
+      None,
+      None,
+      (row, value) => row.copy(boolCol = value),
+      ScalaDbTypes.MariaTypes.bool
+    )
+  }
 
-  def bitCol: OptField[Array[Byte], MariatestnullRow]
+  def bitCol: OptField[Array[Byte], MariatestnullRow] = {
+    new OptField[Array[Byte], MariatestnullRow](
+      _path,
+      "bit_col",
+      _.bitCol,
+      None,
+      None,
+      (row, value) => row.copy(bitCol = value),
+      MariaTypes.bit
+    )
+  }
 
-  def bit1Col: OptField[Array[Byte], MariatestnullRow]
+  def bit1Col: OptField[Array[Byte], MariatestnullRow] = {
+    new OptField[Array[Byte], MariatestnullRow](
+      _path,
+      "bit1_col",
+      _.bit1Col,
+      None,
+      None,
+      (row, value) => row.copy(bit1Col = value),
+      MariaTypes.bit
+    )
+  }
 
-  def charCol: OptField[String, MariatestnullRow]
+  def charCol: OptField[String, MariatestnullRow] = {
+    new OptField[String, MariatestnullRow](
+      _path,
+      "char_col",
+      _.charCol,
+      None,
+      None,
+      (row, value) => row.copy(charCol = value),
+      MariaTypes.char_
+    )
+  }
 
-  def varcharCol: OptField[String, MariatestnullRow]
+  def varcharCol: OptField[String, MariatestnullRow] = {
+    new OptField[String, MariatestnullRow](
+      _path,
+      "varchar_col",
+      _.varcharCol,
+      None,
+      None,
+      (row, value) => row.copy(varcharCol = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def tinytextCol: OptField[String, MariatestnullRow]
+  def tinytextCol: OptField[String, MariatestnullRow] = {
+    new OptField[String, MariatestnullRow](
+      _path,
+      "tinytext_col",
+      _.tinytextCol,
+      None,
+      None,
+      (row, value) => row.copy(tinytextCol = value),
+      MariaTypes.tinytext
+    )
+  }
 
-  def textCol: OptField[String, MariatestnullRow]
+  def textCol: OptField[String, MariatestnullRow] = {
+    new OptField[String, MariatestnullRow](
+      _path,
+      "text_col",
+      _.textCol,
+      None,
+      None,
+      (row, value) => row.copy(textCol = value),
+      MariaTypes.text
+    )
+  }
 
-  def mediumtextCol: OptField[String, MariatestnullRow]
+  def mediumtextCol: OptField[String, MariatestnullRow] = {
+    new OptField[String, MariatestnullRow](
+      _path,
+      "mediumtext_col",
+      _.mediumtextCol,
+      None,
+      None,
+      (row, value) => row.copy(mediumtextCol = value),
+      MariaTypes.mediumtext
+    )
+  }
 
-  def longtextCol: OptField[String, MariatestnullRow]
+  def longtextCol: OptField[String, MariatestnullRow] = {
+    new OptField[String, MariatestnullRow](
+      _path,
+      "longtext_col",
+      _.longtextCol,
+      None,
+      None,
+      (row, value) => row.copy(longtextCol = value),
+      MariaTypes.longtext
+    )
+  }
 
-  def binaryCol: OptField[Array[Byte], MariatestnullRow]
+  def binaryCol: OptField[Array[Byte], MariatestnullRow] = {
+    new OptField[Array[Byte], MariatestnullRow](
+      _path,
+      "binary_col",
+      _.binaryCol,
+      None,
+      None,
+      (row, value) => row.copy(binaryCol = value),
+      MariaTypes.binary
+    )
+  }
 
-  def varbinaryCol: OptField[Array[Byte], MariatestnullRow]
+  def varbinaryCol: OptField[Array[Byte], MariatestnullRow] = {
+    new OptField[Array[Byte], MariatestnullRow](
+      _path,
+      "varbinary_col",
+      _.varbinaryCol,
+      None,
+      None,
+      (row, value) => row.copy(varbinaryCol = value),
+      MariaTypes.varbinary
+    )
+  }
 
-  def tinyblobCol: OptField[Array[Byte], MariatestnullRow]
+  def tinyblobCol: OptField[Array[Byte], MariatestnullRow] = {
+    new OptField[Array[Byte], MariatestnullRow](
+      _path,
+      "tinyblob_col",
+      _.tinyblobCol,
+      None,
+      None,
+      (row, value) => row.copy(tinyblobCol = value),
+      MariaTypes.tinyblob
+    )
+  }
 
-  def blobCol: OptField[Array[Byte], MariatestnullRow]
+  def blobCol: OptField[Array[Byte], MariatestnullRow] = {
+    new OptField[Array[Byte], MariatestnullRow](
+      _path,
+      "blob_col",
+      _.blobCol,
+      None,
+      None,
+      (row, value) => row.copy(blobCol = value),
+      MariaTypes.blob
+    )
+  }
 
-  def mediumblobCol: OptField[Array[Byte], MariatestnullRow]
+  def mediumblobCol: OptField[Array[Byte], MariatestnullRow] = {
+    new OptField[Array[Byte], MariatestnullRow](
+      _path,
+      "mediumblob_col",
+      _.mediumblobCol,
+      None,
+      None,
+      (row, value) => row.copy(mediumblobCol = value),
+      MariaTypes.mediumblob
+    )
+  }
 
-  def longblobCol: OptField[Array[Byte], MariatestnullRow]
+  def longblobCol: OptField[Array[Byte], MariatestnullRow] = {
+    new OptField[Array[Byte], MariatestnullRow](
+      _path,
+      "longblob_col",
+      _.longblobCol,
+      None,
+      None,
+      (row, value) => row.copy(longblobCol = value),
+      MariaTypes.longblob
+    )
+  }
 
-  def dateCol: OptField[LocalDate, MariatestnullRow]
+  def dateCol: OptField[LocalDate, MariatestnullRow] = {
+    new OptField[LocalDate, MariatestnullRow](
+      _path,
+      "date_col",
+      _.dateCol,
+      None,
+      None,
+      (row, value) => row.copy(dateCol = value),
+      MariaTypes.date
+    )
+  }
 
-  def timeCol: OptField[LocalTime, MariatestnullRow]
+  def timeCol: OptField[LocalTime, MariatestnullRow] = {
+    new OptField[LocalTime, MariatestnullRow](
+      _path,
+      "time_col",
+      _.timeCol,
+      None,
+      None,
+      (row, value) => row.copy(timeCol = value),
+      MariaTypes.time
+    )
+  }
 
-  def timeFspCol: OptField[LocalTime, MariatestnullRow]
+  def timeFspCol: OptField[LocalTime, MariatestnullRow] = {
+    new OptField[LocalTime, MariatestnullRow](
+      _path,
+      "time_fsp_col",
+      _.timeFspCol,
+      None,
+      None,
+      (row, value) => row.copy(timeFspCol = value),
+      MariaTypes.time
+    )
+  }
 
-  def datetimeCol: OptField[LocalDateTime, MariatestnullRow]
+  def datetimeCol: OptField[LocalDateTime, MariatestnullRow] = {
+    new OptField[LocalDateTime, MariatestnullRow](
+      _path,
+      "datetime_col",
+      _.datetimeCol,
+      None,
+      None,
+      (row, value) => row.copy(datetimeCol = value),
+      MariaTypes.datetime
+    )
+  }
 
-  def datetimeFspCol: OptField[LocalDateTime, MariatestnullRow]
+  def datetimeFspCol: OptField[LocalDateTime, MariatestnullRow] = {
+    new OptField[LocalDateTime, MariatestnullRow](
+      _path,
+      "datetime_fsp_col",
+      _.datetimeFspCol,
+      None,
+      None,
+      (row, value) => row.copy(datetimeFspCol = value),
+      MariaTypes.datetime
+    )
+  }
 
-  def timestampCol: OptField[LocalDateTime, MariatestnullRow]
+  def timestampCol: OptField[LocalDateTime, MariatestnullRow] = {
+    new OptField[LocalDateTime, MariatestnullRow](
+      _path,
+      "timestamp_col",
+      _.timestampCol,
+      None,
+      None,
+      (row, value) => row.copy(timestampCol = value),
+      MariaTypes.timestamp
+    )
+  }
 
-  def timestampFspCol: OptField[LocalDateTime, MariatestnullRow]
+  def timestampFspCol: OptField[LocalDateTime, MariatestnullRow] = {
+    new OptField[LocalDateTime, MariatestnullRow](
+      _path,
+      "timestamp_fsp_col",
+      _.timestampFspCol,
+      None,
+      None,
+      (row, value) => row.copy(timestampFspCol = value),
+      MariaTypes.timestamp
+    )
+  }
 
-  def yearCol: OptField[Year, MariatestnullRow]
+  def yearCol: OptField[Year, MariatestnullRow] = {
+    new OptField[Year, MariatestnullRow](
+      _path,
+      "year_col",
+      _.yearCol,
+      None,
+      None,
+      (row, value) => row.copy(yearCol = value),
+      MariaTypes.year
+    )
+  }
 
-  def enumCol: OptField[String, MariatestnullRow]
+  def setCol: OptField[MariaSet, MariatestnullRow] = {
+    new OptField[MariaSet, MariatestnullRow](
+      _path,
+      "set_col",
+      _.setCol,
+      None,
+      None,
+      (row, value) => row.copy(setCol = value),
+      MariaTypes.set
+    )
+  }
 
-  def setCol: OptField[MariaSet, MariatestnullRow]
+  def jsonCol: OptField[Json, MariatestnullRow] = {
+    new OptField[Json, MariatestnullRow](
+      _path,
+      "json_col",
+      _.jsonCol,
+      None,
+      None,
+      (row, value) => row.copy(jsonCol = value),
+      MariaTypes.json
+    )
+  }
 
-  def jsonCol: OptField[String, MariatestnullRow]
+  def inet4Col: OptField[Inet4, MariatestnullRow] = {
+    new OptField[Inet4, MariatestnullRow](
+      _path,
+      "inet4_col",
+      _.inet4Col,
+      None,
+      None,
+      (row, value) => row.copy(inet4Col = value),
+      MariaTypes.inet4
+    )
+  }
 
-  def inet4Col: OptField[Inet4, MariatestnullRow]
+  def inet6Col: OptField[Inet6, MariatestnullRow] = {
+    new OptField[Inet6, MariatestnullRow](
+      _path,
+      "inet6_col",
+      _.inet6Col,
+      None,
+      None,
+      (row, value) => row.copy(inet6Col = value),
+      MariaTypes.inet6
+    )
+  }
 
-  def inet6Col: OptField[Inet6, MariatestnullRow]
-
-  override def columns: java.util.List[FieldLike[?, MariatestnullRow]]
+  override def columns: java.util.List[FieldLike[?, MariatestnullRow]] = java.util.List.of(this.tinyintCol.underlying, this.smallintCol.underlying, this.mediumintCol.underlying, this.intCol.underlying, this.bigintCol.underlying, this.tinyintUCol.underlying, this.smallintUCol.underlying, this.mediumintUCol.underlying, this.intUCol.underlying, this.bigintUCol.underlying, this.decimalCol.underlying, this.numericCol.underlying, this.floatCol.underlying, this.doubleCol.underlying, this.boolCol.underlying, this.bitCol.underlying, this.bit1Col.underlying, this.charCol.underlying, this.varcharCol.underlying, this.tinytextCol.underlying, this.textCol.underlying, this.mediumtextCol.underlying, this.longtextCol.underlying, this.binaryCol.underlying, this.varbinaryCol.underlying, this.tinyblobCol.underlying, this.blobCol.underlying, this.mediumblobCol.underlying, this.longblobCol.underlying, this.dateCol.underlying, this.timeCol.underlying, this.timeFspCol.underlying, this.datetimeCol.underlying, this.datetimeFspCol.underlying, this.timestampCol.underlying, this.timestampFspCol.underlying, this.yearCol.underlying, this.setCol.underlying, this.jsonCol.underlying, this.inet4Col.underlying, this.inet6Col.underlying)
 
   override def rowParser: RowParser[MariatestnullRow] = MariatestnullRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[MariatestnullFields, MariatestnullRow] = new MariatestnullFields(`_path`)
+
+  override def `_1`: SqlExpr[Byte] = tinyintCol
+
+  override def `_2`: SqlExpr[Short] = smallintCol
+
+  override def `_3`: SqlExpr[Int] = mediumintCol
+
+  override def `_4`: SqlExpr[Int] = intCol
+
+  override def `_5`: SqlExpr[Long] = bigintCol
+
+  override def `_6`: SqlExpr[Uint1] = tinyintUCol
+
+  override def `_7`: SqlExpr[Uint2] = smallintUCol
+
+  override def `_8`: SqlExpr[Uint4] = mediumintUCol
+
+  override def `_9`: SqlExpr[Uint4] = intUCol
+
+  override def `_10`: SqlExpr[Uint8] = bigintUCol
+
+  override def `_11`: SqlExpr[BigDecimal] = decimalCol
+
+  override def `_12`: SqlExpr[BigDecimal] = numericCol
+
+  override def `_13`: SqlExpr[Float] = floatCol
+
+  override def `_14`: SqlExpr[Double] = doubleCol
+
+  override def `_15`: SqlExpr[Boolean] = boolCol
+
+  override def `_16`: SqlExpr[Array[Byte]] = bitCol
+
+  override def `_17`: SqlExpr[Array[Byte]] = bit1Col
+
+  override def `_18`: SqlExpr[String] = charCol
+
+  override def `_19`: SqlExpr[String] = varcharCol
+
+  override def `_20`: SqlExpr[String] = tinytextCol
+
+  override def `_21`: SqlExpr[String] = textCol
+
+  override def `_22`: SqlExpr[String] = mediumtextCol
+
+  override def `_23`: SqlExpr[String] = longtextCol
+
+  override def `_24`: SqlExpr[Array[Byte]] = binaryCol
+
+  override def `_25`: SqlExpr[Array[Byte]] = varbinaryCol
+
+  override def `_26`: SqlExpr[Array[Byte]] = tinyblobCol
+
+  override def `_27`: SqlExpr[Array[Byte]] = blobCol
+
+  override def `_28`: SqlExpr[Array[Byte]] = mediumblobCol
+
+  override def `_29`: SqlExpr[Array[Byte]] = longblobCol
+
+  override def `_30`: SqlExpr[LocalDate] = dateCol
+
+  override def `_31`: SqlExpr[LocalTime] = timeCol
+
+  override def `_32`: SqlExpr[LocalTime] = timeFspCol
+
+  override def `_33`: SqlExpr[LocalDateTime] = datetimeCol
+
+  override def `_34`: SqlExpr[LocalDateTime] = datetimeFspCol
+
+  override def `_35`: SqlExpr[LocalDateTime] = timestampCol
+
+  override def `_36`: SqlExpr[LocalDateTime] = timestampFspCol
+
+  override def `_37`: SqlExpr[Year] = yearCol
+
+  override def `_38`: SqlExpr[MariaSet] = setCol
+
+  override def `_39`: SqlExpr[Json] = jsonCol
+
+  override def `_40`: SqlExpr[Inet4] = inet4Col
+
+  override def `_41`: SqlExpr[Inet6] = inet6Col
 }
 
 object MariatestnullFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends MariatestnullFields with RelationStructure[MariatestnullFields, MariatestnullRow] {
-
-    override def tinyintCol: OptField[Byte, MariatestnullRow] = {
-      new OptField[Byte, MariatestnullRow](
-        _path,
-        "tinyint_col",
-        _.tinyintCol,
-        None,
-        None,
-        (row, value) => row.copy(tinyintCol = value),
-        ScalaDbTypes.MariaTypes.tinyint
-      )
-    }
-
-    override def smallintCol: OptField[Short, MariatestnullRow] = {
-      new OptField[Short, MariatestnullRow](
-        _path,
-        "smallint_col",
-        _.smallintCol,
-        None,
-        None,
-        (row, value) => row.copy(smallintCol = value),
-        ScalaDbTypes.MariaTypes.smallint
-      )
-    }
-
-    override def mediumintCol: OptField[Int, MariatestnullRow] = {
-      new OptField[Int, MariatestnullRow](
-        _path,
-        "mediumint_col",
-        _.mediumintCol,
-        None,
-        None,
-        (row, value) => row.copy(mediumintCol = value),
-        ScalaDbTypes.MariaTypes.mediumint
-      )
-    }
-
-    override def intCol: OptField[Int, MariatestnullRow] = {
-      new OptField[Int, MariatestnullRow](
-        _path,
-        "int_col",
-        _.intCol,
-        None,
-        None,
-        (row, value) => row.copy(intCol = value),
-        ScalaDbTypes.MariaTypes.int_
-      )
-    }
-
-    override def bigintCol: OptField[Long, MariatestnullRow] = {
-      new OptField[Long, MariatestnullRow](
-        _path,
-        "bigint_col",
-        _.bigintCol,
-        None,
-        None,
-        (row, value) => row.copy(bigintCol = value),
-        ScalaDbTypes.MariaTypes.bigint
-      )
-    }
-
-    override def tinyintUCol: OptField[Short, MariatestnullRow] = {
-      new OptField[Short, MariatestnullRow](
-        _path,
-        "tinyint_u_col",
-        _.tinyintUCol,
-        None,
-        None,
-        (row, value) => row.copy(tinyintUCol = value),
-        ScalaDbTypes.MariaTypes.tinyintUnsigned
-      )
-    }
-
-    override def smallintUCol: OptField[Int, MariatestnullRow] = {
-      new OptField[Int, MariatestnullRow](
-        _path,
-        "smallint_u_col",
-        _.smallintUCol,
-        None,
-        None,
-        (row, value) => row.copy(smallintUCol = value),
-        ScalaDbTypes.MariaTypes.smallintUnsigned
-      )
-    }
-
-    override def mediumintUCol: OptField[Int, MariatestnullRow] = {
-      new OptField[Int, MariatestnullRow](
-        _path,
-        "mediumint_u_col",
-        _.mediumintUCol,
-        None,
-        None,
-        (row, value) => row.copy(mediumintUCol = value),
-        ScalaDbTypes.MariaTypes.mediumintUnsigned
-      )
-    }
-
-    override def intUCol: OptField[Long, MariatestnullRow] = {
-      new OptField[Long, MariatestnullRow](
-        _path,
-        "int_u_col",
-        _.intUCol,
-        None,
-        None,
-        (row, value) => row.copy(intUCol = value),
-        ScalaDbTypes.MariaTypes.intUnsigned
-      )
-    }
-
-    override def bigintUCol: OptField[BigInteger, MariatestnullRow] = {
-      new OptField[BigInteger, MariatestnullRow](
-        _path,
-        "bigint_u_col",
-        _.bigintUCol,
-        None,
-        None,
-        (row, value) => row.copy(bigintUCol = value),
-        MariaTypes.bigintUnsigned
-      )
-    }
-
-    override def decimalCol: OptField[BigDecimal, MariatestnullRow] = {
-      new OptField[BigDecimal, MariatestnullRow](
-        _path,
-        "decimal_col",
-        _.decimalCol,
-        None,
-        None,
-        (row, value) => row.copy(decimalCol = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def numericCol: OptField[BigDecimal, MariatestnullRow] = {
-      new OptField[BigDecimal, MariatestnullRow](
-        _path,
-        "numeric_col",
-        _.numericCol,
-        None,
-        None,
-        (row, value) => row.copy(numericCol = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def floatCol: OptField[Float, MariatestnullRow] = {
-      new OptField[Float, MariatestnullRow](
-        _path,
-        "float_col",
-        _.floatCol,
-        None,
-        None,
-        (row, value) => row.copy(floatCol = value),
-        ScalaDbTypes.MariaTypes.float_
-      )
-    }
-
-    override def doubleCol: OptField[Double, MariatestnullRow] = {
-      new OptField[Double, MariatestnullRow](
-        _path,
-        "double_col",
-        _.doubleCol,
-        None,
-        None,
-        (row, value) => row.copy(doubleCol = value),
-        ScalaDbTypes.MariaTypes.double_
-      )
-    }
-
-    override def boolCol: OptField[Boolean, MariatestnullRow] = {
-      new OptField[Boolean, MariatestnullRow](
-        _path,
-        "bool_col",
-        _.boolCol,
-        None,
-        None,
-        (row, value) => row.copy(boolCol = value),
-        ScalaDbTypes.MariaTypes.bool
-      )
-    }
-
-    override def bitCol: OptField[Array[Byte], MariatestnullRow] = {
-      new OptField[Array[Byte], MariatestnullRow](
-        _path,
-        "bit_col",
-        _.bitCol,
-        None,
-        None,
-        (row, value) => row.copy(bitCol = value),
-        MariaTypes.bit
-      )
-    }
-
-    override def bit1Col: OptField[Array[Byte], MariatestnullRow] = {
-      new OptField[Array[Byte], MariatestnullRow](
-        _path,
-        "bit1_col",
-        _.bit1Col,
-        None,
-        None,
-        (row, value) => row.copy(bit1Col = value),
-        MariaTypes.bit
-      )
-    }
-
-    override def charCol: OptField[String, MariatestnullRow] = {
-      new OptField[String, MariatestnullRow](
-        _path,
-        "char_col",
-        _.charCol,
-        None,
-        None,
-        (row, value) => row.copy(charCol = value),
-        MariaTypes.char_
-      )
-    }
-
-    override def varcharCol: OptField[String, MariatestnullRow] = {
-      new OptField[String, MariatestnullRow](
-        _path,
-        "varchar_col",
-        _.varcharCol,
-        None,
-        None,
-        (row, value) => row.copy(varcharCol = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def tinytextCol: OptField[String, MariatestnullRow] = {
-      new OptField[String, MariatestnullRow](
-        _path,
-        "tinytext_col",
-        _.tinytextCol,
-        None,
-        None,
-        (row, value) => row.copy(tinytextCol = value),
-        MariaTypes.tinytext
-      )
-    }
-
-    override def textCol: OptField[String, MariatestnullRow] = {
-      new OptField[String, MariatestnullRow](
-        _path,
-        "text_col",
-        _.textCol,
-        None,
-        None,
-        (row, value) => row.copy(textCol = value),
-        MariaTypes.text
-      )
-    }
-
-    override def mediumtextCol: OptField[String, MariatestnullRow] = {
-      new OptField[String, MariatestnullRow](
-        _path,
-        "mediumtext_col",
-        _.mediumtextCol,
-        None,
-        None,
-        (row, value) => row.copy(mediumtextCol = value),
-        MariaTypes.mediumtext
-      )
-    }
-
-    override def longtextCol: OptField[String, MariatestnullRow] = {
-      new OptField[String, MariatestnullRow](
-        _path,
-        "longtext_col",
-        _.longtextCol,
-        None,
-        None,
-        (row, value) => row.copy(longtextCol = value),
-        MariaTypes.longtext
-      )
-    }
-
-    override def binaryCol: OptField[Array[Byte], MariatestnullRow] = {
-      new OptField[Array[Byte], MariatestnullRow](
-        _path,
-        "binary_col",
-        _.binaryCol,
-        None,
-        None,
-        (row, value) => row.copy(binaryCol = value),
-        MariaTypes.binary
-      )
-    }
-
-    override def varbinaryCol: OptField[Array[Byte], MariatestnullRow] = {
-      new OptField[Array[Byte], MariatestnullRow](
-        _path,
-        "varbinary_col",
-        _.varbinaryCol,
-        None,
-        None,
-        (row, value) => row.copy(varbinaryCol = value),
-        MariaTypes.varbinary
-      )
-    }
-
-    override def tinyblobCol: OptField[Array[Byte], MariatestnullRow] = {
-      new OptField[Array[Byte], MariatestnullRow](
-        _path,
-        "tinyblob_col",
-        _.tinyblobCol,
-        None,
-        None,
-        (row, value) => row.copy(tinyblobCol = value),
-        MariaTypes.tinyblob
-      )
-    }
-
-    override def blobCol: OptField[Array[Byte], MariatestnullRow] = {
-      new OptField[Array[Byte], MariatestnullRow](
-        _path,
-        "blob_col",
-        _.blobCol,
-        None,
-        None,
-        (row, value) => row.copy(blobCol = value),
-        MariaTypes.blob
-      )
-    }
-
-    override def mediumblobCol: OptField[Array[Byte], MariatestnullRow] = {
-      new OptField[Array[Byte], MariatestnullRow](
-        _path,
-        "mediumblob_col",
-        _.mediumblobCol,
-        None,
-        None,
-        (row, value) => row.copy(mediumblobCol = value),
-        MariaTypes.mediumblob
-      )
-    }
-
-    override def longblobCol: OptField[Array[Byte], MariatestnullRow] = {
-      new OptField[Array[Byte], MariatestnullRow](
-        _path,
-        "longblob_col",
-        _.longblobCol,
-        None,
-        None,
-        (row, value) => row.copy(longblobCol = value),
-        MariaTypes.longblob
-      )
-    }
-
-    override def dateCol: OptField[LocalDate, MariatestnullRow] = {
-      new OptField[LocalDate, MariatestnullRow](
-        _path,
-        "date_col",
-        _.dateCol,
-        None,
-        None,
-        (row, value) => row.copy(dateCol = value),
-        MariaTypes.date
-      )
-    }
-
-    override def timeCol: OptField[LocalTime, MariatestnullRow] = {
-      new OptField[LocalTime, MariatestnullRow](
-        _path,
-        "time_col",
-        _.timeCol,
-        None,
-        None,
-        (row, value) => row.copy(timeCol = value),
-        MariaTypes.time
-      )
-    }
-
-    override def timeFspCol: OptField[LocalTime, MariatestnullRow] = {
-      new OptField[LocalTime, MariatestnullRow](
-        _path,
-        "time_fsp_col",
-        _.timeFspCol,
-        None,
-        None,
-        (row, value) => row.copy(timeFspCol = value),
-        MariaTypes.time
-      )
-    }
-
-    override def datetimeCol: OptField[LocalDateTime, MariatestnullRow] = {
-      new OptField[LocalDateTime, MariatestnullRow](
-        _path,
-        "datetime_col",
-        _.datetimeCol,
-        None,
-        None,
-        (row, value) => row.copy(datetimeCol = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def datetimeFspCol: OptField[LocalDateTime, MariatestnullRow] = {
-      new OptField[LocalDateTime, MariatestnullRow](
-        _path,
-        "datetime_fsp_col",
-        _.datetimeFspCol,
-        None,
-        None,
-        (row, value) => row.copy(datetimeFspCol = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def timestampCol: OptField[LocalDateTime, MariatestnullRow] = {
-      new OptField[LocalDateTime, MariatestnullRow](
-        _path,
-        "timestamp_col",
-        _.timestampCol,
-        None,
-        None,
-        (row, value) => row.copy(timestampCol = value),
-        MariaTypes.timestamp
-      )
-    }
-
-    override def timestampFspCol: OptField[LocalDateTime, MariatestnullRow] = {
-      new OptField[LocalDateTime, MariatestnullRow](
-        _path,
-        "timestamp_fsp_col",
-        _.timestampFspCol,
-        None,
-        None,
-        (row, value) => row.copy(timestampFspCol = value),
-        MariaTypes.timestamp
-      )
-    }
-
-    override def yearCol: OptField[Year, MariatestnullRow] = {
-      new OptField[Year, MariatestnullRow](
-        _path,
-        "year_col",
-        _.yearCol,
-        None,
-        None,
-        (row, value) => row.copy(yearCol = value),
-        MariaTypes.year
-      )
-    }
-
-    override def enumCol: OptField[String, MariatestnullRow] = {
-      new OptField[String, MariatestnullRow](
-        _path,
-        "enum_col",
-        _.enumCol,
-        None,
-        None,
-        (row, value) => row.copy(enumCol = value),
-        MariaTypes.text
-      )
-    }
-
-    override def setCol: OptField[MariaSet, MariatestnullRow] = {
-      new OptField[MariaSet, MariatestnullRow](
-        _path,
-        "set_col",
-        _.setCol,
-        None,
-        None,
-        (row, value) => row.copy(setCol = value),
-        MariaTypes.set
-      )
-    }
-
-    override def jsonCol: OptField[String, MariatestnullRow] = {
-      new OptField[String, MariatestnullRow](
-        _path,
-        "json_col",
-        _.jsonCol,
-        None,
-        None,
-        (row, value) => row.copy(jsonCol = value),
-        MariaTypes.longtext
-      )
-    }
-
-    override def inet4Col: OptField[Inet4, MariatestnullRow] = {
-      new OptField[Inet4, MariatestnullRow](
-        _path,
-        "inet4_col",
-        _.inet4Col,
-        None,
-        None,
-        (row, value) => row.copy(inet4Col = value),
-        MariaTypes.inet4
-      )
-    }
-
-    override def inet6Col: OptField[Inet6, MariatestnullRow] = {
-      new OptField[Inet6, MariatestnullRow](
-        _path,
-        "inet6_col",
-        _.inet6Col,
-        None,
-        None,
-        (row, value) => row.copy(inet6Col = value),
-        MariaTypes.inet6
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, MariatestnullRow]] = java.util.List.of(this.tinyintCol.underlying, this.smallintCol.underlying, this.mediumintCol.underlying, this.intCol.underlying, this.bigintCol.underlying, this.tinyintUCol.underlying, this.smallintUCol.underlying, this.mediumintUCol.underlying, this.intUCol.underlying, this.bigintUCol.underlying, this.decimalCol.underlying, this.numericCol.underlying, this.floatCol.underlying, this.doubleCol.underlying, this.boolCol.underlying, this.bitCol.underlying, this.bit1Col.underlying, this.charCol.underlying, this.varcharCol.underlying, this.tinytextCol.underlying, this.textCol.underlying, this.mediumtextCol.underlying, this.longtextCol.underlying, this.binaryCol.underlying, this.varbinaryCol.underlying, this.tinyblobCol.underlying, this.blobCol.underlying, this.mediumblobCol.underlying, this.longblobCol.underlying, this.dateCol.underlying, this.timeCol.underlying, this.timeFspCol.underlying, this.datetimeCol.underlying, this.datetimeFspCol.underlying, this.timestampCol.underlying, this.timestampFspCol.underlying, this.yearCol.underlying, this.enumCol.underlying, this.setCol.underlying, this.jsonCol.underlying, this.inet4Col.underlying, this.inet6Col.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[MariatestnullFields, MariatestnullRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: MariatestnullFields = new MariatestnullFields(java.util.Collections.emptyList())
 }

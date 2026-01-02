@@ -12,6 +12,7 @@ import adventureworks.userdefined.FirstName;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple18;
 import dev.typr.foundations.data.Xml;
 
 /** View: humanresources.vemployee */
@@ -51,7 +52,26 @@ public record VemployeeViewRow(
     /** Points to {@link adventureworks.person.countryregion.CountryregionRow#name()} */
     Name countryregionname,
     /** Points to {@link adventureworks.person.person.PersonRow#additionalcontactinfo()} */
-    Xml additionalcontactinfo) {
+    Xml additionalcontactinfo)
+    implements Tuple18<
+        BusinessentityId,
+        String, /* user-picked */
+        FirstName,
+        Name,
+        Name,
+        String,
+        String,
+        Phone,
+        Name,
+        String,
+        Integer,
+        String,
+        String,
+        String,
+        Name,
+        String,
+        Name,
+        Xml> {
   /** Points to {@link adventureworks.humanresources.employee.EmployeeRow#businessentityid()} */
   public VemployeeViewRow withBusinessentityid(BusinessentityId businessentityid) {
     return new VemployeeViewRow(
@@ -486,23 +506,23 @@ public record VemployeeViewRow(
 
   public static RowParser<VemployeeViewRow> _rowParser =
       RowParsers.of(
-          BusinessentityId.pgType,
+          BusinessentityId.dbType,
           PgTypes.text,
-          FirstName.pgType,
-          Name.pgType,
-          Name.pgType,
+          FirstName.dbType,
+          Name.dbType,
+          Name.dbType,
           PgTypes.text,
           PgTypes.text,
-          Phone.pgType,
-          Name.pgType,
+          Phone.dbType,
+          Name.dbType,
           PgTypes.text,
           PgTypes.int4,
           PgTypes.text,
           PgTypes.text,
           PgTypes.text,
-          Name.pgType,
+          Name.dbType,
           PgTypes.text,
-          Name.pgType,
+          Name.dbType,
           PgTypes.xml,
           VemployeeViewRow::new,
           row ->
@@ -526,5 +546,113 @@ public record VemployeeViewRow(
                 row.countryregionname(),
                 row.additionalcontactinfo()
               });
+  ;
+
+  @Override
+  public BusinessentityId _1() {
+    return businessentityid;
+  }
+  ;
+
+  @Override
+  public String _10() {
+    return emailaddress;
+  }
+  ;
+
+  @Override
+  public Integer _11() {
+    return emailpromotion;
+  }
+  ;
+
+  @Override
+  public String _12() {
+    return addressline1;
+  }
+  ;
+
+  @Override
+  public String _13() {
+    return addressline2;
+  }
+  ;
+
+  @Override
+  public String _14() {
+    return city;
+  }
+  ;
+
+  @Override
+  public Name _15() {
+    return stateprovincename;
+  }
+  ;
+
+  @Override
+  public String _16() {
+    return postalcode;
+  }
+  ;
+
+  @Override
+  public Name _17() {
+    return countryregionname;
+  }
+  ;
+
+  @Override
+  public Xml _18() {
+    return additionalcontactinfo;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return title;
+  }
+  ;
+
+  @Override
+  public /* user-picked */ FirstName _3() {
+    return firstname;
+  }
+  ;
+
+  @Override
+  public Name _4() {
+    return middlename;
+  }
+  ;
+
+  @Override
+  public Name _5() {
+    return lastname;
+  }
+  ;
+
+  @Override
+  public String _6() {
+    return suffix;
+  }
+  ;
+
+  @Override
+  public String _7() {
+    return jobtitle;
+  }
+  ;
+
+  @Override
+  public Phone _8() {
+    return phonenumber;
+  }
+  ;
+
+  @Override
+  public Name _9() {
+    return phonenumbertype;
+  }
   ;
 }

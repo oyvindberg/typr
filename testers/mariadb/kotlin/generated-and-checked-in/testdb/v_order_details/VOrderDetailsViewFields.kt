@@ -7,88 +7,86 @@ package testdb.v_order_details
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr14
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import kotlin.collections.List
 import testdb.orders.OrdersId
 
-interface VOrderDetailsViewFields : FieldsExpr<VOrderDetailsViewRow> {
-  abstract fun carrierName(): OptField<String, VOrderDetailsViewRow>
+data class VOrderDetailsViewFields(val _path: List<Path>) : TupleExpr14<OrdersId, String, String, String, BigDecimal, String, LocalDateTime, String, String, Long, BigDecimal, String, String, String>, RelationStructure<VOrderDetailsViewFields, VOrderDetailsViewRow>, FieldsBase<VOrderDetailsViewRow> {
+  override fun _1(): SqlExpr<OrdersId> = orderId()
 
-  abstract override fun columns(): List<FieldLike<*, VOrderDetailsViewRow>>
+  override fun _10(): SqlExpr<Long> = itemCount()
 
-  abstract fun currencyCode(): Field<String, VOrderDetailsViewRow>
+  override fun _11(): SqlExpr<BigDecimal> = totalQuantity()
 
-  abstract fun customerEmail(): Field<String, VOrderDetailsViewRow>
+  override fun _12(): SqlExpr<String> = trackingNumber()
 
-  abstract fun customerName(): OptField<String, VOrderDetailsViewRow>
+  override fun _13(): SqlExpr<String> = shippingStatus()
 
-  abstract fun itemCount(): Field<Long, VOrderDetailsViewRow>
+  override fun _14(): SqlExpr<String> = carrierName()
 
-  abstract fun orderId(): Field<OrdersId, VOrderDetailsViewRow>
+  override fun _2(): SqlExpr<String> = orderNumber()
 
-  abstract fun orderNumber(): Field<String, VOrderDetailsViewRow>
+  override fun _3(): SqlExpr<String> = orderStatus()
 
-  abstract fun orderStatus(): Field<String, VOrderDetailsViewRow>
+  override fun _4(): SqlExpr<String> = paymentStatus()
 
-  abstract fun orderedAt(): Field<LocalDateTime, VOrderDetailsViewRow>
+  override fun _5(): SqlExpr<BigDecimal> = totalAmount()
 
-  abstract fun paymentStatus(): Field<String, VOrderDetailsViewRow>
+  override fun _6(): SqlExpr<String> = currencyCode()
+
+  override fun _7(): SqlExpr<LocalDateTime> = orderedAt()
+
+  override fun _8(): SqlExpr<String> = customerEmail()
+
+  override fun _9(): SqlExpr<String> = customerName()
+
+  override fun _path(): List<Path> = _path
+
+  fun carrierName(): OptField<String, VOrderDetailsViewRow> = OptField<String, VOrderDetailsViewRow>(_path, "carrier_name", VOrderDetailsViewRow::carrierName, null, null, { row, value -> row.copy(carrierName = value) }, MariaTypes.varchar)
+
+  override fun columns(): List<FieldLike<*, VOrderDetailsViewRow>> = listOf(this.orderId().underlying, this.orderNumber().underlying, this.orderStatus().underlying, this.paymentStatus().underlying, this.totalAmount().underlying, this.currencyCode().underlying, this.orderedAt().underlying, this.customerEmail().underlying, this.customerName().underlying, this.itemCount().underlying, this.totalQuantity().underlying, this.trackingNumber().underlying, this.shippingStatus().underlying, this.carrierName().underlying)
+
+  fun currencyCode(): Field<String, VOrderDetailsViewRow> = Field<String, VOrderDetailsViewRow>(_path, "currency_code", VOrderDetailsViewRow::currencyCode, null, null, { row, value -> row.copy(currencyCode = value) }, MariaTypes.char_)
+
+  fun customerEmail(): Field<String, VOrderDetailsViewRow> = Field<String, VOrderDetailsViewRow>(_path, "customer_email", VOrderDetailsViewRow::customerEmail, null, null, { row, value -> row.copy(customerEmail = value) }, MariaTypes.varchar)
+
+  fun customerName(): OptField<String, VOrderDetailsViewRow> = OptField<String, VOrderDetailsViewRow>(_path, "customer_name", VOrderDetailsViewRow::customerName, null, null, { row, value -> row.copy(customerName = value) }, MariaTypes.varchar)
+
+  fun itemCount(): Field<Long, VOrderDetailsViewRow> = Field<Long, VOrderDetailsViewRow>(_path, "item_count", VOrderDetailsViewRow::itemCount, null, null, { row, value -> row.copy(itemCount = value) }, KotlinDbTypes.MariaTypes.bigint)
+
+  fun orderId(): Field<OrdersId, VOrderDetailsViewRow> = Field<OrdersId, VOrderDetailsViewRow>(_path, "order_id", VOrderDetailsViewRow::orderId, null, null, { row, value -> row.copy(orderId = value) }, OrdersId.dbType)
+
+  fun orderNumber(): Field<String, VOrderDetailsViewRow> = Field<String, VOrderDetailsViewRow>(_path, "order_number", VOrderDetailsViewRow::orderNumber, null, null, { row, value -> row.copy(orderNumber = value) }, MariaTypes.varchar)
+
+  fun orderStatus(): Field<String, VOrderDetailsViewRow> = Field<String, VOrderDetailsViewRow>(_path, "order_status", VOrderDetailsViewRow::orderStatus, null, null, { row, value -> row.copy(orderStatus = value) }, MariaTypes.text)
+
+  fun orderedAt(): Field<LocalDateTime, VOrderDetailsViewRow> = Field<LocalDateTime, VOrderDetailsViewRow>(_path, "ordered_at", VOrderDetailsViewRow::orderedAt, null, null, { row, value -> row.copy(orderedAt = value) }, MariaTypes.datetime)
+
+  fun paymentStatus(): Field<String, VOrderDetailsViewRow> = Field<String, VOrderDetailsViewRow>(_path, "payment_status", VOrderDetailsViewRow::paymentStatus, null, null, { row, value -> row.copy(paymentStatus = value) }, MariaTypes.text)
 
   override fun rowParser(): RowParser<VOrderDetailsViewRow> = VOrderDetailsViewRow._rowParser.underlying
 
-  abstract fun shippingStatus(): OptField<String, VOrderDetailsViewRow>
+  fun shippingStatus(): OptField<String, VOrderDetailsViewRow> = OptField<String, VOrderDetailsViewRow>(_path, "shipping_status", VOrderDetailsViewRow::shippingStatus, null, null, { row, value -> row.copy(shippingStatus = value) }, MariaTypes.text)
 
-  abstract fun totalAmount(): Field<BigDecimal, VOrderDetailsViewRow>
+  fun totalAmount(): Field<BigDecimal, VOrderDetailsViewRow> = Field<BigDecimal, VOrderDetailsViewRow>(_path, "total_amount", VOrderDetailsViewRow::totalAmount, null, null, { row, value -> row.copy(totalAmount = value) }, KotlinDbTypes.MariaTypes.numeric)
 
-  abstract fun totalQuantity(): OptField<BigDecimal, VOrderDetailsViewRow>
+  fun totalQuantity(): OptField<BigDecimal, VOrderDetailsViewRow> = OptField<BigDecimal, VOrderDetailsViewRow>(_path, "total_quantity", VOrderDetailsViewRow::totalQuantity, null, null, { row, value -> row.copy(totalQuantity = value) }, KotlinDbTypes.MariaTypes.numeric)
 
-  abstract fun trackingNumber(): OptField<String, VOrderDetailsViewRow>
+  fun trackingNumber(): OptField<String, VOrderDetailsViewRow> = OptField<String, VOrderDetailsViewRow>(_path, "tracking_number", VOrderDetailsViewRow::trackingNumber, null, null, { row, value -> row.copy(trackingNumber = value) }, MariaTypes.varchar)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<VOrderDetailsViewFields, VOrderDetailsViewRow> = VOrderDetailsViewFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : VOrderDetailsViewFields, RelationStructure<VOrderDetailsViewFields, VOrderDetailsViewRow> {
-      override fun orderId(): Field<OrdersId, VOrderDetailsViewRow> = Field<OrdersId, VOrderDetailsViewRow>(_path, "order_id", VOrderDetailsViewRow::orderId, null, null, { row, value -> row.copy(orderId = value) }, OrdersId.pgType)
-
-      override fun orderNumber(): Field<String, VOrderDetailsViewRow> = Field<String, VOrderDetailsViewRow>(_path, "order_number", VOrderDetailsViewRow::orderNumber, null, null, { row, value -> row.copy(orderNumber = value) }, MariaTypes.varchar)
-
-      override fun orderStatus(): Field<String, VOrderDetailsViewRow> = Field<String, VOrderDetailsViewRow>(_path, "order_status", VOrderDetailsViewRow::orderStatus, null, null, { row, value -> row.copy(orderStatus = value) }, MariaTypes.text)
-
-      override fun paymentStatus(): Field<String, VOrderDetailsViewRow> = Field<String, VOrderDetailsViewRow>(_path, "payment_status", VOrderDetailsViewRow::paymentStatus, null, null, { row, value -> row.copy(paymentStatus = value) }, MariaTypes.text)
-
-      override fun totalAmount(): Field<BigDecimal, VOrderDetailsViewRow> = Field<BigDecimal, VOrderDetailsViewRow>(_path, "total_amount", VOrderDetailsViewRow::totalAmount, null, null, { row, value -> row.copy(totalAmount = value) }, KotlinDbTypes.MariaTypes.numeric)
-
-      override fun currencyCode(): Field<String, VOrderDetailsViewRow> = Field<String, VOrderDetailsViewRow>(_path, "currency_code", VOrderDetailsViewRow::currencyCode, null, null, { row, value -> row.copy(currencyCode = value) }, MariaTypes.char_)
-
-      override fun orderedAt(): Field<LocalDateTime, VOrderDetailsViewRow> = Field<LocalDateTime, VOrderDetailsViewRow>(_path, "ordered_at", VOrderDetailsViewRow::orderedAt, null, null, { row, value -> row.copy(orderedAt = value) }, MariaTypes.datetime)
-
-      override fun customerEmail(): Field<String, VOrderDetailsViewRow> = Field<String, VOrderDetailsViewRow>(_path, "customer_email", VOrderDetailsViewRow::customerEmail, null, null, { row, value -> row.copy(customerEmail = value) }, MariaTypes.varchar)
-
-      override fun customerName(): OptField<String, VOrderDetailsViewRow> = OptField<String, VOrderDetailsViewRow>(_path, "customer_name", VOrderDetailsViewRow::customerName, null, null, { row, value -> row.copy(customerName = value) }, MariaTypes.varchar)
-
-      override fun itemCount(): Field<Long, VOrderDetailsViewRow> = Field<Long, VOrderDetailsViewRow>(_path, "item_count", VOrderDetailsViewRow::itemCount, null, null, { row, value -> row.copy(itemCount = value) }, KotlinDbTypes.MariaTypes.bigint)
-
-      override fun totalQuantity(): OptField<BigDecimal, VOrderDetailsViewRow> = OptField<BigDecimal, VOrderDetailsViewRow>(_path, "total_quantity", VOrderDetailsViewRow::totalQuantity, null, null, { row, value -> row.copy(totalQuantity = value) }, KotlinDbTypes.MariaTypes.numeric)
-
-      override fun trackingNumber(): OptField<String, VOrderDetailsViewRow> = OptField<String, VOrderDetailsViewRow>(_path, "tracking_number", VOrderDetailsViewRow::trackingNumber, null, null, { row, value -> row.copy(trackingNumber = value) }, MariaTypes.varchar)
-
-      override fun shippingStatus(): OptField<String, VOrderDetailsViewRow> = OptField<String, VOrderDetailsViewRow>(_path, "shipping_status", VOrderDetailsViewRow::shippingStatus, null, null, { row, value -> row.copy(shippingStatus = value) }, MariaTypes.text)
-
-      override fun carrierName(): OptField<String, VOrderDetailsViewRow> = OptField<String, VOrderDetailsViewRow>(_path, "carrier_name", VOrderDetailsViewRow::carrierName, null, null, { row, value -> row.copy(carrierName = value) }, MariaTypes.varchar)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, VOrderDetailsViewRow>> = listOf(this.orderId().underlying, this.orderNumber().underlying, this.orderStatus().underlying, this.paymentStatus().underlying, this.totalAmount().underlying, this.currencyCode().underlying, this.orderedAt().underlying, this.customerEmail().underlying, this.customerName().underlying, this.itemCount().underlying, this.totalQuantity().underlying, this.trackingNumber().underlying, this.shippingStatus().underlying, this.carrierName().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<VOrderDetailsViewFields, VOrderDetailsViewRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: VOrderDetailsViewFields = VOrderDetailsViewFields(emptyList<Path>())
   }
 }

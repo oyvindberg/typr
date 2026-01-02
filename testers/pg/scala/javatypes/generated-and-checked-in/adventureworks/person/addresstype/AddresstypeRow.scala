@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple4
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -29,7 +30,7 @@ case class AddresstypeRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple4[AddresstypeId, Name, UUID, LocalDateTime] {
   def id: AddresstypeId = addresstypeid
 
   def toUnsavedRow(
@@ -44,10 +45,18 @@ case class AddresstypeRow(
       modifieddate
     )
   }
+
+  override def `_1`: AddresstypeId = addresstypeid
+
+  override def `_2`: Name = name
+
+  override def `_3`: UUID = rowguid
+
+  override def `_4`: LocalDateTime = modifieddate
 }
 
 object AddresstypeRow {
-  val `_rowParser`: RowParser[AddresstypeRow] = RowParsers.of(AddresstypeId.pgType, Name.pgType, PgTypes.uuid, PgTypes.timestamp, AddresstypeRow.apply, row => Array[Any](row.addresstypeid, row.name, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[AddresstypeRow] = RowParsers.of(AddresstypeId.dbType, Name.dbType, PgTypes.uuid, PgTypes.timestamp, AddresstypeRow.apply, row => Array[Any](row.addresstypeid, row.name, row.rowguid, row.modifieddate))
 
   given pgText: PgText[AddresstypeRow] = PgText.from(`_rowParser`)
 }

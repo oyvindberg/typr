@@ -6,10 +6,10 @@ package dev.typr.foundations.kotlin
 
 // Core DSL types
 typealias Bijection<Wrapper, Underlying> = dev.typr.foundations.dsl.Bijection<Wrapper, Underlying>
-typealias Tuple2<A, B> = dev.typr.foundations.dsl.Tuple2<A, B>
 // Note: SqlExpr and Structure are defined as objects below for nested type access
 typealias SortOrder<T> = dev.typr.foundations.dsl.SortOrder<T>
 typealias Dialect = dev.typr.foundations.dsl.Dialect
+typealias FieldsBase<Row> = dev.typr.foundations.dsl.FieldsBase<Row>
 typealias FieldsExpr<Row> = dev.typr.foundations.dsl.FieldsExpr<Row>
 
 // Functional interfaces (for SQL expressions with multiple parameters)

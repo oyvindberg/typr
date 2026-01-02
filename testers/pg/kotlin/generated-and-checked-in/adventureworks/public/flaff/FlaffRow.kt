@@ -9,6 +9,7 @@ import adventureworks.public.ShortText
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -27,13 +28,23 @@ data class FlaffRow(
   val specifier: ShortText,
   /** Points to [adventureworks.public.flaff.FlaffRow.specifier] */
   val parentspecifier: ShortText?
-) {
+) : Tuple5<ShortText, String, Int, ShortText, ShortText?> {
+  override fun _1(): ShortText = code
+
+  override fun _2(): String = anotherCode
+
+  override fun _3(): Int = someNumber
+
+  override fun _4(): ShortText = specifier
+
+  override fun _5(): ShortText? = parentspecifier
+
   fun compositeId(): FlaffId = FlaffId(code, anotherCode, someNumber, specifier)
 
   fun id(): FlaffId = this.compositeId()
 
   companion object {
-    val _rowParser: RowParser<FlaffRow> = RowParsers.of(ShortText.pgType, PgTypes.text, KotlinDbTypes.PgTypes.int4, ShortText.pgType, ShortText.pgType.nullable(), { t0, t1, t2, t3, t4 -> FlaffRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.code, row.anotherCode, row.someNumber, row.specifier, row.parentspecifier) })
+    val _rowParser: RowParser<FlaffRow> = RowParsers.of(ShortText.dbType, PgTypes.text, KotlinDbTypes.PgTypes.int4, ShortText.dbType, ShortText.dbType.nullable(), { t0, t1, t2, t3, t4 -> FlaffRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.code, row.anotherCode, row.someNumber, row.specifier, row.parentspecifier) })
 
     fun apply(
       compositeId: FlaffId,

@@ -12,6 +12,7 @@ import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple9
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
@@ -57,7 +58,7 @@ case class SalespersonRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple9[BusinessentityId, Optional[SalesterritoryId], Optional[java.math.BigDecimal], java.math.BigDecimal, java.math.BigDecimal, java.math.BigDecimal, java.math.BigDecimal, UUID, LocalDateTime] {
   def id: BusinessentityId = businessentityid
 
   def toUnsavedRow(
@@ -80,10 +81,28 @@ case class SalespersonRow(
       modifieddate
     )
   }
+
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: Optional[SalesterritoryId] = territoryid
+
+  override def `_3`: Optional[java.math.BigDecimal] = salesquota
+
+  override def `_4`: java.math.BigDecimal = bonus
+
+  override def `_5`: java.math.BigDecimal = commissionpct
+
+  override def `_6`: java.math.BigDecimal = salesytd
+
+  override def `_7`: java.math.BigDecimal = saleslastyear
+
+  override def `_8`: UUID = rowguid
+
+  override def `_9`: LocalDateTime = modifieddate
 }
 
 object SalespersonRow {
-  val `_rowParser`: RowParser[SalespersonRow] = RowParsers.of(BusinessentityId.pgType, SalesterritoryId.pgType.opt(), PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, SalespersonRow.apply, row => Array[Any](row.businessentityid, row.territoryid, row.salesquota, row.bonus, row.commissionpct, row.salesytd, row.saleslastyear, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[SalespersonRow] = RowParsers.of(BusinessentityId.dbType, SalesterritoryId.dbType.opt(), PgTypes.numeric.opt(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, SalespersonRow.apply, row => Array[Any](row.businessentityid, row.territoryid, row.salesquota, row.bonus, row.commissionpct, row.salesytd, row.saleslastyear, row.rowguid, row.modifieddate))
 
   given pgText: PgText[SalespersonRow] = PgText.from(`_rowParser`)
 }

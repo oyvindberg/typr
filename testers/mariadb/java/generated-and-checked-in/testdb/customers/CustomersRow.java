@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple14;
+import dev.typr.foundations.data.Json;
 import dev.typr.foundations.data.maria.MariaSet;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -36,7 +38,7 @@ public record CustomersRow(
     /** Default: 'bronze' */
     String tier,
     /** Default: NULL */
-    Optional<String> preferences,
+    Optional<Json> preferences,
     /** Default: NULL */
     @JsonProperty("marketing_flags") Optional<MariaSet> marketingFlags,
     /** Default: NULL */
@@ -46,7 +48,22 @@ public record CustomersRow(
     /** Default: current_timestamp(6) */
     @JsonProperty("updated_at") LocalDateTime updatedAt,
     /** Default: NULL */
-    @JsonProperty("last_login_at") Optional<LocalDateTime> lastLoginAt) {
+    @JsonProperty("last_login_at") Optional<LocalDateTime> lastLoginAt)
+    implements Tuple14<
+        CustomersId,
+        String,
+        byte[],
+        String,
+        String,
+        Optional<String>,
+        CustomerStatusId,
+        String,
+        Optional<Json>,
+        Optional<MariaSet>,
+        Optional<String>,
+        LocalDateTime,
+        LocalDateTime,
+        Optional<LocalDateTime>> {
   /** AUTO_INCREMENT */
   public CustomersRow withCustomerId(CustomersId customerId) {
     return new CustomersRow(
@@ -208,7 +225,7 @@ public record CustomersRow(
   ;
 
   /** Default: NULL */
-  public CustomersRow withPreferences(Optional<String> preferences) {
+  public CustomersRow withPreferences(Optional<Json> preferences) {
     return new CustomersRow(
         customerId,
         email,
@@ -329,15 +346,15 @@ public record CustomersRow(
 
   public static RowParser<CustomersRow> _rowParser =
       RowParsers.of(
-          CustomersId.pgType,
+          CustomersId.dbType,
           MariaTypes.varchar,
           MariaTypes.binary,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.varchar.opt(),
-          CustomerStatusId.pgType,
+          CustomerStatusId.dbType,
           MariaTypes.text,
-          MariaTypes.longtext.opt(),
+          MariaTypes.json.opt(),
           MariaTypes.set.opt(),
           MariaTypes.text.opt(),
           MariaTypes.datetime,
@@ -363,6 +380,90 @@ public record CustomersRow(
               });
   ;
 
+  @Override
+  public CustomersId _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public Optional<MariaSet> _10() {
+    return marketingFlags;
+  }
+  ;
+
+  @Override
+  public Optional<String> _11() {
+    return notes;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _12() {
+    return createdAt;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _13() {
+    return updatedAt;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _14() {
+    return lastLoginAt;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return email;
+  }
+  ;
+
+  @Override
+  public byte[] _3() {
+    return passwordHash;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return firstName;
+  }
+  ;
+
+  @Override
+  public String _5() {
+    return lastName;
+  }
+  ;
+
+  @Override
+  public Optional<String> _6() {
+    return phone;
+  }
+  ;
+
+  @Override
+  public CustomerStatusId _7() {
+    return status;
+  }
+  ;
+
+  @Override
+  public String _8() {
+    return tier;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _9() {
+    return preferences;
+  }
+  ;
+
   public CustomersId id() {
     return customerId;
   }
@@ -372,7 +473,7 @@ public record CustomersRow(
       Defaulted<Optional<String>> phone,
       Defaulted<CustomerStatusId> status,
       Defaulted<String> tier,
-      Defaulted<Optional<String>> preferences,
+      Defaulted<Optional<Json>> preferences,
       Defaulted<Optional<MariaSet>> marketingFlags,
       Defaulted<Optional<String>> notes,
       Defaulted<LocalDateTime> createdAt,

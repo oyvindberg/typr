@@ -27,11 +27,11 @@ public record CustomersId(@JsonValue Integer value) {
   public static Bijection<CustomersId, Integer> bijection =
       Bijection.of(CustomersId::value, CustomersId::new);
 
-  public static DuckDbType<CustomersId> duckDbType =
-      DuckDbTypes.integer.bimap(CustomersId::new, CustomersId::value);
-
-  public static DuckDbType<CustomersId[]> pgTypeArray =
+  public static DuckDbType<CustomersId[]> dbTypeArray =
       DuckDbTypes.integerArray.bimap(
           xs -> arrayMap.map(xs, CustomersId::new, CustomersId.class),
           xs -> arrayMap.map(xs, CustomersId::value, Integer.class));
+
+  public static DuckDbType<CustomersId> duckDbType =
+      DuckDbTypes.integer.bimap(CustomersId::new, CustomersId::value);
 }

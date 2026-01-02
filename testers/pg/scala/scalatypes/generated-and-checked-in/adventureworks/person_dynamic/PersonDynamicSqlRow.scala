@@ -8,6 +8,7 @@ package adventureworks.person_dynamic
 import adventureworks.public.Name
 import adventureworks.userdefined.FirstName
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -22,8 +23,16 @@ case class PersonDynamicSqlRow(
   middlename: Option[Name],
   /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name
-)
+) extends Tuple4[Option[/* max 8 chars */ String], /* user-picked */ FirstName, Option[Name], Name] {
+  override def `_1`: Option[/* max 8 chars */ String] = title
+
+  override def `_2`: /* user-picked */ FirstName = firstname
+
+  override def `_3`: Option[Name] = middlename
+
+  override def `_4`: Name = lastname
+}
 
 object PersonDynamicSqlRow {
-  val `_rowParser`: RowParser[PersonDynamicSqlRow] = RowParsers.of(PgTypes.text.nullable, FirstName.pgType, Name.pgType.nullable, Name.pgType)(PersonDynamicSqlRow.apply)(row => Array[Any](row.title, row.firstname, row.middlename, row.lastname))
+  val `_rowParser`: RowParser[PersonDynamicSqlRow] = RowParsers.of(PgTypes.text.nullable, FirstName.dbType, Name.dbType.nullable, Name.dbType)(PersonDynamicSqlRow.apply)(row => Array[Any](row.title, row.firstname, row.middlename, row.lastname))
 }

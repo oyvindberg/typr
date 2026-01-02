@@ -10,62 +10,58 @@ import adventureworks.person.person.PersonFields
 import adventureworks.person.person.PersonRow
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
-import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.ForeignKey
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
-import dev.typr.foundations.kotlin.SqlExpr.CompositeIn
-import dev.typr.foundations.kotlin.SqlExpr.CompositeIn.Part
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr
+import dev.typr.foundations.kotlin.TupleExpr5
 import java.time.LocalDateTime
 import java.util.UUID
 import kotlin.collections.List
 
-interface EmailaddressFields : FieldsExpr<EmailaddressRow> {
-  abstract fun businessentityid(): IdField<BusinessentityId, EmailaddressRow>
+data class EmailaddressFields(val _path: List<Path>) : TupleExpr5<BusinessentityId, Int, /* max 50 chars */ String, UUID, LocalDateTime>, RelationStructure<EmailaddressFields, EmailaddressRow>, FieldsBase<EmailaddressRow> {
+  override fun _1(): SqlExpr<BusinessentityId> = businessentityid()
 
-  abstract override fun columns(): List<FieldLike<*, EmailaddressRow>>
+  override fun _2(): SqlExpr<Int> = emailaddressid()
 
-  fun compositeIdIn(compositeIds: List<EmailaddressId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<BusinessentityId, EmailaddressId, EmailaddressRow>(businessentityid(), EmailaddressId::businessentityid, BusinessentityId.pgType), Part<Int, EmailaddressId, EmailaddressRow>(emailaddressid(), EmailaddressId::emailaddressid, KotlinDbTypes.PgTypes.int4)), compositeIds)
+  override fun _3(): SqlExpr</* max 50 chars */ String> = emailaddress()
+
+  override fun _4(): SqlExpr<UUID> = rowguid()
+
+  override fun _5(): SqlExpr<LocalDateTime> = modifieddate()
+
+  override fun _path(): List<Path> = _path
+
+  fun businessentityid(): IdField<BusinessentityId, EmailaddressRow> = IdField<BusinessentityId, EmailaddressRow>(_path, "businessentityid", EmailaddressRow::businessentityid, null, "int4", { row, value -> row.copy(businessentityid = value) }, BusinessentityId.dbType)
+
+  override fun columns(): List<FieldLike<*, EmailaddressRow>> = listOf(this.businessentityid().underlying, this.emailaddressid().underlying, this.emailaddress().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+  fun compositeIdIn(compositeIds: List<EmailaddressId>): SqlExpr<Boolean> = TupleExpr.of(businessentityid(), emailaddressid()).among(compositeIds)
 
   fun compositeIdIs(compositeId: EmailaddressId): SqlExpr<Boolean> = SqlExpr.all(businessentityid().isEqual(compositeId.businessentityid), emailaddressid().isEqual(compositeId.emailaddressid))
 
-  abstract fun emailaddress(): OptField</* max 50 chars */ String, EmailaddressRow>
+  fun emailaddress(): OptField<String, EmailaddressRow> = OptField<String, EmailaddressRow>(_path, "emailaddress", EmailaddressRow::emailaddress, null, null, { row, value -> row.copy(emailaddress = value) }, PgTypes.text)
 
-  abstract fun emailaddressid(): IdField<Int, EmailaddressRow>
+  fun emailaddressid(): IdField<Int, EmailaddressRow> = IdField<Int, EmailaddressRow>(_path, "emailaddressid", EmailaddressRow::emailaddressid, null, "int4", { row, value -> row.copy(emailaddressid = value) }, KotlinDbTypes.PgTypes.int4)
 
   fun fkPerson(): ForeignKey<PersonFields, PersonRow> = ForeignKey.of<PersonFields, PersonRow>("person.FK_EmailAddress_Person_BusinessEntityID").withColumnPair<BusinessentityId>(businessentityid(), PersonFields::businessentityid)
 
-  abstract fun modifieddate(): Field<LocalDateTime, EmailaddressRow>
+  fun modifieddate(): Field<LocalDateTime, EmailaddressRow> = Field<LocalDateTime, EmailaddressRow>(_path, "modifieddate", EmailaddressRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
   override fun rowParser(): RowParser<EmailaddressRow> = EmailaddressRow._rowParser.underlying
 
-  abstract fun rowguid(): Field<UUID, EmailaddressRow>
+  fun rowguid(): Field<UUID, EmailaddressRow> = Field<UUID, EmailaddressRow>(_path, "rowguid", EmailaddressRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<EmailaddressFields, EmailaddressRow> = EmailaddressFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : EmailaddressFields, RelationStructure<EmailaddressFields, EmailaddressRow> {
-      override fun businessentityid(): IdField<BusinessentityId, EmailaddressRow> = IdField<BusinessentityId, EmailaddressRow>(_path, "businessentityid", EmailaddressRow::businessentityid, null, "int4", { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
-
-      override fun emailaddressid(): IdField<Int, EmailaddressRow> = IdField<Int, EmailaddressRow>(_path, "emailaddressid", EmailaddressRow::emailaddressid, null, "int4", { row, value -> row.copy(emailaddressid = value) }, KotlinDbTypes.PgTypes.int4)
-
-      override fun emailaddress(): OptField<String, EmailaddressRow> = OptField<String, EmailaddressRow>(_path, "emailaddress", EmailaddressRow::emailaddress, null, null, { row, value -> row.copy(emailaddress = value) }, PgTypes.text)
-
-      override fun rowguid(): Field<UUID, EmailaddressRow> = Field<UUID, EmailaddressRow>(_path, "rowguid", EmailaddressRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
-
-      override fun modifieddate(): Field<LocalDateTime, EmailaddressRow> = Field<LocalDateTime, EmailaddressRow>(_path, "modifieddate", EmailaddressRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, EmailaddressRow>> = listOf(this.businessentityid().underlying, this.emailaddressid().underlying, this.emailaddress().underlying, this.rowguid().underlying, this.modifieddate().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<EmailaddressFields, EmailaddressRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: EmailaddressFields = EmailaddressFields(emptyList<Path>())
   }
 }

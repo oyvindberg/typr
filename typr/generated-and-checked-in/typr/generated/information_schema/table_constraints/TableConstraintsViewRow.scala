@@ -46,21 +46,21 @@ case class TableConstraintsViewRow(
 )
 
 object TableConstraintsViewRow {
-  implicit lazy val reads: Reads[TableConstraintsViewRow] = {
+  given reads: Reads[TableConstraintsViewRow] = {
     Reads[TableConstraintsViewRow](json => JsResult.fromTry(
         Try(
           TableConstraintsViewRow(
-            constraintCatalog = json.\("constraint_catalog").toOption.map(_.as(Reads.StringReads)),
-            constraintSchema = json.\("constraint_schema").toOption.map(_.as(Reads.StringReads)),
-            constraintName = json.\("constraint_name").toOption.map(_.as(Reads.StringReads)),
-            tableCatalog = json.\("table_catalog").toOption.map(_.as(Reads.StringReads)),
-            tableSchema = json.\("table_schema").toOption.map(_.as(Reads.StringReads)),
-            tableName = json.\("table_name").toOption.map(_.as(Reads.StringReads)),
-            constraintType = json.\("constraint_type").toOption.map(_.as(Reads.StringReads)),
-            isDeferrable = json.\("is_deferrable").toOption.map(_.as(Reads.StringReads)),
-            initiallyDeferred = json.\("initially_deferred").toOption.map(_.as(Reads.StringReads)),
-            enforced = json.\("enforced").toOption.map(_.as(Reads.StringReads)),
-            nullsDistinct = json.\("nulls_distinct").toOption.map(_.as(Reads.StringReads))
+            constraintCatalog = json.\("constraint_catalog").toOption.map(_.as(using Reads.StringReads)),
+            constraintSchema = json.\("constraint_schema").toOption.map(_.as(using Reads.StringReads)),
+            constraintName = json.\("constraint_name").toOption.map(_.as(using Reads.StringReads)),
+            tableCatalog = json.\("table_catalog").toOption.map(_.as(using Reads.StringReads)),
+            tableSchema = json.\("table_schema").toOption.map(_.as(using Reads.StringReads)),
+            tableName = json.\("table_name").toOption.map(_.as(using Reads.StringReads)),
+            constraintType = json.\("constraint_type").toOption.map(_.as(using Reads.StringReads)),
+            isDeferrable = json.\("is_deferrable").toOption.map(_.as(using Reads.StringReads)),
+            initiallyDeferred = json.\("initially_deferred").toOption.map(_.as(using Reads.StringReads)),
+            enforced = json.\("enforced").toOption.map(_.as(using Reads.StringReads)),
+            nullsDistinct = json.\("nulls_distinct").toOption.map(_.as(using Reads.StringReads))
           )
         )
       ),
@@ -71,36 +71,36 @@ object TableConstraintsViewRow {
     RowParser[TableConstraintsViewRow] { row =>
       Success(
         TableConstraintsViewRow(
-          constraintCatalog = row(idx + 0)(Column.columnToOption(Column.columnToString)),
-          constraintSchema = row(idx + 1)(Column.columnToOption(Column.columnToString)),
-          constraintName = row(idx + 2)(Column.columnToOption(Column.columnToString)),
-          tableCatalog = row(idx + 3)(Column.columnToOption(Column.columnToString)),
-          tableSchema = row(idx + 4)(Column.columnToOption(Column.columnToString)),
-          tableName = row(idx + 5)(Column.columnToOption(Column.columnToString)),
-          constraintType = row(idx + 6)(Column.columnToOption(Column.columnToString)),
-          isDeferrable = row(idx + 7)(Column.columnToOption(Column.columnToString)),
-          initiallyDeferred = row(idx + 8)(Column.columnToOption(Column.columnToString)),
-          enforced = row(idx + 9)(Column.columnToOption(Column.columnToString)),
-          nullsDistinct = row(idx + 10)(Column.columnToOption(Column.columnToString))
+          constraintCatalog = row(idx + 0)(using Column.columnToOption(using Column.columnToString)),
+          constraintSchema = row(idx + 1)(using Column.columnToOption(using Column.columnToString)),
+          constraintName = row(idx + 2)(using Column.columnToOption(using Column.columnToString)),
+          tableCatalog = row(idx + 3)(using Column.columnToOption(using Column.columnToString)),
+          tableSchema = row(idx + 4)(using Column.columnToOption(using Column.columnToString)),
+          tableName = row(idx + 5)(using Column.columnToOption(using Column.columnToString)),
+          constraintType = row(idx + 6)(using Column.columnToOption(using Column.columnToString)),
+          isDeferrable = row(idx + 7)(using Column.columnToOption(using Column.columnToString)),
+          initiallyDeferred = row(idx + 8)(using Column.columnToOption(using Column.columnToString)),
+          enforced = row(idx + 9)(using Column.columnToOption(using Column.columnToString)),
+          nullsDistinct = row(idx + 10)(using Column.columnToOption(using Column.columnToString))
         )
       )
     }
   }
 
-  implicit lazy val writes: OWrites[TableConstraintsViewRow] = {
+  given writes: OWrites[TableConstraintsViewRow] = {
     OWrites[TableConstraintsViewRow](o =>
       new JsObject(ListMap[String, JsValue](
-        "constraint_catalog" -> Writes.OptionWrites(Writes.StringWrites).writes(o.constraintCatalog),
-        "constraint_schema" -> Writes.OptionWrites(Writes.StringWrites).writes(o.constraintSchema),
-        "constraint_name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.constraintName),
-        "table_catalog" -> Writes.OptionWrites(Writes.StringWrites).writes(o.tableCatalog),
-        "table_schema" -> Writes.OptionWrites(Writes.StringWrites).writes(o.tableSchema),
-        "table_name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.tableName),
-        "constraint_type" -> Writes.OptionWrites(Writes.StringWrites).writes(o.constraintType),
-        "is_deferrable" -> Writes.OptionWrites(Writes.StringWrites).writes(o.isDeferrable),
-        "initially_deferred" -> Writes.OptionWrites(Writes.StringWrites).writes(o.initiallyDeferred),
-        "enforced" -> Writes.OptionWrites(Writes.StringWrites).writes(o.enforced),
-        "nulls_distinct" -> Writes.OptionWrites(Writes.StringWrites).writes(o.nullsDistinct)
+        "constraint_catalog" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.constraintCatalog),
+        "constraint_schema" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.constraintSchema),
+        "constraint_name" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.constraintName),
+        "table_catalog" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.tableCatalog),
+        "table_schema" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.tableSchema),
+        "table_name" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.tableName),
+        "constraint_type" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.constraintType),
+        "is_deferrable" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.isDeferrable),
+        "initially_deferred" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.initiallyDeferred),
+        "enforced" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.enforced),
+        "nulls_distinct" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.nullsDistinct)
       ))
     )
   }

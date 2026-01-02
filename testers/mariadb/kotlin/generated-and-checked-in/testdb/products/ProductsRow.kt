@@ -7,6 +7,8 @@ package testdb.products
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple18
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
@@ -55,7 +57,7 @@ data class ProductsRow(
   /** length, width, height in cm
     * Default: NULL
     */
-  @JsonProperty("dimensions_json") val dimensionsJson: String?,
+  @JsonProperty("dimensions_json") val dimensionsJson: Json?,
   /** 
     * Default: 'draft'
     */
@@ -71,11 +73,11 @@ data class ProductsRow(
   /** 
     * Default: NULL
     */
-  val attributes: String?,
+  val attributes: Json?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("seo_metadata") val seoMetadata: String?,
+  @JsonProperty("seo_metadata") val seoMetadata: Json?,
   /** 
     * Default: current_timestamp(6)
     */
@@ -88,7 +90,43 @@ data class ProductsRow(
     * Default: NULL
     */
   @JsonProperty("published_at") val publishedAt: LocalDateTime?
-) {
+) : Tuple18<ProductsId, String, BrandsId?, String, String?, String?, BigDecimal, BigDecimal?, BigDecimal?, Json?, String, String, MariaSet?, Json?, Json?, LocalDateTime, LocalDateTime, LocalDateTime?> {
+  override fun _1(): ProductsId = productId
+
+  override fun _10(): Json? = dimensionsJson
+
+  override fun _11(): String = status
+
+  override fun _12(): String = taxClass
+
+  override fun _13(): MariaSet? = tags
+
+  override fun _14(): Json? = attributes
+
+  override fun _15(): Json? = seoMetadata
+
+  override fun _16(): LocalDateTime = createdAt
+
+  override fun _17(): LocalDateTime = updatedAt
+
+  override fun _18(): LocalDateTime? = publishedAt
+
+  override fun _2(): String = sku
+
+  override fun _3(): BrandsId? = brandId
+
+  override fun _4(): String = name
+
+  override fun _5(): String? = shortDescription
+
+  override fun _6(): String? = fullDescription
+
+  override fun _7(): BigDecimal = basePrice
+
+  override fun _8(): BigDecimal? = costPrice
+
+  override fun _9(): BigDecimal? = weightKg
+
   fun id(): ProductsId = productId
 
   fun toUnsavedRow(
@@ -97,18 +135,18 @@ data class ProductsRow(
     fullDescription: Defaulted<String?> = Defaulted.Provided(this.fullDescription),
     costPrice: Defaulted<BigDecimal?> = Defaulted.Provided(this.costPrice),
     weightKg: Defaulted<BigDecimal?> = Defaulted.Provided(this.weightKg),
-    dimensionsJson: Defaulted<String?> = Defaulted.Provided(this.dimensionsJson),
+    dimensionsJson: Defaulted<Json?> = Defaulted.Provided(this.dimensionsJson),
     status: Defaulted<String> = Defaulted.Provided(this.status),
     taxClass: Defaulted<String> = Defaulted.Provided(this.taxClass),
     tags: Defaulted<MariaSet?> = Defaulted.Provided(this.tags),
-    attributes: Defaulted<String?> = Defaulted.Provided(this.attributes),
-    seoMetadata: Defaulted<String?> = Defaulted.Provided(this.seoMetadata),
+    attributes: Defaulted<Json?> = Defaulted.Provided(this.attributes),
+    seoMetadata: Defaulted<Json?> = Defaulted.Provided(this.seoMetadata),
     createdAt: Defaulted<LocalDateTime> = Defaulted.Provided(this.createdAt),
     updatedAt: Defaulted<LocalDateTime> = Defaulted.Provided(this.updatedAt),
     publishedAt: Defaulted<LocalDateTime?> = Defaulted.Provided(this.publishedAt)
   ): ProductsRowUnsaved = ProductsRowUnsaved(sku, name, basePrice, brandId, shortDescription, fullDescription, costPrice, weightKg, dimensionsJson, status, taxClass, tags, attributes, seoMetadata, createdAt, updatedAt, publishedAt)
 
   companion object {
-    val _rowParser: RowParser<ProductsRow> = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, BrandsId.pgType.nullable(), MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.longtext.nullable(), KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), MariaTypes.longtext.nullable(), MariaTypes.text, MariaTypes.text, MariaTypes.set.nullable(), MariaTypes.longtext.nullable(), MariaTypes.longtext.nullable(), MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17 -> ProductsRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.brandId, row.name, row.shortDescription, row.fullDescription, row.basePrice, row.costPrice, row.weightKg, row.dimensionsJson, row.status, row.taxClass, row.tags, row.attributes, row.seoMetadata, row.createdAt, row.updatedAt, row.publishedAt) })
+    val _rowParser: RowParser<ProductsRow> = RowParsers.of(ProductsId.dbType, MariaTypes.varchar, BrandsId.dbType.nullable(), MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.longtext.nullable(), KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), MariaTypes.json.nullable(), MariaTypes.text, MariaTypes.text, MariaTypes.set.nullable(), MariaTypes.json.nullable(), MariaTypes.json.nullable(), MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17 -> ProductsRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.brandId, row.name, row.shortDescription, row.fullDescription, row.basePrice, row.costPrice, row.weightKg, row.dimensionsJson, row.status, row.taxClass, row.tags, row.attributes, row.seoMetadata, row.createdAt, row.updatedAt, row.publishedAt) })
   }
 }

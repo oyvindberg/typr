@@ -26,27 +26,25 @@ import java.util.Optional;
 public class FlaffRepoImpl implements FlaffRepo {
   @Override
   public DeleteBuilder<FlaffFields, FlaffRow> delete() {
-    return DeleteBuilder.of("\"public\".\"flaff\"", FlaffFields.structure(), Dialect.POSTGRESQL);
+    return DeleteBuilder.of("\"public\".\"flaff\"", FlaffFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(FlaffId compositeId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"public\".\"flaff\" where \"code\" = "),
-                Fragment.encode(ShortText.pgType, compositeId.code()),
+                Fragment.encode(ShortText.dbType, compositeId.code()),
                 Fragment.lit(" AND \"another_code\" = "),
                 Fragment.encode(PgTypes.text, compositeId.anotherCode()),
                 Fragment.lit(" AND \"some_number\" = "),
                 Fragment.encode(PgTypes.int4, compositeId.someNumber()),
                 Fragment.lit(" AND \"specifier\" = "),
-                Fragment.encode(ShortText.pgType, compositeId.specifier()),
+                Fragment.encode(ShortText.dbType, compositeId.specifier()),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(FlaffId[] compositeIds, Connection c) {
@@ -64,18 +62,17 @@ public class FlaffRepoImpl implements FlaffRepo {
                     + "from \"public\".\"flaff\"\n"
                     + "where (\"code\", \"another_code\", \"some_number\", \"specifier\")\n"
                     + "in (select * from unnest("),
-            Fragment.encode(ShortText.pgTypeArray, code),
+            Fragment.encode(ShortText.dbTypeArray, code),
             Fragment.lit(", "),
             Fragment.encode(PgTypes.textArray, anotherCode),
             Fragment.lit(", "),
             Fragment.encode(PgTypes.int4Array, someNumber),
             Fragment.lit(", "),
-            Fragment.encode(ShortText.pgTypeArray, specifier),
+            Fragment.encode(ShortText.dbTypeArray, specifier),
             Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public FlaffRow insert(FlaffRow unsaved, Connection c) {
@@ -84,15 +81,15 @@ public class FlaffRepoImpl implements FlaffRepo {
                 "insert into \"public\".\"flaff\"(\"code\", \"another_code\", \"some_number\","
                     + " \"specifier\", \"parentspecifier\")\n"
                     + "values ("),
-            Fragment.encode(ShortText.pgType, unsaved.code()),
+            Fragment.encode(ShortText.dbType, unsaved.code()),
             Fragment.lit("::text, "),
             Fragment.encode(PgTypes.text, unsaved.anotherCode()),
             Fragment.lit(", "),
             Fragment.encode(PgTypes.int4, unsaved.someNumber()),
             Fragment.lit("::int4, "),
-            Fragment.encode(ShortText.pgType, unsaved.specifier()),
+            Fragment.encode(ShortText.dbType, unsaved.specifier()),
             Fragment.lit("::text, "),
-            Fragment.encode(ShortText.pgType.opt(), unsaved.parentspecifier()),
+            Fragment.encode(ShortText.dbType.opt(), unsaved.parentspecifier()),
             Fragment.lit(
                 "::text)\n"
                     + "RETURNING \"code\", \"another_code\", \"some_number\", \"specifier\","
@@ -100,7 +97,6 @@ public class FlaffRepoImpl implements FlaffRepo {
         .updateReturning(FlaffRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<FlaffRow> unsaved, Integer batchSize, Connection c) {
@@ -112,14 +108,12 @@ public class FlaffRepoImpl implements FlaffRepo {
         c,
         FlaffRow.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<FlaffFields, FlaffRow> select() {
     return SelectBuilder.of(
-        "\"public\".\"flaff\"", FlaffFields.structure(), FlaffRow._rowParser, Dialect.POSTGRESQL);
+        "\"public\".\"flaff\"", FlaffFields.structure, FlaffRow._rowParser, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<FlaffRow> selectAll(Connection c) {
@@ -131,7 +125,6 @@ public class FlaffRepoImpl implements FlaffRepo {
         .query(FlaffRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<FlaffRow> selectById(FlaffId compositeId, Connection c) {
@@ -141,18 +134,17 @@ public class FlaffRepoImpl implements FlaffRepo {
                     + " \"parentspecifier\"\n"
                     + "from \"public\".\"flaff\"\n"
                     + "where \"code\" = "),
-            Fragment.encode(ShortText.pgType, compositeId.code()),
+            Fragment.encode(ShortText.dbType, compositeId.code()),
             Fragment.lit(" AND \"another_code\" = "),
             Fragment.encode(PgTypes.text, compositeId.anotherCode()),
             Fragment.lit(" AND \"some_number\" = "),
             Fragment.encode(PgTypes.int4, compositeId.someNumber()),
             Fragment.lit(" AND \"specifier\" = "),
-            Fragment.encode(ShortText.pgType, compositeId.specifier()),
+            Fragment.encode(ShortText.dbType, compositeId.specifier()),
             Fragment.lit(""))
         .query(FlaffRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<FlaffRow> selectByIds(FlaffId[] compositeIds, Connection c) {
@@ -171,18 +163,17 @@ public class FlaffRepoImpl implements FlaffRepo {
                     + "from \"public\".\"flaff\"\n"
                     + "where (\"code\", \"another_code\", \"some_number\", \"specifier\")\n"
                     + "in (select * from unnest("),
-            Fragment.encode(ShortText.pgTypeArray, code),
+            Fragment.encode(ShortText.dbTypeArray, code),
             Fragment.lit(", "),
             Fragment.encode(PgTypes.textArray, anotherCode),
             Fragment.lit(", "),
             Fragment.encode(PgTypes.int4Array, someNumber),
             Fragment.lit(", "),
-            Fragment.encode(ShortText.pgTypeArray, specifier),
+            Fragment.encode(ShortText.dbTypeArray, specifier),
             Fragment.lit("))\n"))
         .query(FlaffRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<FlaffId, FlaffRow> selectByIdsTracked(FlaffId[] compositeIds, Connection c) {
@@ -190,14 +181,12 @@ public class FlaffRepoImpl implements FlaffRepo {
     selectByIds(compositeIds, c).forEach(row -> ret.put(row.compositeId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<FlaffFields, FlaffRow> update() {
     return UpdateBuilder.of(
-        "\"public\".\"flaff\"", FlaffFields.structure(), FlaffRow._rowParser, Dialect.POSTGRESQL);
+        "\"public\".\"flaff\"", FlaffFields.structure, FlaffRow._rowParser, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(FlaffRow row, Connection c) {
@@ -205,21 +194,20 @@ public class FlaffRepoImpl implements FlaffRepo {
     ;
     return interpolate(
                 Fragment.lit("update \"public\".\"flaff\"\nset \"parentspecifier\" = "),
-                Fragment.encode(ShortText.pgType.opt(), row.parentspecifier()),
+                Fragment.encode(ShortText.dbType.opt(), row.parentspecifier()),
                 Fragment.lit("::text\nwhere \"code\" = "),
-                Fragment.encode(ShortText.pgType, compositeId.code()),
+                Fragment.encode(ShortText.dbType, compositeId.code()),
                 Fragment.lit(" AND \"another_code\" = "),
                 Fragment.encode(PgTypes.text, compositeId.anotherCode()),
                 Fragment.lit(" AND \"some_number\" = "),
                 Fragment.encode(PgTypes.int4, compositeId.someNumber()),
                 Fragment.lit(" AND \"specifier\" = "),
-                Fragment.encode(ShortText.pgType, compositeId.specifier()),
+                Fragment.encode(ShortText.dbType, compositeId.specifier()),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public FlaffRow upsert(FlaffRow unsaved, Connection c) {
@@ -228,15 +216,15 @@ public class FlaffRepoImpl implements FlaffRepo {
                 "insert into \"public\".\"flaff\"(\"code\", \"another_code\", \"some_number\","
                     + " \"specifier\", \"parentspecifier\")\n"
                     + "values ("),
-            Fragment.encode(ShortText.pgType, unsaved.code()),
+            Fragment.encode(ShortText.dbType, unsaved.code()),
             Fragment.lit("::text, "),
             Fragment.encode(PgTypes.text, unsaved.anotherCode()),
             Fragment.lit(", "),
             Fragment.encode(PgTypes.int4, unsaved.someNumber()),
             Fragment.lit("::int4, "),
-            Fragment.encode(ShortText.pgType, unsaved.specifier()),
+            Fragment.encode(ShortText.dbType, unsaved.specifier()),
             Fragment.lit("::text, "),
-            Fragment.encode(ShortText.pgType.opt(), unsaved.parentspecifier()),
+            Fragment.encode(ShortText.dbType.opt(), unsaved.parentspecifier()),
             Fragment.lit(
                 "::text)\n"
                     + "on conflict (\"code\", \"another_code\", \"some_number\", \"specifier\")\n"
@@ -247,7 +235,6 @@ public class FlaffRepoImpl implements FlaffRepo {
         .updateReturning(FlaffRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<FlaffRow> upsertBatch(Iterator<FlaffRow> unsaved, Connection c) {
@@ -264,7 +251,6 @@ public class FlaffRepoImpl implements FlaffRepo {
         .updateManyReturning(FlaffRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -294,5 +280,4 @@ public class FlaffRepoImpl implements FlaffRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

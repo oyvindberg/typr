@@ -6,31 +6,29 @@
 package adventureworks.public.issue142
 
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.IdField
+import dev.typr.foundations.kotlin.TupleExpr1
 import kotlin.collections.List
 
-interface Issue142Fields : FieldsExpr<Issue142Row> {
-  abstract override fun columns(): List<FieldLike<*, Issue142Row>>
+data class Issue142Fields(val _path: List<Path>) : TupleExpr1<Issue142Id>, RelationStructure<Issue142Fields, Issue142Row>, FieldsBase<Issue142Row> {
+  override fun _1(): SqlExpr<Issue142Id> = tabellkode()
+
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, Issue142Row>> = listOf(this.tabellkode().underlying)
 
   override fun rowParser(): RowParser<Issue142Row> = Issue142Row._rowParser.underlying
 
-  abstract fun tabellkode(): IdField<Issue142Id, Issue142Row>
+  fun tabellkode(): IdField<Issue142Id, Issue142Row> = IdField<Issue142Id, Issue142Row>(_path, "tabellkode", Issue142Row::tabellkode, null, null, { row, value -> row.copy(tabellkode = value) }, Issue142Id.dbType)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<Issue142Fields, Issue142Row> = Issue142Fields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : Issue142Fields, RelationStructure<Issue142Fields, Issue142Row> {
-      override fun tabellkode(): IdField<Issue142Id, Issue142Row> = IdField<Issue142Id, Issue142Row>(_path, "tabellkode", Issue142Row::tabellkode, null, null, { row, value -> row.copy(tabellkode = value) }, Issue142Id.pgType)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, Issue142Row>> = listOf(this.tabellkode().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<Issue142Fields, Issue142Row> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: Issue142Fields = Issue142Fields(emptyList<Path>())
   }
 }

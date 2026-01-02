@@ -15,5 +15,5 @@ trait OrderItemsBulkInsertSqlRepo {
     productId: /* user-picked */ ProductsId,
     quantity: Int,
     unitPrice: BigDecimal
-  )(using c: Connection): Int
+  )(using c: Connection): List[OrderItemsBulkInsertSqlRow]
 }

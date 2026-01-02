@@ -6,6 +6,7 @@
 package testdb.shipments
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
 import java.time.LocalDate
 import java.time.LocalDateTime
 import testdb.customtypes.Defaulted
@@ -39,7 +40,7 @@ case class ShipmentsRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("dimensions_json") dimensionsJson: Defaulted[Option[String]] = new UseDefault(),
+  @JsonProperty("dimensions_json") dimensionsJson: Defaulted[Option[Json]] = new UseDefault(),
   /** Default: NULL
 
    */
@@ -80,7 +81,7 @@ case class ShipmentsRowUnsaved(
   def toRow(
     trackingNumberDefault: => Option[String],
     weightKgDefault: => Option[BigDecimal],
-    dimensionsJsonDefault: => Option[String],
+    dimensionsJsonDefault: => Option[Json],
     labelDataDefault: => Option[Array[Byte]],
     statusDefault: => String,
     estimatedDeliveryDateDefault: => Option[LocalDate],

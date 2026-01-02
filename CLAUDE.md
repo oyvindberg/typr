@@ -35,16 +35,20 @@ bleep test
 # Format code (always run before testing/committing)
 bleep fmt
 
+# Regenerate tuples, rowparsers and so on. runs bleep sourcegen scripts
+bleep sourcegen
+
 # Code generation scripts
-bleep generate-adventureworks    # PostgreSQL AdventureWorks schema
-bleep generate-mariadb           # MariaDB test schema
-bleep generate-duckdb            # DuckDB test schema
-bleep generate-oracle            # Oracle test schema
-bleep generate-sqlserver         # SQL Server test schema
+bleep generate-postgres          # PostgreSQL AdventureWorks + Showcase schemas
+bleep generate-mariadb           # MariaDB test + Showcase schemas
+bleep generate-duckdb            # DuckDB test + Showcase schemas
+bleep generate-oracle            # Oracle test + Showcase schemas
+bleep generate-sqlserver         # SQL Server test + Showcase schemas
 bleep generate-openapi-test      # OpenAPI code generation
-bleep generate-frontpage         # Website example code
 bleep generate-sources           # Typr's internal generated code
-bleep generate-all               # Run multiple generators in parallel
+
+# Run all generators in parallel. much faster
+bleep generate-all               
 
 # Documentation
 bleep generate-docs              # Generate documentation with mdoc
@@ -111,7 +115,7 @@ testers/pg/scala/anorm/
 
 ### Generation Variants
 
-The `GeneratedAdventureWorks.scala` script generates multiple variants:
+The `GeneratedPostgres.scala` script generates multiple variants:
 - Scala 2.13 + Anorm + PlayJson
 - Scala 3 + Anorm + PlayJson
 - Scala 2.13 + Doobie + Circe
@@ -143,38 +147,32 @@ docker-compose ps
 
 ### Database Initialization
 
-**PostgreSQL** uses mounted volumes and init scripts:
-- `init/install.sh` - Main initialization script
-- `db/pg/` - Schema files mounted to `/docker-entrypoint-initdb.d/pg/`
-- Files executed: `install.sql`, `test-tables.sql`, `issue148.sql`, `frontpage/schema.sql`
+All databases use `sql-init/{database}/` for schema initialization, mounted to `/docker-entrypoint-initdb.d/`:
 
-**MariaDB** auto-executes SQL files from mounted directory:
-- `db/mariadb/` - Schema files mounted to `/docker-entrypoint-initdb.d/`
-- Files executed in order: `01-test-tables.sql`, `02-ordering-system.sql`
-
-**Oracle** uses container init scripts:
-- `db/oracle/` - Mounted to `/container-entrypoint-initdb.d/`
-- Files: `00-init.sql`, `01-comprehensive-schema.sql`
-
-**SQL Server** requires manual initialization or application-level setup.
+- **PostgreSQL**: `sql-init/postgres/` - Shell script `00-install.sh` runs SQL files
+- **MariaDB**: `sql-init/mariadb/` - Shell script `00-run-sql.sh` runs SQL files
+- **Oracle**: `sql-init/oracle/` - Shell script `00-run-sql.sh` runs SQL files
+- **SQL Server**: `sql-init/sqlserver/` - Custom entrypoint `00-entrypoint.sh` starts server and runs SQL
+- **DB2**: `sql-init/db2/` - Shell script `00-run-sql.sh` runs SQL files
+- **DuckDB**: `sql-init/duckdb/` - Loaded by generation script (embedded database, no docker)
 
 ### Ensuring Databases Are Up to Date
 
 **PostgreSQL schema changes:**
 ```bash
-# 1. Add/modify SQL files in db/pg/
-# 2. Update init/install.sh if adding new files
+# 1. Add/modify SQL files in sql-init/postgres/
+# 2. Update 00-install.sh if adding new files
 # 3. Restart to reinitialize
 docker-compose down
 docker-compose up -d
 
 # 4. Regenerate code
-bleep generate-adventureworks
+bleep generate-postgres
 ```
 
 **MariaDB schema changes:**
 ```bash
-# 1. Modify files in db/mariadb/ (numbered for execution order)
+# 1. Modify files in sql-init/mariadb/ (numbered for execution order)
 # 2. Restart to reinitialize
 docker-compose down
 docker-compose up -d
@@ -185,10 +183,10 @@ bleep generate-mariadb
 
 **Oracle schema changes:**
 ```bash
-# 1. Modify files in db/oracle/
+# 1. Modify files in sql-init/oracle/
 # 2. Remove volume to force reinitialization
 docker-compose down
-docker volume rm typr_oracle-data
+docker volume rm typr-3_oracle-data
 docker-compose up -d
 
 # 3. Wait for Oracle to be ready (can take 1-2 minutes)
@@ -218,30 +216,46 @@ docker volume rm typr_sqlserver-data
 
 ## SQL File Locations
 
-There are two types of SQL file locations:
+SQL files are organized into two main directories with different purposes:
 
-### Schema Files (`db/{database}/`)
-Schema definition files mounted into Docker containers for database initialization:
-- `db/pg/` - PostgreSQL (install.sql, test-tables.sql, frontpage/, issue*.sql)
-- `db/mariadb/` - MariaDB (01-test-tables.sql, 02-ordering-system.sql)
-- `db/oracle/` - Oracle (00-init.sql, 01-comprehensive-schema.sql)
-- `db/duckdb/` - DuckDB schemas
+### Schema Initialization (`sql-init/`)
+Schema definition files mounted into Docker containers for database initialization at startup.
+These create tables, types, views, and other database objects.
 
-### Query Files (`{database}_sql/`)
-SQL query files that Typr uses to generate typed query classes:
-- `adventureworks_sql/` - PostgreSQL SQL queries for AdventureWorks
-- `mariadb_sql/` - MariaDB SQL queries
-- `sqlserver_sql/` - SQL Server SQL queries
+```
+sql-init/
+├── postgres/           # PostgreSQL schemas (install.sql, test-tables.sql, issue*.sql)
+├── mariadb/            # MariaDB schemas (01-test-tables.sql, 02-ordering-system.sql)
+├── oracle/             # Oracle schemas (00-init.sql, 01-comprehensive-schema.sql)
+├── sqlserver/          # SQL Server schemas (001-init.sql, 002-test-schema.sql)
+└── duckdb/             # DuckDB schemas (loaded by generation script, not docker)
+```
 
-These files contain parameterized SQL that generates typed repository methods:
+### Query Scripts (`sql-scripts/`)
+SQL query files that Typr uses to generate typed query classes. These contain
+parameterized SQL that generates repository methods with type-safe parameters.
+
+```
+sql-scripts/
+├── postgres/           # PostgreSQL SQL queries (AdventureWorks)
+├── mariadb/            # MariaDB SQL queries
+├── sqlserver/          # SQL Server SQL queries
+├── oracle/             # Oracle SQL queries
+└── duckdb/             # DuckDB SQL queries
+```
+
+Query file syntax example:
 ```sql
--- mariadb_sql/customer_orders.sql
+-- sql-scripts/mariadb/customer_orders.sql
 SELECT c.customer_id, c.name, COUNT(o.order_id) as order_count
 FROM customers c
 LEFT JOIN orders o ON c.customer_id = o.customer_id
 WHERE c.customer_id = :customer_id:int!
 GROUP BY c.customer_id, c.name
 ```
+
+### Internal SQL (`typr-internal-sql/`)
+SQL scripts used by Typr's own code generation (GeneratedSources). Not for user modification.
 
 ## DSL Architecture
 
@@ -320,7 +334,7 @@ typr-dsl-doobie/                   # [LEGACY] Doobie-specific DSL (Scala, Postgr
 typr-dsl-zio-jdbc/                 # [LEGACY] ZIO-JDBC-specific DSL (Scala, PostgreSQL only)
 
 typr-scripts/                      # Generation scripts
-├── GeneratedAdventureWorks.scala  # PostgreSQL generation
+├── GeneratedPostgres.scala        # PostgreSQL generation
 ├── GeneratedMariaDb.scala         # MariaDB generation
 ├── GeneratedDuckDb.scala          # DuckDB generation
 ├── GeneratedOracle.scala          # Oracle generation
@@ -329,15 +343,21 @@ typr-scripts/                      # Generation scripts
 ├── GenerateAll.scala              # Run all generators
 └── ...
 
-db/                                # Schema files (mounted to Docker)
-├── pg/                            # PostgreSQL schemas
+sql-init/                          # Schema files (mounted to Docker)
+├── postgres/                      # PostgreSQL schemas
 ├── mariadb/                       # MariaDB schemas
-├── duckdb/                        # DuckDB schemas
-└── oracle/                        # Oracle schemas
+├── oracle/                        # Oracle schemas
+├── sqlserver/                     # SQL Server schemas
+└── duckdb/                        # DuckDB schemas (loaded by script)
 
-adventureworks_sql/                # PostgreSQL SQL query files
-mariadb_sql/                       # MariaDB SQL query files
-sqlserver_sql/                     # SQL Server SQL query files
+sql-scripts/                       # SQL query files for code generation
+├── postgres/                      # PostgreSQL SQL queries
+├── mariadb/                       # MariaDB SQL queries
+├── sqlserver/                     # SQL Server SQL queries
+├── oracle/                        # Oracle SQL queries
+└── duckdb/                        # DuckDB SQL queries
+
+typr-internal-sql/                 # Internal SQL for Typr codegen
 ```
 
 ## Code Generation
@@ -419,10 +439,10 @@ WHERE p.productcategory = :category_id:myapp.production.productcategory.Productc
 ## Development Workflow
 
 ### Working on Issues
-1. **Create Test Case**: Add SQL file in `db/pg/issueNNN.sql` (or appropriate database folder)
-2. **Update Install Script**: Add to `init/install.sh` for PostgreSQL
+1. **Create Test Case**: Add SQL file in `sql-init/postgres/issueNNN.sql` (or appropriate database folder)
+2. **Update Install Script**: Add to `sql-init/postgres/00-install.sh` for PostgreSQL
 3. **Restart Database**: `docker-compose down && docker-compose up -d`
-4. **Generate Code**: Run appropriate generator (e.g., `bleep generate-adventureworks`)
+4. **Generate Code**: Run appropriate generator (e.g., `bleep generate-postgres`)
 5. **Trace Issue**: Examine generated code
 6. **Commit Test Setup**: Commit before making changes
 7. **Implement Fix**: Make code changes
@@ -454,20 +474,13 @@ bleep generate-docs
 cd site && npm install && npm run build
 ```
 
-### Frontpage Examples
-Website code examples come from the `frontpage` schema:
-1. Edit `db/pg/frontpage/schema.sql`
-2. Restart database: `docker-compose down && docker-compose up -d`
-3. Generate: `bleep generate-frontpage`
-4. Copy from `frontpage-generated/` to website components
-
 ## Key Files
 
 - `bleep.yaml` - Main build configuration (all projects, scripts, templates)
 - `build.gradle.kts` - Root Gradle config for Kotlin modules
 - `settings.gradle.kts` - Gradle project structure
-- `docker-compose.yml` - Database infrastructure (PostgreSQL, MariaDB, Oracle, SQL Server)
-- `init/install.sh` - PostgreSQL initialization script
+- `docker-compose.yml` - Database infrastructure (PostgreSQL, MariaDB, Oracle, SQL Server, DB2)
+- `sql-init/postgres/00-install.sh` - PostgreSQL initialization script
 
 ## Troubleshooting
 
@@ -504,11 +517,10 @@ docker-compose logs -f oracle
 
 ### Code Generation Philosophy
 - Never generate code that relies on derivation - we are the deriver
-- Run appropriate generator (e.g., `bleep generate-adventureworks`) before testing to see codegen effects
+- Run appropriate generator (e.g., `bleep generate-postgres`) before testing to see codegen effects
 
 ### Development Rules
-- Always run `bleep fmt` before testing
-- Always run `bleep test` before committing
+- Always run `bleep fmt` and `bleep test`  before commiting
 - Always run bleep with `--no-color`
 
 ### Strict Orders
@@ -517,3 +529,6 @@ docker-compose logs -f oracle
  CODE IN BOTH ENDS HERE
 - YOU ARE NOT UNDER ANY CIRCUMSTANCE ALLOWED TO CAST TO CHEAT THE TYPE SYSTEM. IF YOU COME ACROSS A SITUATION WHERE YOU HAVE NO OTHER CHOICE, STOP AND ASK USER
 - NEVER EVER PERFORM DESTRUCTIVE GIT ACTIONS IN GIT WHERE CHANGES ARE IRREVOCABLY LOST. GIT CHECKOUT FILE? STASH CHANGES INSTEAD. GIT RESET HARD? A STASH INSTEAD
+- WHEN YOU CHANGE CODE, NEVER LEAVE DANGLING COMMENTS DESCRIBING HOW IT WAS BEFORE OR WHY YOU MADE A CHANGE. WE HAVE GIT FOR THAT
+- when restarting a database container always restart only the one you want to restart. it takes ages to start all
+- UNDER NO CIRCUMSTANCE, EVER. FUCKING EVER. WILL CLAUDE GIVE UP AND REVERT ALL THE FILES

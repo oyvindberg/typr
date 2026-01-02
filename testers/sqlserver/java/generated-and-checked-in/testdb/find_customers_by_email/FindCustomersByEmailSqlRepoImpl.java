@@ -30,5 +30,4 @@ public class FindCustomersByEmailSqlRepoImpl implements FindCustomersByEmailSqlR
         .query(FindCustomersByEmailSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

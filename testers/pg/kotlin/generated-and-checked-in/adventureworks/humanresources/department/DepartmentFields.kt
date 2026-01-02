@@ -8,45 +8,43 @@ package adventureworks.humanresources.department
 import adventureworks.public.Name
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
+import dev.typr.foundations.kotlin.TupleExpr4
 import java.time.LocalDateTime
 import kotlin.collections.List
 
-interface DepartmentFields : FieldsExpr<DepartmentRow> {
-  abstract override fun columns(): List<FieldLike<*, DepartmentRow>>
+data class DepartmentFields(val _path: List<Path>) : TupleExpr4<DepartmentId, Name, Name, LocalDateTime>, RelationStructure<DepartmentFields, DepartmentRow>, FieldsBase<DepartmentRow> {
+  override fun _1(): SqlExpr<DepartmentId> = departmentid()
 
-  abstract fun departmentid(): IdField<DepartmentId, DepartmentRow>
+  override fun _2(): SqlExpr<Name> = name()
 
-  abstract fun groupname(): Field<Name, DepartmentRow>
+  override fun _3(): SqlExpr<Name> = groupname()
 
-  abstract fun modifieddate(): Field<LocalDateTime, DepartmentRow>
+  override fun _4(): SqlExpr<LocalDateTime> = modifieddate()
 
-  abstract fun name(): Field<Name, DepartmentRow>
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, DepartmentRow>> = listOf(this.departmentid().underlying, this.name().underlying, this.groupname().underlying, this.modifieddate().underlying)
+
+  fun departmentid(): IdField<DepartmentId, DepartmentRow> = IdField<DepartmentId, DepartmentRow>(_path, "departmentid", DepartmentRow::departmentid, null, "int4", { row, value -> row.copy(departmentid = value) }, DepartmentId.dbType)
+
+  fun groupname(): Field<Name, DepartmentRow> = Field<Name, DepartmentRow>(_path, "groupname", DepartmentRow::groupname, null, "varchar", { row, value -> row.copy(groupname = value) }, Name.dbType)
+
+  fun modifieddate(): Field<LocalDateTime, DepartmentRow> = Field<LocalDateTime, DepartmentRow>(_path, "modifieddate", DepartmentRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
+
+  fun name(): Field<Name, DepartmentRow> = Field<Name, DepartmentRow>(_path, "name", DepartmentRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.dbType)
 
   override fun rowParser(): RowParser<DepartmentRow> = DepartmentRow._rowParser.underlying
 
+  override fun withPaths(_path: List<Path>): RelationStructure<DepartmentFields, DepartmentRow> = DepartmentFields(_path)
+
   companion object {
-    data class Impl(val _path: List<Path>) : DepartmentFields, RelationStructure<DepartmentFields, DepartmentRow> {
-      override fun departmentid(): IdField<DepartmentId, DepartmentRow> = IdField<DepartmentId, DepartmentRow>(_path, "departmentid", DepartmentRow::departmentid, null, "int4", { row, value -> row.copy(departmentid = value) }, DepartmentId.pgType)
-
-      override fun name(): Field<Name, DepartmentRow> = Field<Name, DepartmentRow>(_path, "name", DepartmentRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.pgType)
-
-      override fun groupname(): Field<Name, DepartmentRow> = Field<Name, DepartmentRow>(_path, "groupname", DepartmentRow::groupname, null, "varchar", { row, value -> row.copy(groupname = value) }, Name.pgType)
-
-      override fun modifieddate(): Field<LocalDateTime, DepartmentRow> = Field<LocalDateTime, DepartmentRow>(_path, "modifieddate", DepartmentRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, DepartmentRow>> = listOf(this.departmentid().underlying, this.name().underlying, this.groupname().underlying, this.modifieddate().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<DepartmentFields, DepartmentRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: DepartmentFields = DepartmentFields(emptyList<Path>())
   }
 }

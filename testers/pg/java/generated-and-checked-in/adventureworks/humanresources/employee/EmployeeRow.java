@@ -12,6 +12,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple15;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -75,7 +76,23 @@ public record EmployeeRow(
     /** Default: now() */
     LocalDateTime modifieddate,
     /** Where the employee is located in corporate hierarchy. Default: '/'::character varying */
-    Optional<String> organizationnode) {
+    Optional<String> organizationnode)
+    implements Tuple15<
+        BusinessentityId,
+        String,
+        String,
+        String,
+        LocalDate,
+        String,
+        String,
+        LocalDate,
+        Flag,
+        Short,
+        Short,
+        Flag,
+        UUID,
+        LocalDateTime,
+        Optional<String>> {
   /**
    * Primary key for Employee records. Foreign key to BusinessEntity.BusinessEntityID. Points to
    * {@link adventureworks.person.person.PersonRow#businessentityid()}
@@ -417,7 +434,7 @@ public record EmployeeRow(
 
   public static RowParser<EmployeeRow> _rowParser =
       RowParsers.of(
-          BusinessentityId.pgType,
+          BusinessentityId.dbType,
           PgTypes.text,
           PgTypes.text,
           PgTypes.text,
@@ -425,10 +442,10 @@ public record EmployeeRow(
           PgTypes.bpchar,
           PgTypes.bpchar,
           PgTypes.date,
-          Flag.pgType,
+          Flag.dbType,
           PgTypes.int2,
           PgTypes.int2,
-          Flag.pgType,
+          Flag.dbType,
           PgTypes.uuid,
           PgTypes.timestamp,
           PgTypes.text.opt(),
@@ -454,6 +471,96 @@ public record EmployeeRow(
   ;
 
   public static PgText<EmployeeRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public BusinessentityId _1() {
+    return businessentityid;
+  }
+  ;
+
+  @Override
+  public Short _10() {
+    return vacationhours;
+  }
+  ;
+
+  @Override
+  public Short _11() {
+    return sickleavehours;
+  }
+  ;
+
+  @Override
+  public Flag _12() {
+    return currentflag;
+  }
+  ;
+
+  @Override
+  public UUID _13() {
+    return rowguid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _14() {
+    return modifieddate;
+  }
+  ;
+
+  @Override
+  public Optional<String> _15() {
+    return organizationnode;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return nationalidnumber;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return loginid;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return jobtitle;
+  }
+  ;
+
+  @Override
+  public LocalDate _5() {
+    return birthdate;
+  }
+  ;
+
+  @Override
+  public String _6() {
+    return maritalstatus;
+  }
+  ;
+
+  @Override
+  public String _7() {
+    return gender;
+  }
+  ;
+
+  @Override
+  public LocalDate _8() {
+    return hiredate;
+  }
+  ;
+
+  @Override
+  public Flag _9() {
+    return salariedflag;
+  }
+  ;
 
   public BusinessentityId id() {
     return businessentityid;

@@ -7,6 +7,7 @@ package testdb.customer_stats
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -17,7 +18,15 @@ case class CustomerStatsMVRow(
   @JsonProperty("CUSTOMER_NAME") customerName: String,
   @JsonProperty("TOTAL_ORDERS") totalOrders: Int,
   @JsonProperty("TOTAL_REVENUE") totalRevenue: BigDecimal
-)
+) extends Tuple4[Int, String, Int, BigDecimal] {
+  override def `_1`: Int = customerId
+
+  override def `_2`: String = customerName
+
+  override def `_3`: Int = totalOrders
+
+  override def `_4`: BigDecimal = totalRevenue
+}
 
 object CustomerStatsMVRow {
   val `_rowParser`: RowParser[CustomerStatsMVRow] = RowParsers.of(ScalaDbTypes.Db2Types.integer, Db2Types.varchar, ScalaDbTypes.Db2Types.integer, ScalaDbTypes.Db2Types.decimal)(CustomerStatsMVRow.apply)(row => Array[Any](row.customerId, row.customerName, row.totalOrders, row.totalRevenue))

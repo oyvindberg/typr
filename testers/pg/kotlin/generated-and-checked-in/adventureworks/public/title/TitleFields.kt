@@ -6,31 +6,29 @@
 package adventureworks.public.title
 
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.IdField
+import dev.typr.foundations.kotlin.TupleExpr1
 import kotlin.collections.List
 
-interface TitleFields : FieldsExpr<TitleRow> {
-  abstract fun code(): IdField<TitleId, TitleRow>
+data class TitleFields(val _path: List<Path>) : TupleExpr1<TitleId>, RelationStructure<TitleFields, TitleRow>, FieldsBase<TitleRow> {
+  override fun _1(): SqlExpr<TitleId> = code()
 
-  abstract override fun columns(): List<FieldLike<*, TitleRow>>
+  override fun _path(): List<Path> = _path
+
+  fun code(): IdField<TitleId, TitleRow> = IdField<TitleId, TitleRow>(_path, "code", TitleRow::code, null, null, { row, value -> row.copy(code = value) }, TitleId.dbType)
+
+  override fun columns(): List<FieldLike<*, TitleRow>> = listOf(this.code().underlying)
 
   override fun rowParser(): RowParser<TitleRow> = TitleRow._rowParser.underlying
 
+  override fun withPaths(_path: List<Path>): RelationStructure<TitleFields, TitleRow> = TitleFields(_path)
+
   companion object {
-    data class Impl(val _path: List<Path>) : TitleFields, RelationStructure<TitleFields, TitleRow> {
-      override fun code(): IdField<TitleId, TitleRow> = IdField<TitleId, TitleRow>(_path, "code", TitleRow::code, null, null, { row, value -> row.copy(code = value) }, TitleId.pgType)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, TitleRow>> = listOf(this.code().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<TitleFields, TitleRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: TitleFields = TitleFields(emptyList<Path>())
   }
 }

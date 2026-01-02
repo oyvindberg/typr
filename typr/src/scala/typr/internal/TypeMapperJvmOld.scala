@@ -25,6 +25,9 @@ case class TypeMapperJvmOld(lang: Lang, typeOverride: TypeOverride, nullabilityO
           case db.PgType.Float8                => lang.Double
           case db.PgType.Hstore                => customTypes.TypoHStore.typoType
           case db.PgType.Inet                  => customTypes.TypoInet.typoType
+          case db.PgType.Cidr                  => customTypes.TypoCidr.typoType
+          case db.PgType.MacAddr               => customTypes.TypoMacAddr.typoType
+          case db.PgType.MacAddr8              => customTypes.TypoMacAddr8.typoType
           case db.PgType.Int2                  => customTypes.TypoShort.typoType
           case db.PgType.Int4                  => lang.Int
           case db.PgType.Int8                  => lang.Long

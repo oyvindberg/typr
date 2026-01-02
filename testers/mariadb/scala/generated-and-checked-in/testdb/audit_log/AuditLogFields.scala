@@ -7,169 +7,167 @@ package testdb.audit_log
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.Inet6
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr10
 import java.time.LocalDateTime
 
-trait AuditLogFields extends FieldsExpr0[AuditLogRow] {
-  def logId: IdField[AuditLogId, AuditLogRow]
+class AuditLogFields(val `_path`: java.util.List[Path]) extends TupleExpr10[AuditLogId, String, String, String, Json, Json, String, LocalDateTime, Inet6, Array[Byte]] with RelationStructure[AuditLogFields, AuditLogRow]  with FieldsBase[AuditLogRow] {
+  def logId: IdField[AuditLogId, AuditLogRow] = {
+    new IdField[AuditLogId, AuditLogRow](
+      _path,
+      "log_id",
+      _.logId,
+      None,
+      None,
+      (row, value) => row.copy(logId = value),
+      AuditLogId.dbType
+    )
+  }
 
-  def tableName: Field[String, AuditLogRow]
+  def tableName: Field[String, AuditLogRow] = {
+    new Field[String, AuditLogRow](
+      _path,
+      "table_name",
+      _.tableName,
+      None,
+      None,
+      (row, value) => row.copy(tableName = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def recordId: Field[String, AuditLogRow]
+  def recordId: Field[String, AuditLogRow] = {
+    new Field[String, AuditLogRow](
+      _path,
+      "record_id",
+      _.recordId,
+      None,
+      None,
+      (row, value) => row.copy(recordId = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def action: Field[String, AuditLogRow]
+  def action: Field[String, AuditLogRow] = {
+    new Field[String, AuditLogRow](
+      _path,
+      "action",
+      _.action,
+      None,
+      None,
+      (row, value) => row.copy(action = value),
+      MariaTypes.text
+    )
+  }
 
-  def oldValues: OptField[String, AuditLogRow]
+  def oldValues: OptField[Json, AuditLogRow] = {
+    new OptField[Json, AuditLogRow](
+      _path,
+      "old_values",
+      _.oldValues,
+      None,
+      None,
+      (row, value) => row.copy(oldValues = value),
+      MariaTypes.json
+    )
+  }
 
-  def newValues: OptField[String, AuditLogRow]
+  def newValues: OptField[Json, AuditLogRow] = {
+    new OptField[Json, AuditLogRow](
+      _path,
+      "new_values",
+      _.newValues,
+      None,
+      None,
+      (row, value) => row.copy(newValues = value),
+      MariaTypes.json
+    )
+  }
 
-  def changedBy: OptField[String, AuditLogRow]
+  def changedBy: OptField[String, AuditLogRow] = {
+    new OptField[String, AuditLogRow](
+      _path,
+      "changed_by",
+      _.changedBy,
+      None,
+      None,
+      (row, value) => row.copy(changedBy = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def changedAt: Field[LocalDateTime, AuditLogRow]
+  def changedAt: Field[LocalDateTime, AuditLogRow] = {
+    new Field[LocalDateTime, AuditLogRow](
+      _path,
+      "changed_at",
+      _.changedAt,
+      None,
+      None,
+      (row, value) => row.copy(changedAt = value),
+      MariaTypes.datetime
+    )
+  }
 
-  def clientIp: OptField[Inet6, AuditLogRow]
+  def clientIp: OptField[Inet6, AuditLogRow] = {
+    new OptField[Inet6, AuditLogRow](
+      _path,
+      "client_ip",
+      _.clientIp,
+      None,
+      None,
+      (row, value) => row.copy(clientIp = value),
+      MariaTypes.inet6
+    )
+  }
 
-  def sessionId: OptField[Array[Byte], AuditLogRow]
+  def sessionId: OptField[Array[Byte], AuditLogRow] = {
+    new OptField[Array[Byte], AuditLogRow](
+      _path,
+      "session_id",
+      _.sessionId,
+      None,
+      None,
+      (row, value) => row.copy(sessionId = value),
+      MariaTypes.varbinary
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, AuditLogRow]]
+  override def columns: java.util.List[FieldLike[?, AuditLogRow]] = java.util.List.of(this.logId.underlying, this.tableName.underlying, this.recordId.underlying, this.action.underlying, this.oldValues.underlying, this.newValues.underlying, this.changedBy.underlying, this.changedAt.underlying, this.clientIp.underlying, this.sessionId.underlying)
 
   override def rowParser: RowParser[AuditLogRow] = AuditLogRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[AuditLogFields, AuditLogRow] = new AuditLogFields(`_path`)
+
+  override def `_1`: SqlExpr[AuditLogId] = logId
+
+  override def `_2`: SqlExpr[String] = tableName
+
+  override def `_3`: SqlExpr[String] = recordId
+
+  override def `_4`: SqlExpr[String] = action
+
+  override def `_5`: SqlExpr[Json] = oldValues
+
+  override def `_6`: SqlExpr[Json] = newValues
+
+  override def `_7`: SqlExpr[String] = changedBy
+
+  override def `_8`: SqlExpr[LocalDateTime] = changedAt
+
+  override def `_9`: SqlExpr[Inet6] = clientIp
+
+  override def `_10`: SqlExpr[Array[Byte]] = sessionId
 }
 
 object AuditLogFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends AuditLogFields with RelationStructure[AuditLogFields, AuditLogRow] {
-
-    override def logId: IdField[AuditLogId, AuditLogRow] = {
-      new IdField[AuditLogId, AuditLogRow](
-        _path,
-        "log_id",
-        _.logId,
-        None,
-        None,
-        (row, value) => row.copy(logId = value),
-        AuditLogId.pgType
-      )
-    }
-
-    override def tableName: Field[String, AuditLogRow] = {
-      new Field[String, AuditLogRow](
-        _path,
-        "table_name",
-        _.tableName,
-        None,
-        None,
-        (row, value) => row.copy(tableName = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def recordId: Field[String, AuditLogRow] = {
-      new Field[String, AuditLogRow](
-        _path,
-        "record_id",
-        _.recordId,
-        None,
-        None,
-        (row, value) => row.copy(recordId = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def action: Field[String, AuditLogRow] = {
-      new Field[String, AuditLogRow](
-        _path,
-        "action",
-        _.action,
-        None,
-        None,
-        (row, value) => row.copy(action = value),
-        MariaTypes.text
-      )
-    }
-
-    override def oldValues: OptField[String, AuditLogRow] = {
-      new OptField[String, AuditLogRow](
-        _path,
-        "old_values",
-        _.oldValues,
-        None,
-        None,
-        (row, value) => row.copy(oldValues = value),
-        MariaTypes.longtext
-      )
-    }
-
-    override def newValues: OptField[String, AuditLogRow] = {
-      new OptField[String, AuditLogRow](
-        _path,
-        "new_values",
-        _.newValues,
-        None,
-        None,
-        (row, value) => row.copy(newValues = value),
-        MariaTypes.longtext
-      )
-    }
-
-    override def changedBy: OptField[String, AuditLogRow] = {
-      new OptField[String, AuditLogRow](
-        _path,
-        "changed_by",
-        _.changedBy,
-        None,
-        None,
-        (row, value) => row.copy(changedBy = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def changedAt: Field[LocalDateTime, AuditLogRow] = {
-      new Field[LocalDateTime, AuditLogRow](
-        _path,
-        "changed_at",
-        _.changedAt,
-        None,
-        None,
-        (row, value) => row.copy(changedAt = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def clientIp: OptField[Inet6, AuditLogRow] = {
-      new OptField[Inet6, AuditLogRow](
-        _path,
-        "client_ip",
-        _.clientIp,
-        None,
-        None,
-        (row, value) => row.copy(clientIp = value),
-        MariaTypes.inet6
-      )
-    }
-
-    override def sessionId: OptField[Array[Byte], AuditLogRow] = {
-      new OptField[Array[Byte], AuditLogRow](
-        _path,
-        "session_id",
-        _.sessionId,
-        None,
-        None,
-        (row, value) => row.copy(sessionId = value),
-        MariaTypes.varbinary
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, AuditLogRow]] = java.util.List.of(this.logId.underlying, this.tableName.underlying, this.recordId.underlying, this.action.underlying, this.oldValues.underlying, this.newValues.underlying, this.changedBy.underlying, this.changedAt.underlying, this.clientIp.underlying, this.sessionId.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[AuditLogFields, AuditLogRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: AuditLogFields = new AuditLogFields(java.util.Collections.emptyList())
 }

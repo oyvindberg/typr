@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple14;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import testdb.products.ProductsId;
@@ -43,7 +44,22 @@ public record VInventoryStatusViewRow(
     /** Default: NULL Points to {@link testdb.inventory.InventoryRow#binLocation()} */
     @JsonProperty("bin_location") Optional<String> binLocation,
     /** Default: NULL Points to {@link testdb.inventory.InventoryRow#lastCountedAt()} */
-    @JsonProperty("last_counted_at") Optional<LocalDateTime> lastCountedAt) {
+    @JsonProperty("last_counted_at") Optional<LocalDateTime> lastCountedAt)
+    implements Tuple14<
+        ProductsId,
+        String,
+        String,
+        WarehousesId,
+        String,
+        String,
+        Integer,
+        Integer,
+        Integer,
+        Long,
+        Integer,
+        String,
+        Optional<String>,
+        Optional<LocalDateTime>> {
   /** Default: 0 Points to {@link testdb.products.ProductsRow#productId()} */
   public VInventoryStatusViewRow withProductId(ProductsId productId) {
     return new VInventoryStatusViewRow(
@@ -326,10 +342,10 @@ public record VInventoryStatusViewRow(
 
   public static RowParser<VInventoryStatusViewRow> _rowParser =
       RowParsers.of(
-          ProductsId.pgType,
+          ProductsId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar,
-          WarehousesId.pgType,
+          WarehousesId.dbType,
           MariaTypes.char_,
           MariaTypes.varchar,
           MariaTypes.int_,
@@ -358,5 +374,89 @@ public record VInventoryStatusViewRow(
                 row.binLocation(),
                 row.lastCountedAt()
               });
+  ;
+
+  @Override
+  public ProductsId _1() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public Long _10() {
+    return available;
+  }
+  ;
+
+  @Override
+  public Integer _11() {
+    return reorderPoint;
+  }
+  ;
+
+  @Override
+  public String _12() {
+    return stockStatus;
+  }
+  ;
+
+  @Override
+  public Optional<String> _13() {
+    return binLocation;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _14() {
+    return lastCountedAt;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return sku;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return productName;
+  }
+  ;
+
+  @Override
+  public WarehousesId _4() {
+    return warehouseId;
+  }
+  ;
+
+  @Override
+  public String _5() {
+    return warehouseCode;
+  }
+  ;
+
+  @Override
+  public String _6() {
+    return warehouseName;
+  }
+  ;
+
+  @Override
+  public Integer _7() {
+    return quantityOnHand;
+  }
+  ;
+
+  @Override
+  public Integer _8() {
+    return quantityReserved;
+  }
+  ;
+
+  @Override
+  public Integer _9() {
+    return quantityOnOrder;
+  }
   ;
 }

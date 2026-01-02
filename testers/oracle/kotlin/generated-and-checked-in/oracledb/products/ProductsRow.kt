@@ -7,6 +7,7 @@ package oracledb.products
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -24,7 +25,17 @@ data class ProductsRow(
   @JsonProperty("NAME") val name: String,
   @JsonProperty("PRICE") val price: MoneyT,
   @JsonProperty("TAGS") val tags: TagVarrayT?
-) {
+) : Tuple5<ProductsId, String, String, MoneyT, TagVarrayT?> {
+  override fun _1(): ProductsId = productId
+
+  override fun _2(): String = sku
+
+  override fun _3(): String = name
+
+  override fun _4(): MoneyT = price
+
+  override fun _5(): TagVarrayT? = tags
+
   fun id(): ProductsId = productId
 
   fun toUnsavedRow(productId: Defaulted<ProductsId>): ProductsRowUnsaved = ProductsRowUnsaved(sku, name, price, tags, productId)

@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple6;
 import dev.typr.foundations.data.Xml;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -32,7 +33,8 @@ public record ProductmodelRow(
     /** Default: uuid_generate_v1() */
     UUID rowguid,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple6<ProductmodelId, Name, Optional<Xml>, Optional<Xml>, UUID, LocalDateTime> {
   /**
    * Primary key for ProductModel records. Default:
    * nextval('production.productmodel_productmodelid_seq'::regclass)
@@ -80,8 +82,8 @@ public record ProductmodelRow(
 
   public static RowParser<ProductmodelRow> _rowParser =
       RowParsers.of(
-          ProductmodelId.pgType,
-          Name.pgType,
+          ProductmodelId.dbType,
+          Name.dbType,
           PgTypes.xml.opt(),
           PgTypes.xml.opt(),
           PgTypes.uuid,
@@ -99,6 +101,42 @@ public record ProductmodelRow(
   ;
 
   public static PgText<ProductmodelRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public ProductmodelId _1() {
+    return productmodelid;
+  }
+  ;
+
+  @Override
+  public Name _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public Optional<Xml> _3() {
+    return catalogdescription;
+  }
+  ;
+
+  @Override
+  public Optional<Xml> _4() {
+    return instructions;
+  }
+  ;
+
+  @Override
+  public UUID _5() {
+    return rowguid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _6() {
+    return modifieddate;
+  }
+  ;
 
   public ProductmodelId id() {
     return productmodelid;
