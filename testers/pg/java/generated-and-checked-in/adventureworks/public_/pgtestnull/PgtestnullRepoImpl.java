@@ -24,9 +24,8 @@ public class PgtestnullRepoImpl implements PgtestnullRepo {
   @Override
   public DeleteBuilder<PgtestnullFields, PgtestnullRow> delete() {
     return DeleteBuilder.of(
-        "\"public\".\"pgtestnull\"", PgtestnullFields.structure(), Dialect.POSTGRESQL);
+        "\"public\".\"pgtestnull\"", PgtestnullFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public PgtestnullRow insert(PgtestnullRow unsaved, Connection c) {
@@ -88,9 +87,9 @@ public class PgtestnullRepoImpl implements PgtestnullRepo {
             Fragment.lit("::lseg, "),
             Fragment.encode(PgTypes.money.opt(), unsaved.money()),
             Fragment.lit("::money, "),
-            Fragment.encode(Mydomain.pgType.opt(), unsaved.mydomain()),
+            Fragment.encode(Mydomain.dbType.opt(), unsaved.mydomain()),
             Fragment.lit("::text, "),
-            Fragment.encode(Myenum.pgType.opt(), unsaved.myenum()),
+            Fragment.encode(Myenum.dbType.opt(), unsaved.myenum()),
             Fragment.lit("::public.myenum, "),
             Fragment.encode(PgTypes.name.opt(), unsaved.name()),
             Fragment.lit("::name, "),
@@ -156,9 +155,9 @@ public class PgtestnullRepoImpl implements PgtestnullRepo {
             Fragment.lit("::lseg[], "),
             Fragment.encode(PgTypes.moneyArray.opt(), unsaved.moneyes()),
             Fragment.lit("::money[], "),
-            Fragment.encode(Mydomain.pgTypeArray.opt(), unsaved.mydomaines()),
+            Fragment.encode(Mydomain.dbTypeArray.opt(), unsaved.mydomaines()),
             Fragment.lit("::mydomain[], "),
-            Fragment.encode(Myenum.pgTypeArray.opt(), unsaved.myenumes()),
+            Fragment.encode(Myenum.dbTypeArray.opt(), unsaved.myenumes()),
             Fragment.lit("::myenum[], "),
             Fragment.encode(PgTypes.nameArray.opt(), unsaved.namees()),
             Fragment.lit("::name[], "),
@@ -204,7 +203,6 @@ public class PgtestnullRepoImpl implements PgtestnullRepo {
         .updateReturning(PgtestnullRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<PgtestnullRow> unsaved, Integer batchSize, Connection c) {
@@ -226,17 +224,15 @@ public class PgtestnullRepoImpl implements PgtestnullRepo {
         c,
         PgtestnullRow.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<PgtestnullFields, PgtestnullRow> select() {
     return SelectBuilder.of(
         "\"public\".\"pgtestnull\"",
-        PgtestnullFields.structure(),
+        PgtestnullFields.structure,
         PgtestnullRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<PgtestnullRow> selectAll(Connection c) {
@@ -259,15 +255,13 @@ public class PgtestnullRepoImpl implements PgtestnullRepo {
         .query(PgtestnullRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<PgtestnullFields, PgtestnullRow> update() {
     return UpdateBuilder.of(
         "\"public\".\"pgtestnull\"",
-        PgtestnullFields.structure(),
+        PgtestnullFields.structure,
         PgtestnullRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 }

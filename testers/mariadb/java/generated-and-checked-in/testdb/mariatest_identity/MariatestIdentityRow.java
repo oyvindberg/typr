@@ -8,13 +8,15 @@ package testdb.mariatest_identity;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple2;
 
 /** Table: mariatest_identity Primary key: id */
 public record MariatestIdentityRow(
     /** AUTO_INCREMENT */
     MariatestIdentityId id,
     /** */
-    String name) {
+    String name)
+    implements Tuple2<MariatestIdentityId, String> {
   /** AUTO_INCREMENT */
   public MariatestIdentityRow withId(MariatestIdentityId id) {
     return new MariatestIdentityRow(id, name);
@@ -29,10 +31,22 @@ public record MariatestIdentityRow(
 
   public static RowParser<MariatestIdentityRow> _rowParser =
       RowParsers.of(
-          MariatestIdentityId.pgType,
+          MariatestIdentityId.dbType,
           MariaTypes.varchar,
           MariatestIdentityRow::new,
           row -> new Object[] {row.id(), row.name()});
+  ;
+
+  @Override
+  public MariatestIdentityId _1() {
+    return id;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return name;
+  }
   ;
 
   public MariatestIdentityRowUnsaved toUnsavedRow() {

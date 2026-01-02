@@ -11,6 +11,7 @@ import adventureworks.humanresources.shift.ShiftId
 import adventureworks.person.businessentity.BusinessentityId
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple6
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -44,7 +45,7 @@ case class EmployeedepartmenthistoryRow(
   enddate: Option[LocalDate],
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple6[BusinessentityId, DepartmentId, ShiftId, LocalDate, Option[LocalDate], LocalDateTime] {
   def compositeId: EmployeedepartmenthistoryId = {
     new EmployeedepartmenthistoryId(
       businessentityid,
@@ -66,10 +67,22 @@ case class EmployeedepartmenthistoryRow(
       modifieddate
     )
   }
+
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: DepartmentId = departmentid
+
+  override def `_3`: ShiftId = shiftid
+
+  override def `_4`: LocalDate = startdate
+
+  override def `_5`: Option[LocalDate] = enddate
+
+  override def `_6`: LocalDateTime = modifieddate
 }
 
 object EmployeedepartmenthistoryRow {
-  val `_rowParser`: RowParser[EmployeedepartmenthistoryRow] = RowParsers.of(BusinessentityId.pgType, DepartmentId.pgType, ShiftId.pgType, PgTypes.date, PgTypes.date.nullable, PgTypes.timestamp)(EmployeedepartmenthistoryRow.apply)(row => Array[Any](row.businessentityid, row.departmentid, row.shiftid, row.startdate, row.enddate, row.modifieddate))
+  val `_rowParser`: RowParser[EmployeedepartmenthistoryRow] = RowParsers.of(BusinessentityId.dbType, DepartmentId.dbType, ShiftId.dbType, PgTypes.date, PgTypes.date.nullable, PgTypes.timestamp)(EmployeedepartmenthistoryRow.apply)(row => Array[Any](row.businessentityid, row.departmentid, row.shiftid, row.startdate, row.enddate, row.modifieddate))
 
   def apply(
     compositeId: EmployeedepartmenthistoryId,

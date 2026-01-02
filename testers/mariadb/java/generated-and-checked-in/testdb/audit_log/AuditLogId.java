@@ -8,12 +8,12 @@ package testdb.audit_log;
 import com.fasterxml.jackson.annotation.JsonValue;
 import dev.typr.foundations.MariaType;
 import dev.typr.foundations.MariaTypes;
+import dev.typr.foundations.data.Uint8;
 import dev.typr.foundations.dsl.Bijection;
-import java.math.BigInteger;
 
 /** Type for the primary key of table `audit_log` */
-public record AuditLogId(@JsonValue BigInteger value) {
-  public AuditLogId withValue(BigInteger value) {
+public record AuditLogId(@JsonValue Uint8 value) {
+  public AuditLogId withValue(Uint8 value) {
     return new AuditLogId(value);
   }
   ;
@@ -24,9 +24,9 @@ public record AuditLogId(@JsonValue BigInteger value) {
   }
   ;
 
-  public static Bijection<AuditLogId, BigInteger> bijection =
+  public static Bijection<AuditLogId, Uint8> bijection =
       Bijection.of(AuditLogId::value, AuditLogId::new);
 
-  public static MariaType<AuditLogId> pgType =
+  public static MariaType<AuditLogId> dbType =
       MariaTypes.bigintUnsigned.bimap(AuditLogId::new, AuditLogId::value);
 }

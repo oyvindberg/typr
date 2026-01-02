@@ -9,6 +9,7 @@ import adventureworks.customtypes.Defaulted
 import adventureworks.public.Name
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple3
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import java.time.LocalDateTime
@@ -24,13 +25,19 @@ data class CountryregionRow(
   val name: Name,
   /** Default: now() */
   val modifieddate: LocalDateTime
-) {
+) : Tuple3<CountryregionId, Name, LocalDateTime> {
+  override fun _1(): CountryregionId = countryregioncode
+
+  override fun _2(): Name = name
+
+  override fun _3(): LocalDateTime = modifieddate
+
   fun id(): CountryregionId = countryregioncode
 
   fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime> = Defaulted.Provided(this.modifieddate)): CountryregionRowUnsaved = CountryregionRowUnsaved(countryregioncode, name, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<CountryregionRow> = RowParsers.of(CountryregionId.pgType, Name.pgType, PgTypes.timestamp, { t0, t1, t2 -> CountryregionRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.countryregioncode, row.name, row.modifieddate) })
+    val _rowParser: RowParser<CountryregionRow> = RowParsers.of(CountryregionId.dbType, Name.dbType, PgTypes.timestamp, { t0, t1, t2 -> CountryregionRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.countryregioncode, row.name, row.modifieddate) })
 
     val pgText: PgText<CountryregionRow> =
       PgText.from(_rowParser.underlying)

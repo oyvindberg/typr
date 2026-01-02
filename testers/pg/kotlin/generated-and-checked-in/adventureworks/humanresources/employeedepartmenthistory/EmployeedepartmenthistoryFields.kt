@@ -16,33 +16,47 @@ import adventureworks.humanresources.shift.ShiftRow
 import adventureworks.person.businessentity.BusinessentityId
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
-import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.ForeignKey
 import dev.typr.foundations.kotlin.RelationStructure
-import dev.typr.foundations.kotlin.SqlExpr.CompositeIn
-import dev.typr.foundations.kotlin.SqlExpr.CompositeIn.Part
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr
+import dev.typr.foundations.kotlin.TupleExpr6
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.collections.List
 
-interface EmployeedepartmenthistoryFields : FieldsExpr<EmployeedepartmenthistoryRow> {
-  abstract fun businessentityid(): IdField<BusinessentityId, EmployeedepartmenthistoryRow>
+data class EmployeedepartmenthistoryFields(val _path: List<Path>) : TupleExpr6<BusinessentityId, DepartmentId, ShiftId, LocalDate, LocalDate, LocalDateTime>, RelationStructure<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow>, FieldsBase<EmployeedepartmenthistoryRow> {
+  override fun _1(): SqlExpr<BusinessentityId> = businessentityid()
 
-  abstract override fun columns(): List<FieldLike<*, EmployeedepartmenthistoryRow>>
+  override fun _2(): SqlExpr<DepartmentId> = departmentid()
 
-  fun compositeIdIn(compositeIds: List<EmployeedepartmenthistoryId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<BusinessentityId, EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow>(businessentityid(), EmployeedepartmenthistoryId::businessentityid, BusinessentityId.pgType), Part<LocalDate, EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow>(startdate(), EmployeedepartmenthistoryId::startdate, PgTypes.date), Part<DepartmentId, EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow>(departmentid(), EmployeedepartmenthistoryId::departmentid, DepartmentId.pgType), Part<ShiftId, EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow>(shiftid(), EmployeedepartmenthistoryId::shiftid, ShiftId.pgType)), compositeIds)
+  override fun _3(): SqlExpr<ShiftId> = shiftid()
+
+  override fun _4(): SqlExpr<LocalDate> = startdate()
+
+  override fun _5(): SqlExpr<LocalDate> = enddate()
+
+  override fun _6(): SqlExpr<LocalDateTime> = modifieddate()
+
+  override fun _path(): List<Path> = _path
+
+  fun businessentityid(): IdField<BusinessentityId, EmployeedepartmenthistoryRow> = IdField<BusinessentityId, EmployeedepartmenthistoryRow>(_path, "businessentityid", EmployeedepartmenthistoryRow::businessentityid, null, "int4", { row, value -> row.copy(businessentityid = value) }, BusinessentityId.dbType)
+
+  override fun columns(): List<FieldLike<*, EmployeedepartmenthistoryRow>> = listOf(this.businessentityid().underlying, this.departmentid().underlying, this.shiftid().underlying, this.startdate().underlying, this.enddate().underlying, this.modifieddate().underlying)
+
+  fun compositeIdIn(compositeIds: List<EmployeedepartmenthistoryId>): SqlExpr<Boolean> = TupleExpr.of(businessentityid(), startdate(), departmentid(), shiftid()).among(compositeIds)
 
   fun compositeIdIs(compositeId: EmployeedepartmenthistoryId): SqlExpr<Boolean> = SqlExpr.all(businessentityid().isEqual(compositeId.businessentityid), startdate().isEqual(compositeId.startdate), departmentid().isEqual(compositeId.departmentid), shiftid().isEqual(compositeId.shiftid))
 
-  abstract fun departmentid(): IdField<DepartmentId, EmployeedepartmenthistoryRow>
+  fun departmentid(): IdField<DepartmentId, EmployeedepartmenthistoryRow> = IdField<DepartmentId, EmployeedepartmenthistoryRow>(_path, "departmentid", EmployeedepartmenthistoryRow::departmentid, null, "int2", { row, value -> row.copy(departmentid = value) }, DepartmentId.dbType)
 
-  abstract fun enddate(): OptField<LocalDate, EmployeedepartmenthistoryRow>
+  fun enddate(): OptField<LocalDate, EmployeedepartmenthistoryRow> = OptField<LocalDate, EmployeedepartmenthistoryRow>(_path, "enddate", EmployeedepartmenthistoryRow::enddate, null, "date", { row, value -> row.copy(enddate = value) }, PgTypes.date)
 
   fun fkDepartment(): ForeignKey<DepartmentFields, DepartmentRow> = ForeignKey.of<DepartmentFields, DepartmentRow>("humanresources.FK_EmployeeDepartmentHistory_Department_DepartmentID").withColumnPair<DepartmentId>(departmentid(), DepartmentFields::departmentid)
 
@@ -50,35 +64,17 @@ interface EmployeedepartmenthistoryFields : FieldsExpr<Employeedepartmenthistory
 
   fun fkShift(): ForeignKey<ShiftFields, ShiftRow> = ForeignKey.of<ShiftFields, ShiftRow>("humanresources.FK_EmployeeDepartmentHistory_Shift_ShiftID").withColumnPair<ShiftId>(shiftid(), ShiftFields::shiftid)
 
-  abstract fun modifieddate(): Field<LocalDateTime, EmployeedepartmenthistoryRow>
+  fun modifieddate(): Field<LocalDateTime, EmployeedepartmenthistoryRow> = Field<LocalDateTime, EmployeedepartmenthistoryRow>(_path, "modifieddate", EmployeedepartmenthistoryRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
   override fun rowParser(): RowParser<EmployeedepartmenthistoryRow> = EmployeedepartmenthistoryRow._rowParser.underlying
 
-  abstract fun shiftid(): IdField<ShiftId, EmployeedepartmenthistoryRow>
+  fun shiftid(): IdField<ShiftId, EmployeedepartmenthistoryRow> = IdField<ShiftId, EmployeedepartmenthistoryRow>(_path, "shiftid", EmployeedepartmenthistoryRow::shiftid, null, "int2", { row, value -> row.copy(shiftid = value) }, ShiftId.dbType)
 
-  abstract fun startdate(): IdField<LocalDate, EmployeedepartmenthistoryRow>
+  fun startdate(): IdField<LocalDate, EmployeedepartmenthistoryRow> = IdField<LocalDate, EmployeedepartmenthistoryRow>(_path, "startdate", EmployeedepartmenthistoryRow::startdate, null, "date", { row, value -> row.copy(startdate = value) }, PgTypes.date)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow> = EmployeedepartmenthistoryFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : EmployeedepartmenthistoryFields, RelationStructure<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow> {
-      override fun businessentityid(): IdField<BusinessentityId, EmployeedepartmenthistoryRow> = IdField<BusinessentityId, EmployeedepartmenthistoryRow>(_path, "businessentityid", EmployeedepartmenthistoryRow::businessentityid, null, "int4", { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
-
-      override fun departmentid(): IdField<DepartmentId, EmployeedepartmenthistoryRow> = IdField<DepartmentId, EmployeedepartmenthistoryRow>(_path, "departmentid", EmployeedepartmenthistoryRow::departmentid, null, "int2", { row, value -> row.copy(departmentid = value) }, DepartmentId.pgType)
-
-      override fun shiftid(): IdField<ShiftId, EmployeedepartmenthistoryRow> = IdField<ShiftId, EmployeedepartmenthistoryRow>(_path, "shiftid", EmployeedepartmenthistoryRow::shiftid, null, "int2", { row, value -> row.copy(shiftid = value) }, ShiftId.pgType)
-
-      override fun startdate(): IdField<LocalDate, EmployeedepartmenthistoryRow> = IdField<LocalDate, EmployeedepartmenthistoryRow>(_path, "startdate", EmployeedepartmenthistoryRow::startdate, null, "date", { row, value -> row.copy(startdate = value) }, PgTypes.date)
-
-      override fun enddate(): OptField<LocalDate, EmployeedepartmenthistoryRow> = OptField<LocalDate, EmployeedepartmenthistoryRow>(_path, "enddate", EmployeedepartmenthistoryRow::enddate, null, "date", { row, value -> row.copy(enddate = value) }, PgTypes.date)
-
-      override fun modifieddate(): Field<LocalDateTime, EmployeedepartmenthistoryRow> = Field<LocalDateTime, EmployeedepartmenthistoryRow>(_path, "modifieddate", EmployeedepartmenthistoryRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, EmployeedepartmenthistoryRow>> = listOf(this.businessentityid().underlying, this.departmentid().underlying, this.shiftid().underlying, this.startdate().underlying, this.enddate().underlying, this.modifieddate().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: EmployeedepartmenthistoryFields = EmployeedepartmenthistoryFields(emptyList<Path>())
   }
 }

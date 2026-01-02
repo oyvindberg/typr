@@ -7,99 +7,96 @@ package testdb.customers
 
 import dev.typr.foundations.DuckDbTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr5
 import java.time.LocalDateTime
 import testdb.Priority
 
-trait CustomersFields extends FieldsExpr0[CustomersRow] {
-  def customerId: IdField[CustomersId, CustomersRow]
+class CustomersFields(val `_path`: java.util.List[Path]) extends TupleExpr5[CustomersId, String, String, LocalDateTime, Priority] with RelationStructure[CustomersFields, CustomersRow]  with FieldsBase[CustomersRow] {
+  def customerId: IdField[CustomersId, CustomersRow] = {
+    new IdField[CustomersId, CustomersRow](
+      _path,
+      "customer_id",
+      _.customerId,
+      None,
+      Some("INTEGER"),
+      (row, value) => row.copy(customerId = value),
+      CustomersId.duckDbType
+    )
+  }
 
-  def name: Field[String, CustomersRow]
+  def name: Field[String, CustomersRow] = {
+    new Field[String, CustomersRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      None,
+      (row, value) => row.copy(name = value),
+      DuckDbTypes.varchar
+    )
+  }
 
-  def email: OptField[String, CustomersRow]
+  def email: OptField[String, CustomersRow] = {
+    new OptField[String, CustomersRow](
+      _path,
+      "email",
+      _.email,
+      None,
+      None,
+      (row, value) => row.copy(email = value),
+      DuckDbTypes.varchar
+    )
+  }
 
-  def createdAt: Field[LocalDateTime, CustomersRow]
+  def createdAt: Field[LocalDateTime, CustomersRow] = {
+    new Field[LocalDateTime, CustomersRow](
+      _path,
+      "created_at",
+      _.createdAt,
+      None,
+      Some("TIMESTAMP"),
+      (row, value) => row.copy(createdAt = value),
+      DuckDbTypes.timestamp
+    )
+  }
 
-  def priority: OptField[Priority, CustomersRow]
+  def priority: OptField[Priority, CustomersRow] = {
+    new OptField[Priority, CustomersRow](
+      _path,
+      "priority",
+      _.priority,
+      None,
+      Some("priority"),
+      (row, value) => row.copy(priority = value),
+      Priority.duckDbType
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, CustomersRow]]
+  override def columns: java.util.List[FieldLike[?, CustomersRow]] = java.util.List.of(this.customerId.underlying, this.name.underlying, this.email.underlying, this.createdAt.underlying, this.priority.underlying)
 
   override def rowParser: RowParser[CustomersRow] = CustomersRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomersFields, CustomersRow] = new CustomersFields(`_path`)
+
+  override def `_1`: SqlExpr[CustomersId] = customerId
+
+  override def `_2`: SqlExpr[String] = name
+
+  override def `_3`: SqlExpr[String] = email
+
+  override def `_4`: SqlExpr[LocalDateTime] = createdAt
+
+  override def `_5`: SqlExpr[Priority] = priority
 }
 
 object CustomersFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends CustomersFields with RelationStructure[CustomersFields, CustomersRow] {
-
-    override def customerId: IdField[CustomersId, CustomersRow] = {
-      new IdField[CustomersId, CustomersRow](
-        _path,
-        "customer_id",
-        _.customerId,
-        None,
-        Some("INTEGER"),
-        (row, value) => row.copy(customerId = value),
-        CustomersId.duckDbType
-      )
-    }
-
-    override def name: Field[String, CustomersRow] = {
-      new Field[String, CustomersRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        None,
-        (row, value) => row.copy(name = value),
-        DuckDbTypes.varchar
-      )
-    }
-
-    override def email: OptField[String, CustomersRow] = {
-      new OptField[String, CustomersRow](
-        _path,
-        "email",
-        _.email,
-        None,
-        None,
-        (row, value) => row.copy(email = value),
-        DuckDbTypes.varchar
-      )
-    }
-
-    override def createdAt: Field[LocalDateTime, CustomersRow] = {
-      new Field[LocalDateTime, CustomersRow](
-        _path,
-        "created_at",
-        _.createdAt,
-        None,
-        Some("TIMESTAMP"),
-        (row, value) => row.copy(createdAt = value),
-        DuckDbTypes.timestamp
-      )
-    }
-
-    override def priority: OptField[Priority, CustomersRow] = {
-      new OptField[Priority, CustomersRow](
-        _path,
-        "priority",
-        _.priority,
-        None,
-        Some("priority"),
-        (row, value) => row.copy(priority = value),
-        Priority.duckDbType
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, CustomersRow]] = java.util.List.of(this.customerId.underlying, this.name.underlying, this.email.underlying, this.createdAt.underlying, this.priority.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomersFields, CustomersRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: CustomersFields = new CustomersFields(java.util.Collections.emptyList())
 }

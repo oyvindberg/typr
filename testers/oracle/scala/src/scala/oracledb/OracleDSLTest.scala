@@ -119,7 +119,7 @@ class OracleDSLTest extends AnyFunSuite {
         new ProductsRowUnsaved("MAP-001", "Map Test", price, java.util.Optional.empty(), Defaulted.UseDefault())
       )
 
-      val query = productsRepo.select.where(p => p.sku.isEqual("MAP-001")).map(p => p.name)
+      val query = productsRepo.select.where(p => p.sku.isEqual("MAP-001")).map(p => dev.typr.foundations.dsl.TupleExpr.of(p.name))
 
       val results = query.toList(c)
       val _ = assert(results.size() > 0)

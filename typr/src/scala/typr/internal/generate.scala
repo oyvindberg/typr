@@ -42,7 +42,7 @@ object generate {
         case DbLibName.Doobie =>
           new DbLibDoobie(pkg, publicOptions.inlineImplicits, default, publicOptions.enableStreamingInserts, publicOptions.fixVerySlowImplicit, requireScalaWithLegacyDsl("doobie"))
         case DbLibName.Typo =>
-          new DbLibTypo(language, default, publicOptions.enableStreamingInserts, metaDb.dbType.adapter(needsTimestampCasts = false), naming)
+          new DbLibFoundations(language, default, publicOptions.enableStreamingInserts, metaDb.dbType.adapter(needsTimestampCasts = false), naming)
         case DbLibName.ZioJdbc =>
           new DbLibZioJdbc(
             pkg,
@@ -76,8 +76,9 @@ object generate {
       typeOverride = publicOptions.typeOverride
     )
     val customTypes = new CustomTypes(customTypesPackage, language)
+    val duckDbStructLookup = MetaDb.buildStructLookup(metaDb.duckDbStructTypes)
     val scalaTypeMapper = publicOptions.dbLib match {
-      case Some(DbLibName.Typo) => TypeMapperJvmNew(language, options.typeOverride, publicOptions.nullabilityOverride, naming)
+      case Some(DbLibName.Typo) => TypeMapperJvmNew(language, options.typeOverride, publicOptions.nullabilityOverride, naming, duckDbStructLookup)
       case _                    => TypeMapperJvmOld(language, options.typeOverride, publicOptions.nullabilityOverride, naming, customTypes)
     }
     val enums = metaDb.enums.map(ComputedStringEnum(naming))
@@ -87,6 +88,8 @@ object generate {
       .map(ComputedOracleObjectType(naming, scalaTypeMapper))
     val oracleCollectionTypes = metaDb.oracleCollectionTypes.values.toList
       .flatMap(ComputedOracleCollectionType(naming, scalaTypeMapper))
+    val duckDbStructTypes = metaDb.duckDbStructTypes
+      .map(ComputedDuckDbStruct(naming, scalaTypeMapper))
     val projectsWithFiles: ProjectGraph[Files, List[jvm.File]] =
       graph.valueFromProject { project =>
         val isRoot = graph == project
@@ -135,8 +138,8 @@ object generate {
         val domainFiles = domains.map(d => FileDomain(d, options, language))
         val oracleObjectTypeFiles = oracleObjectTypes.map(FileOracleObjectType(_, options))
         val oracleCollectionTypeFiles = oracleCollectionTypes.map(FileOracleCollectionType(_, options))
-
         val adapter = metaDb.dbType.adapter(needsTimestampCasts = false)
+        val duckDbStructTypeFiles = duckDbStructTypes.map(FileDuckDbStruct(_, options, adapter, duckDbStructLookup, naming))
         val defaultFile = FileDefault(default, options.jsonLibs, options.dbLib, language)
         val mostFiles: List[jvm.File] =
           List(
@@ -146,6 +149,7 @@ object generate {
             domainFiles,
             oracleObjectTypeFiles,
             oracleCollectionTypeFiles,
+            duckDbStructTypeFiles,
             customTypes.All.values.map(FileCustomType(options, language)),
             relationFilesByName.map { case (_, f) => f },
             sqlFileFiles
@@ -156,7 +160,7 @@ object generate {
             if (options.keepDependencies) relationFilesByName.map { case (_, f) => f }
             else relationFilesByName.collect { case (name, f) if selector.include(name) => f }
 
-          minimize(mostFiles, entryPoints = sqlFileFiles ++ keptRelations ++ domainFiles ++ oracleObjectTypeFiles ++ oracleCollectionTypeFiles)
+          minimize(mostFiles, entryPoints = sqlFileFiles ++ keptRelations ++ domainFiles ++ oracleObjectTypeFiles ++ oracleCollectionTypeFiles ++ duckDbStructTypeFiles)
         }
 
         // package objects have weird scoping, so don't attempt to automatically write imports for them.

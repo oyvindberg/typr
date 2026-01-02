@@ -6,18 +6,21 @@
 package adventureworks.public.issue142
 
 import dev.typr.foundations.PgText
+import dev.typr.foundations.Tuple.Tuple1
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 
 /** Table: public.issue142
  * Primary key: tabellkode
  */
-case class Issue142Row(tabellkode: Issue142Id) {
+case class Issue142Row(tabellkode: Issue142Id) extends Tuple1[Issue142Id] {
   def id: Issue142Id = tabellkode
+
+  override def `_1`: Issue142Id = tabellkode
 }
 
 object Issue142Row {
-  val `_rowParser`: RowParser[Issue142Row] = RowParsers.of(Issue142Id.pgType)(Issue142Row.apply)(row => Array[Any](row.tabellkode))
+  val `_rowParser`: RowParser[Issue142Row] = RowParsers.of(Issue142Id.dbType)(Issue142Row.apply)(row => Array[Any](row.tabellkode))
 
   given pgText: PgText[Issue142Row] = PgText.from(`_rowParser`.underlying)
 }

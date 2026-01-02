@@ -11,9 +11,9 @@ value class FirstName(val value: String) {
     @JvmStatic
     val pgText: PgText<FirstName> = PgText.instance { v, sb -> PgText.textString.unsafeEncode(v.value, sb) }
     @JvmStatic
-    val pgType: PgType<FirstName> = PgTypes.text.bimap({ FirstName(it) }, { it.value })
+    val dbType: PgType<FirstName> = PgTypes.text.bimap({ FirstName(it) }, { it.value })
     @JvmStatic
-    val pgTypeArray: PgType<Array<FirstName>> = PgTypes.textArray.bimap(
+    val dbTypeArray: PgType<Array<FirstName>> = PgTypes.textArray.bimap(
       { arr -> arrayMap.map(arr, { FirstName(it) }, FirstName::class.java) },
       { arr -> arrayMap.map(arr, { it.value }, String::class.java) }
     )

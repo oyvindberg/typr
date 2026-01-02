@@ -10,5 +10,5 @@ package typr.generated.information_schema.table_constraints
 import java.sql.Connection
 
 trait TableConstraintsViewRepo {
-  def selectAll(implicit c: Connection): List[TableConstraintsViewRow]
+  def selectAll(using c: Connection): List[TableConstraintsViewRow]
 }

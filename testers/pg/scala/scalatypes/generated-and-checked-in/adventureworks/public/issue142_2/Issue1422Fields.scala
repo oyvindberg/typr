@@ -9,42 +9,39 @@ import adventureworks.public.issue142.Issue142Fields
 import adventureworks.public.issue142.Issue142Id
 import adventureworks.public.issue142.Issue142Row
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.IdField
+import dev.typr.foundations.scala.TupleExpr1
 
-trait Issue1422Fields extends FieldsExpr0[Issue1422Row] {
-  def tabellkode: IdField[Issue142Id, Issue1422Row]
+class Issue1422Fields(val `_path`: java.util.List[Path]) extends TupleExpr1[Issue142Id] with RelationStructure[Issue1422Fields, Issue1422Row]  with FieldsBase[Issue1422Row] {
+  def tabellkode: IdField[Issue142Id, Issue1422Row] = {
+    new IdField[Issue142Id, Issue1422Row](
+      _path,
+      "tabellkode",
+      _.tabellkode,
+      None,
+      None,
+      (row, value) => row.copy(tabellkode = value),
+      Issue142Id.dbType
+    )
+  }
 
   def fkIssue142: ForeignKey[Issue142Fields, Issue142Row] = ForeignKey.of[Issue142Fields, Issue142Row]("public.tabell2_tabell_fk").withColumnPair[Issue142Id](tabellkode, _.tabellkode)
 
-  override def columns: java.util.List[FieldLike[?, Issue1422Row]]
+  override def columns: java.util.List[FieldLike[?, Issue1422Row]] = java.util.List.of(this.tabellkode.underlying)
 
   override def rowParser: RowParser[Issue1422Row] = Issue1422Row._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[Issue1422Fields, Issue1422Row] = new Issue1422Fields(`_path`)
+
+  override def `_1`: SqlExpr[Issue142Id] = tabellkode
 }
 
 object Issue1422Fields {
-  case class Impl(val `_path`: java.util.List[Path]) extends Issue1422Fields with RelationStructure[Issue1422Fields, Issue1422Row] {
-
-    override def tabellkode: IdField[Issue142Id, Issue1422Row] = {
-      new IdField[Issue142Id, Issue1422Row](
-        _path,
-        "tabellkode",
-        _.tabellkode,
-        None,
-        None,
-        (row, value) => row.copy(tabellkode = value),
-        Issue142Id.pgType
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, Issue1422Row]] = java.util.List.of(this.tabellkode.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[Issue1422Fields, Issue1422Row] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: Issue1422Fields = new Issue1422Fields(java.util.Collections.emptyList())
 }

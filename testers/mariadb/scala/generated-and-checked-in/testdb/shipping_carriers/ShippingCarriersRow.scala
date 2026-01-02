@@ -7,6 +7,8 @@ package testdb.shipping_carriers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple6
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -32,17 +34,17 @@ case class ShippingCarriersRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("api_config") apiConfig: Option[String],
+  @JsonProperty("api_config") apiConfig: Option[Json],
   /** 
    * Default: 1
    */
   @JsonProperty("is_active") isActive: Boolean
-) {
+) extends Tuple6[ShippingCarriersId, String, String, Option[String], Option[Json], Boolean] {
   def id: ShippingCarriersId = carrierId
 
   def toUnsavedRow(
     trackingUrlTemplate: Defaulted[Option[String]] = Defaulted.Provided(this.trackingUrlTemplate),
-    apiConfig: Defaulted[Option[String]] = Defaulted.Provided(this.apiConfig),
+    apiConfig: Defaulted[Option[Json]] = Defaulted.Provided(this.apiConfig),
     isActive: Defaulted[Boolean] = Defaulted.Provided(this.isActive)
   ): ShippingCarriersRowUnsaved = {
     new ShippingCarriersRowUnsaved(
@@ -53,8 +55,20 @@ case class ShippingCarriersRow(
       isActive
     )
   }
+
+  override def `_1`: ShippingCarriersId = carrierId
+
+  override def `_2`: String = code
+
+  override def `_3`: String = name
+
+  override def `_4`: Option[String] = trackingUrlTemplate
+
+  override def `_5`: Option[Json] = apiConfig
+
+  override def `_6`: Boolean = isActive
 }
 
 object ShippingCarriersRow {
-  val `_rowParser`: RowParser[ShippingCarriersRow] = RowParsers.of(ShippingCarriersId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.longtext.nullable, ScalaDbTypes.MariaTypes.bool)(ShippingCarriersRow.apply)(row => Array[Any](row.carrierId, row.code, row.name, row.trackingUrlTemplate, row.apiConfig, row.isActive))
+  val `_rowParser`: RowParser[ShippingCarriersRow] = RowParsers.of(ShippingCarriersId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.json.nullable, ScalaDbTypes.MariaTypes.bool)(ShippingCarriersRow.apply)(row => Array[Any](row.carrierId, row.code, row.name, row.trackingUrlTemplate, row.apiConfig, row.isActive))
 }

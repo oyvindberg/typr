@@ -13,161 +13,158 @@ import adventureworks.sales.salesterritory.SalesterritoryId
 import adventureworks.sales.salesterritory.SalesterritoryRow
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.ForeignKey
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
+import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
 import dev.typr.foundations.dsl.SqlExpr.OptField
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr9
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
 
-trait SalespersonFields extends FieldsExpr0[SalespersonRow] {
-  def businessentityid: IdField[BusinessentityId, SalespersonRow]
+class SalespersonFields(val `_path`: java.util.List[Path]) extends TupleExpr9[BusinessentityId, SalesterritoryId, java.math.BigDecimal, java.math.BigDecimal, java.math.BigDecimal, java.math.BigDecimal, java.math.BigDecimal, UUID, LocalDateTime] with RelationStructure[SalespersonFields, SalespersonRow]  with FieldsBase[SalespersonRow] {
+  def businessentityid: IdField[BusinessentityId, SalespersonRow] = {
+    new IdField[BusinessentityId, SalespersonRow](
+      _path,
+      "businessentityid",
+      _.businessentityid,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(businessentityid = value),
+      BusinessentityId.dbType
+    )
+  }
 
-  def territoryid: OptField[SalesterritoryId, SalespersonRow]
+  def territoryid: OptField[SalesterritoryId, SalespersonRow] = {
+    new OptField[SalesterritoryId, SalespersonRow](
+      _path,
+      "territoryid",
+      _.territoryid,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(territoryid = value),
+      SalesterritoryId.dbType
+    )
+  }
 
-  def salesquota: OptField[java.math.BigDecimal, SalespersonRow]
+  def salesquota: OptField[java.math.BigDecimal, SalespersonRow] = {
+    new OptField[java.math.BigDecimal, SalespersonRow](
+      _path,
+      "salesquota",
+      _.salesquota,
+      Optional.empty(),
+      Optional.of("numeric"),
+      (row, value) => row.copy(salesquota = value),
+      PgTypes.numeric
+    )
+  }
 
-  def bonus: Field[java.math.BigDecimal, SalespersonRow]
+  def bonus: Field[java.math.BigDecimal, SalespersonRow] = {
+    new Field[java.math.BigDecimal, SalespersonRow](
+      _path,
+      "bonus",
+      _.bonus,
+      Optional.empty(),
+      Optional.of("numeric"),
+      (row, value) => row.copy(bonus = value),
+      PgTypes.numeric
+    )
+  }
 
-  def commissionpct: Field[java.math.BigDecimal, SalespersonRow]
+  def commissionpct: Field[java.math.BigDecimal, SalespersonRow] = {
+    new Field[java.math.BigDecimal, SalespersonRow](
+      _path,
+      "commissionpct",
+      _.commissionpct,
+      Optional.empty(),
+      Optional.of("numeric"),
+      (row, value) => row.copy(commissionpct = value),
+      PgTypes.numeric
+    )
+  }
 
-  def salesytd: Field[java.math.BigDecimal, SalespersonRow]
+  def salesytd: Field[java.math.BigDecimal, SalespersonRow] = {
+    new Field[java.math.BigDecimal, SalespersonRow](
+      _path,
+      "salesytd",
+      _.salesytd,
+      Optional.empty(),
+      Optional.of("numeric"),
+      (row, value) => row.copy(salesytd = value),
+      PgTypes.numeric
+    )
+  }
 
-  def saleslastyear: Field[java.math.BigDecimal, SalespersonRow]
+  def saleslastyear: Field[java.math.BigDecimal, SalespersonRow] = {
+    new Field[java.math.BigDecimal, SalespersonRow](
+      _path,
+      "saleslastyear",
+      _.saleslastyear,
+      Optional.empty(),
+      Optional.of("numeric"),
+      (row, value) => row.copy(saleslastyear = value),
+      PgTypes.numeric
+    )
+  }
 
-  def rowguid: Field[UUID, SalespersonRow]
+  def rowguid: Field[UUID, SalespersonRow] = {
+    new Field[UUID, SalespersonRow](
+      _path,
+      "rowguid",
+      _.rowguid,
+      Optional.empty(),
+      Optional.of("uuid"),
+      (row, value) => row.copy(rowguid = value),
+      PgTypes.uuid
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, SalespersonRow]
+  def modifieddate: Field[LocalDateTime, SalespersonRow] = {
+    new Field[LocalDateTime, SalespersonRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      Optional.empty(),
+      Optional.of("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
   def fkHumanresourcesEmployee: ForeignKey[EmployeeFields, EmployeeRow] = ForeignKey.of[EmployeeFields, EmployeeRow]("sales.FK_SalesPerson_Employee_BusinessEntityID").withColumnPair[BusinessentityId](businessentityid, _.businessentityid)
 
   def fkSalesterritory: ForeignKey[SalesterritoryFields, SalesterritoryRow] = ForeignKey.of[SalesterritoryFields, SalesterritoryRow]("sales.FK_SalesPerson_SalesTerritory_TerritoryID").withColumnPair[SalesterritoryId](territoryid, _.territoryid)
 
-  override def columns: java.util.List[FieldLike[?, SalespersonRow]]
+  override def columns: java.util.List[FieldLike[?, SalespersonRow]] = java.util.List.of(this.businessentityid, this.territoryid, this.salesquota, this.bonus, this.commissionpct, this.salesytd, this.saleslastyear, this.rowguid, this.modifieddate)
 
   override def rowParser: RowParser[SalespersonRow] = SalespersonRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[SalespersonFields, SalespersonRow] = new SalespersonFields(`_path`)
+
+  override def `_1`: SqlExpr[BusinessentityId] = businessentityid
+
+  override def `_2`: SqlExpr[SalesterritoryId] = territoryid
+
+  override def `_3`: SqlExpr[java.math.BigDecimal] = salesquota
+
+  override def `_4`: SqlExpr[java.math.BigDecimal] = bonus
+
+  override def `_5`: SqlExpr[java.math.BigDecimal] = commissionpct
+
+  override def `_6`: SqlExpr[java.math.BigDecimal] = salesytd
+
+  override def `_7`: SqlExpr[java.math.BigDecimal] = saleslastyear
+
+  override def `_8`: SqlExpr[UUID] = rowguid
+
+  override def `_9`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object SalespersonFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends SalespersonFields with RelationStructure[SalespersonFields, SalespersonRow] {
-
-    override def businessentityid: IdField[BusinessentityId, SalespersonRow] = {
-      new IdField[BusinessentityId, SalespersonRow](
-        _path,
-        "businessentityid",
-        _.businessentityid,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(businessentityid = value),
-        BusinessentityId.pgType
-      )
-    }
-
-    override def territoryid: OptField[SalesterritoryId, SalespersonRow] = {
-      new OptField[SalesterritoryId, SalespersonRow](
-        _path,
-        "territoryid",
-        _.territoryid,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(territoryid = value),
-        SalesterritoryId.pgType
-      )
-    }
-
-    override def salesquota: OptField[java.math.BigDecimal, SalespersonRow] = {
-      new OptField[java.math.BigDecimal, SalespersonRow](
-        _path,
-        "salesquota",
-        _.salesquota,
-        Optional.empty(),
-        Optional.of("numeric"),
-        (row, value) => row.copy(salesquota = value),
-        PgTypes.numeric
-      )
-    }
-
-    override def bonus: Field[java.math.BigDecimal, SalespersonRow] = {
-      new Field[java.math.BigDecimal, SalespersonRow](
-        _path,
-        "bonus",
-        _.bonus,
-        Optional.empty(),
-        Optional.of("numeric"),
-        (row, value) => row.copy(bonus = value),
-        PgTypes.numeric
-      )
-    }
-
-    override def commissionpct: Field[java.math.BigDecimal, SalespersonRow] = {
-      new Field[java.math.BigDecimal, SalespersonRow](
-        _path,
-        "commissionpct",
-        _.commissionpct,
-        Optional.empty(),
-        Optional.of("numeric"),
-        (row, value) => row.copy(commissionpct = value),
-        PgTypes.numeric
-      )
-    }
-
-    override def salesytd: Field[java.math.BigDecimal, SalespersonRow] = {
-      new Field[java.math.BigDecimal, SalespersonRow](
-        _path,
-        "salesytd",
-        _.salesytd,
-        Optional.empty(),
-        Optional.of("numeric"),
-        (row, value) => row.copy(salesytd = value),
-        PgTypes.numeric
-      )
-    }
-
-    override def saleslastyear: Field[java.math.BigDecimal, SalespersonRow] = {
-      new Field[java.math.BigDecimal, SalespersonRow](
-        _path,
-        "saleslastyear",
-        _.saleslastyear,
-        Optional.empty(),
-        Optional.of("numeric"),
-        (row, value) => row.copy(saleslastyear = value),
-        PgTypes.numeric
-      )
-    }
-
-    override def rowguid: Field[UUID, SalespersonRow] = {
-      new Field[UUID, SalespersonRow](
-        _path,
-        "rowguid",
-        _.rowguid,
-        Optional.empty(),
-        Optional.of("uuid"),
-        (row, value) => row.copy(rowguid = value),
-        PgTypes.uuid
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, SalespersonRow] = {
-      new Field[LocalDateTime, SalespersonRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        Optional.empty(),
-        Optional.of("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, SalespersonRow]] = java.util.List.of(this.businessentityid, this.territoryid, this.salesquota, this.bonus, this.commissionpct, this.salesytd, this.saleslastyear, this.rowguid, this.modifieddate)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[SalespersonFields, SalespersonRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: SalespersonFields = new SalespersonFields(java.util.Collections.emptyList())
 }

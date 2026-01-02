@@ -5,6 +5,7 @@ package sqlfiles
 import typr.internal.external.ExternalTools
 import typr.internal.mariadb.MariaSqlFileMetadata
 import typr.internal.duckdb.DuckDbSqlFileMetadata
+import typr.internal.oracle.OracleSqlFileMetadata
 import typr.internal.sqlserver.SqlServerSqlFileMetadata
 import typr.internal.db2.Db2SqlFileMetadata
 
@@ -22,7 +23,7 @@ object SqlFileReader {
       case DbType.DuckDB =>
         DuckDbSqlFileMetadata(logger, scriptsPath, ds, externalTools)
       case DbType.Oracle =>
-        readSqlFileDirectories(logger, scriptsPath, ds)
+        OracleSqlFileMetadata(logger, scriptsPath, ds, externalTools)
       case DbType.SqlServer =>
         SqlServerSqlFileMetadata(logger, scriptsPath, ds, externalTools)
       case DbType.DB2 =>

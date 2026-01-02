@@ -27,32 +27,29 @@ public class PasswordRepoImpl implements PasswordRepo {
   @Override
   public DeleteBuilder<PasswordFields, PasswordRow> delete() {
     return DeleteBuilder.of(
-        "\"person\".\"password\"", PasswordFields.structure(), Dialect.POSTGRESQL);
+        "\"person\".\"password\"", PasswordFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(BusinessentityId businessentityid, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"person\".\"password\" where \"businessentityid\" = "),
-                Fragment.encode(BusinessentityId.pgType, businessentityid),
+                Fragment.encode(BusinessentityId.dbType, businessentityid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(BusinessentityId[] businessentityids, Connection c) {
     return interpolate(
             Fragment.lit("delete\nfrom \"person\".\"password\"\nwhere \"businessentityid\" = ANY("),
-            Fragment.encode(BusinessentityId.pgTypeArray, businessentityids),
+            Fragment.encode(BusinessentityId.dbTypeArray, businessentityids),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public PasswordRow insert(PasswordRow unsaved, Connection c) {
@@ -61,7 +58,7 @@ public class PasswordRepoImpl implements PasswordRepo {
                 "insert into \"person\".\"password\"(\"businessentityid\", \"passwordhash\","
                     + " \"passwordsalt\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.text, unsaved.passwordhash()),
             Fragment.lit(", "),
@@ -77,7 +74,6 @@ public class PasswordRepoImpl implements PasswordRepo {
         .updateReturning(PasswordRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public PasswordRow insert(PasswordRowUnsaved unsaved, Connection c) {
@@ -88,7 +84,7 @@ public class PasswordRepoImpl implements PasswordRepo {
     columns.add(Fragment.lit("\"businessentityid\""));
     values.add(
         interpolate(
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"passwordhash\""));
     values.add(
@@ -129,7 +125,6 @@ public class PasswordRepoImpl implements PasswordRepo {
     ;
     return q.updateReturning(PasswordRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<PasswordRow> unsaved, Integer batchSize, Connection c) {
@@ -141,7 +136,6 @@ public class PasswordRepoImpl implements PasswordRepo {
         c,
         PasswordRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -155,17 +149,15 @@ public class PasswordRepoImpl implements PasswordRepo {
         c,
         PasswordRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<PasswordFields, PasswordRow> select() {
     return SelectBuilder.of(
         "\"person\".\"password\"",
-        PasswordFields.structure(),
+        PasswordFields.structure,
         PasswordRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<PasswordRow> selectAll(Connection c) {
@@ -177,7 +169,6 @@ public class PasswordRepoImpl implements PasswordRepo {
         .query(PasswordRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<PasswordRow> selectById(BusinessentityId businessentityid, Connection c) {
@@ -187,12 +178,11 @@ public class PasswordRepoImpl implements PasswordRepo {
                     + " \"modifieddate\"\n"
                     + "from \"person\".\"password\"\n"
                     + "where \"businessentityid\" = "),
-            Fragment.encode(BusinessentityId.pgType, businessentityid),
+            Fragment.encode(BusinessentityId.dbType, businessentityid),
             Fragment.lit(""))
         .query(PasswordRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<PasswordRow> selectByIds(BusinessentityId[] businessentityids, Connection c) {
@@ -202,12 +192,11 @@ public class PasswordRepoImpl implements PasswordRepo {
                     + " \"modifieddate\"\n"
                     + "from \"person\".\"password\"\n"
                     + "where \"businessentityid\" = ANY("),
-            Fragment.encode(BusinessentityId.pgTypeArray, businessentityids),
+            Fragment.encode(BusinessentityId.dbTypeArray, businessentityids),
             Fragment.lit(")"))
         .query(PasswordRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<BusinessentityId, PasswordRow> selectByIdsTracked(
@@ -216,17 +205,15 @@ public class PasswordRepoImpl implements PasswordRepo {
     selectByIds(businessentityids, c).forEach(row -> ret.put(row.businessentityid(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<PasswordFields, PasswordRow> update() {
     return UpdateBuilder.of(
         "\"person\".\"password\"",
-        PasswordFields.structure(),
+        PasswordFields.structure,
         PasswordRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(PasswordRow row, Connection c) {
@@ -242,13 +229,12 @@ public class PasswordRepoImpl implements PasswordRepo {
                 Fragment.lit("::uuid,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"businessentityid\" = "),
-                Fragment.encode(BusinessentityId.pgType, businessentityid),
+                Fragment.encode(BusinessentityId.dbType, businessentityid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public PasswordRow upsert(PasswordRow unsaved, Connection c) {
@@ -257,7 +243,7 @@ public class PasswordRepoImpl implements PasswordRepo {
                 "insert into \"person\".\"password\"(\"businessentityid\", \"passwordhash\","
                     + " \"passwordsalt\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.text, unsaved.passwordhash()),
             Fragment.lit(", "),
@@ -279,7 +265,6 @@ public class PasswordRepoImpl implements PasswordRepo {
         .updateReturning(PasswordRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<PasswordRow> upsertBatch(Iterator<PasswordRow> unsaved, Connection c) {
@@ -299,7 +284,6 @@ public class PasswordRepoImpl implements PasswordRepo {
         .updateManyReturning(PasswordRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -333,5 +317,4 @@ public class PasswordRepoImpl implements PasswordRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

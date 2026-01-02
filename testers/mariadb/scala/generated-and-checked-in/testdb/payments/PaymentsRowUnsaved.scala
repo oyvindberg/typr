@@ -6,6 +6,7 @@
 package testdb.payments
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.Inet6
 import java.time.LocalDateTime
 import testdb.customtypes.Defaulted
@@ -40,7 +41,7 @@ case class PaymentsRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("processor_response") processorResponse: Defaulted[Option[String]] = new UseDefault(),
+  @JsonProperty("processor_response") processorResponse: Defaulted[Option[Json]] = new UseDefault(),
   /** Default: NULL
 
    */
@@ -62,7 +63,7 @@ case class PaymentsRowUnsaved(
     transactionIdDefault: => Option[String],
     currencyCodeDefault: => String,
     statusDefault: => String,
-    processorResponseDefault: => Option[String],
+    processorResponseDefault: => Option[Json],
     errorMessageDefault: => Option[String],
     ipAddressDefault: => Option[Inet6],
     createdAtDefault: => LocalDateTime,

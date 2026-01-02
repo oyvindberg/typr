@@ -12,6 +12,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple3;
 
 /** Table: public.titledperson */
 public record TitledpersonRow(
@@ -19,7 +20,8 @@ public record TitledpersonRow(
     @JsonProperty("title_short") TitleDomainId titleShort,
     /** Points to {@link adventureworks.public_.title.TitleRow#code()} */
     TitleId title,
-    String name) {
+    String name)
+    implements Tuple3<TitleDomainId, TitleId, String> {
   /** Points to {@link adventureworks.public_.title_domain.TitleDomainRow#code()} */
   public TitledpersonRow withTitleShort(TitleDomainId titleShort) {
     return new TitledpersonRow(titleShort, title, name);
@@ -39,12 +41,30 @@ public record TitledpersonRow(
 
   public static RowParser<TitledpersonRow> _rowParser =
       RowParsers.of(
-          TitleDomainId.pgType,
-          TitleId.pgType,
+          TitleDomainId.dbType,
+          TitleId.dbType,
           PgTypes.text,
           TitledpersonRow::new,
           row -> new Object[] {row.titleShort(), row.title(), row.name()});
   ;
 
   public static PgText<TitledpersonRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public TitleDomainId _1() {
+    return titleShort;
+  }
+  ;
+
+  @Override
+  public TitleId _2() {
+    return title;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return name;
+  }
+  ;
 }

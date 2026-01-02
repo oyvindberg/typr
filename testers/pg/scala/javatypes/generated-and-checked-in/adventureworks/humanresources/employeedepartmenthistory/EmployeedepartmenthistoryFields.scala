@@ -16,32 +16,93 @@ import adventureworks.humanresources.shift.ShiftRow
 import adventureworks.person.businessentity.BusinessentityId
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.ForeignKey
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
 import dev.typr.foundations.dsl.SqlExpr
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
 import dev.typr.foundations.dsl.SqlExpr.OptField
+import dev.typr.foundations.dsl.TupleExpr
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr6
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Optional
 
-trait EmployeedepartmenthistoryFields extends FieldsExpr0[EmployeedepartmenthistoryRow] {
-  def businessentityid: IdField[BusinessentityId, EmployeedepartmenthistoryRow]
+class EmployeedepartmenthistoryFields(val `_path`: java.util.List[Path]) extends TupleExpr6[BusinessentityId, DepartmentId, ShiftId, LocalDate, LocalDate, LocalDateTime] with RelationStructure[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow]  with FieldsBase[EmployeedepartmenthistoryRow] {
+  def businessentityid: IdField[BusinessentityId, EmployeedepartmenthistoryRow] = {
+    new IdField[BusinessentityId, EmployeedepartmenthistoryRow](
+      _path,
+      "businessentityid",
+      _.businessentityid,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(businessentityid = value),
+      BusinessentityId.dbType
+    )
+  }
 
-  def departmentid: IdField[DepartmentId, EmployeedepartmenthistoryRow]
+  def departmentid: IdField[DepartmentId, EmployeedepartmenthistoryRow] = {
+    new IdField[DepartmentId, EmployeedepartmenthistoryRow](
+      _path,
+      "departmentid",
+      _.departmentid,
+      Optional.empty(),
+      Optional.of("int2"),
+      (row, value) => row.copy(departmentid = value),
+      DepartmentId.dbType
+    )
+  }
 
-  def shiftid: IdField[ShiftId, EmployeedepartmenthistoryRow]
+  def shiftid: IdField[ShiftId, EmployeedepartmenthistoryRow] = {
+    new IdField[ShiftId, EmployeedepartmenthistoryRow](
+      _path,
+      "shiftid",
+      _.shiftid,
+      Optional.empty(),
+      Optional.of("int2"),
+      (row, value) => row.copy(shiftid = value),
+      ShiftId.dbType
+    )
+  }
 
-  def startdate: IdField[LocalDate, EmployeedepartmenthistoryRow]
+  def startdate: IdField[LocalDate, EmployeedepartmenthistoryRow] = {
+    new IdField[LocalDate, EmployeedepartmenthistoryRow](
+      _path,
+      "startdate",
+      _.startdate,
+      Optional.empty(),
+      Optional.of("date"),
+      (row, value) => row.copy(startdate = value),
+      PgTypes.date
+    )
+  }
 
-  def enddate: OptField[LocalDate, EmployeedepartmenthistoryRow]
+  def enddate: OptField[LocalDate, EmployeedepartmenthistoryRow] = {
+    new OptField[LocalDate, EmployeedepartmenthistoryRow](
+      _path,
+      "enddate",
+      _.enddate,
+      Optional.empty(),
+      Optional.of("date"),
+      (row, value) => row.copy(enddate = value),
+      PgTypes.date
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, EmployeedepartmenthistoryRow]
+  def modifieddate: Field[LocalDateTime, EmployeedepartmenthistoryRow] = {
+    new Field[LocalDateTime, EmployeedepartmenthistoryRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      Optional.empty(),
+      Optional.of("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
   def fkDepartment: ForeignKey[DepartmentFields, DepartmentRow] = ForeignKey.of[DepartmentFields, DepartmentRow]("humanresources.FK_EmployeeDepartmentHistory_Department_DepartmentID").withColumnPair[DepartmentId](departmentid, _.departmentid)
 
@@ -51,92 +112,27 @@ trait EmployeedepartmenthistoryFields extends FieldsExpr0[Employeedepartmenthist
 
   def compositeIdIs(compositeId: EmployeedepartmenthistoryId): SqlExpr[java.lang.Boolean] = SqlExpr.all(businessentityid.isEqual(compositeId.businessentityid), startdate.isEqual(compositeId.startdate), departmentid.isEqual(compositeId.departmentid), shiftid.isEqual(compositeId.shiftid))
 
-  def compositeIdIn(compositeIds: java.util.List[EmployeedepartmenthistoryId]): SqlExpr[java.lang.Boolean] = CompositeIn(java.util.List.of(CompositeIn.Part[BusinessentityId, EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow](businessentityid, _.businessentityid, BusinessentityId.pgType), CompositeIn.Part[LocalDate, EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow](startdate, _.startdate, PgTypes.date), CompositeIn.Part[DepartmentId, EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow](departmentid, _.departmentid, DepartmentId.pgType), CompositeIn.Part[ShiftId, EmployeedepartmenthistoryId, EmployeedepartmenthistoryRow](shiftid, _.shiftid, ShiftId.pgType)), compositeIds)
+  def compositeIdIn(compositeIds: java.util.List[EmployeedepartmenthistoryId]): SqlExpr[java.lang.Boolean] = TupleExpr.of(businessentityid, startdate, departmentid, shiftid).among(compositeIds)
 
-  override def columns: java.util.List[FieldLike[?, EmployeedepartmenthistoryRow]]
+  override def columns: java.util.List[FieldLike[?, EmployeedepartmenthistoryRow]] = java.util.List.of(this.businessentityid, this.departmentid, this.shiftid, this.startdate, this.enddate, this.modifieddate)
 
   override def rowParser: RowParser[EmployeedepartmenthistoryRow] = EmployeedepartmenthistoryRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] = new EmployeedepartmenthistoryFields(`_path`)
+
+  override def `_1`: SqlExpr[BusinessentityId] = businessentityid
+
+  override def `_2`: SqlExpr[DepartmentId] = departmentid
+
+  override def `_3`: SqlExpr[ShiftId] = shiftid
+
+  override def `_4`: SqlExpr[LocalDate] = startdate
+
+  override def `_5`: SqlExpr[LocalDate] = enddate
+
+  override def `_6`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object EmployeedepartmenthistoryFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends EmployeedepartmenthistoryFields with RelationStructure[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] {
-
-    override def businessentityid: IdField[BusinessentityId, EmployeedepartmenthistoryRow] = {
-      new IdField[BusinessentityId, EmployeedepartmenthistoryRow](
-        _path,
-        "businessentityid",
-        _.businessentityid,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(businessentityid = value),
-        BusinessentityId.pgType
-      )
-    }
-
-    override def departmentid: IdField[DepartmentId, EmployeedepartmenthistoryRow] = {
-      new IdField[DepartmentId, EmployeedepartmenthistoryRow](
-        _path,
-        "departmentid",
-        _.departmentid,
-        Optional.empty(),
-        Optional.of("int2"),
-        (row, value) => row.copy(departmentid = value),
-        DepartmentId.pgType
-      )
-    }
-
-    override def shiftid: IdField[ShiftId, EmployeedepartmenthistoryRow] = {
-      new IdField[ShiftId, EmployeedepartmenthistoryRow](
-        _path,
-        "shiftid",
-        _.shiftid,
-        Optional.empty(),
-        Optional.of("int2"),
-        (row, value) => row.copy(shiftid = value),
-        ShiftId.pgType
-      )
-    }
-
-    override def startdate: IdField[LocalDate, EmployeedepartmenthistoryRow] = {
-      new IdField[LocalDate, EmployeedepartmenthistoryRow](
-        _path,
-        "startdate",
-        _.startdate,
-        Optional.empty(),
-        Optional.of("date"),
-        (row, value) => row.copy(startdate = value),
-        PgTypes.date
-      )
-    }
-
-    override def enddate: OptField[LocalDate, EmployeedepartmenthistoryRow] = {
-      new OptField[LocalDate, EmployeedepartmenthistoryRow](
-        _path,
-        "enddate",
-        _.enddate,
-        Optional.empty(),
-        Optional.of("date"),
-        (row, value) => row.copy(enddate = value),
-        PgTypes.date
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, EmployeedepartmenthistoryRow] = {
-      new Field[LocalDateTime, EmployeedepartmenthistoryRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        Optional.empty(),
-        Optional.of("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, EmployeedepartmenthistoryRow]] = java.util.List.of(this.businessentityid, this.departmentid, this.shiftid, this.startdate, this.enddate, this.modifieddate)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[EmployeedepartmenthistoryFields, EmployeedepartmenthistoryRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: EmployeedepartmenthistoryFields = new EmployeedepartmenthistoryFields(java.util.Collections.emptyList())
 }

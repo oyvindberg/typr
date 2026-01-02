@@ -18,11 +18,10 @@ public class CustomerStatsMVRepoImpl implements CustomerStatsMVRepo {
   public SelectBuilder<CustomerStatsMVFields, CustomerStatsMVRow> select() {
     return SelectBuilder.of(
         "\"CUSTOMER_STATS\"",
-        CustomerStatsMVFields.structure(),
+        CustomerStatsMVFields.structure,
         CustomerStatsMVRow._rowParser,
         Dialect.DB2);
   }
-  ;
 
   @Override
   public List<CustomerStatsMVRow> selectAll(Connection c) {
@@ -33,5 +32,4 @@ public class CustomerStatsMVRepoImpl implements CustomerStatsMVRepo {
         .query(CustomerStatsMVRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

@@ -103,17 +103,12 @@ object SqlServerAdapter extends DbAdapter {
     }
 
     dbType match {
-      case db.Unknown(sqlType) =>
-        sys.error(s"SqlServerAdapter.lookupByDbType: unknown SQL Server type: $sqlType")
-
       case dbType: db.SqlServerType =>
         dbType match {
           // Unknown case handled in outer match, but needed here for exhaustiveness
-          case db.Unknown(sqlType) =>
-            sys.error(s"SqlServerAdapter.lookupByDbType: unknown SQL Server type: $sqlType")
-
+          case db.Unknown(sqlType) => code"$Types.unknown"
           // Primitive types with language-specific overrides
-          case db.SqlServerType.TinyInt       => primitiveType("tinyint") // Unsigned!
+          case db.SqlServerType.TinyInt       => code"$Types.tinyint" // Uint1 (unsigned 0-255)
           case db.SqlServerType.SmallInt      => primitiveType("smallint")
           case db.SqlServerType.Int           => primitiveType("int_")
           case db.SqlServerType.BigInt        => primitiveType("bigint")
@@ -243,4 +238,14 @@ object SqlServerAdapter extends DbAdapter {
     code"OUTPUT $columns"
 
   override def returningBeforeValues: Boolean = true
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LAYER 5: Schema DDL
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  def dropSchemaDdl(schemaName: String, cascade: Boolean): String =
+    s"IF EXISTS (SELECT * FROM sys.schemas WHERE name = '$schemaName') DROP SCHEMA [$schemaName]"
+
+  def createSchemaDdl(schemaName: String): String =
+    s"IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = '$schemaName') EXEC('CREATE SCHEMA [$schemaName]')"
 }

@@ -8,14 +8,14 @@ package testdb.audit_log
 import com.fasterxml.jackson.annotation.JsonValue
 import dev.typr.foundations.MariaType
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.scala.Bijection
-import java.math.BigInteger
 
 /** Type for the primary key of table `audit_log` */
-case class AuditLogId(@JsonValue value: BigInteger) extends scala.AnyVal
+case class AuditLogId(@JsonValue value: Uint8) extends scala.AnyVal
 
 object AuditLogId {
-  given bijection: Bijection[AuditLogId, BigInteger] = Bijection.apply[AuditLogId, BigInteger](_.value)(AuditLogId.apply)
+  given bijection: Bijection[AuditLogId, Uint8] = Bijection.apply[AuditLogId, Uint8](_.value)(AuditLogId.apply)
 
-  given pgType: MariaType[AuditLogId] = MariaTypes.bigintUnsigned.bimap(AuditLogId.apply, _.value)
+  given dbType: MariaType[AuditLogId] = MariaTypes.bigintUnsigned.bimap(AuditLogId.apply, _.value)
 }

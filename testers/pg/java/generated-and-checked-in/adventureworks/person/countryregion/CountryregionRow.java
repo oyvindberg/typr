@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple3;
 import java.time.LocalDateTime;
 
 /**
@@ -23,7 +24,8 @@ public record CountryregionRow(
     /** Country or region name. */
     Name name,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple3<CountryregionId, Name, LocalDateTime> {
   /** ISO standard code for countries and regions. */
   public CountryregionRow withCountryregioncode(CountryregionId countryregioncode) {
     return new CountryregionRow(countryregioncode, name, modifieddate);
@@ -44,14 +46,32 @@ public record CountryregionRow(
 
   public static RowParser<CountryregionRow> _rowParser =
       RowParsers.of(
-          CountryregionId.pgType,
-          Name.pgType,
+          CountryregionId.dbType,
+          Name.dbType,
           PgTypes.timestamp,
           CountryregionRow::new,
           row -> new Object[] {row.countryregioncode(), row.name(), row.modifieddate()});
   ;
 
   public static PgText<CountryregionRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public CountryregionId _1() {
+    return countryregioncode;
+  }
+  ;
+
+  @Override
+  public Name _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _3() {
+    return modifieddate;
+  }
+  ;
 
   public CountryregionId id() {
     return countryregioncode;

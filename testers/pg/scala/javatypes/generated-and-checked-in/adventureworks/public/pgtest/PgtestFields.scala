@@ -16,11 +16,13 @@ import dev.typr.foundations.data.Jsonb
 import dev.typr.foundations.data.Money
 import dev.typr.foundations.data.Vector
 import dev.typr.foundations.data.Xml
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
+import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr70
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -37,999 +39,994 @@ import org.postgresql.geometric.PGpoint
 import org.postgresql.geometric.PGpolygon
 import org.postgresql.util.PGInterval
 
-trait PgtestFields extends FieldsExpr0[PgtestRow] {
-  def bool: Field[java.lang.Boolean, PgtestRow]
-
-  def box: Field[PGbox, PgtestRow]
-
-  def bpchar: Field[String, PgtestRow]
-
-  def bytea: Field[Array[scala.Byte], PgtestRow]
-
-  def char: Field[String, PgtestRow]
-
-  def circle: Field[PGcircle, PgtestRow]
-
-  def date: Field[LocalDate, PgtestRow]
-
-  def float4: Field[java.lang.Float, PgtestRow]
-
-  def float8: Field[java.lang.Double, PgtestRow]
-
-  def hstore: Field[java.util.Map[String, String], PgtestRow]
-
-  def inet: Field[Inet, PgtestRow]
-
-  def int2: Field[java.lang.Short, PgtestRow]
-
-  def int2vector: Field[Int2Vector, PgtestRow]
-
-  def int4: Field[Integer, PgtestRow]
-
-  def int8: Field[java.lang.Long, PgtestRow]
-
-  def interval: Field[PGInterval, PgtestRow]
-
-  def json: Field[Json, PgtestRow]
-
-  def jsonb: Field[Jsonb, PgtestRow]
-
-  def line: Field[PGline, PgtestRow]
-
-  def lseg: Field[PGlseg, PgtestRow]
-
-  def money: Field[Money, PgtestRow]
-
-  def mydomain: Field[Mydomain, PgtestRow]
-
-  def myenum: Field[Myenum, PgtestRow]
-
-  def name: Field[String, PgtestRow]
-
-  def numeric: Field[java.math.BigDecimal, PgtestRow]
-
-  def path: Field[PGpath, PgtestRow]
-
-  def point: Field[PGpoint, PgtestRow]
-
-  def polygon: Field[PGpolygon, PgtestRow]
-
-  def text: Field[String, PgtestRow]
-
-  def time: Field[LocalTime, PgtestRow]
-
-  def timestamp: Field[LocalDateTime, PgtestRow]
-
-  def timestampz: Field[Instant, PgtestRow]
-
-  def timez: Field[OffsetTime, PgtestRow]
-
-  def uuid: Field[UUID, PgtestRow]
-
-  def varchar: Field[String, PgtestRow]
-
-  def vector: Field[Vector, PgtestRow]
-
-  def xml: Field[Xml, PgtestRow]
-
-  def boxes: Field[Array[PGbox], PgtestRow]
-
-  def bpchares: Field[Array[/* bpchar */ String], PgtestRow]
-
-  def chares: Field[Array[/* bpchar */ String], PgtestRow]
-
-  def circlees: Field[Array[PGcircle], PgtestRow]
-
-  def datees: Field[Array[LocalDate], PgtestRow]
-
-  def float4es: Field[Array[java.lang.Float], PgtestRow]
-
-  def float8es: Field[Array[java.lang.Double], PgtestRow]
-
-  def inetes: Field[Array[Inet], PgtestRow]
-
-  def int2es: Field[Array[java.lang.Short], PgtestRow]
-
-  def int2vectores: Field[Array[Int2Vector], PgtestRow]
-
-  def int4es: Field[Array[Integer], PgtestRow]
-
-  def int8es: Field[Array[java.lang.Long], PgtestRow]
-
-  def intervales: Field[Array[PGInterval], PgtestRow]
-
-  def jsones: Field[Array[Json], PgtestRow]
-
-  def jsonbes: Field[Array[Jsonb], PgtestRow]
-
-  def linees: Field[Array[PGline], PgtestRow]
-
-  def lseges: Field[Array[PGlseg], PgtestRow]
-
-  def moneyes: Field[Array[Money], PgtestRow]
-
-  def mydomaines: Field[Array[Mydomain], PgtestRow]
-
-  def myenumes: Field[Array[Myenum], PgtestRow]
-
-  def namees: Field[Array[String], PgtestRow]
-
-  def numerices: Field[Array[java.math.BigDecimal], PgtestRow]
-
-  def pathes: Field[Array[PGpath], PgtestRow]
-
-  def pointes: Field[Array[PGpoint], PgtestRow]
-
-  def polygones: Field[Array[PGpolygon], PgtestRow]
-
-  def textes: Field[Array[String], PgtestRow]
-
-  def timees: Field[Array[LocalTime], PgtestRow]
-
-  def timestampes: Field[Array[LocalDateTime], PgtestRow]
-
-  def timestampzes: Field[Array[Instant], PgtestRow]
-
-  def timezes: Field[Array[OffsetTime], PgtestRow]
-
-  def uuides: Field[Array[UUID], PgtestRow]
-
-  def varchares: Field[Array[String], PgtestRow]
-
-  def xmles: Field[Array[Xml], PgtestRow]
-
-  override def columns: java.util.List[FieldLike[?, PgtestRow]]
+class PgtestFields(val `_path`: java.util.List[Path]) extends TupleExpr70[java.lang.Boolean, PGbox, String, Array[scala.Byte], String, PGcircle, LocalDate, java.lang.Float, java.lang.Double, java.util.Map[String, String], Inet, java.lang.Short, Int2Vector, Integer, java.lang.Long, PGInterval, Json, Jsonb, PGline, PGlseg, Money, Mydomain, Myenum, String, java.math.BigDecimal, PGpath, PGpoint, PGpolygon, String, LocalTime, LocalDateTime, Instant, OffsetTime, UUID, String, Vector, Xml, Array[PGbox], Array[/* bpchar */ String], Array[/* bpchar */ String], Array[PGcircle], Array[LocalDate], Array[java.lang.Float], Array[java.lang.Double], Array[Inet], Array[java.lang.Short], Array[Int2Vector], Array[Integer], Array[java.lang.Long], Array[PGInterval], Array[Json], Array[Jsonb], Array[PGline], Array[PGlseg], Array[Money], Array[Mydomain], Array[Myenum], Array[String], Array[java.math.BigDecimal], Array[PGpath], Array[PGpoint], Array[PGpolygon], Array[String], Array[LocalTime], Array[LocalDateTime], Array[Instant], Array[OffsetTime], Array[UUID], Array[String], Array[Xml]] with RelationStructure[PgtestFields, PgtestRow]  with FieldsBase[PgtestRow] {
+  def bool: Field[java.lang.Boolean, PgtestRow] = {
+    new Field[java.lang.Boolean, PgtestRow](
+      _path,
+      "bool",
+      _.bool,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(bool = value),
+      PgTypes.bool
+    )
+  }
+
+  def box: Field[PGbox, PgtestRow] = {
+    new Field[PGbox, PgtestRow](
+      _path,
+      "box",
+      _.box,
+      Optional.empty(),
+      Optional.of("box"),
+      (row, value) => row.copy(box = value),
+      PgTypes.box
+    )
+  }
+
+  def bpchar: Field[String, PgtestRow] = {
+    new Field[String, PgtestRow](
+      _path,
+      "bpchar",
+      _.bpchar,
+      Optional.empty(),
+      Optional.of("bpchar"),
+      (row, value) => row.copy(bpchar = value),
+      PgTypes.bpchar
+    )
+  }
+
+  def bytea: Field[Array[scala.Byte], PgtestRow] = {
+    new Field[Array[scala.Byte], PgtestRow](
+      _path,
+      "bytea",
+      _.bytea,
+      Optional.empty(),
+      Optional.of("bytea"),
+      (row, value) => row.copy(bytea = value),
+      PgTypes.bytea
+    )
+  }
+
+  def char: Field[String, PgtestRow] = {
+    new Field[String, PgtestRow](
+      _path,
+      "char",
+      _.char,
+      Optional.empty(),
+      Optional.of("bpchar"),
+      (row, value) => row.copy(char = value),
+      PgTypes.bpchar
+    )
+  }
+
+  def circle: Field[PGcircle, PgtestRow] = {
+    new Field[PGcircle, PgtestRow](
+      _path,
+      "circle",
+      _.circle,
+      Optional.empty(),
+      Optional.of("circle"),
+      (row, value) => row.copy(circle = value),
+      PgTypes.circle
+    )
+  }
+
+  def date: Field[LocalDate, PgtestRow] = {
+    new Field[LocalDate, PgtestRow](
+      _path,
+      "date",
+      _.date,
+      Optional.empty(),
+      Optional.of("date"),
+      (row, value) => row.copy(date = value),
+      PgTypes.date
+    )
+  }
+
+  def float4: Field[java.lang.Float, PgtestRow] = {
+    new Field[java.lang.Float, PgtestRow](
+      _path,
+      "float4",
+      _.float4,
+      Optional.empty(),
+      Optional.of("float4"),
+      (row, value) => row.copy(float4 = value),
+      PgTypes.float4
+    )
+  }
+
+  def float8: Field[java.lang.Double, PgtestRow] = {
+    new Field[java.lang.Double, PgtestRow](
+      _path,
+      "float8",
+      _.float8,
+      Optional.empty(),
+      Optional.of("float8"),
+      (row, value) => row.copy(float8 = value),
+      PgTypes.float8
+    )
+  }
+
+  def hstore: Field[java.util.Map[String, String], PgtestRow] = {
+    new Field[java.util.Map[String, String], PgtestRow](
+      _path,
+      "hstore",
+      _.hstore,
+      Optional.empty(),
+      Optional.of("hstore"),
+      (row, value) => row.copy(hstore = value),
+      PgTypes.hstore
+    )
+  }
+
+  def inet: Field[Inet, PgtestRow] = {
+    new Field[Inet, PgtestRow](
+      _path,
+      "inet",
+      _.inet,
+      Optional.empty(),
+      Optional.of("inet"),
+      (row, value) => row.copy(inet = value),
+      PgTypes.inet
+    )
+  }
+
+  def int2: Field[java.lang.Short, PgtestRow] = {
+    new Field[java.lang.Short, PgtestRow](
+      _path,
+      "int2",
+      _.int2,
+      Optional.empty(),
+      Optional.of("int2"),
+      (row, value) => row.copy(int2 = value),
+      PgTypes.int2
+    )
+  }
+
+  def int2vector: Field[Int2Vector, PgtestRow] = {
+    new Field[Int2Vector, PgtestRow](
+      _path,
+      "int2vector",
+      _.int2vector,
+      Optional.empty(),
+      Optional.of("int2vector"),
+      (row, value) => row.copy(int2vector = value),
+      PgTypes.int2vector
+    )
+  }
+
+  def int4: Field[Integer, PgtestRow] = {
+    new Field[Integer, PgtestRow](
+      _path,
+      "int4",
+      _.int4,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(int4 = value),
+      PgTypes.int4
+    )
+  }
+
+  def int8: Field[java.lang.Long, PgtestRow] = {
+    new Field[java.lang.Long, PgtestRow](
+      _path,
+      "int8",
+      _.int8,
+      Optional.empty(),
+      Optional.of("int8"),
+      (row, value) => row.copy(int8 = value),
+      PgTypes.int8
+    )
+  }
+
+  def interval: Field[PGInterval, PgtestRow] = {
+    new Field[PGInterval, PgtestRow](
+      _path,
+      "interval",
+      _.interval,
+      Optional.empty(),
+      Optional.of("interval"),
+      (row, value) => row.copy(interval = value),
+      PgTypes.interval
+    )
+  }
+
+  def json: Field[Json, PgtestRow] = {
+    new Field[Json, PgtestRow](
+      _path,
+      "json",
+      _.json,
+      Optional.empty(),
+      Optional.of("json"),
+      (row, value) => row.copy(json = value),
+      PgTypes.json
+    )
+  }
+
+  def jsonb: Field[Jsonb, PgtestRow] = {
+    new Field[Jsonb, PgtestRow](
+      _path,
+      "jsonb",
+      _.jsonb,
+      Optional.empty(),
+      Optional.of("jsonb"),
+      (row, value) => row.copy(jsonb = value),
+      PgTypes.jsonb
+    )
+  }
+
+  def line: Field[PGline, PgtestRow] = {
+    new Field[PGline, PgtestRow](
+      _path,
+      "line",
+      _.line,
+      Optional.empty(),
+      Optional.of("line"),
+      (row, value) => row.copy(line = value),
+      PgTypes.line
+    )
+  }
+
+  def lseg: Field[PGlseg, PgtestRow] = {
+    new Field[PGlseg, PgtestRow](
+      _path,
+      "lseg",
+      _.lseg,
+      Optional.empty(),
+      Optional.of("lseg"),
+      (row, value) => row.copy(lseg = value),
+      PgTypes.lseg
+    )
+  }
+
+  def money: Field[Money, PgtestRow] = {
+    new Field[Money, PgtestRow](
+      _path,
+      "money",
+      _.money,
+      Optional.of("numeric"),
+      Optional.of("money"),
+      (row, value) => row.copy(money = value),
+      PgTypes.money
+    )
+  }
+
+  def mydomain: Field[Mydomain, PgtestRow] = {
+    new Field[Mydomain, PgtestRow](
+      _path,
+      "mydomain",
+      _.mydomain,
+      Optional.empty(),
+      Optional.of("text"),
+      (row, value) => row.copy(mydomain = value),
+      Mydomain.dbType
+    )
+  }
+
+  def myenum: Field[Myenum, PgtestRow] = {
+    new Field[Myenum, PgtestRow](
+      _path,
+      "myenum",
+      _.myenum,
+      Optional.empty(),
+      Optional.of("public.myenum"),
+      (row, value) => row.copy(myenum = value),
+      Myenum.dbType
+    )
+  }
+
+  def name: Field[String, PgtestRow] = {
+    new Field[String, PgtestRow](
+      _path,
+      "name",
+      _.name,
+      Optional.empty(),
+      Optional.of("name"),
+      (row, value) => row.copy(name = value),
+      PgTypes.name
+    )
+  }
+
+  def numeric: Field[java.math.BigDecimal, PgtestRow] = {
+    new Field[java.math.BigDecimal, PgtestRow](
+      _path,
+      "numeric",
+      _.numeric,
+      Optional.empty(),
+      Optional.of("numeric"),
+      (row, value) => row.copy(numeric = value),
+      PgTypes.numeric
+    )
+  }
+
+  def path: Field[PGpath, PgtestRow] = {
+    new Field[PGpath, PgtestRow](
+      _path,
+      "path",
+      _.path,
+      Optional.empty(),
+      Optional.of("path"),
+      (row, value) => row.copy(path = value),
+      PgTypes.path
+    )
+  }
+
+  def point: Field[PGpoint, PgtestRow] = {
+    new Field[PGpoint, PgtestRow](
+      _path,
+      "point",
+      _.point,
+      Optional.empty(),
+      Optional.of("point"),
+      (row, value) => row.copy(point = value),
+      PgTypes.point
+    )
+  }
+
+  def polygon: Field[PGpolygon, PgtestRow] = {
+    new Field[PGpolygon, PgtestRow](
+      _path,
+      "polygon",
+      _.polygon,
+      Optional.empty(),
+      Optional.of("polygon"),
+      (row, value) => row.copy(polygon = value),
+      PgTypes.polygon
+    )
+  }
+
+  def text: Field[String, PgtestRow] = {
+    new Field[String, PgtestRow](
+      _path,
+      "text",
+      _.text,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(text = value),
+      PgTypes.text
+    )
+  }
+
+  def time: Field[LocalTime, PgtestRow] = {
+    new Field[LocalTime, PgtestRow](
+      _path,
+      "time",
+      _.time,
+      Optional.empty(),
+      Optional.of("time"),
+      (row, value) => row.copy(time = value),
+      PgTypes.time
+    )
+  }
+
+  def timestamp: Field[LocalDateTime, PgtestRow] = {
+    new Field[LocalDateTime, PgtestRow](
+      _path,
+      "timestamp",
+      _.timestamp,
+      Optional.empty(),
+      Optional.of("timestamp"),
+      (row, value) => row.copy(timestamp = value),
+      PgTypes.timestamp
+    )
+  }
+
+  def timestampz: Field[Instant, PgtestRow] = {
+    new Field[Instant, PgtestRow](
+      _path,
+      "timestampz",
+      _.timestampz,
+      Optional.empty(),
+      Optional.of("timestamptz"),
+      (row, value) => row.copy(timestampz = value),
+      PgTypes.timestamptz
+    )
+  }
+
+  def timez: Field[OffsetTime, PgtestRow] = {
+    new Field[OffsetTime, PgtestRow](
+      _path,
+      "timez",
+      _.timez,
+      Optional.empty(),
+      Optional.of("timetz"),
+      (row, value) => row.copy(timez = value),
+      PgTypes.timetz
+    )
+  }
+
+  def uuid: Field[UUID, PgtestRow] = {
+    new Field[UUID, PgtestRow](
+      _path,
+      "uuid",
+      _.uuid,
+      Optional.empty(),
+      Optional.of("uuid"),
+      (row, value) => row.copy(uuid = value),
+      PgTypes.uuid
+    )
+  }
+
+  def varchar: Field[String, PgtestRow] = {
+    new Field[String, PgtestRow](
+      _path,
+      "varchar",
+      _.varchar,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(varchar = value),
+      PgTypes.text
+    )
+  }
+
+  def vector: Field[Vector, PgtestRow] = {
+    new Field[Vector, PgtestRow](
+      _path,
+      "vector",
+      _.vector,
+      Optional.empty(),
+      Optional.of("vector"),
+      (row, value) => row.copy(vector = value),
+      PgTypes.vector
+    )
+  }
+
+  def xml: Field[Xml, PgtestRow] = {
+    new Field[Xml, PgtestRow](
+      _path,
+      "xml",
+      _.xml,
+      Optional.empty(),
+      Optional.of("xml"),
+      (row, value) => row.copy(xml = value),
+      PgTypes.xml
+    )
+  }
+
+  def boxes: Field[Array[PGbox], PgtestRow] = {
+    new Field[Array[PGbox], PgtestRow](
+      _path,
+      "boxes",
+      _.boxes,
+      Optional.empty(),
+      Optional.of("box[]"),
+      (row, value) => row.copy(boxes = value),
+      PgTypes.boxArray
+    )
+  }
+
+  def bpchares: Field[Array[/* bpchar */ String], PgtestRow] = {
+    new Field[Array[/* bpchar */ String], PgtestRow](
+      _path,
+      "bpchares",
+      _.bpchares,
+      Optional.empty(),
+      Optional.of("bpchar[]"),
+      (row, value) => row.copy(bpchares = value),
+      PgTypes.bpcharArray
+    )
+  }
+
+  def chares: Field[Array[/* bpchar */ String], PgtestRow] = {
+    new Field[Array[/* bpchar */ String], PgtestRow](
+      _path,
+      "chares",
+      _.chares,
+      Optional.empty(),
+      Optional.of("bpchar[]"),
+      (row, value) => row.copy(chares = value),
+      PgTypes.bpcharArray
+    )
+  }
+
+  def circlees: Field[Array[PGcircle], PgtestRow] = {
+    new Field[Array[PGcircle], PgtestRow](
+      _path,
+      "circlees",
+      _.circlees,
+      Optional.empty(),
+      Optional.of("circle[]"),
+      (row, value) => row.copy(circlees = value),
+      PgTypes.circleArray
+    )
+  }
+
+  def datees: Field[Array[LocalDate], PgtestRow] = {
+    new Field[Array[LocalDate], PgtestRow](
+      _path,
+      "datees",
+      _.datees,
+      Optional.empty(),
+      Optional.of("date[]"),
+      (row, value) => row.copy(datees = value),
+      PgTypes.dateArray
+    )
+  }
+
+  def float4es: Field[Array[java.lang.Float], PgtestRow] = {
+    new Field[Array[java.lang.Float], PgtestRow](
+      _path,
+      "float4es",
+      _.float4es,
+      Optional.empty(),
+      Optional.of("float4[]"),
+      (row, value) => row.copy(float4es = value),
+      PgTypes.float4Array
+    )
+  }
+
+  def float8es: Field[Array[java.lang.Double], PgtestRow] = {
+    new Field[Array[java.lang.Double], PgtestRow](
+      _path,
+      "float8es",
+      _.float8es,
+      Optional.empty(),
+      Optional.of("float8[]"),
+      (row, value) => row.copy(float8es = value),
+      PgTypes.float8Array
+    )
+  }
+
+  def inetes: Field[Array[Inet], PgtestRow] = {
+    new Field[Array[Inet], PgtestRow](
+      _path,
+      "inetes",
+      _.inetes,
+      Optional.empty(),
+      Optional.of("inet[]"),
+      (row, value) => row.copy(inetes = value),
+      PgTypes.inetArray
+    )
+  }
+
+  def int2es: Field[Array[java.lang.Short], PgtestRow] = {
+    new Field[Array[java.lang.Short], PgtestRow](
+      _path,
+      "int2es",
+      _.int2es,
+      Optional.empty(),
+      Optional.of("int2[]"),
+      (row, value) => row.copy(int2es = value),
+      PgTypes.int2Array
+    )
+  }
+
+  def int2vectores: Field[Array[Int2Vector], PgtestRow] = {
+    new Field[Array[Int2Vector], PgtestRow](
+      _path,
+      "int2vectores",
+      _.int2vectores,
+      Optional.empty(),
+      Optional.of("int2vector[]"),
+      (row, value) => row.copy(int2vectores = value),
+      PgTypes.int2vectorArray
+    )
+  }
+
+  def int4es: Field[Array[Integer], PgtestRow] = {
+    new Field[Array[Integer], PgtestRow](
+      _path,
+      "int4es",
+      _.int4es,
+      Optional.empty(),
+      Optional.of("int4[]"),
+      (row, value) => row.copy(int4es = value),
+      PgTypes.int4Array
+    )
+  }
+
+  def int8es: Field[Array[java.lang.Long], PgtestRow] = {
+    new Field[Array[java.lang.Long], PgtestRow](
+      _path,
+      "int8es",
+      _.int8es,
+      Optional.empty(),
+      Optional.of("int8[]"),
+      (row, value) => row.copy(int8es = value),
+      PgTypes.int8Array
+    )
+  }
+
+  def intervales: Field[Array[PGInterval], PgtestRow] = {
+    new Field[Array[PGInterval], PgtestRow](
+      _path,
+      "intervales",
+      _.intervales,
+      Optional.empty(),
+      Optional.of("interval[]"),
+      (row, value) => row.copy(intervales = value),
+      PgTypes.intervalArray
+    )
+  }
+
+  def jsones: Field[Array[Json], PgtestRow] = {
+    new Field[Array[Json], PgtestRow](
+      _path,
+      "jsones",
+      _.jsones,
+      Optional.empty(),
+      Optional.of("json[]"),
+      (row, value) => row.copy(jsones = value),
+      PgTypes.jsonArray
+    )
+  }
+
+  def jsonbes: Field[Array[Jsonb], PgtestRow] = {
+    new Field[Array[Jsonb], PgtestRow](
+      _path,
+      "jsonbes",
+      _.jsonbes,
+      Optional.empty(),
+      Optional.of("jsonb[]"),
+      (row, value) => row.copy(jsonbes = value),
+      PgTypes.jsonbArray
+    )
+  }
+
+  def linees: Field[Array[PGline], PgtestRow] = {
+    new Field[Array[PGline], PgtestRow](
+      _path,
+      "linees",
+      _.linees,
+      Optional.empty(),
+      Optional.of("line[]"),
+      (row, value) => row.copy(linees = value),
+      PgTypes.lineArray
+    )
+  }
+
+  def lseges: Field[Array[PGlseg], PgtestRow] = {
+    new Field[Array[PGlseg], PgtestRow](
+      _path,
+      "lseges",
+      _.lseges,
+      Optional.empty(),
+      Optional.of("lseg[]"),
+      (row, value) => row.copy(lseges = value),
+      PgTypes.lsegArray
+    )
+  }
+
+  def moneyes: Field[Array[Money], PgtestRow] = {
+    new Field[Array[Money], PgtestRow](
+      _path,
+      "moneyes",
+      _.moneyes,
+      Optional.of("numeric[]"),
+      Optional.of("money[]"),
+      (row, value) => row.copy(moneyes = value),
+      PgTypes.moneyArray
+    )
+  }
+
+  def mydomaines: Field[Array[Mydomain], PgtestRow] = {
+    new Field[Array[Mydomain], PgtestRow](
+      _path,
+      "mydomaines",
+      _.mydomaines,
+      Optional.of("text[]"),
+      Optional.of("mydomain[]"),
+      (row, value) => row.copy(mydomaines = value),
+      Mydomain.dbTypeArray
+    )
+  }
+
+  def myenumes: Field[Array[Myenum], PgtestRow] = {
+    new Field[Array[Myenum], PgtestRow](
+      _path,
+      "myenumes",
+      _.myenumes,
+      Optional.empty(),
+      Optional.of("myenum[]"),
+      (row, value) => row.copy(myenumes = value),
+      Myenum.dbTypeArray
+    )
+  }
+
+  def namees: Field[Array[String], PgtestRow] = {
+    new Field[Array[String], PgtestRow](
+      _path,
+      "namees",
+      _.namees,
+      Optional.empty(),
+      Optional.of("name[]"),
+      (row, value) => row.copy(namees = value),
+      PgTypes.nameArray
+    )
+  }
+
+  def numerices: Field[Array[java.math.BigDecimal], PgtestRow] = {
+    new Field[Array[java.math.BigDecimal], PgtestRow](
+      _path,
+      "numerices",
+      _.numerices,
+      Optional.empty(),
+      Optional.of("numeric[]"),
+      (row, value) => row.copy(numerices = value),
+      PgTypes.numericArray
+    )
+  }
+
+  def pathes: Field[Array[PGpath], PgtestRow] = {
+    new Field[Array[PGpath], PgtestRow](
+      _path,
+      "pathes",
+      _.pathes,
+      Optional.empty(),
+      Optional.of("path[]"),
+      (row, value) => row.copy(pathes = value),
+      PgTypes.pathArray
+    )
+  }
+
+  def pointes: Field[Array[PGpoint], PgtestRow] = {
+    new Field[Array[PGpoint], PgtestRow](
+      _path,
+      "pointes",
+      _.pointes,
+      Optional.empty(),
+      Optional.of("point[]"),
+      (row, value) => row.copy(pointes = value),
+      PgTypes.pointArray
+    )
+  }
+
+  def polygones: Field[Array[PGpolygon], PgtestRow] = {
+    new Field[Array[PGpolygon], PgtestRow](
+      _path,
+      "polygones",
+      _.polygones,
+      Optional.empty(),
+      Optional.of("polygon[]"),
+      (row, value) => row.copy(polygones = value),
+      PgTypes.polygonArray
+    )
+  }
+
+  def textes: Field[Array[String], PgtestRow] = {
+    new Field[Array[String], PgtestRow](
+      _path,
+      "textes",
+      _.textes,
+      Optional.empty(),
+      Optional.of("text[]"),
+      (row, value) => row.copy(textes = value),
+      PgTypes.textArray
+    )
+  }
+
+  def timees: Field[Array[LocalTime], PgtestRow] = {
+    new Field[Array[LocalTime], PgtestRow](
+      _path,
+      "timees",
+      _.timees,
+      Optional.empty(),
+      Optional.of("time[]"),
+      (row, value) => row.copy(timees = value),
+      PgTypes.timeArray
+    )
+  }
+
+  def timestampes: Field[Array[LocalDateTime], PgtestRow] = {
+    new Field[Array[LocalDateTime], PgtestRow](
+      _path,
+      "timestampes",
+      _.timestampes,
+      Optional.empty(),
+      Optional.of("timestamp[]"),
+      (row, value) => row.copy(timestampes = value),
+      PgTypes.timestampArray
+    )
+  }
+
+  def timestampzes: Field[Array[Instant], PgtestRow] = {
+    new Field[Array[Instant], PgtestRow](
+      _path,
+      "timestampzes",
+      _.timestampzes,
+      Optional.empty(),
+      Optional.of("timestamptz[]"),
+      (row, value) => row.copy(timestampzes = value),
+      PgTypes.timestamptzArray
+    )
+  }
+
+  def timezes: Field[Array[OffsetTime], PgtestRow] = {
+    new Field[Array[OffsetTime], PgtestRow](
+      _path,
+      "timezes",
+      _.timezes,
+      Optional.empty(),
+      Optional.of("timetz[]"),
+      (row, value) => row.copy(timezes = value),
+      PgTypes.timetzArray
+    )
+  }
+
+  def uuides: Field[Array[UUID], PgtestRow] = {
+    new Field[Array[UUID], PgtestRow](
+      _path,
+      "uuides",
+      _.uuides,
+      Optional.empty(),
+      Optional.of("uuid[]"),
+      (row, value) => row.copy(uuides = value),
+      PgTypes.uuidArray
+    )
+  }
+
+  def varchares: Field[Array[String], PgtestRow] = {
+    new Field[Array[String], PgtestRow](
+      _path,
+      "varchares",
+      _.varchares,
+      Optional.empty(),
+      Optional.of("varchar[]"),
+      (row, value) => row.copy(varchares = value),
+      PgTypes.textArray
+    )
+  }
+
+  def xmles: Field[Array[Xml], PgtestRow] = {
+    new Field[Array[Xml], PgtestRow](
+      _path,
+      "xmles",
+      _.xmles,
+      Optional.empty(),
+      Optional.of("xml[]"),
+      (row, value) => row.copy(xmles = value),
+      PgTypes.xmlArray
+    )
+  }
+
+  override def columns: java.util.List[FieldLike[?, PgtestRow]] = java.util.List.of(this.bool, this.box, this.bpchar, this.bytea, this.char, this.circle, this.date, this.float4, this.float8, this.hstore, this.inet, this.int2, this.int2vector, this.int4, this.int8, this.interval, this.json, this.jsonb, this.line, this.lseg, this.money, this.mydomain, this.myenum, this.name, this.numeric, this.path, this.point, this.polygon, this.text, this.time, this.timestamp, this.timestampz, this.timez, this.uuid, this.varchar, this.vector, this.xml, this.boxes, this.bpchares, this.chares, this.circlees, this.datees, this.float4es, this.float8es, this.inetes, this.int2es, this.int2vectores, this.int4es, this.int8es, this.intervales, this.jsones, this.jsonbes, this.linees, this.lseges, this.moneyes, this.mydomaines, this.myenumes, this.namees, this.numerices, this.pathes, this.pointes, this.polygones, this.textes, this.timees, this.timestampes, this.timestampzes, this.timezes, this.uuides, this.varchares, this.xmles)
 
   override def rowParser: RowParser[PgtestRow] = PgtestRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[PgtestFields, PgtestRow] = new PgtestFields(`_path`)
+
+  override def `_1`: SqlExpr[java.lang.Boolean] = bool
+
+  override def `_2`: SqlExpr[PGbox] = box
+
+  override def `_3`: SqlExpr[String] = bpchar
+
+  override def `_4`: SqlExpr[Array[scala.Byte]] = bytea
+
+  override def `_5`: SqlExpr[String] = char
+
+  override def `_6`: SqlExpr[PGcircle] = circle
+
+  override def `_7`: SqlExpr[LocalDate] = date
+
+  override def `_8`: SqlExpr[java.lang.Float] = float4
+
+  override def `_9`: SqlExpr[java.lang.Double] = float8
+
+  override def `_10`: SqlExpr[java.util.Map[String, String]] = hstore
+
+  override def `_11`: SqlExpr[Inet] = inet
+
+  override def `_12`: SqlExpr[java.lang.Short] = int2
+
+  override def `_13`: SqlExpr[Int2Vector] = int2vector
+
+  override def `_14`: SqlExpr[Integer] = int4
+
+  override def `_15`: SqlExpr[java.lang.Long] = int8
+
+  override def `_16`: SqlExpr[PGInterval] = interval
+
+  override def `_17`: SqlExpr[Json] = json
+
+  override def `_18`: SqlExpr[Jsonb] = jsonb
+
+  override def `_19`: SqlExpr[PGline] = line
+
+  override def `_20`: SqlExpr[PGlseg] = lseg
+
+  override def `_21`: SqlExpr[Money] = money
+
+  override def `_22`: SqlExpr[Mydomain] = mydomain
+
+  override def `_23`: SqlExpr[Myenum] = myenum
+
+  override def `_24`: SqlExpr[String] = name
+
+  override def `_25`: SqlExpr[java.math.BigDecimal] = numeric
+
+  override def `_26`: SqlExpr[PGpath] = path
+
+  override def `_27`: SqlExpr[PGpoint] = point
+
+  override def `_28`: SqlExpr[PGpolygon] = polygon
+
+  override def `_29`: SqlExpr[String] = text
+
+  override def `_30`: SqlExpr[LocalTime] = time
+
+  override def `_31`: SqlExpr[LocalDateTime] = timestamp
+
+  override def `_32`: SqlExpr[Instant] = timestampz
+
+  override def `_33`: SqlExpr[OffsetTime] = timez
+
+  override def `_34`: SqlExpr[UUID] = uuid
+
+  override def `_35`: SqlExpr[String] = varchar
+
+  override def `_36`: SqlExpr[Vector] = vector
+
+  override def `_37`: SqlExpr[Xml] = xml
+
+  override def `_38`: SqlExpr[Array[PGbox]] = boxes
+
+  override def `_39`: SqlExpr[Array[/* bpchar */ String]] = bpchares
+
+  override def `_40`: SqlExpr[Array[/* bpchar */ String]] = chares
+
+  override def `_41`: SqlExpr[Array[PGcircle]] = circlees
+
+  override def `_42`: SqlExpr[Array[LocalDate]] = datees
+
+  override def `_43`: SqlExpr[Array[java.lang.Float]] = float4es
+
+  override def `_44`: SqlExpr[Array[java.lang.Double]] = float8es
+
+  override def `_45`: SqlExpr[Array[Inet]] = inetes
+
+  override def `_46`: SqlExpr[Array[java.lang.Short]] = int2es
+
+  override def `_47`: SqlExpr[Array[Int2Vector]] = int2vectores
+
+  override def `_48`: SqlExpr[Array[Integer]] = int4es
+
+  override def `_49`: SqlExpr[Array[java.lang.Long]] = int8es
+
+  override def `_50`: SqlExpr[Array[PGInterval]] = intervales
+
+  override def `_51`: SqlExpr[Array[Json]] = jsones
+
+  override def `_52`: SqlExpr[Array[Jsonb]] = jsonbes
+
+  override def `_53`: SqlExpr[Array[PGline]] = linees
+
+  override def `_54`: SqlExpr[Array[PGlseg]] = lseges
+
+  override def `_55`: SqlExpr[Array[Money]] = moneyes
+
+  override def `_56`: SqlExpr[Array[Mydomain]] = mydomaines
+
+  override def `_57`: SqlExpr[Array[Myenum]] = myenumes
+
+  override def `_58`: SqlExpr[Array[String]] = namees
+
+  override def `_59`: SqlExpr[Array[java.math.BigDecimal]] = numerices
+
+  override def `_60`: SqlExpr[Array[PGpath]] = pathes
+
+  override def `_61`: SqlExpr[Array[PGpoint]] = pointes
+
+  override def `_62`: SqlExpr[Array[PGpolygon]] = polygones
+
+  override def `_63`: SqlExpr[Array[String]] = textes
+
+  override def `_64`: SqlExpr[Array[LocalTime]] = timees
+
+  override def `_65`: SqlExpr[Array[LocalDateTime]] = timestampes
+
+  override def `_66`: SqlExpr[Array[Instant]] = timestampzes
+
+  override def `_67`: SqlExpr[Array[OffsetTime]] = timezes
+
+  override def `_68`: SqlExpr[Array[UUID]] = uuides
+
+  override def `_69`: SqlExpr[Array[String]] = varchares
+
+  override def `_70`: SqlExpr[Array[Xml]] = xmles
 }
 
 object PgtestFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends PgtestFields with RelationStructure[PgtestFields, PgtestRow] {
-
-    override def bool: Field[java.lang.Boolean, PgtestRow] = {
-      new Field[java.lang.Boolean, PgtestRow](
-        _path,
-        "bool",
-        _.bool,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(bool = value),
-        PgTypes.bool
-      )
-    }
-
-    override def box: Field[PGbox, PgtestRow] = {
-      new Field[PGbox, PgtestRow](
-        _path,
-        "box",
-        _.box,
-        Optional.empty(),
-        Optional.of("box"),
-        (row, value) => row.copy(box = value),
-        PgTypes.box
-      )
-    }
-
-    override def bpchar: Field[String, PgtestRow] = {
-      new Field[String, PgtestRow](
-        _path,
-        "bpchar",
-        _.bpchar,
-        Optional.empty(),
-        Optional.of("bpchar"),
-        (row, value) => row.copy(bpchar = value),
-        PgTypes.bpchar
-      )
-    }
-
-    override def bytea: Field[Array[scala.Byte], PgtestRow] = {
-      new Field[Array[scala.Byte], PgtestRow](
-        _path,
-        "bytea",
-        _.bytea,
-        Optional.empty(),
-        Optional.of("bytea"),
-        (row, value) => row.copy(bytea = value),
-        PgTypes.bytea
-      )
-    }
-
-    override def char: Field[String, PgtestRow] = {
-      new Field[String, PgtestRow](
-        _path,
-        "char",
-        _.char,
-        Optional.empty(),
-        Optional.of("bpchar"),
-        (row, value) => row.copy(char = value),
-        PgTypes.bpchar
-      )
-    }
-
-    override def circle: Field[PGcircle, PgtestRow] = {
-      new Field[PGcircle, PgtestRow](
-        _path,
-        "circle",
-        _.circle,
-        Optional.empty(),
-        Optional.of("circle"),
-        (row, value) => row.copy(circle = value),
-        PgTypes.circle
-      )
-    }
-
-    override def date: Field[LocalDate, PgtestRow] = {
-      new Field[LocalDate, PgtestRow](
-        _path,
-        "date",
-        _.date,
-        Optional.empty(),
-        Optional.of("date"),
-        (row, value) => row.copy(date = value),
-        PgTypes.date
-      )
-    }
-
-    override def float4: Field[java.lang.Float, PgtestRow] = {
-      new Field[java.lang.Float, PgtestRow](
-        _path,
-        "float4",
-        _.float4,
-        Optional.empty(),
-        Optional.of("float4"),
-        (row, value) => row.copy(float4 = value),
-        PgTypes.float4
-      )
-    }
-
-    override def float8: Field[java.lang.Double, PgtestRow] = {
-      new Field[java.lang.Double, PgtestRow](
-        _path,
-        "float8",
-        _.float8,
-        Optional.empty(),
-        Optional.of("float8"),
-        (row, value) => row.copy(float8 = value),
-        PgTypes.float8
-      )
-    }
-
-    override def hstore: Field[java.util.Map[String, String], PgtestRow] = {
-      new Field[java.util.Map[String, String], PgtestRow](
-        _path,
-        "hstore",
-        _.hstore,
-        Optional.empty(),
-        Optional.of("hstore"),
-        (row, value) => row.copy(hstore = value),
-        PgTypes.hstore
-      )
-    }
-
-    override def inet: Field[Inet, PgtestRow] = {
-      new Field[Inet, PgtestRow](
-        _path,
-        "inet",
-        _.inet,
-        Optional.empty(),
-        Optional.of("inet"),
-        (row, value) => row.copy(inet = value),
-        PgTypes.inet
-      )
-    }
-
-    override def int2: Field[java.lang.Short, PgtestRow] = {
-      new Field[java.lang.Short, PgtestRow](
-        _path,
-        "int2",
-        _.int2,
-        Optional.empty(),
-        Optional.of("int2"),
-        (row, value) => row.copy(int2 = value),
-        PgTypes.int2
-      )
-    }
-
-    override def int2vector: Field[Int2Vector, PgtestRow] = {
-      new Field[Int2Vector, PgtestRow](
-        _path,
-        "int2vector",
-        _.int2vector,
-        Optional.empty(),
-        Optional.of("int2vector"),
-        (row, value) => row.copy(int2vector = value),
-        PgTypes.int2vector
-      )
-    }
-
-    override def int4: Field[Integer, PgtestRow] = {
-      new Field[Integer, PgtestRow](
-        _path,
-        "int4",
-        _.int4,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(int4 = value),
-        PgTypes.int4
-      )
-    }
-
-    override def int8: Field[java.lang.Long, PgtestRow] = {
-      new Field[java.lang.Long, PgtestRow](
-        _path,
-        "int8",
-        _.int8,
-        Optional.empty(),
-        Optional.of("int8"),
-        (row, value) => row.copy(int8 = value),
-        PgTypes.int8
-      )
-    }
-
-    override def interval: Field[PGInterval, PgtestRow] = {
-      new Field[PGInterval, PgtestRow](
-        _path,
-        "interval",
-        _.interval,
-        Optional.empty(),
-        Optional.of("interval"),
-        (row, value) => row.copy(interval = value),
-        PgTypes.interval
-      )
-    }
-
-    override def json: Field[Json, PgtestRow] = {
-      new Field[Json, PgtestRow](
-        _path,
-        "json",
-        _.json,
-        Optional.empty(),
-        Optional.of("json"),
-        (row, value) => row.copy(json = value),
-        PgTypes.json
-      )
-    }
-
-    override def jsonb: Field[Jsonb, PgtestRow] = {
-      new Field[Jsonb, PgtestRow](
-        _path,
-        "jsonb",
-        _.jsonb,
-        Optional.empty(),
-        Optional.of("jsonb"),
-        (row, value) => row.copy(jsonb = value),
-        PgTypes.jsonb
-      )
-    }
-
-    override def line: Field[PGline, PgtestRow] = {
-      new Field[PGline, PgtestRow](
-        _path,
-        "line",
-        _.line,
-        Optional.empty(),
-        Optional.of("line"),
-        (row, value) => row.copy(line = value),
-        PgTypes.line
-      )
-    }
-
-    override def lseg: Field[PGlseg, PgtestRow] = {
-      new Field[PGlseg, PgtestRow](
-        _path,
-        "lseg",
-        _.lseg,
-        Optional.empty(),
-        Optional.of("lseg"),
-        (row, value) => row.copy(lseg = value),
-        PgTypes.lseg
-      )
-    }
-
-    override def money: Field[Money, PgtestRow] = {
-      new Field[Money, PgtestRow](
-        _path,
-        "money",
-        _.money,
-        Optional.of("numeric"),
-        Optional.of("money"),
-        (row, value) => row.copy(money = value),
-        PgTypes.money
-      )
-    }
-
-    override def mydomain: Field[Mydomain, PgtestRow] = {
-      new Field[Mydomain, PgtestRow](
-        _path,
-        "mydomain",
-        _.mydomain,
-        Optional.empty(),
-        Optional.of("text"),
-        (row, value) => row.copy(mydomain = value),
-        Mydomain.pgType
-      )
-    }
-
-    override def myenum: Field[Myenum, PgtestRow] = {
-      new Field[Myenum, PgtestRow](
-        _path,
-        "myenum",
-        _.myenum,
-        Optional.empty(),
-        Optional.of("public.myenum"),
-        (row, value) => row.copy(myenum = value),
-        Myenum.pgType
-      )
-    }
-
-    override def name: Field[String, PgtestRow] = {
-      new Field[String, PgtestRow](
-        _path,
-        "name",
-        _.name,
-        Optional.empty(),
-        Optional.of("name"),
-        (row, value) => row.copy(name = value),
-        PgTypes.name
-      )
-    }
-
-    override def numeric: Field[java.math.BigDecimal, PgtestRow] = {
-      new Field[java.math.BigDecimal, PgtestRow](
-        _path,
-        "numeric",
-        _.numeric,
-        Optional.empty(),
-        Optional.of("numeric"),
-        (row, value) => row.copy(numeric = value),
-        PgTypes.numeric
-      )
-    }
-
-    override def path: Field[PGpath, PgtestRow] = {
-      new Field[PGpath, PgtestRow](
-        _path,
-        "path",
-        _.path,
-        Optional.empty(),
-        Optional.of("path"),
-        (row, value) => row.copy(path = value),
-        PgTypes.path
-      )
-    }
-
-    override def point: Field[PGpoint, PgtestRow] = {
-      new Field[PGpoint, PgtestRow](
-        _path,
-        "point",
-        _.point,
-        Optional.empty(),
-        Optional.of("point"),
-        (row, value) => row.copy(point = value),
-        PgTypes.point
-      )
-    }
-
-    override def polygon: Field[PGpolygon, PgtestRow] = {
-      new Field[PGpolygon, PgtestRow](
-        _path,
-        "polygon",
-        _.polygon,
-        Optional.empty(),
-        Optional.of("polygon"),
-        (row, value) => row.copy(polygon = value),
-        PgTypes.polygon
-      )
-    }
-
-    override def text: Field[String, PgtestRow] = {
-      new Field[String, PgtestRow](
-        _path,
-        "text",
-        _.text,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(text = value),
-        PgTypes.text
-      )
-    }
-
-    override def time: Field[LocalTime, PgtestRow] = {
-      new Field[LocalTime, PgtestRow](
-        _path,
-        "time",
-        _.time,
-        Optional.empty(),
-        Optional.of("time"),
-        (row, value) => row.copy(time = value),
-        PgTypes.time
-      )
-    }
-
-    override def timestamp: Field[LocalDateTime, PgtestRow] = {
-      new Field[LocalDateTime, PgtestRow](
-        _path,
-        "timestamp",
-        _.timestamp,
-        Optional.empty(),
-        Optional.of("timestamp"),
-        (row, value) => row.copy(timestamp = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def timestampz: Field[Instant, PgtestRow] = {
-      new Field[Instant, PgtestRow](
-        _path,
-        "timestampz",
-        _.timestampz,
-        Optional.empty(),
-        Optional.of("timestamptz"),
-        (row, value) => row.copy(timestampz = value),
-        PgTypes.timestamptz
-      )
-    }
-
-    override def timez: Field[OffsetTime, PgtestRow] = {
-      new Field[OffsetTime, PgtestRow](
-        _path,
-        "timez",
-        _.timez,
-        Optional.empty(),
-        Optional.of("timetz"),
-        (row, value) => row.copy(timez = value),
-        PgTypes.timetz
-      )
-    }
-
-    override def uuid: Field[UUID, PgtestRow] = {
-      new Field[UUID, PgtestRow](
-        _path,
-        "uuid",
-        _.uuid,
-        Optional.empty(),
-        Optional.of("uuid"),
-        (row, value) => row.copy(uuid = value),
-        PgTypes.uuid
-      )
-    }
-
-    override def varchar: Field[String, PgtestRow] = {
-      new Field[String, PgtestRow](
-        _path,
-        "varchar",
-        _.varchar,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(varchar = value),
-        PgTypes.text
-      )
-    }
-
-    override def vector: Field[Vector, PgtestRow] = {
-      new Field[Vector, PgtestRow](
-        _path,
-        "vector",
-        _.vector,
-        Optional.empty(),
-        Optional.of("vector"),
-        (row, value) => row.copy(vector = value),
-        PgTypes.vector
-      )
-    }
-
-    override def xml: Field[Xml, PgtestRow] = {
-      new Field[Xml, PgtestRow](
-        _path,
-        "xml",
-        _.xml,
-        Optional.empty(),
-        Optional.of("xml"),
-        (row, value) => row.copy(xml = value),
-        PgTypes.xml
-      )
-    }
-
-    override def boxes: Field[Array[PGbox], PgtestRow] = {
-      new Field[Array[PGbox], PgtestRow](
-        _path,
-        "boxes",
-        _.boxes,
-        Optional.empty(),
-        Optional.of("box[]"),
-        (row, value) => row.copy(boxes = value),
-        PgTypes.boxArray
-      )
-    }
-
-    override def bpchares: Field[Array[/* bpchar */ String], PgtestRow] = {
-      new Field[Array[/* bpchar */ String], PgtestRow](
-        _path,
-        "bpchares",
-        _.bpchares,
-        Optional.empty(),
-        Optional.of("bpchar[]"),
-        (row, value) => row.copy(bpchares = value),
-        PgTypes.bpcharArray
-      )
-    }
-
-    override def chares: Field[Array[/* bpchar */ String], PgtestRow] = {
-      new Field[Array[/* bpchar */ String], PgtestRow](
-        _path,
-        "chares",
-        _.chares,
-        Optional.empty(),
-        Optional.of("bpchar[]"),
-        (row, value) => row.copy(chares = value),
-        PgTypes.bpcharArray
-      )
-    }
-
-    override def circlees: Field[Array[PGcircle], PgtestRow] = {
-      new Field[Array[PGcircle], PgtestRow](
-        _path,
-        "circlees",
-        _.circlees,
-        Optional.empty(),
-        Optional.of("circle[]"),
-        (row, value) => row.copy(circlees = value),
-        PgTypes.circleArray
-      )
-    }
-
-    override def datees: Field[Array[LocalDate], PgtestRow] = {
-      new Field[Array[LocalDate], PgtestRow](
-        _path,
-        "datees",
-        _.datees,
-        Optional.empty(),
-        Optional.of("date[]"),
-        (row, value) => row.copy(datees = value),
-        PgTypes.dateArray
-      )
-    }
-
-    override def float4es: Field[Array[java.lang.Float], PgtestRow] = {
-      new Field[Array[java.lang.Float], PgtestRow](
-        _path,
-        "float4es",
-        _.float4es,
-        Optional.empty(),
-        Optional.of("float4[]"),
-        (row, value) => row.copy(float4es = value),
-        PgTypes.float4Array
-      )
-    }
-
-    override def float8es: Field[Array[java.lang.Double], PgtestRow] = {
-      new Field[Array[java.lang.Double], PgtestRow](
-        _path,
-        "float8es",
-        _.float8es,
-        Optional.empty(),
-        Optional.of("float8[]"),
-        (row, value) => row.copy(float8es = value),
-        PgTypes.float8Array
-      )
-    }
-
-    override def inetes: Field[Array[Inet], PgtestRow] = {
-      new Field[Array[Inet], PgtestRow](
-        _path,
-        "inetes",
-        _.inetes,
-        Optional.empty(),
-        Optional.of("inet[]"),
-        (row, value) => row.copy(inetes = value),
-        PgTypes.inetArray
-      )
-    }
-
-    override def int2es: Field[Array[java.lang.Short], PgtestRow] = {
-      new Field[Array[java.lang.Short], PgtestRow](
-        _path,
-        "int2es",
-        _.int2es,
-        Optional.empty(),
-        Optional.of("int2[]"),
-        (row, value) => row.copy(int2es = value),
-        PgTypes.int2Array
-      )
-    }
-
-    override def int2vectores: Field[Array[Int2Vector], PgtestRow] = {
-      new Field[Array[Int2Vector], PgtestRow](
-        _path,
-        "int2vectores",
-        _.int2vectores,
-        Optional.empty(),
-        Optional.of("int2vector[]"),
-        (row, value) => row.copy(int2vectores = value),
-        PgTypes.int2vectorArray
-      )
-    }
-
-    override def int4es: Field[Array[Integer], PgtestRow] = {
-      new Field[Array[Integer], PgtestRow](
-        _path,
-        "int4es",
-        _.int4es,
-        Optional.empty(),
-        Optional.of("int4[]"),
-        (row, value) => row.copy(int4es = value),
-        PgTypes.int4Array
-      )
-    }
-
-    override def int8es: Field[Array[java.lang.Long], PgtestRow] = {
-      new Field[Array[java.lang.Long], PgtestRow](
-        _path,
-        "int8es",
-        _.int8es,
-        Optional.empty(),
-        Optional.of("int8[]"),
-        (row, value) => row.copy(int8es = value),
-        PgTypes.int8Array
-      )
-    }
-
-    override def intervales: Field[Array[PGInterval], PgtestRow] = {
-      new Field[Array[PGInterval], PgtestRow](
-        _path,
-        "intervales",
-        _.intervales,
-        Optional.empty(),
-        Optional.of("interval[]"),
-        (row, value) => row.copy(intervales = value),
-        PgTypes.intervalArray
-      )
-    }
-
-    override def jsones: Field[Array[Json], PgtestRow] = {
-      new Field[Array[Json], PgtestRow](
-        _path,
-        "jsones",
-        _.jsones,
-        Optional.empty(),
-        Optional.of("json[]"),
-        (row, value) => row.copy(jsones = value),
-        PgTypes.jsonArray
-      )
-    }
-
-    override def jsonbes: Field[Array[Jsonb], PgtestRow] = {
-      new Field[Array[Jsonb], PgtestRow](
-        _path,
-        "jsonbes",
-        _.jsonbes,
-        Optional.empty(),
-        Optional.of("jsonb[]"),
-        (row, value) => row.copy(jsonbes = value),
-        PgTypes.jsonbArray
-      )
-    }
-
-    override def linees: Field[Array[PGline], PgtestRow] = {
-      new Field[Array[PGline], PgtestRow](
-        _path,
-        "linees",
-        _.linees,
-        Optional.empty(),
-        Optional.of("line[]"),
-        (row, value) => row.copy(linees = value),
-        PgTypes.lineArray
-      )
-    }
-
-    override def lseges: Field[Array[PGlseg], PgtestRow] = {
-      new Field[Array[PGlseg], PgtestRow](
-        _path,
-        "lseges",
-        _.lseges,
-        Optional.empty(),
-        Optional.of("lseg[]"),
-        (row, value) => row.copy(lseges = value),
-        PgTypes.lsegArray
-      )
-    }
-
-    override def moneyes: Field[Array[Money], PgtestRow] = {
-      new Field[Array[Money], PgtestRow](
-        _path,
-        "moneyes",
-        _.moneyes,
-        Optional.of("numeric[]"),
-        Optional.of("money[]"),
-        (row, value) => row.copy(moneyes = value),
-        PgTypes.moneyArray
-      )
-    }
-
-    override def mydomaines: Field[Array[Mydomain], PgtestRow] = {
-      new Field[Array[Mydomain], PgtestRow](
-        _path,
-        "mydomaines",
-        _.mydomaines,
-        Optional.of("text[]"),
-        Optional.of("mydomain[]"),
-        (row, value) => row.copy(mydomaines = value),
-        Mydomain.pgTypeArray
-      )
-    }
-
-    override def myenumes: Field[Array[Myenum], PgtestRow] = {
-      new Field[Array[Myenum], PgtestRow](
-        _path,
-        "myenumes",
-        _.myenumes,
-        Optional.empty(),
-        Optional.of("myenum[]"),
-        (row, value) => row.copy(myenumes = value),
-        Myenum.pgTypeArray
-      )
-    }
-
-    override def namees: Field[Array[String], PgtestRow] = {
-      new Field[Array[String], PgtestRow](
-        _path,
-        "namees",
-        _.namees,
-        Optional.empty(),
-        Optional.of("name[]"),
-        (row, value) => row.copy(namees = value),
-        PgTypes.nameArray
-      )
-    }
-
-    override def numerices: Field[Array[java.math.BigDecimal], PgtestRow] = {
-      new Field[Array[java.math.BigDecimal], PgtestRow](
-        _path,
-        "numerices",
-        _.numerices,
-        Optional.empty(),
-        Optional.of("numeric[]"),
-        (row, value) => row.copy(numerices = value),
-        PgTypes.numericArray
-      )
-    }
-
-    override def pathes: Field[Array[PGpath], PgtestRow] = {
-      new Field[Array[PGpath], PgtestRow](
-        _path,
-        "pathes",
-        _.pathes,
-        Optional.empty(),
-        Optional.of("path[]"),
-        (row, value) => row.copy(pathes = value),
-        PgTypes.pathArray
-      )
-    }
-
-    override def pointes: Field[Array[PGpoint], PgtestRow] = {
-      new Field[Array[PGpoint], PgtestRow](
-        _path,
-        "pointes",
-        _.pointes,
-        Optional.empty(),
-        Optional.of("point[]"),
-        (row, value) => row.copy(pointes = value),
-        PgTypes.pointArray
-      )
-    }
-
-    override def polygones: Field[Array[PGpolygon], PgtestRow] = {
-      new Field[Array[PGpolygon], PgtestRow](
-        _path,
-        "polygones",
-        _.polygones,
-        Optional.empty(),
-        Optional.of("polygon[]"),
-        (row, value) => row.copy(polygones = value),
-        PgTypes.polygonArray
-      )
-    }
-
-    override def textes: Field[Array[String], PgtestRow] = {
-      new Field[Array[String], PgtestRow](
-        _path,
-        "textes",
-        _.textes,
-        Optional.empty(),
-        Optional.of("text[]"),
-        (row, value) => row.copy(textes = value),
-        PgTypes.textArray
-      )
-    }
-
-    override def timees: Field[Array[LocalTime], PgtestRow] = {
-      new Field[Array[LocalTime], PgtestRow](
-        _path,
-        "timees",
-        _.timees,
-        Optional.empty(),
-        Optional.of("time[]"),
-        (row, value) => row.copy(timees = value),
-        PgTypes.timeArray
-      )
-    }
-
-    override def timestampes: Field[Array[LocalDateTime], PgtestRow] = {
-      new Field[Array[LocalDateTime], PgtestRow](
-        _path,
-        "timestampes",
-        _.timestampes,
-        Optional.empty(),
-        Optional.of("timestamp[]"),
-        (row, value) => row.copy(timestampes = value),
-        PgTypes.timestampArray
-      )
-    }
-
-    override def timestampzes: Field[Array[Instant], PgtestRow] = {
-      new Field[Array[Instant], PgtestRow](
-        _path,
-        "timestampzes",
-        _.timestampzes,
-        Optional.empty(),
-        Optional.of("timestamptz[]"),
-        (row, value) => row.copy(timestampzes = value),
-        PgTypes.timestamptzArray
-      )
-    }
-
-    override def timezes: Field[Array[OffsetTime], PgtestRow] = {
-      new Field[Array[OffsetTime], PgtestRow](
-        _path,
-        "timezes",
-        _.timezes,
-        Optional.empty(),
-        Optional.of("timetz[]"),
-        (row, value) => row.copy(timezes = value),
-        PgTypes.timetzArray
-      )
-    }
-
-    override def uuides: Field[Array[UUID], PgtestRow] = {
-      new Field[Array[UUID], PgtestRow](
-        _path,
-        "uuides",
-        _.uuides,
-        Optional.empty(),
-        Optional.of("uuid[]"),
-        (row, value) => row.copy(uuides = value),
-        PgTypes.uuidArray
-      )
-    }
-
-    override def varchares: Field[Array[String], PgtestRow] = {
-      new Field[Array[String], PgtestRow](
-        _path,
-        "varchares",
-        _.varchares,
-        Optional.empty(),
-        Optional.of("varchar[]"),
-        (row, value) => row.copy(varchares = value),
-        PgTypes.textArray
-      )
-    }
-
-    override def xmles: Field[Array[Xml], PgtestRow] = {
-      new Field[Array[Xml], PgtestRow](
-        _path,
-        "xmles",
-        _.xmles,
-        Optional.empty(),
-        Optional.of("xml[]"),
-        (row, value) => row.copy(xmles = value),
-        PgTypes.xmlArray
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, PgtestRow]] = java.util.List.of(this.bool, this.box, this.bpchar, this.bytea, this.char, this.circle, this.date, this.float4, this.float8, this.hstore, this.inet, this.int2, this.int2vector, this.int4, this.int8, this.interval, this.json, this.jsonb, this.line, this.lseg, this.money, this.mydomain, this.myenum, this.name, this.numeric, this.path, this.point, this.polygon, this.text, this.time, this.timestamp, this.timestampz, this.timez, this.uuid, this.varchar, this.vector, this.xml, this.boxes, this.bpchares, this.chares, this.circlees, this.datees, this.float4es, this.float8es, this.inetes, this.int2es, this.int2vectores, this.int4es, this.int8es, this.intervales, this.jsones, this.jsonbes, this.linees, this.lseges, this.moneyes, this.mydomaines, this.myenumes, this.namees, this.numerices, this.pathes, this.pointes, this.polygones, this.textes, this.timees, this.timestampes, this.timestampzes, this.timezes, this.uuides, this.varchares, this.xmles)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[PgtestFields, PgtestRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: PgtestFields = new PgtestFields(java.util.Collections.emptyList())
 }

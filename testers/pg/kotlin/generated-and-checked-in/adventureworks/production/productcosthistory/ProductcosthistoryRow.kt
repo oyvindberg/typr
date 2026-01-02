@@ -9,6 +9,7 @@ import adventureworks.customtypes.Defaulted
 import adventureworks.production.product.ProductId
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -38,7 +39,17 @@ data class ProductcosthistoryRow(
   val standardcost: BigDecimal,
   /** Default: now() */
   val modifieddate: LocalDateTime
-) {
+) : Tuple5<ProductId, LocalDateTime, LocalDateTime?, BigDecimal, LocalDateTime> {
+  override fun _1(): ProductId = productid
+
+  override fun _2(): LocalDateTime = startdate
+
+  override fun _3(): LocalDateTime? = enddate
+
+  override fun _4(): BigDecimal = standardcost
+
+  override fun _5(): LocalDateTime = modifieddate
+
   fun compositeId(): ProductcosthistoryId = ProductcosthistoryId(productid, startdate)
 
   fun id(): ProductcosthistoryId = this.compositeId()
@@ -46,7 +57,7 @@ data class ProductcosthistoryRow(
   fun toUnsavedRow(modifieddate: Defaulted<LocalDateTime> = Defaulted.Provided(this.modifieddate)): ProductcosthistoryRowUnsaved = ProductcosthistoryRowUnsaved(productid, startdate, enddate, standardcost, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ProductcosthistoryRow> = RowParsers.of(ProductId.pgType, PgTypes.timestamp, PgTypes.timestamp.nullable(), PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> ProductcosthistoryRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.productid, row.startdate, row.enddate, row.standardcost, row.modifieddate) })
+    val _rowParser: RowParser<ProductcosthistoryRow> = RowParsers.of(ProductId.dbType, PgTypes.timestamp, PgTypes.timestamp.nullable(), PgTypes.numeric, PgTypes.timestamp, { t0, t1, t2, t3, t4 -> ProductcosthistoryRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.productid, row.startdate, row.enddate, row.standardcost, row.modifieddate) })
 
     fun apply(
       compositeId: ProductcosthistoryId,

@@ -7,6 +7,7 @@ package testdb.orders
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -32,7 +33,7 @@ case class OrdersRow(
   @JsonProperty("TOTAL_AMOUNT") totalAmount: Option[BigDecimal],
   /** Default: 'pending' */
   @JsonProperty("STATUS") status: Option[String]
-) {
+) extends Tuple5[OrdersId, CustomersId, LocalDate, Option[BigDecimal], Option[String]] {
   def id: OrdersId = orderId
 
   def toUnsavedRow(
@@ -46,8 +47,18 @@ case class OrdersRow(
       status
     )
   }
+
+  override def `_1`: OrdersId = orderId
+
+  override def `_2`: CustomersId = customerId
+
+  override def `_3`: LocalDate = orderDate
+
+  override def `_4`: Option[BigDecimal] = totalAmount
+
+  override def `_5`: Option[String] = status
 }
 
 object OrdersRow {
-  val `_rowParser`: RowParser[OrdersRow] = RowParsers.of(OrdersId.pgType, CustomersId.pgType, Db2Types.date, ScalaDbTypes.Db2Types.decimal.nullable, Db2Types.varchar.nullable)(OrdersRow.apply)(row => Array[Any](row.orderId, row.customerId, row.orderDate, row.totalAmount, row.status))
+  val `_rowParser`: RowParser[OrdersRow] = RowParsers.of(OrdersId.dbType, CustomersId.dbType, Db2Types.date, ScalaDbTypes.Db2Types.decimal.nullable, Db2Types.varchar.nullable)(OrdersRow.apply)(row => Array[Any](row.orderId, row.customerId, row.orderDate, row.totalAmount, row.status))
 }

@@ -24,27 +24,25 @@ import java.util.Optional;
 public class MariatestRepoImpl implements MariatestRepo {
   @Override
   public DeleteBuilder<MariatestFields, MariatestRow> delete() {
-    return DeleteBuilder.of("`mariatest`", MariatestFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`mariatest`", MariatestFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(MariatestId intCol, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `mariatest` where `int_col` = "),
-                Fragment.encode(MariatestId.pgType, intCol),
+                Fragment.encode(MariatestId.dbType, intCol),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(MariatestId[] intCols, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : intCols) {
-      fragments.add(Fragment.encode(MariatestId.pgType, id));
+      fragments.add(Fragment.encode(MariatestId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -54,7 +52,6 @@ public class MariatestRepoImpl implements MariatestRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public MariatestRow insert(MariatestRow unsaved, Connection c) {
@@ -68,7 +65,7 @@ public class MariatestRepoImpl implements MariatestRepo {
                     + " `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`,"
                     + " `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`,"
                     + " `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`,"
-                    + " `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`)\n"
+                    + " `set_col`, `json_col`, `inet4_col`, `inet6_col`)\n"
                     + "values ("),
             Fragment.encode(MariaTypes.tinyint, unsaved.tinyintCol()),
             Fragment.lit(", "),
@@ -76,7 +73,7 @@ public class MariatestRepoImpl implements MariatestRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.mediumint, unsaved.mediumintCol()),
             Fragment.lit(", "),
-            Fragment.encode(MariatestId.pgType, unsaved.intCol()),
+            Fragment.encode(MariatestId.dbType, unsaved.intCol()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.bigint, unsaved.bigintCol()),
             Fragment.lit(", "),
@@ -144,11 +141,9 @@ public class MariatestRepoImpl implements MariatestRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.year, unsaved.yearCol()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.text, unsaved.enumCol()),
-            Fragment.lit(", "),
             Fragment.encode(MariaTypes.set, unsaved.setCol()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext, unsaved.jsonCol()),
+            Fragment.encode(MariaTypes.json, unsaved.jsonCol()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.inet4, unsaved.inet4Col()),
             Fragment.lit(", "),
@@ -163,11 +158,10 @@ public class MariatestRepoImpl implements MariatestRepo {
                     + " `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`,"
                     + " `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`,"
                     + " `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`,"
-                    + " `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`\n"))
+                    + " `set_col`, `json_col`, `inet4_col`, `inet6_col`\n"))
         .updateReturning(MariatestRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public MariatestRow insert(MariatestRowUnsaved unsaved, Connection c) {
@@ -187,7 +181,7 @@ public class MariatestRepoImpl implements MariatestRepo {
             Fragment.encode(MariaTypes.mediumint, unsaved.mediumintCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`int_col`"));
     values.add(
-        interpolate(Fragment.encode(MariatestId.pgType, unsaved.intCol()), Fragment.lit("")));
+        interpolate(Fragment.encode(MariatestId.dbType, unsaved.intCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`bigint_col`"));
     values.add(
         interpolate(Fragment.encode(MariaTypes.bigint, unsaved.bigintCol()), Fragment.lit("")));
@@ -282,13 +276,10 @@ public class MariatestRepoImpl implements MariatestRepo {
             Fragment.encode(MariaTypes.datetime, unsaved.datetimeFspCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`year_col`"));
     values.add(interpolate(Fragment.encode(MariaTypes.year, unsaved.yearCol()), Fragment.lit("")));
-    columns.add(Fragment.lit("`enum_col`"));
-    values.add(interpolate(Fragment.encode(MariaTypes.text, unsaved.enumCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`set_col`"));
     values.add(interpolate(Fragment.encode(MariaTypes.set, unsaved.setCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`json_col`"));
-    values.add(
-        interpolate(Fragment.encode(MariaTypes.longtext, unsaved.jsonCol()), Fragment.lit("")));
+    values.add(interpolate(Fragment.encode(MariaTypes.json, unsaved.jsonCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`inet4_col`"));
     values.add(
         interpolate(Fragment.encode(MariaTypes.inet4, unsaved.inet4Col()), Fragment.lit("")));
@@ -331,18 +322,16 @@ public class MariatestRepoImpl implements MariatestRepo {
                     + " `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`,"
                     + " `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`,"
                     + " `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`,"
-                    + " `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`\n"));
+                    + " `set_col`, `json_col`, `inet4_col`, `inet6_col`\n"));
     ;
     return q.updateReturning(MariatestRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<MariatestFields, MariatestRow> select() {
     return SelectBuilder.of(
-        "`mariatest`", MariatestFields.structure(), MariatestRow._rowParser, Dialect.MARIADB);
+        "`mariatest`", MariatestFields.structure, MariatestRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<MariatestRow> selectAll(Connection c) {
@@ -356,12 +345,11 @@ public class MariatestRepoImpl implements MariatestRepo {
                     + " `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`,"
                     + " `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`,"
                     + " `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`,"
-                    + " `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`\n"
+                    + " `set_col`, `json_col`, `inet4_col`, `inet6_col`\n"
                     + "from `mariatest`\n"))
         .query(MariatestRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<MariatestRow> selectById(MariatestId intCol, Connection c) {
@@ -375,21 +363,20 @@ public class MariatestRepoImpl implements MariatestRepo {
                     + " `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`,"
                     + " `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`,"
                     + " `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`,"
-                    + " `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`\n"
+                    + " `set_col`, `json_col`, `inet4_col`, `inet6_col`\n"
                     + "from `mariatest`\n"
                     + "where `int_col` = "),
-            Fragment.encode(MariatestId.pgType, intCol),
+            Fragment.encode(MariatestId.dbType, intCol),
             Fragment.lit(""))
         .query(MariatestRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<MariatestRow> selectByIds(MariatestId[] intCols, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : intCols) {
-      fragments.add(Fragment.encode(MariatestId.pgType, id));
+      fragments.add(Fragment.encode(MariatestId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -402,14 +389,13 @@ public class MariatestRepoImpl implements MariatestRepo {
                     + " `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`,"
                     + " `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`,"
                     + " `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`,"
-                    + " `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col` from"
-                    + " `mariatest` where `int_col` in ("),
+                    + " `set_col`, `json_col`, `inet4_col`, `inet6_col` from `mariatest` where"
+                    + " `int_col` in ("),
             Fragment.comma(fragments),
             Fragment.lit(")"))
         .query(MariatestRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<MariatestId, MariatestRow> selectByIdsTracked(MariatestId[] intCols, Connection c) {
@@ -417,14 +403,12 @@ public class MariatestRepoImpl implements MariatestRepo {
     selectByIds(intCols, c).forEach(row -> ret.put(row.intCol(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<MariatestFields, MariatestRow> update() {
     return UpdateBuilder.of(
-        "`mariatest`", MariatestFields.structure(), MariatestRow._rowParser, Dialect.MARIADB);
+        "`mariatest`", MariatestFields.structure, MariatestRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(MariatestRow row, Connection c) {
@@ -503,24 +487,21 @@ public class MariatestRepoImpl implements MariatestRepo {
                 Fragment.encode(MariaTypes.timestamp, row.timestampFspCol()),
                 Fragment.lit(",\n`year_col` = "),
                 Fragment.encode(MariaTypes.year, row.yearCol()),
-                Fragment.lit(",\n`enum_col` = "),
-                Fragment.encode(MariaTypes.text, row.enumCol()),
                 Fragment.lit(",\n`set_col` = "),
                 Fragment.encode(MariaTypes.set, row.setCol()),
                 Fragment.lit(",\n`json_col` = "),
-                Fragment.encode(MariaTypes.longtext, row.jsonCol()),
+                Fragment.encode(MariaTypes.json, row.jsonCol()),
                 Fragment.lit(",\n`inet4_col` = "),
                 Fragment.encode(MariaTypes.inet4, row.inet4Col()),
                 Fragment.lit(",\n`inet6_col` = "),
                 Fragment.encode(MariaTypes.inet6, row.inet6Col()),
                 Fragment.lit("\nwhere `int_col` = "),
-                Fragment.encode(MariatestId.pgType, intCol),
+                Fragment.encode(MariatestId.dbType, intCol),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public MariatestRow upsert(MariatestRow unsaved, Connection c) {
@@ -534,7 +515,7 @@ public class MariatestRepoImpl implements MariatestRepo {
                     + " `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`,"
                     + " `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`,"
                     + " `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`,"
-                    + " `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`)\n"
+                    + " `set_col`, `json_col`, `inet4_col`, `inet6_col`)\n"
                     + "VALUES ("),
             Fragment.encode(MariaTypes.tinyint, unsaved.tinyintCol()),
             Fragment.lit(", "),
@@ -542,7 +523,7 @@ public class MariatestRepoImpl implements MariatestRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.mediumint, unsaved.mediumintCol()),
             Fragment.lit(", "),
-            Fragment.encode(MariatestId.pgType, unsaved.intCol()),
+            Fragment.encode(MariatestId.dbType, unsaved.intCol()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.bigint, unsaved.bigintCol()),
             Fragment.lit(", "),
@@ -610,11 +591,9 @@ public class MariatestRepoImpl implements MariatestRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.year, unsaved.yearCol()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.text, unsaved.enumCol()),
-            Fragment.lit(", "),
             Fragment.encode(MariaTypes.set, unsaved.setCol()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext, unsaved.jsonCol()),
+            Fragment.encode(MariaTypes.json, unsaved.jsonCol()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.inet4, unsaved.inet4Col()),
             Fragment.lit(", "),
@@ -657,7 +636,6 @@ public class MariatestRepoImpl implements MariatestRepo {
                     + "`timestamp_col` = VALUES(`timestamp_col`),\n"
                     + "`timestamp_fsp_col` = VALUES(`timestamp_fsp_col`),\n"
                     + "`year_col` = VALUES(`year_col`),\n"
-                    + "`enum_col` = VALUES(`enum_col`),\n"
                     + "`set_col` = VALUES(`set_col`),\n"
                     + "`json_col` = VALUES(`json_col`),\n"
                     + "`inet4_col` = VALUES(`inet4_col`),\n"
@@ -670,11 +648,10 @@ public class MariatestRepoImpl implements MariatestRepo {
                     + " `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`,"
                     + " `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`,"
                     + " `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`,"
-                    + " `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`"))
+                    + " `set_col`, `json_col`, `inet4_col`, `inet6_col`"))
         .updateReturning(MariatestRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<MariatestRow> upsertBatch(Iterator<MariatestRow> unsaved, Connection c) {
@@ -688,9 +665,9 @@ public class MariatestRepoImpl implements MariatestRepo {
                     + " `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`,"
                     + " `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`,"
                     + " `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`,"
-                    + " `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`)\n"
+                    + " `set_col`, `json_col`, `inet4_col`, `inet6_col`)\n"
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,"
-                    + " ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n"
+                    + " ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n"
                     + "ON DUPLICATE KEY UPDATE `tinyint_col` = VALUES(`tinyint_col`),\n"
                     + "`smallint_col` = VALUES(`smallint_col`),\n"
                     + "`mediumint_col` = VALUES(`mediumint_col`),\n"
@@ -727,7 +704,6 @@ public class MariatestRepoImpl implements MariatestRepo {
                     + "`timestamp_col` = VALUES(`timestamp_col`),\n"
                     + "`timestamp_fsp_col` = VALUES(`timestamp_fsp_col`),\n"
                     + "`year_col` = VALUES(`year_col`),\n"
-                    + "`enum_col` = VALUES(`enum_col`),\n"
                     + "`set_col` = VALUES(`set_col`),\n"
                     + "`json_col` = VALUES(`json_col`),\n"
                     + "`inet4_col` = VALUES(`inet4_col`),\n"
@@ -740,9 +716,8 @@ public class MariatestRepoImpl implements MariatestRepo {
                     + " `varbinary_col`, `tinyblob_col`, `blob_col`, `mediumblob_col`,"
                     + " `longblob_col`, `date_col`, `time_col`, `time_fsp_col`, `datetime_col`,"
                     + " `datetime_fsp_col`, `timestamp_col`, `timestamp_fsp_col`, `year_col`,"
-                    + " `enum_col`, `set_col`, `json_col`, `inet4_col`, `inet6_col`"))
+                    + " `set_col`, `json_col`, `inet4_col`, `inet6_col`"))
         .updateReturningEach(MariatestRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

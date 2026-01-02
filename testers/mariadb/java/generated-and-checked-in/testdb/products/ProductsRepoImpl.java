@@ -25,27 +25,25 @@ import testdb.brands.BrandsId;
 public class ProductsRepoImpl implements ProductsRepo {
   @Override
   public DeleteBuilder<ProductsFields, ProductsRow> delete() {
-    return DeleteBuilder.of("`products`", ProductsFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`products`", ProductsFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(ProductsId productId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `products` where `product_id` = "),
-                Fragment.encode(ProductsId.pgType, productId),
+                Fragment.encode(ProductsId.dbType, productId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(ProductsId[] productIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : productIds) {
-      fragments.add(Fragment.encode(ProductsId.pgType, id));
+      fragments.add(Fragment.encode(ProductsId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -55,7 +53,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductsRow insert(ProductsRow unsaved, Connection c) {
@@ -68,7 +65,7 @@ public class ProductsRepoImpl implements ProductsRepo {
                     + "values ("),
             Fragment.encode(MariaTypes.varchar, unsaved.sku()),
             Fragment.lit(", "),
-            Fragment.encode(BrandsId.pgType.opt(), unsaved.brandId()),
+            Fragment.encode(BrandsId.dbType.opt(), unsaved.brandId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.name()),
             Fragment.lit(", "),
@@ -82,7 +79,7 @@ public class ProductsRepoImpl implements ProductsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.numeric.opt(), unsaved.weightKg()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.dimensionsJson()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.dimensionsJson()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text, unsaved.status()),
             Fragment.lit(", "),
@@ -90,9 +87,9 @@ public class ProductsRepoImpl implements ProductsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.set.opt(), unsaved.tags()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.attributes()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.attributes()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.seoMetadata()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.seoMetadata()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.datetime, unsaved.createdAt()),
             Fragment.lit(", "),
@@ -108,7 +105,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .updateReturning(ProductsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductsRow insert(ProductsRowUnsaved unsaved, Connection c) {
@@ -130,7 +126,7 @@ public class ProductsRepoImpl implements ProductsRepo {
             value -> {
               columns.add(Fragment.lit("`brand_id`"));
               values.add(
-                  interpolate(Fragment.encode(BrandsId.pgType.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(BrandsId.dbType.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -180,7 +176,7 @@ public class ProductsRepoImpl implements ProductsRepo {
             value -> {
               columns.add(Fragment.lit("`dimensions_json`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(MariaTypes.json.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -218,7 +214,7 @@ public class ProductsRepoImpl implements ProductsRepo {
             value -> {
               columns.add(Fragment.lit("`attributes`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(MariaTypes.json.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -228,7 +224,7 @@ public class ProductsRepoImpl implements ProductsRepo {
             value -> {
               columns.add(Fragment.lit("`seo_metadata`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(MariaTypes.json.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -276,14 +272,12 @@ public class ProductsRepoImpl implements ProductsRepo {
     ;
     return q.updateReturning(ProductsRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<ProductsFields, ProductsRow> select() {
     return SelectBuilder.of(
-        "`products`", ProductsFields.structure(), ProductsRow._rowParser, Dialect.MARIADB);
+        "`products`", ProductsFields.structure, ProductsRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<ProductsRow> selectAll(Connection c) {
@@ -297,7 +291,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .query(ProductsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<ProductsRow> selectById(ProductsId productId, Connection c) {
@@ -309,18 +302,17 @@ public class ProductsRepoImpl implements ProductsRepo {
                     + " `seo_metadata`, `created_at`, `updated_at`, `published_at`\n"
                     + "from `products`\n"
                     + "where `product_id` = "),
-            Fragment.encode(ProductsId.pgType, productId),
+            Fragment.encode(ProductsId.dbType, productId),
             Fragment.lit(""))
         .query(ProductsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductsRow> selectByIds(ProductsId[] productIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : productIds) {
-      fragments.add(Fragment.encode(ProductsId.pgType, id));
+      fragments.add(Fragment.encode(ProductsId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -335,7 +327,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .query(ProductsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<ProductsId, ProductsRow> selectByIdsTracked(ProductsId[] productIds, Connection c) {
@@ -343,7 +334,6 @@ public class ProductsRepoImpl implements ProductsRepo {
     selectByIds(productIds, c).forEach(row -> ret.put(row.productId(), row));
     return ret;
   }
-  ;
 
   @Override
   public Optional<ProductsRow> selectByUniqueSku(String sku, Connection c) {
@@ -360,14 +350,12 @@ public class ProductsRepoImpl implements ProductsRepo {
         .query(ProductsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<ProductsFields, ProductsRow> update() {
     return UpdateBuilder.of(
-        "`products`", ProductsFields.structure(), ProductsRow._rowParser, Dialect.MARIADB);
+        "`products`", ProductsFields.structure, ProductsRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(ProductsRow row, Connection c) {
@@ -377,7 +365,7 @@ public class ProductsRepoImpl implements ProductsRepo {
                 Fragment.lit("update `products`\nset `sku` = "),
                 Fragment.encode(MariaTypes.varchar, row.sku()),
                 Fragment.lit(",\n`brand_id` = "),
-                Fragment.encode(BrandsId.pgType.opt(), row.brandId()),
+                Fragment.encode(BrandsId.dbType.opt(), row.brandId()),
                 Fragment.lit(",\n`name` = "),
                 Fragment.encode(MariaTypes.varchar, row.name()),
                 Fragment.lit(",\n`short_description` = "),
@@ -391,7 +379,7 @@ public class ProductsRepoImpl implements ProductsRepo {
                 Fragment.lit(",\n`weight_kg` = "),
                 Fragment.encode(MariaTypes.numeric.opt(), row.weightKg()),
                 Fragment.lit(",\n`dimensions_json` = "),
-                Fragment.encode(MariaTypes.longtext.opt(), row.dimensionsJson()),
+                Fragment.encode(MariaTypes.json.opt(), row.dimensionsJson()),
                 Fragment.lit(",\n`status` = "),
                 Fragment.encode(MariaTypes.text, row.status()),
                 Fragment.lit(",\n`tax_class` = "),
@@ -399,9 +387,9 @@ public class ProductsRepoImpl implements ProductsRepo {
                 Fragment.lit(",\n`tags` = "),
                 Fragment.encode(MariaTypes.set.opt(), row.tags()),
                 Fragment.lit(",\n`attributes` = "),
-                Fragment.encode(MariaTypes.longtext.opt(), row.attributes()),
+                Fragment.encode(MariaTypes.json.opt(), row.attributes()),
                 Fragment.lit(",\n`seo_metadata` = "),
-                Fragment.encode(MariaTypes.longtext.opt(), row.seoMetadata()),
+                Fragment.encode(MariaTypes.json.opt(), row.seoMetadata()),
                 Fragment.lit(",\n`created_at` = "),
                 Fragment.encode(MariaTypes.datetime, row.createdAt()),
                 Fragment.lit(",\n`updated_at` = "),
@@ -409,26 +397,27 @@ public class ProductsRepoImpl implements ProductsRepo {
                 Fragment.lit(",\n`published_at` = "),
                 Fragment.encode(MariaTypes.datetime.opt(), row.publishedAt()),
                 Fragment.lit("\nwhere `product_id` = "),
-                Fragment.encode(ProductsId.pgType, productId),
+                Fragment.encode(ProductsId.dbType, productId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public ProductsRow upsert(ProductsRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `products`(`sku`, `brand_id`, `name`, `short_description`,"
-                    + " `full_description`, `base_price`, `cost_price`, `weight_kg`,"
-                    + " `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`,"
-                    + " `seo_metadata`, `created_at`, `updated_at`, `published_at`)\n"
+                "INSERT INTO `products`(`product_id`, `sku`, `brand_id`, `name`,"
+                    + " `short_description`, `full_description`, `base_price`, `cost_price`,"
+                    + " `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`,"
+                    + " `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`)\n"
                     + "VALUES ("),
+            Fragment.encode(ProductsId.dbType, unsaved.productId()),
+            Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.sku()),
             Fragment.lit(", "),
-            Fragment.encode(BrandsId.pgType.opt(), unsaved.brandId()),
+            Fragment.encode(BrandsId.dbType.opt(), unsaved.brandId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.name()),
             Fragment.lit(", "),
@@ -442,7 +431,7 @@ public class ProductsRepoImpl implements ProductsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.numeric.opt(), unsaved.weightKg()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.dimensionsJson()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.dimensionsJson()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text, unsaved.status()),
             Fragment.lit(", "),
@@ -450,9 +439,9 @@ public class ProductsRepoImpl implements ProductsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.set.opt(), unsaved.tags()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.attributes()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.attributes()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.seoMetadata()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.seoMetadata()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.datetime, unsaved.createdAt()),
             Fragment.lit(", "),
@@ -485,7 +474,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .updateReturning(ProductsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductsRow> upsertBatch(Iterator<ProductsRow> unsaved, Connection c) {
@@ -520,5 +508,4 @@ public class ProductsRepoImpl implements ProductsRepo {
         .updateReturningEach(ProductsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

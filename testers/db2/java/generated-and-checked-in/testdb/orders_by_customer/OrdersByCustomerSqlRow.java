@@ -9,19 +9,30 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple8;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 /** SQL file: orders_by_customer.sql */
 public record OrdersByCustomerSqlRow(
     @JsonProperty("order_id") Integer orderId,
     @JsonProperty("order_date") LocalDate orderDate,
-    @JsonProperty("total_amount") BigDecimal totalAmount,
-    String status,
+    @JsonProperty("total_amount") Optional<BigDecimal> totalAmount,
+    Optional<String> status,
     @JsonProperty("item_number") Integer itemNumber,
     @JsonProperty("product_name") String productName,
     Integer quantity,
-    @JsonProperty("unit_price") BigDecimal unitPrice) {
+    @JsonProperty("unit_price") BigDecimal unitPrice)
+    implements Tuple8<
+        Integer,
+        LocalDate,
+        Optional<BigDecimal>,
+        Optional<String>,
+        Integer,
+        String,
+        Integer,
+        BigDecimal> {
   public OrdersByCustomerSqlRow withOrderId(Integer orderId) {
     return new OrdersByCustomerSqlRow(
         orderId, orderDate, totalAmount, status, itemNumber, productName, quantity, unitPrice);
@@ -34,13 +45,13 @@ public record OrdersByCustomerSqlRow(
   }
   ;
 
-  public OrdersByCustomerSqlRow withTotalAmount(BigDecimal totalAmount) {
+  public OrdersByCustomerSqlRow withTotalAmount(Optional<BigDecimal> totalAmount) {
     return new OrdersByCustomerSqlRow(
         orderId, orderDate, totalAmount, status, itemNumber, productName, quantity, unitPrice);
   }
   ;
 
-  public OrdersByCustomerSqlRow withStatus(String status) {
+  public OrdersByCustomerSqlRow withStatus(Optional<String> status) {
     return new OrdersByCustomerSqlRow(
         orderId, orderDate, totalAmount, status, itemNumber, productName, quantity, unitPrice);
   }
@@ -74,8 +85,8 @@ public record OrdersByCustomerSqlRow(
       RowParsers.of(
           Db2Types.integer,
           Db2Types.date,
-          Db2Types.decimal,
-          Db2Types.varchar,
+          Db2Types.decimal.opt(),
+          Db2Types.varchar.opt(),
           Db2Types.integer,
           Db2Types.varchar,
           Db2Types.integer,
@@ -92,5 +103,53 @@ public record OrdersByCustomerSqlRow(
                 row.quantity(),
                 row.unitPrice()
               });
+  ;
+
+  @Override
+  public Integer _1() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public LocalDate _2() {
+    return orderDate;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _3() {
+    return totalAmount;
+  }
+  ;
+
+  @Override
+  public Optional<String> _4() {
+    return status;
+  }
+  ;
+
+  @Override
+  public Integer _5() {
+    return itemNumber;
+  }
+  ;
+
+  @Override
+  public String _6() {
+    return productName;
+  }
+  ;
+
+  @Override
+  public Integer _7() {
+    return quantity;
+  }
+  ;
+
+  @Override
+  public BigDecimal _8() {
+    return unitPrice;
+  }
   ;
 }

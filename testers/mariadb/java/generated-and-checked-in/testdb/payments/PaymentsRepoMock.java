@@ -47,7 +47,7 @@ public record PaymentsRepoMock(
   @Override
   public DeleteBuilder<PaymentsFields, PaymentsRow> delete() {
     return new DeleteBuilderMock<>(
-        PaymentsFields.structure(),
+        PaymentsFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.paymentId(),
@@ -96,7 +96,7 @@ public record PaymentsRepoMock(
   @Override
   public SelectBuilder<PaymentsFields, PaymentsRow> select() {
     return new SelectBuilderMock<>(
-        PaymentsFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        PaymentsFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -137,7 +137,7 @@ public record PaymentsRepoMock(
   @Override
   public UpdateBuilder<PaymentsFields, PaymentsRow> update() {
     return new UpdateBuilderMock<>(
-        PaymentsFields.structure(),
+        PaymentsFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

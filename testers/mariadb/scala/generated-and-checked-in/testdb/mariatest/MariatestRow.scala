@@ -7,13 +7,18 @@ package testdb.mariatest
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple41
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint2
+import dev.typr.foundations.data.Uint4
+import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.data.maria.Inet4
 import dev.typr.foundations.data.maria.Inet6
 import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
-import java.math.BigInteger
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -35,15 +40,15 @@ case class MariatestRow(
   /**  */
   @JsonProperty("bigint_col") bigintCol: Long,
   /**  */
-  @JsonProperty("tinyint_u_col") tinyintUCol: Short,
+  @JsonProperty("tinyint_u_col") tinyintUCol: Uint1,
   /**  */
-  @JsonProperty("smallint_u_col") smallintUCol: Int,
+  @JsonProperty("smallint_u_col") smallintUCol: Uint2,
   /**  */
-  @JsonProperty("mediumint_u_col") mediumintUCol: Int,
+  @JsonProperty("mediumint_u_col") mediumintUCol: Uint4,
   /**  */
-  @JsonProperty("int_u_col") intUCol: Long,
+  @JsonProperty("int_u_col") intUCol: Uint4,
   /**  */
-  @JsonProperty("bigint_u_col") bigintUCol: BigInteger,
+  @JsonProperty("bigint_u_col") bigintUCol: Uint8,
   /**  */
   @JsonProperty("decimal_col") decimalCol: BigDecimal,
   /**  */
@@ -103,16 +108,14 @@ case class MariatestRow(
   /**  */
   @JsonProperty("year_col") yearCol: Year,
   /**  */
-  @JsonProperty("enum_col") enumCol: String,
-  /**  */
   @JsonProperty("set_col") setCol: MariaSet,
   /**  */
-  @JsonProperty("json_col") jsonCol: String,
+  @JsonProperty("json_col") jsonCol: Json,
   /**  */
   @JsonProperty("inet4_col") inet4Col: Inet4,
   /**  */
   @JsonProperty("inet6_col") inet6Col: Inet6
-) {
+) extends Tuple41[Byte, Short, Int, MariatestId, Long, Uint1, Uint2, Uint4, Uint4, Uint8, BigDecimal, BigDecimal, Float, Double, Boolean, Array[Byte], Array[Byte], String, String, String, String, String, String, Array[Byte], Array[Byte], Array[Byte], Array[Byte], Array[Byte], Array[Byte], LocalDate, LocalTime, LocalTime, LocalDateTime, LocalDateTime, LocalDateTime, LocalDateTime, Year, MariaSet, Json, Inet4, Inet6] {
   def id: MariatestId = intCol
 
   def toUnsavedRow(
@@ -155,7 +158,6 @@ case class MariatestRow(
       datetimeCol,
       datetimeFspCol,
       yearCol,
-      enumCol,
       setCol,
       jsonCol,
       inet4Col,
@@ -164,8 +166,90 @@ case class MariatestRow(
       timestampFspCol
     )
   }
+
+  override def `_1`: Byte = tinyintCol
+
+  override def `_2`: Short = smallintCol
+
+  override def `_3`: Int = mediumintCol
+
+  override def `_4`: MariatestId = intCol
+
+  override def `_5`: Long = bigintCol
+
+  override def `_6`: Uint1 = tinyintUCol
+
+  override def `_7`: Uint2 = smallintUCol
+
+  override def `_8`: Uint4 = mediumintUCol
+
+  override def `_9`: Uint4 = intUCol
+
+  override def `_10`: Uint8 = bigintUCol
+
+  override def `_11`: BigDecimal = decimalCol
+
+  override def `_12`: BigDecimal = numericCol
+
+  override def `_13`: Float = floatCol
+
+  override def `_14`: Double = doubleCol
+
+  override def `_15`: Boolean = boolCol
+
+  override def `_16`: Array[Byte] = bitCol
+
+  override def `_17`: Array[Byte] = bit1Col
+
+  override def `_18`: String = charCol
+
+  override def `_19`: String = varcharCol
+
+  override def `_20`: String = tinytextCol
+
+  override def `_21`: String = textCol
+
+  override def `_22`: String = mediumtextCol
+
+  override def `_23`: String = longtextCol
+
+  override def `_24`: Array[Byte] = binaryCol
+
+  override def `_25`: Array[Byte] = varbinaryCol
+
+  override def `_26`: Array[Byte] = tinyblobCol
+
+  override def `_27`: Array[Byte] = blobCol
+
+  override def `_28`: Array[Byte] = mediumblobCol
+
+  override def `_29`: Array[Byte] = longblobCol
+
+  override def `_30`: LocalDate = dateCol
+
+  override def `_31`: LocalTime = timeCol
+
+  override def `_32`: LocalTime = timeFspCol
+
+  override def `_33`: LocalDateTime = datetimeCol
+
+  override def `_34`: LocalDateTime = datetimeFspCol
+
+  override def `_35`: LocalDateTime = timestampCol
+
+  override def `_36`: LocalDateTime = timestampFspCol
+
+  override def `_37`: Year = yearCol
+
+  override def `_38`: MariaSet = setCol
+
+  override def `_39`: Json = jsonCol
+
+  override def `_40`: Inet4 = inet4Col
+
+  override def `_41`: Inet6 = inet6Col
 }
 
 object MariatestRow {
-  val `_rowParser`: RowParser[MariatestRow] = RowParsers.of(ScalaDbTypes.MariaTypes.tinyint, ScalaDbTypes.MariaTypes.smallint, ScalaDbTypes.MariaTypes.mediumint, MariatestId.pgType, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.tinyintUnsigned, ScalaDbTypes.MariaTypes.smallintUnsigned, ScalaDbTypes.MariaTypes.mediumintUnsigned, ScalaDbTypes.MariaTypes.intUnsigned, MariaTypes.bigintUnsigned, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.float_, ScalaDbTypes.MariaTypes.double_, ScalaDbTypes.MariaTypes.bool, MariaTypes.bit, MariaTypes.bit, MariaTypes.char_, MariaTypes.varchar, MariaTypes.tinytext, MariaTypes.text, MariaTypes.mediumtext, MariaTypes.longtext, MariaTypes.binary, MariaTypes.varbinary, MariaTypes.tinyblob, MariaTypes.blob, MariaTypes.mediumblob, MariaTypes.longblob, MariaTypes.date, MariaTypes.time, MariaTypes.time, MariaTypes.datetime, MariaTypes.datetime, MariaTypes.timestamp, MariaTypes.timestamp, MariaTypes.year, MariaTypes.text, MariaTypes.set, MariaTypes.longtext, MariaTypes.inet4, MariaTypes.inet6)(MariatestRow.apply)(row => Array[Any](row.tinyintCol, row.smallintCol, row.mediumintCol, row.intCol, row.bigintCol, row.tinyintUCol, row.smallintUCol, row.mediumintUCol, row.intUCol, row.bigintUCol, row.decimalCol, row.numericCol, row.floatCol, row.doubleCol, row.boolCol, row.bitCol, row.bit1Col, row.charCol, row.varcharCol, row.tinytextCol, row.textCol, row.mediumtextCol, row.longtextCol, row.binaryCol, row.varbinaryCol, row.tinyblobCol, row.blobCol, row.mediumblobCol, row.longblobCol, row.dateCol, row.timeCol, row.timeFspCol, row.datetimeCol, row.datetimeFspCol, row.timestampCol, row.timestampFspCol, row.yearCol, row.enumCol, row.setCol, row.jsonCol, row.inet4Col, row.inet6Col))
+  val `_rowParser`: RowParser[MariatestRow] = RowParsers.of(ScalaDbTypes.MariaTypes.tinyint, ScalaDbTypes.MariaTypes.smallint, ScalaDbTypes.MariaTypes.mediumint, MariatestId.dbType, ScalaDbTypes.MariaTypes.bigint, MariaTypes.tinyintUnsigned, MariaTypes.smallintUnsigned, MariaTypes.mediumintUnsigned, MariaTypes.intUnsigned, MariaTypes.bigintUnsigned, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.float_, ScalaDbTypes.MariaTypes.double_, ScalaDbTypes.MariaTypes.bool, MariaTypes.bit, MariaTypes.bit, MariaTypes.char_, MariaTypes.varchar, MariaTypes.tinytext, MariaTypes.text, MariaTypes.mediumtext, MariaTypes.longtext, MariaTypes.binary, MariaTypes.varbinary, MariaTypes.tinyblob, MariaTypes.blob, MariaTypes.mediumblob, MariaTypes.longblob, MariaTypes.date, MariaTypes.time, MariaTypes.time, MariaTypes.datetime, MariaTypes.datetime, MariaTypes.timestamp, MariaTypes.timestamp, MariaTypes.year, MariaTypes.set, MariaTypes.json, MariaTypes.inet4, MariaTypes.inet6)(MariatestRow.apply)(row => Array[Any](row.tinyintCol, row.smallintCol, row.mediumintCol, row.intCol, row.bigintCol, row.tinyintUCol, row.smallintUCol, row.mediumintUCol, row.intUCol, row.bigintUCol, row.decimalCol, row.numericCol, row.floatCol, row.doubleCol, row.boolCol, row.bitCol, row.bit1Col, row.charCol, row.varcharCol, row.tinytextCol, row.textCol, row.mediumtextCol, row.longtextCol, row.binaryCol, row.varbinaryCol, row.tinyblobCol, row.blobCol, row.mediumblobCol, row.longblobCol, row.dateCol, row.timeCol, row.timeFspCol, row.datetimeCol, row.datetimeFspCol, row.timestampCol, row.timestampFspCol, row.yearCol, row.setCol, row.jsonCol, row.inet4Col, row.inet6Col))
 }

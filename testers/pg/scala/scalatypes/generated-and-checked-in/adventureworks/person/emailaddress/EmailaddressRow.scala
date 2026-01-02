@@ -9,6 +9,7 @@ import adventureworks.customtypes.Defaulted
 import adventureworks.person.businessentity.BusinessentityId
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -35,7 +36,7 @@ case class EmailaddressRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple5[BusinessentityId, Int, Option[/* max 50 chars */ String], UUID, LocalDateTime] {
   def compositeId: EmailaddressId = new EmailaddressId(businessentityid, emailaddressid)
 
   def id: EmailaddressId = this.compositeId
@@ -53,10 +54,20 @@ case class EmailaddressRow(
       modifieddate
     )
   }
+
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: Int = emailaddressid
+
+  override def `_3`: Option[/* max 50 chars */ String] = emailaddress
+
+  override def `_4`: UUID = rowguid
+
+  override def `_5`: LocalDateTime = modifieddate
 }
 
 object EmailaddressRow {
-  val `_rowParser`: RowParser[EmailaddressRow] = RowParsers.of(BusinessentityId.pgType, ScalaDbTypes.PgTypes.int4, PgTypes.text.nullable, PgTypes.uuid, PgTypes.timestamp)(EmailaddressRow.apply)(row => Array[Any](row.businessentityid, row.emailaddressid, row.emailaddress, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[EmailaddressRow] = RowParsers.of(BusinessentityId.dbType, ScalaDbTypes.PgTypes.int4, PgTypes.text.nullable, PgTypes.uuid, PgTypes.timestamp)(EmailaddressRow.apply)(row => Array[Any](row.businessentityid, row.emailaddressid, row.emailaddress, row.rowguid, row.modifieddate))
 
   def apply(
     compositeId: EmailaddressId,

@@ -7,6 +7,7 @@ package testdb.customer_order_summary
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -18,7 +19,15 @@ data class CustomerOrderSummaryViewRow(
   @JsonProperty("NAME") val name: String,
   @JsonProperty("ORDER_COUNT") val orderCount: Int,
   @JsonProperty("TOTAL_SPENT") val totalSpent: BigDecimal
-) {
+) : Tuple4<Int, String, Int, BigDecimal> {
+  override fun _1(): Int = customerId
+
+  override fun _2(): String = name
+
+  override fun _3(): Int = orderCount
+
+  override fun _4(): BigDecimal = totalSpent
+
   companion object {
     val _rowParser: RowParser<CustomerOrderSummaryViewRow> = RowParsers.of(KotlinDbTypes.Db2Types.integer, Db2Types.varchar, KotlinDbTypes.Db2Types.integer, KotlinDbTypes.Db2Types.decimal, { t0, t1, t2, t3 -> CustomerOrderSummaryViewRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.customerId, row.name, row.orderCount, row.totalSpent) })
   }

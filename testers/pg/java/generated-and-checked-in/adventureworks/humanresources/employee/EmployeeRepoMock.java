@@ -48,7 +48,7 @@ public record EmployeeRepoMock(
   @Override
   public DeleteBuilder<EmployeeFields, EmployeeRow> delete() {
     return new DeleteBuilderMock<>(
-        EmployeeFields.structure(),
+        EmployeeFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.businessentityid(),
@@ -126,7 +126,7 @@ public record EmployeeRepoMock(
   @Override
   public SelectBuilder<EmployeeFields, EmployeeRow> select() {
     return new SelectBuilderMock<>(
-        EmployeeFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        EmployeeFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -169,7 +169,7 @@ public record EmployeeRepoMock(
   @Override
   public UpdateBuilder<EmployeeFields, EmployeeRow> update() {
     return new UpdateBuilderMock<>(
-        EmployeeFields.structure(),
+        EmployeeFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

@@ -10,5 +10,5 @@ package typr.generated.information_schema.tables
 import java.sql.Connection
 
 trait TablesViewRepo {
-  def selectAll(implicit c: Connection): List[TablesViewRow]
+  def selectAll(using c: Connection): List[TablesViewRow]
 }

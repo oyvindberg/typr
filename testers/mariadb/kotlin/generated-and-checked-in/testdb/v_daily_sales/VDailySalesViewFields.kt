@@ -7,71 +7,69 @@ package testdb.v_daily_sales
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr10
 import java.math.BigDecimal
 import java.time.LocalDate
 import kotlin.collections.List
 
-interface VDailySalesViewFields : FieldsExpr<VDailySalesViewRow> {
-  abstract fun avgOrderValue(): OptField<BigDecimal, VDailySalesViewRow>
+data class VDailySalesViewFields(val _path: List<Path>) : TupleExpr10<LocalDate, Long, Long, BigDecimal, BigDecimal, BigDecimal, BigDecimal, BigDecimal, BigDecimal, BigDecimal>, RelationStructure<VDailySalesViewFields, VDailySalesViewRow>, FieldsBase<VDailySalesViewRow> {
+  override fun _1(): SqlExpr<LocalDate> = orderDate()
 
-  abstract override fun columns(): List<FieldLike<*, VDailySalesViewRow>>
+  override fun _10(): SqlExpr<BigDecimal> = avgOrderValue()
 
-  abstract fun grossSales(): OptField<BigDecimal, VDailySalesViewRow>
+  override fun _2(): SqlExpr<Long> = orderCount()
 
-  abstract fun itemsSold(): OptField<BigDecimal, VDailySalesViewRow>
+  override fun _3(): SqlExpr<Long> = uniqueCustomers()
 
-  abstract fun netSales(): OptField<BigDecimal, VDailySalesViewRow>
+  override fun _4(): SqlExpr<BigDecimal> = itemsSold()
 
-  abstract fun orderCount(): Field<Long, VDailySalesViewRow>
+  override fun _5(): SqlExpr<BigDecimal> = grossSales()
 
-  abstract fun orderDate(): OptField<LocalDate, VDailySalesViewRow>
+  override fun _6(): SqlExpr<BigDecimal> = totalDiscounts()
+
+  override fun _7(): SqlExpr<BigDecimal> = totalShipping()
+
+  override fun _8(): SqlExpr<BigDecimal> = totalTax()
+
+  override fun _9(): SqlExpr<BigDecimal> = netSales()
+
+  override fun _path(): List<Path> = _path
+
+  fun avgOrderValue(): OptField<BigDecimal, VDailySalesViewRow> = OptField<BigDecimal, VDailySalesViewRow>(_path, "avg_order_value", VDailySalesViewRow::avgOrderValue, null, null, { row, value -> row.copy(avgOrderValue = value) }, KotlinDbTypes.MariaTypes.numeric)
+
+  override fun columns(): List<FieldLike<*, VDailySalesViewRow>> = listOf(this.orderDate().underlying, this.orderCount().underlying, this.uniqueCustomers().underlying, this.itemsSold().underlying, this.grossSales().underlying, this.totalDiscounts().underlying, this.totalShipping().underlying, this.totalTax().underlying, this.netSales().underlying, this.avgOrderValue().underlying)
+
+  fun grossSales(): OptField<BigDecimal, VDailySalesViewRow> = OptField<BigDecimal, VDailySalesViewRow>(_path, "gross_sales", VDailySalesViewRow::grossSales, null, null, { row, value -> row.copy(grossSales = value) }, KotlinDbTypes.MariaTypes.numeric)
+
+  fun itemsSold(): OptField<BigDecimal, VDailySalesViewRow> = OptField<BigDecimal, VDailySalesViewRow>(_path, "items_sold", VDailySalesViewRow::itemsSold, null, null, { row, value -> row.copy(itemsSold = value) }, KotlinDbTypes.MariaTypes.numeric)
+
+  fun netSales(): OptField<BigDecimal, VDailySalesViewRow> = OptField<BigDecimal, VDailySalesViewRow>(_path, "net_sales", VDailySalesViewRow::netSales, null, null, { row, value -> row.copy(netSales = value) }, KotlinDbTypes.MariaTypes.numeric)
+
+  fun orderCount(): Field<Long, VDailySalesViewRow> = Field<Long, VDailySalesViewRow>(_path, "order_count", VDailySalesViewRow::orderCount, null, null, { row, value -> row.copy(orderCount = value) }, KotlinDbTypes.MariaTypes.bigint)
+
+  fun orderDate(): OptField<LocalDate, VDailySalesViewRow> = OptField<LocalDate, VDailySalesViewRow>(_path, "order_date", VDailySalesViewRow::orderDate, null, null, { row, value -> row.copy(orderDate = value) }, MariaTypes.date)
 
   override fun rowParser(): RowParser<VDailySalesViewRow> = VDailySalesViewRow._rowParser.underlying
 
-  abstract fun totalDiscounts(): OptField<BigDecimal, VDailySalesViewRow>
+  fun totalDiscounts(): OptField<BigDecimal, VDailySalesViewRow> = OptField<BigDecimal, VDailySalesViewRow>(_path, "total_discounts", VDailySalesViewRow::totalDiscounts, null, null, { row, value -> row.copy(totalDiscounts = value) }, KotlinDbTypes.MariaTypes.numeric)
 
-  abstract fun totalShipping(): OptField<BigDecimal, VDailySalesViewRow>
+  fun totalShipping(): OptField<BigDecimal, VDailySalesViewRow> = OptField<BigDecimal, VDailySalesViewRow>(_path, "total_shipping", VDailySalesViewRow::totalShipping, null, null, { row, value -> row.copy(totalShipping = value) }, KotlinDbTypes.MariaTypes.numeric)
 
-  abstract fun totalTax(): OptField<BigDecimal, VDailySalesViewRow>
+  fun totalTax(): OptField<BigDecimal, VDailySalesViewRow> = OptField<BigDecimal, VDailySalesViewRow>(_path, "total_tax", VDailySalesViewRow::totalTax, null, null, { row, value -> row.copy(totalTax = value) }, KotlinDbTypes.MariaTypes.numeric)
 
-  abstract fun uniqueCustomers(): Field<Long, VDailySalesViewRow>
+  fun uniqueCustomers(): Field<Long, VDailySalesViewRow> = Field<Long, VDailySalesViewRow>(_path, "unique_customers", VDailySalesViewRow::uniqueCustomers, null, null, { row, value -> row.copy(uniqueCustomers = value) }, KotlinDbTypes.MariaTypes.bigint)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<VDailySalesViewFields, VDailySalesViewRow> = VDailySalesViewFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : VDailySalesViewFields, RelationStructure<VDailySalesViewFields, VDailySalesViewRow> {
-      override fun orderDate(): OptField<LocalDate, VDailySalesViewRow> = OptField<LocalDate, VDailySalesViewRow>(_path, "order_date", VDailySalesViewRow::orderDate, null, null, { row, value -> row.copy(orderDate = value) }, MariaTypes.date)
-
-      override fun orderCount(): Field<Long, VDailySalesViewRow> = Field<Long, VDailySalesViewRow>(_path, "order_count", VDailySalesViewRow::orderCount, null, null, { row, value -> row.copy(orderCount = value) }, KotlinDbTypes.MariaTypes.bigint)
-
-      override fun uniqueCustomers(): Field<Long, VDailySalesViewRow> = Field<Long, VDailySalesViewRow>(_path, "unique_customers", VDailySalesViewRow::uniqueCustomers, null, null, { row, value -> row.copy(uniqueCustomers = value) }, KotlinDbTypes.MariaTypes.bigint)
-
-      override fun itemsSold(): OptField<BigDecimal, VDailySalesViewRow> = OptField<BigDecimal, VDailySalesViewRow>(_path, "items_sold", VDailySalesViewRow::itemsSold, null, null, { row, value -> row.copy(itemsSold = value) }, KotlinDbTypes.MariaTypes.numeric)
-
-      override fun grossSales(): OptField<BigDecimal, VDailySalesViewRow> = OptField<BigDecimal, VDailySalesViewRow>(_path, "gross_sales", VDailySalesViewRow::grossSales, null, null, { row, value -> row.copy(grossSales = value) }, KotlinDbTypes.MariaTypes.numeric)
-
-      override fun totalDiscounts(): OptField<BigDecimal, VDailySalesViewRow> = OptField<BigDecimal, VDailySalesViewRow>(_path, "total_discounts", VDailySalesViewRow::totalDiscounts, null, null, { row, value -> row.copy(totalDiscounts = value) }, KotlinDbTypes.MariaTypes.numeric)
-
-      override fun totalShipping(): OptField<BigDecimal, VDailySalesViewRow> = OptField<BigDecimal, VDailySalesViewRow>(_path, "total_shipping", VDailySalesViewRow::totalShipping, null, null, { row, value -> row.copy(totalShipping = value) }, KotlinDbTypes.MariaTypes.numeric)
-
-      override fun totalTax(): OptField<BigDecimal, VDailySalesViewRow> = OptField<BigDecimal, VDailySalesViewRow>(_path, "total_tax", VDailySalesViewRow::totalTax, null, null, { row, value -> row.copy(totalTax = value) }, KotlinDbTypes.MariaTypes.numeric)
-
-      override fun netSales(): OptField<BigDecimal, VDailySalesViewRow> = OptField<BigDecimal, VDailySalesViewRow>(_path, "net_sales", VDailySalesViewRow::netSales, null, null, { row, value -> row.copy(netSales = value) }, KotlinDbTypes.MariaTypes.numeric)
-
-      override fun avgOrderValue(): OptField<BigDecimal, VDailySalesViewRow> = OptField<BigDecimal, VDailySalesViewRow>(_path, "avg_order_value", VDailySalesViewRow::avgOrderValue, null, null, { row, value -> row.copy(avgOrderValue = value) }, KotlinDbTypes.MariaTypes.numeric)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, VDailySalesViewRow>> = listOf(this.orderDate().underlying, this.orderCount().underlying, this.uniqueCustomers().underlying, this.itemsSold().underlying, this.grossSales().underlying, this.totalDiscounts().underlying, this.totalShipping().underlying, this.totalTax().underlying, this.netSales().underlying, this.avgOrderValue().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<VDailySalesViewFields, VDailySalesViewRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: VDailySalesViewFields = VDailySalesViewFields(emptyList<Path>())
   }
 }

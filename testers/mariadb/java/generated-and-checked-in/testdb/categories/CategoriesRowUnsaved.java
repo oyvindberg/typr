@@ -6,6 +6,7 @@
 package testdb.categories;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.typr.foundations.data.Json;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
 import testdb.customtypes.Defaulted.UseDefault;
@@ -27,7 +28,7 @@ public record CategoriesRowUnsaved(
     /** Default: 1 */
     @JsonProperty("is_visible") Defaulted<Boolean> isVisible,
     /** Default: NULL */
-    Defaulted<Optional<String>> metadata) {
+    Defaulted<Optional<Json>> metadata) {
   public CategoriesRowUnsaved(
       /** */
       String name,
@@ -95,7 +96,7 @@ public record CategoriesRowUnsaved(
   ;
 
   /** Default: NULL */
-  public CategoriesRowUnsaved withMetadata(Defaulted<Optional<String>> metadata) {
+  public CategoriesRowUnsaved withMetadata(Defaulted<Optional<Json>> metadata) {
     return new CategoriesRowUnsaved(
         name, slug, parentId, description, imageUrl, sortOrder, isVisible, metadata);
   }
@@ -107,7 +108,7 @@ public record CategoriesRowUnsaved(
       java.util.function.Supplier<Optional<String>> imageUrlDefault,
       java.util.function.Supplier<Short> sortOrderDefault,
       java.util.function.Supplier<Boolean> isVisibleDefault,
-      java.util.function.Supplier<Optional<String>> metadataDefault,
+      java.util.function.Supplier<Optional<Json>> metadataDefault,
       java.util.function.Supplier<CategoriesId> categoryIdDefault) {
     return new CategoriesRow(
         categoryIdDefault.get(),

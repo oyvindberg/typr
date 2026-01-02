@@ -4,7 +4,6 @@ import cats.effect.IO
 import org.http4s.Uri
 import org.http4s.client.Client
 import testapi.model.Animal
-import org.http4s.circe.CirceEntityEncoder.circeEntityEncoder
 import org.http4s.circe.CirceEntityDecoder.circeEntityDecoder
 
 /** Http4s client implementation for AnimalsApi */

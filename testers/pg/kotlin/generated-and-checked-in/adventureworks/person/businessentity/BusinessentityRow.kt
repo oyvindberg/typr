@@ -8,6 +8,7 @@ package adventureworks.person.businessentity
 import adventureworks.customtypes.Defaulted
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple3
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import java.time.LocalDateTime
@@ -26,7 +27,13 @@ data class BusinessentityRow(
   val rowguid: UUID,
   /** Default: now() */
   val modifieddate: LocalDateTime
-) {
+) : Tuple3<BusinessentityId, UUID, LocalDateTime> {
+  override fun _1(): BusinessentityId = businessentityid
+
+  override fun _2(): UUID = rowguid
+
+  override fun _3(): LocalDateTime = modifieddate
+
   fun id(): BusinessentityId = businessentityid
 
   fun toUnsavedRow(
@@ -36,7 +43,7 @@ data class BusinessentityRow(
   ): BusinessentityRowUnsaved = BusinessentityRowUnsaved(businessentityid, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<BusinessentityRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2 -> BusinessentityRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.businessentityid, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<BusinessentityRow> = RowParsers.of(BusinessentityId.dbType, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2 -> BusinessentityRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.businessentityid, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<BusinessentityRow> =
       PgText.from(_rowParser.underlying)

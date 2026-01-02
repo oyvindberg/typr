@@ -28,16 +28,15 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
   @Override
   public DeleteBuilder<EmailaddressFields, EmailaddressRow> delete() {
     return DeleteBuilder.of(
-        "\"person\".\"emailaddress\"", EmailaddressFields.structure(), Dialect.POSTGRESQL);
+        "\"person\".\"emailaddress\"", EmailaddressFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(EmailaddressId compositeId, Connection c) {
     return interpolate(
                 Fragment.lit(
                     "delete from \"person\".\"emailaddress\" where \"businessentityid\" = "),
-                Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid()),
+                Fragment.encode(BusinessentityId.dbType, compositeId.businessentityid()),
                 Fragment.lit(" AND \"emailaddressid\" = "),
                 Fragment.encode(PgTypes.int4, compositeId.emailaddressid()),
                 Fragment.lit(""))
@@ -45,7 +44,6 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(EmailaddressId[] compositeIds, Connection c) {
@@ -61,14 +59,13 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
                     + "from \"person\".\"emailaddress\"\n"
                     + "where (\"businessentityid\", \"emailaddressid\")\n"
                     + "in (select * from unnest("),
-            Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
+            Fragment.encode(BusinessentityId.dbTypeArray, businessentityid),
             Fragment.lit(", "),
             Fragment.encode(PgTypes.int4Array, emailaddressid),
             Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public EmailaddressRow insert(EmailaddressRow unsaved, Connection c) {
@@ -77,7 +74,7 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
                 "insert into \"person\".\"emailaddress\"(\"businessentityid\", \"emailaddressid\","
                     + " \"emailaddress\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.int4, unsaved.emailaddressid()),
             Fragment.lit("::int4, "),
@@ -93,7 +90,6 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
         .updateReturning(EmailaddressRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public EmailaddressRow insert(EmailaddressRowUnsaved unsaved, Connection c) {
@@ -104,7 +100,7 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
     columns.add(Fragment.lit("\"businessentityid\""));
     values.add(
         interpolate(
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"emailaddress\""));
     values.add(
@@ -151,7 +147,6 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
     ;
     return q.updateReturning(EmailaddressRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<EmailaddressRow> unsaved, Integer batchSize, Connection c) {
@@ -163,7 +158,6 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
         c,
         EmailaddressRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -178,17 +172,15 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
         c,
         EmailaddressRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<EmailaddressFields, EmailaddressRow> select() {
     return SelectBuilder.of(
         "\"person\".\"emailaddress\"",
-        EmailaddressFields.structure(),
+        EmailaddressFields.structure,
         EmailaddressRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<EmailaddressRow> selectAll(Connection c) {
@@ -200,7 +192,6 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
         .query(EmailaddressRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<EmailaddressRow> selectById(EmailaddressId compositeId, Connection c) {
@@ -210,14 +201,13 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
                     + " \"modifieddate\"\n"
                     + "from \"person\".\"emailaddress\"\n"
                     + "where \"businessentityid\" = "),
-            Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, compositeId.businessentityid()),
             Fragment.lit(" AND \"emailaddressid\" = "),
             Fragment.encode(PgTypes.int4, compositeId.emailaddressid()),
             Fragment.lit(""))
         .query(EmailaddressRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<EmailaddressRow> selectByIds(EmailaddressId[] compositeIds, Connection c) {
@@ -234,14 +224,13 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
                     + "from \"person\".\"emailaddress\"\n"
                     + "where (\"businessentityid\", \"emailaddressid\")\n"
                     + "in (select * from unnest("),
-            Fragment.encode(BusinessentityId.pgTypeArray, businessentityid),
+            Fragment.encode(BusinessentityId.dbTypeArray, businessentityid),
             Fragment.lit(", "),
             Fragment.encode(PgTypes.int4Array, emailaddressid),
             Fragment.lit("))\n"))
         .query(EmailaddressRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<EmailaddressId, EmailaddressRow> selectByIdsTracked(
@@ -250,17 +239,15 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
     selectByIds(compositeIds, c).forEach(row -> ret.put(row.compositeId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<EmailaddressFields, EmailaddressRow> update() {
     return UpdateBuilder.of(
         "\"person\".\"emailaddress\"",
-        EmailaddressFields.structure(),
+        EmailaddressFields.structure,
         EmailaddressRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(EmailaddressRow row, Connection c) {
@@ -274,7 +261,7 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
                 Fragment.lit("::uuid,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"businessentityid\" = "),
-                Fragment.encode(BusinessentityId.pgType, compositeId.businessentityid()),
+                Fragment.encode(BusinessentityId.dbType, compositeId.businessentityid()),
                 Fragment.lit(" AND \"emailaddressid\" = "),
                 Fragment.encode(PgTypes.int4, compositeId.emailaddressid()),
                 Fragment.lit(""))
@@ -282,7 +269,6 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public EmailaddressRow upsert(EmailaddressRow unsaved, Connection c) {
@@ -291,7 +277,7 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
                 "insert into \"person\".\"emailaddress\"(\"businessentityid\", \"emailaddressid\","
                     + " \"emailaddress\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.int4, unsaved.emailaddressid()),
             Fragment.lit("::int4, "),
@@ -312,7 +298,6 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
         .updateReturning(EmailaddressRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<EmailaddressRow> upsertBatch(Iterator<EmailaddressRow> unsaved, Connection c) {
@@ -331,7 +316,6 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
         .updateManyReturning(EmailaddressRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -365,5 +349,4 @@ public class EmailaddressRepoImpl implements EmailaddressRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

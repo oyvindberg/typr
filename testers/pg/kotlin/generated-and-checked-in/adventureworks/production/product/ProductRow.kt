@@ -13,6 +13,7 @@ import adventureworks.public.Flag
 import adventureworks.public.Name
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple25
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -112,7 +113,57 @@ data class ProductRow(
   val rowguid: UUID,
   /** Default: now() */
   val modifieddate: LocalDateTime
-) {
+) : Tuple25<ProductId, Name, String, Flag, Flag, /* max 15 chars */ String?, Short, Short, BigDecimal, BigDecimal, /* max 5 chars */ String?, UnitmeasureId?, UnitmeasureId?, BigDecimal?, Int, /* bpchar, max 2 chars */ String?, /* bpchar, max 2 chars */ String?, /* bpchar, max 2 chars */ String?, ProductsubcategoryId?, ProductmodelId?, LocalDateTime, LocalDateTime?, LocalDateTime?, UUID, LocalDateTime> {
+  override fun _1(): ProductId = productid
+
+  override fun _10(): BigDecimal = listprice
+
+  override fun _11(): /* max 5 chars */ String? = size
+
+  override fun _12(): UnitmeasureId? = sizeunitmeasurecode
+
+  override fun _13(): UnitmeasureId? = weightunitmeasurecode
+
+  override fun _14(): BigDecimal? = weight
+
+  override fun _15(): Int = daystomanufacture
+
+  override fun _16(): /* bpchar, max 2 chars */ String? = productline
+
+  override fun _17(): /* bpchar, max 2 chars */ String? = `class`
+
+  override fun _18(): /* bpchar, max 2 chars */ String? = style
+
+  override fun _19(): ProductsubcategoryId? = productsubcategoryid
+
+  override fun _2(): Name = name
+
+  override fun _20(): ProductmodelId? = productmodelid
+
+  override fun _21(): LocalDateTime = sellstartdate
+
+  override fun _22(): LocalDateTime? = sellenddate
+
+  override fun _23(): LocalDateTime? = discontinueddate
+
+  override fun _24(): UUID = rowguid
+
+  override fun _25(): LocalDateTime = modifieddate
+
+  override fun _3(): String = productnumber
+
+  override fun _4(): Flag = makeflag
+
+  override fun _5(): Flag = finishedgoodsflag
+
+  override fun _6(): /* max 15 chars */ String? = color
+
+  override fun _7(): Short = safetystocklevel
+
+  override fun _8(): Short = reorderpoint
+
+  override fun _9(): BigDecimal = standardcost
+
   fun id(): ProductId = productid
 
   fun toUnsavedRow(
@@ -124,7 +175,7 @@ data class ProductRow(
   ): ProductRowUnsaved = ProductRowUnsaved(name, productnumber, color, safetystocklevel, reorderpoint, standardcost, listprice, size, sizeunitmeasurecode, weightunitmeasurecode, weight, daystomanufacture, productline, `class`, style, productsubcategoryid, productmodelid, sellstartdate, sellenddate, discontinueddate, productid, makeflag, finishedgoodsflag, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<ProductRow> = RowParsers.of(ProductId.pgType, Name.pgType, PgTypes.text, Flag.pgType, Flag.pgType, PgTypes.text.nullable(), KotlinDbTypes.PgTypes.int2, KotlinDbTypes.PgTypes.int2, PgTypes.numeric, PgTypes.numeric, PgTypes.text.nullable(), UnitmeasureId.pgType.nullable(), UnitmeasureId.pgType.nullable(), PgTypes.numeric.nullable(), KotlinDbTypes.PgTypes.int4, PgTypes.bpchar.nullable(), PgTypes.bpchar.nullable(), PgTypes.bpchar.nullable(), ProductsubcategoryId.pgType.nullable(), ProductmodelId.pgType.nullable(), PgTypes.timestamp, PgTypes.timestamp.nullable(), PgTypes.timestamp.nullable(), PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24 -> ProductRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24) }, { row -> arrayOf<Any?>(row.productid, row.name, row.productnumber, row.makeflag, row.finishedgoodsflag, row.color, row.safetystocklevel, row.reorderpoint, row.standardcost, row.listprice, row.size, row.sizeunitmeasurecode, row.weightunitmeasurecode, row.weight, row.daystomanufacture, row.productline, row.`class`, row.style, row.productsubcategoryid, row.productmodelid, row.sellstartdate, row.sellenddate, row.discontinueddate, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<ProductRow> = RowParsers.of(ProductId.dbType, Name.dbType, PgTypes.text, Flag.dbType, Flag.dbType, PgTypes.text.nullable(), KotlinDbTypes.PgTypes.int2, KotlinDbTypes.PgTypes.int2, PgTypes.numeric, PgTypes.numeric, PgTypes.text.nullable(), UnitmeasureId.dbType.nullable(), UnitmeasureId.dbType.nullable(), PgTypes.numeric.nullable(), KotlinDbTypes.PgTypes.int4, PgTypes.bpchar.nullable(), PgTypes.bpchar.nullable(), PgTypes.bpchar.nullable(), ProductsubcategoryId.dbType.nullable(), ProductmodelId.dbType.nullable(), PgTypes.timestamp, PgTypes.timestamp.nullable(), PgTypes.timestamp.nullable(), PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24 -> ProductRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24) }, { row -> arrayOf<Any?>(row.productid, row.name, row.productnumber, row.makeflag, row.finishedgoodsflag, row.color, row.safetystocklevel, row.reorderpoint, row.standardcost, row.listprice, row.size, row.sizeunitmeasurecode, row.weightunitmeasurecode, row.weight, row.daystomanufacture, row.productline, row.`class`, row.style, row.productsubcategoryid, row.productmodelid, row.sellstartdate, row.sellenddate, row.discontinueddate, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<ProductRow> =
       PgText.from(_rowParser.underlying)

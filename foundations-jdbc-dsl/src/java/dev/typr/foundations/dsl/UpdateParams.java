@@ -27,8 +27,8 @@ public record UpdateParams<Fields, Row>(
    * for the value.
    */
   public <T> UpdateParams<Fields, Row> set(
-      Function<Fields, SqlExpr.FieldLikeNotId<T, Row>> column, T value, DbType<T> pgType) {
-    return set(column, fields -> new SqlExpr.ConstReq<>(value, pgType));
+      Function<Fields, SqlExpr.FieldLikeNotId<T, Row>> column, T value, DbType<T> dbType) {
+    return set(column, fields -> new SqlExpr.ConstReq<>(value, dbType));
   }
 
   public static <Fields, Row> UpdateParams<Fields, Row> empty() {

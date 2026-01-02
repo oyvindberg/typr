@@ -16,7 +16,7 @@ case class CustomType(
     toTypoInArray: Option[CustomType.ToTypo] = None,
     fromTypoInArray: Option[CustomType.FromTypo] = None,
     objBody: jvm.Type.Qualified => List[jvm.ClassMember] = _ => Nil,
-    pgTypeAnnotations: List[jvm.Annotation] = Nil
+    dbTypeAnnotations: List[jvm.Annotation] = Nil
 ) {
   def withComment(newComment: String): CustomType = copy(comment = comment + newComment)
   def objBody0 = objBody(typoType)

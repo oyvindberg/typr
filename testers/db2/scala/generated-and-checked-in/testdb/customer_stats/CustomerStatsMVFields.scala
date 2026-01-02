@@ -7,82 +7,79 @@ package testdb.customer_stats
 
 import dev.typr.foundations.Db2Types
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
+import dev.typr.foundations.scala.TupleExpr4
 
-trait CustomerStatsMVFields extends FieldsExpr0[CustomerStatsMVRow] {
-  def customerId: Field[Int, CustomerStatsMVRow]
+class CustomerStatsMVFields(val `_path`: java.util.List[Path]) extends TupleExpr4[Int, String, Int, BigDecimal] with RelationStructure[CustomerStatsMVFields, CustomerStatsMVRow]  with FieldsBase[CustomerStatsMVRow] {
+  def customerId: Field[Int, CustomerStatsMVRow] = {
+    new Field[Int, CustomerStatsMVRow](
+      _path,
+      "CUSTOMER_ID",
+      _.customerId,
+      None,
+      None,
+      (row, value) => row.copy(customerId = value),
+      ScalaDbTypes.Db2Types.integer
+    )
+  }
 
-  def customerName: Field[String, CustomerStatsMVRow]
+  def customerName: Field[String, CustomerStatsMVRow] = {
+    new Field[String, CustomerStatsMVRow](
+      _path,
+      "CUSTOMER_NAME",
+      _.customerName,
+      None,
+      None,
+      (row, value) => row.copy(customerName = value),
+      Db2Types.varchar
+    )
+  }
 
-  def totalOrders: Field[Int, CustomerStatsMVRow]
+  def totalOrders: Field[Int, CustomerStatsMVRow] = {
+    new Field[Int, CustomerStatsMVRow](
+      _path,
+      "TOTAL_ORDERS",
+      _.totalOrders,
+      None,
+      None,
+      (row, value) => row.copy(totalOrders = value),
+      ScalaDbTypes.Db2Types.integer
+    )
+  }
 
-  def totalRevenue: Field[BigDecimal, CustomerStatsMVRow]
+  def totalRevenue: Field[BigDecimal, CustomerStatsMVRow] = {
+    new Field[BigDecimal, CustomerStatsMVRow](
+      _path,
+      "TOTAL_REVENUE",
+      _.totalRevenue,
+      None,
+      None,
+      (row, value) => row.copy(totalRevenue = value),
+      ScalaDbTypes.Db2Types.decimal
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, CustomerStatsMVRow]]
+  override def columns: java.util.List[FieldLike[?, CustomerStatsMVRow]] = java.util.List.of(this.customerId.underlying, this.customerName.underlying, this.totalOrders.underlying, this.totalRevenue.underlying)
 
   override def rowParser: RowParser[CustomerStatsMVRow] = CustomerStatsMVRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomerStatsMVFields, CustomerStatsMVRow] = new CustomerStatsMVFields(`_path`)
+
+  override def `_1`: SqlExpr[Int] = customerId
+
+  override def `_2`: SqlExpr[String] = customerName
+
+  override def `_3`: SqlExpr[Int] = totalOrders
+
+  override def `_4`: SqlExpr[BigDecimal] = totalRevenue
 }
 
 object CustomerStatsMVFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends CustomerStatsMVFields with RelationStructure[CustomerStatsMVFields, CustomerStatsMVRow] {
-
-    override def customerId: Field[Int, CustomerStatsMVRow] = {
-      new Field[Int, CustomerStatsMVRow](
-        _path,
-        "CUSTOMER_ID",
-        _.customerId,
-        None,
-        None,
-        (row, value) => row.copy(customerId = value),
-        ScalaDbTypes.Db2Types.integer
-      )
-    }
-
-    override def customerName: Field[String, CustomerStatsMVRow] = {
-      new Field[String, CustomerStatsMVRow](
-        _path,
-        "CUSTOMER_NAME",
-        _.customerName,
-        None,
-        None,
-        (row, value) => row.copy(customerName = value),
-        Db2Types.varchar
-      )
-    }
-
-    override def totalOrders: Field[Int, CustomerStatsMVRow] = {
-      new Field[Int, CustomerStatsMVRow](
-        _path,
-        "TOTAL_ORDERS",
-        _.totalOrders,
-        None,
-        None,
-        (row, value) => row.copy(totalOrders = value),
-        ScalaDbTypes.Db2Types.integer
-      )
-    }
-
-    override def totalRevenue: Field[BigDecimal, CustomerStatsMVRow] = {
-      new Field[BigDecimal, CustomerStatsMVRow](
-        _path,
-        "TOTAL_REVENUE",
-        _.totalRevenue,
-        None,
-        None,
-        (row, value) => row.copy(totalRevenue = value),
-        ScalaDbTypes.Db2Types.decimal
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, CustomerStatsMVRow]] = java.util.List.of(this.customerId.underlying, this.customerName.underlying, this.totalOrders.underlying, this.totalRevenue.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomerStatsMVFields, CustomerStatsMVRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: CustomerStatsMVFields = new CustomerStatsMVFields(java.util.Collections.emptyList())
 }

@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple3
 
 /** Table: public.identity-test
  * Primary key: name
@@ -21,14 +22,20 @@ case class IdentityTestRow(
   /** Identity BY DEFAULT, identityStart: 1, identityIncrement: 1, identityMaximum: 2147483647, identityMinimum: 1 */
   @JsonProperty("default_generated") defaultGenerated: Integer,
   name: IdentityTestId
-) {
+) extends Tuple3[Integer, Integer, IdentityTestId] {
   def id: IdentityTestId = name
 
   def toUnsavedRow(defaultGenerated: Defaulted[Integer] = Defaulted.Provided(this.defaultGenerated)): IdentityTestRowUnsaved = new IdentityTestRowUnsaved(name, defaultGenerated)
+
+  override def `_1`: Integer = alwaysGenerated
+
+  override def `_2`: Integer = defaultGenerated
+
+  override def `_3`: IdentityTestId = name
 }
 
 object IdentityTestRow {
-  val `_rowParser`: RowParser[IdentityTestRow] = RowParsers.of(PgTypes.int4, PgTypes.int4, IdentityTestId.pgType, IdentityTestRow.apply, row => Array[Any](row.alwaysGenerated, row.defaultGenerated, row.name))
+  val `_rowParser`: RowParser[IdentityTestRow] = RowParsers.of(PgTypes.int4, PgTypes.int4, IdentityTestId.dbType, IdentityTestRow.apply, row => Array[Any](row.alwaysGenerated, row.defaultGenerated, row.name))
 
   given pgText: PgText[IdentityTestRow] = PgText.from(`_rowParser`)
 }

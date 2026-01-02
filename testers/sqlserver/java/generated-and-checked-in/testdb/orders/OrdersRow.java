@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
 import dev.typr.foundations.SqlServerTypes;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -23,7 +24,8 @@ public record OrdersRow(
     @JsonProperty("customer_id") CustomersId customerId,
     /** Default: (getdate()) */
     @JsonProperty("order_date") Optional<LocalDateTime> orderDate,
-    @JsonProperty("total_amount") BigDecimal totalAmount) {
+    @JsonProperty("total_amount") BigDecimal totalAmount)
+    implements Tuple4<OrdersId, CustomersId, Optional<LocalDateTime>, BigDecimal> {
   /** IDENTITY(1, 1) */
   public OrdersRow withOrderId(OrdersId orderId) {
     return new OrdersRow(orderId, customerId, orderDate, totalAmount);
@@ -56,6 +58,30 @@ public record OrdersRow(
           OrdersRow::new,
           row ->
               new Object[] {row.orderId(), row.customerId(), row.orderDate(), row.totalAmount()});
+  ;
+
+  @Override
+  public OrdersId _1() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public CustomersId _2() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _3() {
+    return orderDate;
+  }
+  ;
+
+  @Override
+  public BigDecimal _4() {
+    return totalAmount;
+  }
   ;
 
   public OrdersId id() {

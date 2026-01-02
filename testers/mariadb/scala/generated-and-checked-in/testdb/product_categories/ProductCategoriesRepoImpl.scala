@@ -20,17 +20,17 @@ import dev.typr.foundations.scala.Fragment.sql
 class ProductCategoriesRepoImpl extends ProductCategoriesRepo {
   override def delete: DeleteBuilder[ProductCategoriesFields, ProductCategoriesRow] = DeleteBuilder.of("`product_categories`", ProductCategoriesFields.structure, Dialect.MARIADB)
 
-  override def deleteById(compositeId: ProductCategoriesId)(using c: Connection): Boolean = sql"delete from `product_categories` where `product_id` = ${Fragment.encode(ProductsId.pgType, compositeId.productId)} AND `category_id` = ${Fragment.encode(CategoriesId.pgType, compositeId.categoryId)}".update().runUnchecked(c) > 0
+  override def deleteById(compositeId: ProductCategoriesId)(using c: Connection): Boolean = sql"delete from `product_categories` where `product_id` = ${Fragment.encode(ProductsId.dbType, compositeId.productId)} AND `category_id` = ${Fragment.encode(CategoriesId.dbType, compositeId.categoryId)}".update().runUnchecked(c) > 0
 
   override def deleteByIds(compositeIds: Array[ProductCategoriesId])(using c: Connection): Int = {
     val fragments: ListBuffer[Fragment] = ListBuffer()
-    compositeIds.foreach { id => fragments.addOne(Fragment.interpolate(Fragment.lit("("), Fragment.encode(ProductsId.pgType, id.productId), Fragment.lit(", "), Fragment.encode(CategoriesId.pgType, id.categoryId), Fragment.lit(")"))): @scala.annotation.nowarn }
+    compositeIds.foreach { id => fragments.addOne(Fragment.interpolate(Fragment.lit("("), Fragment.encode(ProductsId.dbType, id.productId), Fragment.lit(", "), Fragment.encode(CategoriesId.dbType, id.categoryId), Fragment.lit(")"))): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("delete from `product_categories` where (`product_id`, `category_id`) in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override def insert(unsaved: ProductCategoriesRow)(using c: Connection): ProductCategoriesRow = {
   sql"""insert into `product_categories`(`product_id`, `category_id`, `is_primary`, `sort_order`)
-    values (${Fragment.encode(ProductsId.pgType, unsaved.productId)}, ${Fragment.encode(CategoriesId.pgType, unsaved.categoryId)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isPrimary)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.smallint, unsaved.sortOrder)})
+    values (${Fragment.encode(ProductsId.dbType, unsaved.productId)}, ${Fragment.encode(CategoriesId.dbType, unsaved.categoryId)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isPrimary)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.smallint, unsaved.sortOrder)})
     RETURNING `product_id`, `category_id`, `is_primary`, `sort_order`
     """
     .updateReturning(ProductCategoriesRow.`_rowParser`.exactlyOne()).runUnchecked(c)
@@ -40,9 +40,9 @@ class ProductCategoriesRepoImpl extends ProductCategoriesRepo {
     val columns: ListBuffer[Fragment] = ListBuffer()
     val values: ListBuffer[Fragment] = ListBuffer()
     columns.addOne(Fragment.lit("`product_id`")): @scala.annotation.nowarn
-    values.addOne(sql"${Fragment.encode(ProductsId.pgType, unsaved.productId)}"): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(ProductsId.dbType, unsaved.productId)}"): @scala.annotation.nowarn
     columns.addOne(Fragment.lit("`category_id`")): @scala.annotation.nowarn
-    values.addOne(sql"${Fragment.encode(CategoriesId.pgType, unsaved.categoryId)}"): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(CategoriesId.dbType, unsaved.categoryId)}"): @scala.annotation.nowarn
     unsaved.isPrimary.visit(
       {  },
       value => { columns.addOne(Fragment.lit("`is_primary`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(ScalaDbTypes.MariaTypes.bool, value)}"): @scala.annotation.nowarn }
@@ -71,12 +71,12 @@ class ProductCategoriesRepoImpl extends ProductCategoriesRepo {
   override def selectById(compositeId: ProductCategoriesId)(using c: Connection): Option[ProductCategoriesRow] = {
     sql"""select `product_id`, `category_id`, `is_primary`, `sort_order`
     from `product_categories`
-    where `product_id` = ${Fragment.encode(ProductsId.pgType, compositeId.productId)} AND `category_id` = ${Fragment.encode(CategoriesId.pgType, compositeId.categoryId)}""".query(ProductCategoriesRow.`_rowParser`.first()).runUnchecked(c)
+    where `product_id` = ${Fragment.encode(ProductsId.dbType, compositeId.productId)} AND `category_id` = ${Fragment.encode(CategoriesId.dbType, compositeId.categoryId)}""".query(ProductCategoriesRow.`_rowParser`.first()).runUnchecked(c)
   }
 
   override def selectByIds(compositeIds: Array[ProductCategoriesId])(using c: Connection): List[ProductCategoriesRow] = {
     val fragments: ListBuffer[Fragment] = ListBuffer()
-    compositeIds.foreach { id => fragments.addOne(Fragment.interpolate(Fragment.lit("("), Fragment.encode(ProductsId.pgType, id.productId), Fragment.lit(", "), Fragment.encode(CategoriesId.pgType, id.categoryId), Fragment.lit(")"))): @scala.annotation.nowarn }
+    compositeIds.foreach { id => fragments.addOne(Fragment.interpolate(Fragment.lit("("), Fragment.encode(ProductsId.dbType, id.productId), Fragment.lit(", "), Fragment.encode(CategoriesId.dbType, id.categoryId), Fragment.lit(")"))): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("select `product_id`, `category_id`, `is_primary`, `sort_order` from `product_categories` where (`product_id`, `category_id`) in ("), Fragment.comma(fragments), Fragment.lit(")")).query(ProductCategoriesRow.`_rowParser`.all()).runUnchecked(c)
   }
 
@@ -93,12 +93,12 @@ class ProductCategoriesRepoImpl extends ProductCategoriesRepo {
     return sql"""update `product_categories`
     set `is_primary` = ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, row.isPrimary)},
     `sort_order` = ${Fragment.encode(ScalaDbTypes.MariaTypes.smallint, row.sortOrder)}
-    where `product_id` = ${Fragment.encode(ProductsId.pgType, compositeId.productId)} AND `category_id` = ${Fragment.encode(CategoriesId.pgType, compositeId.categoryId)}""".update().runUnchecked(c) > 0
+    where `product_id` = ${Fragment.encode(ProductsId.dbType, compositeId.productId)} AND `category_id` = ${Fragment.encode(CategoriesId.dbType, compositeId.categoryId)}""".update().runUnchecked(c) > 0
   }
 
   override def upsert(unsaved: ProductCategoriesRow)(using c: Connection): ProductCategoriesRow = {
   sql"""INSERT INTO `product_categories`(`product_id`, `category_id`, `is_primary`, `sort_order`)
-    VALUES (${Fragment.encode(ProductsId.pgType, unsaved.productId)}, ${Fragment.encode(CategoriesId.pgType, unsaved.categoryId)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isPrimary)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.smallint, unsaved.sortOrder)})
+    VALUES (${Fragment.encode(ProductsId.dbType, unsaved.productId)}, ${Fragment.encode(CategoriesId.dbType, unsaved.categoryId)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isPrimary)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.smallint, unsaved.sortOrder)})
     ON DUPLICATE KEY UPDATE `is_primary` = VALUES(`is_primary`),
     `sort_order` = VALUES(`sort_order`)
     RETURNING `product_id`, `category_id`, `is_primary`, `sort_order`"""

@@ -9,6 +9,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple16;
+import dev.typr.foundations.data.Json;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint4;
 import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -32,15 +36,15 @@ public record PromotionsRow(
     /** Default: NULL */
     @JsonProperty("min_order_amount") Optional<BigDecimal> minOrderAmount,
     /** Default: NULL */
-    @JsonProperty("max_uses") Optional<Long> maxUses,
+    @JsonProperty("max_uses") Optional<Uint4> maxUses,
     /** Default: 0 */
-    @JsonProperty("uses_count") Long usesCount,
+    @JsonProperty("uses_count") Uint4 usesCount,
     /** Default: NULL */
-    @JsonProperty("max_uses_per_customer") Optional<Short> maxUsesPerCustomer,
+    @JsonProperty("max_uses_per_customer") Optional<Uint1> maxUsesPerCustomer,
     /** Default: NULL */
     @JsonProperty("applicable_to") Optional<MariaSet> applicableTo,
     /** Complex eligibility rules Default: NULL */
-    @JsonProperty("rules_json") Optional<String> rulesJson,
+    @JsonProperty("rules_json") Optional<Json> rulesJson,
     /** */
     @JsonProperty("valid_from") LocalDateTime validFrom,
     /** */
@@ -48,7 +52,24 @@ public record PromotionsRow(
     /** Default: 1 */
     @JsonProperty("is_active") Boolean isActive,
     /** Default: current_timestamp() */
-    @JsonProperty("created_at") LocalDateTime createdAt) {
+    @JsonProperty("created_at") LocalDateTime createdAt)
+    implements Tuple16<
+        PromotionsId,
+        String,
+        String,
+        Optional<String>,
+        String,
+        BigDecimal,
+        Optional<BigDecimal>,
+        Optional<Uint4>,
+        Uint4,
+        Optional<Uint1>,
+        Optional<MariaSet>,
+        Optional<Json>,
+        LocalDateTime,
+        LocalDateTime,
+        Boolean,
+        LocalDateTime> {
   /** AUTO_INCREMENT */
   public PromotionsRow withPromotionId(PromotionsId promotionId) {
     return new PromotionsRow(
@@ -204,7 +225,7 @@ public record PromotionsRow(
   ;
 
   /** Default: NULL */
-  public PromotionsRow withMaxUses(Optional<Long> maxUses) {
+  public PromotionsRow withMaxUses(Optional<Uint4> maxUses) {
     return new PromotionsRow(
         promotionId,
         code,
@@ -226,7 +247,7 @@ public record PromotionsRow(
   ;
 
   /** Default: 0 */
-  public PromotionsRow withUsesCount(Long usesCount) {
+  public PromotionsRow withUsesCount(Uint4 usesCount) {
     return new PromotionsRow(
         promotionId,
         code,
@@ -248,7 +269,7 @@ public record PromotionsRow(
   ;
 
   /** Default: NULL */
-  public PromotionsRow withMaxUsesPerCustomer(Optional<Short> maxUsesPerCustomer) {
+  public PromotionsRow withMaxUsesPerCustomer(Optional<Uint1> maxUsesPerCustomer) {
     return new PromotionsRow(
         promotionId,
         code,
@@ -292,7 +313,7 @@ public record PromotionsRow(
   ;
 
   /** Complex eligibility rules Default: NULL */
-  public PromotionsRow withRulesJson(Optional<String> rulesJson) {
+  public PromotionsRow withRulesJson(Optional<Json> rulesJson) {
     return new PromotionsRow(
         promotionId,
         code,
@@ -403,7 +424,7 @@ public record PromotionsRow(
 
   public static RowParser<PromotionsRow> _rowParser =
       RowParsers.of(
-          PromotionsId.pgType,
+          PromotionsId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.text.opt(),
@@ -414,7 +435,7 @@ public record PromotionsRow(
           MariaTypes.intUnsigned,
           MariaTypes.tinyintUnsigned.opt(),
           MariaTypes.set.opt(),
-          MariaTypes.longtext.opt(),
+          MariaTypes.json.opt(),
           MariaTypes.datetime,
           MariaTypes.datetime,
           MariaTypes.bool,
@@ -441,6 +462,102 @@ public record PromotionsRow(
               });
   ;
 
+  @Override
+  public PromotionsId _1() {
+    return promotionId;
+  }
+  ;
+
+  @Override
+  public Optional<Uint1> _10() {
+    return maxUsesPerCustomer;
+  }
+  ;
+
+  @Override
+  public Optional<MariaSet> _11() {
+    return applicableTo;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _12() {
+    return rulesJson;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _13() {
+    return validFrom;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _14() {
+    return validTo;
+  }
+  ;
+
+  @Override
+  public Boolean _15() {
+    return isActive;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _16() {
+    return createdAt;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return code;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return name;
+  }
+  ;
+
+  @Override
+  public Optional<String> _4() {
+    return description;
+  }
+  ;
+
+  @Override
+  public String _5() {
+    return discountType;
+  }
+  ;
+
+  @Override
+  public BigDecimal _6() {
+    return discountValue;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _7() {
+    return minOrderAmount;
+  }
+  ;
+
+  @Override
+  public Optional<Uint4> _8() {
+    return maxUses;
+  }
+  ;
+
+  @Override
+  public Uint4 _9() {
+    return usesCount;
+  }
+  ;
+
   public PromotionsId id() {
     return promotionId;
   }
@@ -449,11 +566,11 @@ public record PromotionsRow(
   public PromotionsRowUnsaved toUnsavedRow(
       Defaulted<Optional<String>> description,
       Defaulted<Optional<BigDecimal>> minOrderAmount,
-      Defaulted<Optional<Long>> maxUses,
-      Defaulted<Long> usesCount,
-      Defaulted<Optional<Short>> maxUsesPerCustomer,
+      Defaulted<Optional<Uint4>> maxUses,
+      Defaulted<Uint4> usesCount,
+      Defaulted<Optional<Uint1>> maxUsesPerCustomer,
       Defaulted<Optional<MariaSet>> applicableTo,
-      Defaulted<Optional<String>> rulesJson,
+      Defaulted<Optional<Json>> rulesJson,
       Defaulted<Boolean> isActive,
       Defaulted<LocalDateTime> createdAt) {
     return new PromotionsRowUnsaved(

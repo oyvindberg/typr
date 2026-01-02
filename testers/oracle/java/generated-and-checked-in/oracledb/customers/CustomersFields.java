@@ -7,127 +7,135 @@ package oracledb.customers;
 
 import dev.typr.foundations.OracleTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import oracledb.AddressT;
 import oracledb.MoneyT;
 
-public interface CustomersFields extends FieldsExpr<CustomersRow> {
-  record Impl(List<Path> _path)
-      implements CustomersFields, RelationStructure<CustomersFields, CustomersRow> {
-    @Override
-    public IdField<CustomersId, CustomersRow> customerId() {
-      return new IdField<CustomersId, CustomersRow>(
-          _path,
-          "CUSTOMER_ID",
-          CustomersRow::customerId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerId(value),
-          CustomersId.oracleType);
-    }
-    ;
+public class CustomersFields
+    implements TupleExpr5<CustomersId, String, AddressT, MoneyT, LocalDateTime>,
+        RelationStructure<CustomersFields, CustomersRow>,
+        FieldsBase<CustomersRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, CustomersRow> name() {
-      return new Field<String, CustomersRow>(
-          _path,
-          "NAME",
-          CustomersRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          OracleTypes.varchar2);
-    }
-    ;
-
-    @Override
-    public Field<AddressT, CustomersRow> billingAddress() {
-      return new Field<AddressT, CustomersRow>(
-          _path,
-          "BILLING_ADDRESS",
-          CustomersRow::billingAddress,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withBillingAddress(value),
-          AddressT.oracleType);
-    }
-    ;
-
-    @Override
-    public OptField<MoneyT, CustomersRow> creditLimit() {
-      return new OptField<MoneyT, CustomersRow>(
-          _path,
-          "CREDIT_LIMIT",
-          CustomersRow::creditLimit,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCreditLimit(value),
-          MoneyT.oracleType);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, CustomersRow> createdAt() {
-      return new Field<LocalDateTime, CustomersRow>(
-          _path,
-          "CREATED_AT",
-          CustomersRow::createdAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCreatedAt(value),
-          OracleTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, CustomersRow>> columns() {
-      return java.util.List.of(
-          this.customerId(),
-          this.name(),
-          this.billingAddress(),
-          this.creditLimit(),
-          this.createdAt());
-    }
-    ;
-
-    @Override
-    public RelationStructure<CustomersFields, CustomersRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public CustomersFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static CustomersFields structure = new CustomersFields(java.util.Collections.emptyList());
+
+  public IdField<CustomersId, CustomersRow> customerId() {
+    return new IdField<CustomersId, CustomersRow>(
+        _path,
+        "CUSTOMER_ID",
+        CustomersRow::customerId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerId(value),
+        CustomersId.oracleType);
   }
-  ;
 
-  IdField<CustomersId, CustomersRow> customerId();
+  public Field<String, CustomersRow> name() {
+    return new Field<String, CustomersRow>(
+        _path,
+        "NAME",
+        CustomersRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        OracleTypes.varchar2);
+  }
 
-  Field<String, CustomersRow> name();
+  public Field<AddressT, CustomersRow> billingAddress() {
+    return new Field<AddressT, CustomersRow>(
+        _path,
+        "BILLING_ADDRESS",
+        CustomersRow::billingAddress,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withBillingAddress(value),
+        AddressT.oracleType);
+  }
 
-  Field<AddressT, CustomersRow> billingAddress();
+  public OptField<MoneyT, CustomersRow> creditLimit() {
+    return new OptField<MoneyT, CustomersRow>(
+        _path,
+        "CREDIT_LIMIT",
+        CustomersRow::creditLimit,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCreditLimit(value),
+        MoneyT.oracleType);
+  }
 
-  OptField<MoneyT, CustomersRow> creditLimit();
-
-  Field<LocalDateTime, CustomersRow> createdAt();
+  public Field<LocalDateTime, CustomersRow> createdAt() {
+    return new Field<LocalDateTime, CustomersRow>(
+        _path,
+        "CREATED_AT",
+        CustomersRow::createdAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCreatedAt(value),
+        OracleTypes.timestamp);
+  }
 
   @Override
-  List<FieldLike<?, CustomersRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<CustomersRow> rowParser() {
+  public List<FieldLike<?, CustomersRow>> columns() {
+    return java.util.List.of(
+        this.customerId(),
+        this.name(),
+        this.billingAddress(),
+        this.creditLimit(),
+        this.createdAt());
+  }
+
+  @Override
+  public RowParser<CustomersRow> rowParser() {
     return CustomersRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<CustomersFields, CustomersRow> withPaths(List<Path> _path) {
+    return new CustomersFields(_path);
+  }
+
+  @Override
+  public SqlExpr<CustomersId> _1() {
+    return customerId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<AddressT> _3() {
+    return billingAddress();
+  }
+
+  @Override
+  public SqlExpr<MoneyT> _4() {
+    return creditLimit();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _5() {
+    return createdAt();
+  }
 }

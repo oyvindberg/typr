@@ -7,106 +7,112 @@ package testdb.customer_order_summary;
 
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr4;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-public interface CustomerOrderSummaryViewFields extends FieldsExpr<CustomerOrderSummaryViewRow> {
-  record Impl(List<Path> _path)
-      implements CustomerOrderSummaryViewFields,
-          RelationStructure<CustomerOrderSummaryViewFields, CustomerOrderSummaryViewRow> {
-    @Override
-    public Field<Integer, CustomerOrderSummaryViewRow> customerId() {
-      return new Field<Integer, CustomerOrderSummaryViewRow>(
-          _path,
-          "CUSTOMER_ID",
-          CustomerOrderSummaryViewRow::customerId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerId(value),
-          Db2Types.integer);
-    }
-    ;
+public class CustomerOrderSummaryViewFields
+    implements TupleExpr4<Integer, String, Integer, BigDecimal>,
+        RelationStructure<CustomerOrderSummaryViewFields, CustomerOrderSummaryViewRow>,
+        FieldsBase<CustomerOrderSummaryViewRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, CustomerOrderSummaryViewRow> name() {
-      return new Field<String, CustomerOrderSummaryViewRow>(
-          _path,
-          "NAME",
-          CustomerOrderSummaryViewRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          Db2Types.varchar);
-    }
-    ;
-
-    @Override
-    public Field<Integer, CustomerOrderSummaryViewRow> orderCount() {
-      return new Field<Integer, CustomerOrderSummaryViewRow>(
-          _path,
-          "ORDER_COUNT",
-          CustomerOrderSummaryViewRow::orderCount,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderCount(value),
-          Db2Types.integer);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, CustomerOrderSummaryViewRow> totalSpent() {
-      return new Field<BigDecimal, CustomerOrderSummaryViewRow>(
-          _path,
-          "TOTAL_SPENT",
-          CustomerOrderSummaryViewRow::totalSpent,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTotalSpent(value),
-          Db2Types.decimal);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, CustomerOrderSummaryViewRow>> columns() {
-      return java.util.List.of(
-          this.customerId(), this.name(), this.orderCount(), this.totalSpent());
-    }
-    ;
-
-    @Override
-    public RelationStructure<CustomerOrderSummaryViewFields, CustomerOrderSummaryViewRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public CustomerOrderSummaryViewFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static CustomerOrderSummaryViewFields structure =
+      new CustomerOrderSummaryViewFields(java.util.Collections.emptyList());
+
+  public Field<Integer, CustomerOrderSummaryViewRow> customerId() {
+    return new Field<Integer, CustomerOrderSummaryViewRow>(
+        _path,
+        "CUSTOMER_ID",
+        CustomerOrderSummaryViewRow::customerId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerId(value),
+        Db2Types.integer);
   }
-  ;
 
-  Field<Integer, CustomerOrderSummaryViewRow> customerId();
+  public Field<String, CustomerOrderSummaryViewRow> name() {
+    return new Field<String, CustomerOrderSummaryViewRow>(
+        _path,
+        "NAME",
+        CustomerOrderSummaryViewRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        Db2Types.varchar);
+  }
 
-  Field<String, CustomerOrderSummaryViewRow> name();
+  public Field<Integer, CustomerOrderSummaryViewRow> orderCount() {
+    return new Field<Integer, CustomerOrderSummaryViewRow>(
+        _path,
+        "ORDER_COUNT",
+        CustomerOrderSummaryViewRow::orderCount,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderCount(value),
+        Db2Types.integer);
+  }
 
-  Field<Integer, CustomerOrderSummaryViewRow> orderCount();
-
-  Field<BigDecimal, CustomerOrderSummaryViewRow> totalSpent();
+  public Field<BigDecimal, CustomerOrderSummaryViewRow> totalSpent() {
+    return new Field<BigDecimal, CustomerOrderSummaryViewRow>(
+        _path,
+        "TOTAL_SPENT",
+        CustomerOrderSummaryViewRow::totalSpent,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTotalSpent(value),
+        Db2Types.decimal);
+  }
 
   @Override
-  List<FieldLike<?, CustomerOrderSummaryViewRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<CustomerOrderSummaryViewRow> rowParser() {
+  public List<FieldLike<?, CustomerOrderSummaryViewRow>> columns() {
+    return java.util.List.of(this.customerId(), this.name(), this.orderCount(), this.totalSpent());
+  }
+
+  @Override
+  public RowParser<CustomerOrderSummaryViewRow> rowParser() {
     return CustomerOrderSummaryViewRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<CustomerOrderSummaryViewFields, CustomerOrderSummaryViewRow> withPaths(
+      List<Path> _path) {
+    return new CustomerOrderSummaryViewFields(_path);
+  }
+
+  @Override
+  public SqlExpr<Integer> _1() {
+    return customerId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<Integer> _3() {
+    return orderCount();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _4() {
+    return totalSpent();
+  }
 }

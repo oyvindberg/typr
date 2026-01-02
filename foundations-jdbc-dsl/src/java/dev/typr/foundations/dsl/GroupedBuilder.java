@@ -1,6 +1,7 @@
 package dev.typr.foundations.dsl;
 
 import dev.typr.foundations.Fragment;
+import dev.typr.foundations.Tuple;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Optional;
@@ -19,18 +20,18 @@ import java.util.function.Function;
  * var results = personRepo.select()
  *     .where(p -> p.active())
  *     .groupBy(p -> p.department())
- *     .select(p -> Tuples.of(
+ *     .select(p -> TupleExpr.of(
  *         p.department(),
  *         SqlExpr.count()
  *     ))
  *     .toList(conn);
- * // Type: List<Tuple2<Department, Long>>
+ * // Type: List<Tuple.Tuple2<Department, Long>>
  *
  * // Department stats with HAVING
  * var largeDepts = personRepo.select()
  *     .groupBy(p -> p.department())
  *     .having(p -> SqlExpr.count().greaterThan(5L))
- *     .select(p -> Tuples.of(
+ *     .select(p -> TupleExpr.of(
  *         p.department(),
  *         SqlExpr.count(),
  *         SqlExpr.avg(p.salary())
@@ -65,7 +66,7 @@ public interface GroupedBuilder<Fields, Row> {
    * <p>Example:
    *
    * <pre>{@code
-   * .select(p -> Tuples.of(
+   * .select(p -> TupleExpr.of(
    *     p.department(),    // GROUP BY column
    *     SqlExpr.count(),   // Aggregate
    *     SqlExpr.max(p.salary())  // Aggregate
@@ -77,7 +78,7 @@ public interface GroupedBuilder<Fields, Row> {
    * @param <NewRow> the type of the projected row (a Tuple)
    * @return a SelectBuilder for the grouped and projected query
    */
-  <NewFields extends Tuples.TupleExpr<NewRow>, NewRow extends Tuples.Tuple>
+  <NewFields extends TupleExpr<NewRow>, NewRow extends Tuple>
       SelectBuilder<NewFields, NewRow> select(Function<Fields, NewFields> projection);
 
   /**
@@ -89,8 +90,8 @@ public interface GroupedBuilder<Fields, Row> {
    * @param <NewRow> the type of the projected row
    * @return list of grouped results
    */
-  default <NewFields extends Tuples.TupleExpr<NewRow>, NewRow extends Tuples.Tuple>
-      List<NewRow> toList(Connection conn, Function<Fields, NewFields> projection) {
+  default <NewFields extends TupleExpr<NewRow>, NewRow extends Tuple> List<NewRow> toList(
+      Connection conn, Function<Fields, NewFields> projection) {
     return select(projection).toList(conn);
   }
 

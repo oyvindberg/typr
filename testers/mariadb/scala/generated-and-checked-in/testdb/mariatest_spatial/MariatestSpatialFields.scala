@@ -7,12 +7,14 @@ package testdb.mariatest_spatial
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
+import dev.typr.foundations.scala.TupleExpr9
 import org.mariadb.jdbc.`type`.Geometry
 import org.mariadb.jdbc.`type`.GeometryCollection
 import org.mariadb.jdbc.`type`.LineString
@@ -22,145 +24,140 @@ import org.mariadb.jdbc.`type`.MultiPolygon
 import org.mariadb.jdbc.`type`.Point
 import org.mariadb.jdbc.`type`.Polygon
 
-trait MariatestSpatialFields extends FieldsExpr0[MariatestSpatialRow] {
-  def id: IdField[MariatestSpatialId, MariatestSpatialRow]
+class MariatestSpatialFields(val `_path`: java.util.List[Path]) extends TupleExpr9[MariatestSpatialId, Geometry, Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, GeometryCollection] with RelationStructure[MariatestSpatialFields, MariatestSpatialRow]  with FieldsBase[MariatestSpatialRow] {
+  def id: IdField[MariatestSpatialId, MariatestSpatialRow] = {
+    new IdField[MariatestSpatialId, MariatestSpatialRow](
+      _path,
+      "id",
+      _.id,
+      None,
+      None,
+      (row, value) => row.copy(id = value),
+      MariatestSpatialId.dbType
+    )
+  }
 
-  def geometryCol: Field[Geometry, MariatestSpatialRow]
+  def geometryCol: Field[Geometry, MariatestSpatialRow] = {
+    new Field[Geometry, MariatestSpatialRow](
+      _path,
+      "geometry_col",
+      _.geometryCol,
+      None,
+      None,
+      (row, value) => row.copy(geometryCol = value),
+      MariaTypes.geometry
+    )
+  }
 
-  def pointCol: Field[Point, MariatestSpatialRow]
+  def pointCol: Field[Point, MariatestSpatialRow] = {
+    new Field[Point, MariatestSpatialRow](
+      _path,
+      "point_col",
+      _.pointCol,
+      None,
+      None,
+      (row, value) => row.copy(pointCol = value),
+      MariaTypes.point
+    )
+  }
 
-  def linestringCol: Field[LineString, MariatestSpatialRow]
+  def linestringCol: Field[LineString, MariatestSpatialRow] = {
+    new Field[LineString, MariatestSpatialRow](
+      _path,
+      "linestring_col",
+      _.linestringCol,
+      None,
+      None,
+      (row, value) => row.copy(linestringCol = value),
+      MariaTypes.linestring
+    )
+  }
 
-  def polygonCol: Field[Polygon, MariatestSpatialRow]
+  def polygonCol: Field[Polygon, MariatestSpatialRow] = {
+    new Field[Polygon, MariatestSpatialRow](
+      _path,
+      "polygon_col",
+      _.polygonCol,
+      None,
+      None,
+      (row, value) => row.copy(polygonCol = value),
+      MariaTypes.polygon
+    )
+  }
 
-  def multipointCol: Field[MultiPoint, MariatestSpatialRow]
+  def multipointCol: Field[MultiPoint, MariatestSpatialRow] = {
+    new Field[MultiPoint, MariatestSpatialRow](
+      _path,
+      "multipoint_col",
+      _.multipointCol,
+      None,
+      None,
+      (row, value) => row.copy(multipointCol = value),
+      MariaTypes.multipoint
+    )
+  }
 
-  def multilinestringCol: Field[MultiLineString, MariatestSpatialRow]
+  def multilinestringCol: Field[MultiLineString, MariatestSpatialRow] = {
+    new Field[MultiLineString, MariatestSpatialRow](
+      _path,
+      "multilinestring_col",
+      _.multilinestringCol,
+      None,
+      None,
+      (row, value) => row.copy(multilinestringCol = value),
+      MariaTypes.multilinestring
+    )
+  }
 
-  def multipolygonCol: Field[MultiPolygon, MariatestSpatialRow]
+  def multipolygonCol: Field[MultiPolygon, MariatestSpatialRow] = {
+    new Field[MultiPolygon, MariatestSpatialRow](
+      _path,
+      "multipolygon_col",
+      _.multipolygonCol,
+      None,
+      None,
+      (row, value) => row.copy(multipolygonCol = value),
+      MariaTypes.multipolygon
+    )
+  }
 
-  def geometrycollectionCol: Field[GeometryCollection, MariatestSpatialRow]
+  def geometrycollectionCol: Field[GeometryCollection, MariatestSpatialRow] = {
+    new Field[GeometryCollection, MariatestSpatialRow](
+      _path,
+      "geometrycollection_col",
+      _.geometrycollectionCol,
+      None,
+      None,
+      (row, value) => row.copy(geometrycollectionCol = value),
+      MariaTypes.geometrycollection
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, MariatestSpatialRow]]
+  override def columns: java.util.List[FieldLike[?, MariatestSpatialRow]] = java.util.List.of(this.id.underlying, this.geometryCol.underlying, this.pointCol.underlying, this.linestringCol.underlying, this.polygonCol.underlying, this.multipointCol.underlying, this.multilinestringCol.underlying, this.multipolygonCol.underlying, this.geometrycollectionCol.underlying)
 
   override def rowParser: RowParser[MariatestSpatialRow] = MariatestSpatialRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[MariatestSpatialFields, MariatestSpatialRow] = new MariatestSpatialFields(`_path`)
+
+  override def `_1`: SqlExpr[MariatestSpatialId] = id
+
+  override def `_2`: SqlExpr[Geometry] = geometryCol
+
+  override def `_3`: SqlExpr[Point] = pointCol
+
+  override def `_4`: SqlExpr[LineString] = linestringCol
+
+  override def `_5`: SqlExpr[Polygon] = polygonCol
+
+  override def `_6`: SqlExpr[MultiPoint] = multipointCol
+
+  override def `_7`: SqlExpr[MultiLineString] = multilinestringCol
+
+  override def `_8`: SqlExpr[MultiPolygon] = multipolygonCol
+
+  override def `_9`: SqlExpr[GeometryCollection] = geometrycollectionCol
 }
 
 object MariatestSpatialFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends MariatestSpatialFields with RelationStructure[MariatestSpatialFields, MariatestSpatialRow] {
-
-    override def id: IdField[MariatestSpatialId, MariatestSpatialRow] = {
-      new IdField[MariatestSpatialId, MariatestSpatialRow](
-        _path,
-        "id",
-        _.id,
-        None,
-        None,
-        (row, value) => row.copy(id = value),
-        MariatestSpatialId.pgType
-      )
-    }
-
-    override def geometryCol: Field[Geometry, MariatestSpatialRow] = {
-      new Field[Geometry, MariatestSpatialRow](
-        _path,
-        "geometry_col",
-        _.geometryCol,
-        None,
-        None,
-        (row, value) => row.copy(geometryCol = value),
-        MariaTypes.geometry
-      )
-    }
-
-    override def pointCol: Field[Point, MariatestSpatialRow] = {
-      new Field[Point, MariatestSpatialRow](
-        _path,
-        "point_col",
-        _.pointCol,
-        None,
-        None,
-        (row, value) => row.copy(pointCol = value),
-        MariaTypes.point
-      )
-    }
-
-    override def linestringCol: Field[LineString, MariatestSpatialRow] = {
-      new Field[LineString, MariatestSpatialRow](
-        _path,
-        "linestring_col",
-        _.linestringCol,
-        None,
-        None,
-        (row, value) => row.copy(linestringCol = value),
-        MariaTypes.linestring
-      )
-    }
-
-    override def polygonCol: Field[Polygon, MariatestSpatialRow] = {
-      new Field[Polygon, MariatestSpatialRow](
-        _path,
-        "polygon_col",
-        _.polygonCol,
-        None,
-        None,
-        (row, value) => row.copy(polygonCol = value),
-        MariaTypes.polygon
-      )
-    }
-
-    override def multipointCol: Field[MultiPoint, MariatestSpatialRow] = {
-      new Field[MultiPoint, MariatestSpatialRow](
-        _path,
-        "multipoint_col",
-        _.multipointCol,
-        None,
-        None,
-        (row, value) => row.copy(multipointCol = value),
-        MariaTypes.multipoint
-      )
-    }
-
-    override def multilinestringCol: Field[MultiLineString, MariatestSpatialRow] = {
-      new Field[MultiLineString, MariatestSpatialRow](
-        _path,
-        "multilinestring_col",
-        _.multilinestringCol,
-        None,
-        None,
-        (row, value) => row.copy(multilinestringCol = value),
-        MariaTypes.multilinestring
-      )
-    }
-
-    override def multipolygonCol: Field[MultiPolygon, MariatestSpatialRow] = {
-      new Field[MultiPolygon, MariatestSpatialRow](
-        _path,
-        "multipolygon_col",
-        _.multipolygonCol,
-        None,
-        None,
-        (row, value) => row.copy(multipolygonCol = value),
-        MariaTypes.multipolygon
-      )
-    }
-
-    override def geometrycollectionCol: Field[GeometryCollection, MariatestSpatialRow] = {
-      new Field[GeometryCollection, MariatestSpatialRow](
-        _path,
-        "geometrycollection_col",
-        _.geometrycollectionCol,
-        None,
-        None,
-        (row, value) => row.copy(geometrycollectionCol = value),
-        MariaTypes.geometrycollection
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, MariatestSpatialRow]] = java.util.List.of(this.id.underlying, this.geometryCol.underlying, this.pointCol.underlying, this.linestringCol.underlying, this.polygonCol.underlying, this.multipointCol.underlying, this.multilinestringCol.underlying, this.multipolygonCol.underlying, this.geometrycollectionCol.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[MariatestSpatialFields, MariatestSpatialRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: MariatestSpatialFields = new MariatestSpatialFields(java.util.Collections.emptyList())
 }

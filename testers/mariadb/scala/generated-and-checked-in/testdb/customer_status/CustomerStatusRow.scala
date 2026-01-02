@@ -7,6 +7,7 @@ package testdb.customer_status
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple3
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -24,12 +25,18 @@ case class CustomerStatusRow(
    * Default: 1
    */
   @JsonProperty("is_active") isActive: Boolean
-) {
+) extends Tuple3[CustomerStatusId, String, Boolean] {
   def id: CustomerStatusId = statusCode
 
   def toUnsavedRow(isActive: Defaulted[Boolean] = Defaulted.Provided(this.isActive)): CustomerStatusRowUnsaved = new CustomerStatusRowUnsaved(statusCode, description, isActive)
+
+  override def `_1`: CustomerStatusId = statusCode
+
+  override def `_2`: String = description
+
+  override def `_3`: Boolean = isActive
 }
 
 object CustomerStatusRow {
-  val `_rowParser`: RowParser[CustomerStatusRow] = RowParsers.of(CustomerStatusId.pgType, MariaTypes.varchar, ScalaDbTypes.MariaTypes.bool)(CustomerStatusRow.apply)(row => Array[Any](row.statusCode, row.description, row.isActive))
+  val `_rowParser`: RowParser[CustomerStatusRow] = RowParsers.of(CustomerStatusId.dbType, MariaTypes.varchar, ScalaDbTypes.MariaTypes.bool)(CustomerStatusRow.apply)(row => Array[Any](row.statusCode, row.description, row.isActive))
 }

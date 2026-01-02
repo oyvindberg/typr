@@ -6,6 +6,7 @@
 package testdb.product_categories
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -33,7 +34,7 @@ case class ProductCategoriesRow(
    * Default: 0
    */
   @JsonProperty("sort_order") sortOrder: Short
-) {
+) extends Tuple4[ProductsId, CategoriesId, Boolean, Short] {
   def compositeId: ProductCategoriesId = new ProductCategoriesId(productId, categoryId)
 
   def id: ProductCategoriesId = this.compositeId
@@ -49,10 +50,18 @@ case class ProductCategoriesRow(
       sortOrder
     )
   }
+
+  override def `_1`: ProductsId = productId
+
+  override def `_2`: CategoriesId = categoryId
+
+  override def `_3`: Boolean = isPrimary
+
+  override def `_4`: Short = sortOrder
 }
 
 object ProductCategoriesRow {
-  val `_rowParser`: RowParser[ProductCategoriesRow] = RowParsers.of(ProductsId.pgType, CategoriesId.pgType, ScalaDbTypes.MariaTypes.bool, ScalaDbTypes.MariaTypes.smallint)(ProductCategoriesRow.apply)(row => Array[Any](row.productId, row.categoryId, row.isPrimary, row.sortOrder))
+  val `_rowParser`: RowParser[ProductCategoriesRow] = RowParsers.of(ProductsId.dbType, CategoriesId.dbType, ScalaDbTypes.MariaTypes.bool, ScalaDbTypes.MariaTypes.smallint)(ProductCategoriesRow.apply)(row => Array[Any](row.productId, row.categoryId, row.isPrimary, row.sortOrder))
 
   def apply(
     compositeId: ProductCategoriesId,

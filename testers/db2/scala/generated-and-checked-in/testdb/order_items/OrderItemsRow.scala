@@ -7,6 +7,7 @@ package testdb.order_items
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -22,14 +23,24 @@ case class OrderItemsRow(
   @JsonProperty("PRODUCT_NAME") productName: String,
   @JsonProperty("QUANTITY") quantity: Int,
   @JsonProperty("UNIT_PRICE") unitPrice: BigDecimal
-) {
+) extends Tuple5[OrdersId, Int, String, Int, BigDecimal] {
   def compositeId: OrderItemsId = new OrderItemsId(orderId, itemNumber)
 
   def id: OrderItemsId = this.compositeId
+
+  override def `_1`: OrdersId = orderId
+
+  override def `_2`: Int = itemNumber
+
+  override def `_3`: String = productName
+
+  override def `_4`: Int = quantity
+
+  override def `_5`: BigDecimal = unitPrice
 }
 
 object OrderItemsRow {
-  val `_rowParser`: RowParser[OrderItemsRow] = RowParsers.of(OrdersId.pgType, ScalaDbTypes.Db2Types.integer, Db2Types.varchar, ScalaDbTypes.Db2Types.integer, ScalaDbTypes.Db2Types.decimal)(OrderItemsRow.apply)(row => Array[Any](row.orderId, row.itemNumber, row.productName, row.quantity, row.unitPrice))
+  val `_rowParser`: RowParser[OrderItemsRow] = RowParsers.of(OrdersId.dbType, ScalaDbTypes.Db2Types.integer, Db2Types.varchar, ScalaDbTypes.Db2Types.integer, ScalaDbTypes.Db2Types.decimal)(OrderItemsRow.apply)(row => Array[Any](row.orderId, row.itemNumber, row.productName, row.quantity, row.unitPrice))
 
   def apply(
     compositeId: OrderItemsId,

@@ -9,12 +9,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.OracleTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple2;
 import java.math.BigDecimal;
 
 /** Type for the composite primary key of table `EMPLOYEES` */
 public record EmployeesId(
-    @JsonProperty("EMP_NUMBER") BigDecimal empNumber,
-    @JsonProperty("EMP_SUFFIX") String empSuffix) {
+    @JsonProperty("EMP_NUMBER") BigDecimal empNumber, @JsonProperty("EMP_SUFFIX") String empSuffix)
+    implements Tuple2<BigDecimal, String> {
   public EmployeesId withEmpNumber(BigDecimal empNumber) {
     return new EmployeesId(empNumber, empSuffix);
   }
@@ -31,5 +32,17 @@ public record EmployeesId(
           OracleTypes.varchar2,
           EmployeesId::new,
           row -> new Object[] {row.empNumber(), row.empSuffix()});
+  ;
+
+  @Override
+  public BigDecimal _1() {
+    return empNumber;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return empSuffix;
+  }
   ;
 }

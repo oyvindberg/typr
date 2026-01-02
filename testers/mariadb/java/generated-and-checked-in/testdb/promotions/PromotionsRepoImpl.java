@@ -24,27 +24,25 @@ import java.util.Optional;
 public class PromotionsRepoImpl implements PromotionsRepo {
   @Override
   public DeleteBuilder<PromotionsFields, PromotionsRow> delete() {
-    return DeleteBuilder.of("`promotions`", PromotionsFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`promotions`", PromotionsFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(PromotionsId promotionId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `promotions` where `promotion_id` = "),
-                Fragment.encode(PromotionsId.pgType, promotionId),
+                Fragment.encode(PromotionsId.dbType, promotionId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(PromotionsId[] promotionIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : promotionIds) {
-      fragments.add(Fragment.encode(PromotionsId.pgType, id));
+      fragments.add(Fragment.encode(PromotionsId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -54,7 +52,6 @@ public class PromotionsRepoImpl implements PromotionsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public PromotionsRow insert(PromotionsRow unsaved, Connection c) {
@@ -85,7 +82,7 @@ public class PromotionsRepoImpl implements PromotionsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.set.opt(), unsaved.applicableTo()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.rulesJson()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.rulesJson()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.datetime, unsaved.validFrom()),
             Fragment.lit(", "),
@@ -103,7 +100,6 @@ public class PromotionsRepoImpl implements PromotionsRepo {
         .updateReturning(PromotionsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public PromotionsRow insert(PromotionsRowUnsaved unsaved, Connection c) {
@@ -197,7 +193,7 @@ public class PromotionsRepoImpl implements PromotionsRepo {
             value -> {
               columns.add(Fragment.lit("`rules_json`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(MariaTypes.json.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -234,14 +230,12 @@ public class PromotionsRepoImpl implements PromotionsRepo {
     ;
     return q.updateReturning(PromotionsRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<PromotionsFields, PromotionsRow> select() {
     return SelectBuilder.of(
-        "`promotions`", PromotionsFields.structure(), PromotionsRow._rowParser, Dialect.MARIADB);
+        "`promotions`", PromotionsFields.structure, PromotionsRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<PromotionsRow> selectAll(Connection c) {
@@ -255,7 +249,6 @@ public class PromotionsRepoImpl implements PromotionsRepo {
         .query(PromotionsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<PromotionsRow> selectById(PromotionsId promotionId, Connection c) {
@@ -267,18 +260,17 @@ public class PromotionsRepoImpl implements PromotionsRepo {
                     + " `valid_to`, `is_active`, `created_at`\n"
                     + "from `promotions`\n"
                     + "where `promotion_id` = "),
-            Fragment.encode(PromotionsId.pgType, promotionId),
+            Fragment.encode(PromotionsId.dbType, promotionId),
             Fragment.lit(""))
         .query(PromotionsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<PromotionsRow> selectByIds(PromotionsId[] promotionIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : promotionIds) {
-      fragments.add(Fragment.encode(PromotionsId.pgType, id));
+      fragments.add(Fragment.encode(PromotionsId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -293,7 +285,6 @@ public class PromotionsRepoImpl implements PromotionsRepo {
         .query(PromotionsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<PromotionsId, PromotionsRow> selectByIdsTracked(
@@ -302,7 +293,6 @@ public class PromotionsRepoImpl implements PromotionsRepo {
     selectByIds(promotionIds, c).forEach(row -> ret.put(row.promotionId(), row));
     return ret;
   }
-  ;
 
   @Override
   public Optional<PromotionsRow> selectByUniqueCode(String code, Connection c) {
@@ -319,14 +309,12 @@ public class PromotionsRepoImpl implements PromotionsRepo {
         .query(PromotionsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<PromotionsFields, PromotionsRow> update() {
     return UpdateBuilder.of(
-        "`promotions`", PromotionsFields.structure(), PromotionsRow._rowParser, Dialect.MARIADB);
+        "`promotions`", PromotionsFields.structure, PromotionsRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(PromotionsRow row, Connection c) {
@@ -354,7 +342,7 @@ public class PromotionsRepoImpl implements PromotionsRepo {
                 Fragment.lit(",\n`applicable_to` = "),
                 Fragment.encode(MariaTypes.set.opt(), row.applicableTo()),
                 Fragment.lit(",\n`rules_json` = "),
-                Fragment.encode(MariaTypes.longtext.opt(), row.rulesJson()),
+                Fragment.encode(MariaTypes.json.opt(), row.rulesJson()),
                 Fragment.lit(",\n`valid_from` = "),
                 Fragment.encode(MariaTypes.datetime, row.validFrom()),
                 Fragment.lit(",\n`valid_to` = "),
@@ -364,23 +352,24 @@ public class PromotionsRepoImpl implements PromotionsRepo {
                 Fragment.lit(",\n`created_at` = "),
                 Fragment.encode(MariaTypes.datetime, row.createdAt()),
                 Fragment.lit("\nwhere `promotion_id` = "),
-                Fragment.encode(PromotionsId.pgType, promotionId),
+                Fragment.encode(PromotionsId.dbType, promotionId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public PromotionsRow upsert(PromotionsRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `promotions`(`code`, `name`, `description`, `discount_type`,"
-                    + " `discount_value`, `min_order_amount`, `max_uses`, `uses_count`,"
-                    + " `max_uses_per_customer`, `applicable_to`, `rules_json`, `valid_from`,"
-                    + " `valid_to`, `is_active`, `created_at`)\n"
+                "INSERT INTO `promotions`(`promotion_id`, `code`, `name`, `description`,"
+                    + " `discount_type`, `discount_value`, `min_order_amount`, `max_uses`,"
+                    + " `uses_count`, `max_uses_per_customer`, `applicable_to`, `rules_json`,"
+                    + " `valid_from`, `valid_to`, `is_active`, `created_at`)\n"
                     + "VALUES ("),
+            Fragment.encode(PromotionsId.dbType, unsaved.promotionId()),
+            Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.code()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.name()),
@@ -401,7 +390,7 @@ public class PromotionsRepoImpl implements PromotionsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.set.opt(), unsaved.applicableTo()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.rulesJson()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.rulesJson()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.datetime, unsaved.validFrom()),
             Fragment.lit(", "),
@@ -434,7 +423,6 @@ public class PromotionsRepoImpl implements PromotionsRepo {
         .updateReturning(PromotionsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<PromotionsRow> upsertBatch(Iterator<PromotionsRow> unsaved, Connection c) {
@@ -467,5 +455,4 @@ public class PromotionsRepoImpl implements PromotionsRepo {
         .updateReturningEach(PromotionsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

@@ -7,16 +7,19 @@ package testdb.payments
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.Inet6
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr12
 import java.time.LocalDateTime
 import testdb.orders.OrdersFields
 import testdb.orders.OrdersId
@@ -25,191 +28,186 @@ import testdb.payment_methods.PaymentMethodsFields
 import testdb.payment_methods.PaymentMethodsId
 import testdb.payment_methods.PaymentMethodsRow
 
-trait PaymentsFields extends FieldsExpr0[PaymentsRow] {
-  def paymentId: IdField[PaymentsId, PaymentsRow]
+class PaymentsFields(val `_path`: java.util.List[Path]) extends TupleExpr12[PaymentsId, OrdersId, PaymentMethodsId, String, BigDecimal, String, String, Json, String, Inet6, LocalDateTime, LocalDateTime] with RelationStructure[PaymentsFields, PaymentsRow]  with FieldsBase[PaymentsRow] {
+  def paymentId: IdField[PaymentsId, PaymentsRow] = {
+    new IdField[PaymentsId, PaymentsRow](
+      _path,
+      "payment_id",
+      _.paymentId,
+      None,
+      None,
+      (row, value) => row.copy(paymentId = value),
+      PaymentsId.dbType
+    )
+  }
 
-  def orderId: Field[OrdersId, PaymentsRow]
+  def orderId: Field[OrdersId, PaymentsRow] = {
+    new Field[OrdersId, PaymentsRow](
+      _path,
+      "order_id",
+      _.orderId,
+      None,
+      None,
+      (row, value) => row.copy(orderId = value),
+      OrdersId.dbType
+    )
+  }
 
-  def methodId: Field[PaymentMethodsId, PaymentsRow]
+  def methodId: Field[PaymentMethodsId, PaymentsRow] = {
+    new Field[PaymentMethodsId, PaymentsRow](
+      _path,
+      "method_id",
+      _.methodId,
+      None,
+      None,
+      (row, value) => row.copy(methodId = value),
+      PaymentMethodsId.dbType
+    )
+  }
 
-  def transactionId: OptField[String, PaymentsRow]
+  def transactionId: OptField[String, PaymentsRow] = {
+    new OptField[String, PaymentsRow](
+      _path,
+      "transaction_id",
+      _.transactionId,
+      None,
+      None,
+      (row, value) => row.copy(transactionId = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def amount: Field[BigDecimal, PaymentsRow]
+  def amount: Field[BigDecimal, PaymentsRow] = {
+    new Field[BigDecimal, PaymentsRow](
+      _path,
+      "amount",
+      _.amount,
+      None,
+      None,
+      (row, value) => row.copy(amount = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def currencyCode: Field[String, PaymentsRow]
+  def currencyCode: Field[String, PaymentsRow] = {
+    new Field[String, PaymentsRow](
+      _path,
+      "currency_code",
+      _.currencyCode,
+      None,
+      None,
+      (row, value) => row.copy(currencyCode = value),
+      MariaTypes.char_
+    )
+  }
 
-  def status: Field[String, PaymentsRow]
+  def status: Field[String, PaymentsRow] = {
+    new Field[String, PaymentsRow](
+      _path,
+      "status",
+      _.status,
+      None,
+      None,
+      (row, value) => row.copy(status = value),
+      MariaTypes.text
+    )
+  }
 
-  def processorResponse: OptField[String, PaymentsRow]
+  def processorResponse: OptField[Json, PaymentsRow] = {
+    new OptField[Json, PaymentsRow](
+      _path,
+      "processor_response",
+      _.processorResponse,
+      None,
+      None,
+      (row, value) => row.copy(processorResponse = value),
+      MariaTypes.json
+    )
+  }
 
-  def errorMessage: OptField[String, PaymentsRow]
+  def errorMessage: OptField[String, PaymentsRow] = {
+    new OptField[String, PaymentsRow](
+      _path,
+      "error_message",
+      _.errorMessage,
+      None,
+      None,
+      (row, value) => row.copy(errorMessage = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def ipAddress: OptField[Inet6, PaymentsRow]
+  def ipAddress: OptField[Inet6, PaymentsRow] = {
+    new OptField[Inet6, PaymentsRow](
+      _path,
+      "ip_address",
+      _.ipAddress,
+      None,
+      None,
+      (row, value) => row.copy(ipAddress = value),
+      MariaTypes.inet6
+    )
+  }
 
-  def createdAt: Field[LocalDateTime, PaymentsRow]
+  def createdAt: Field[LocalDateTime, PaymentsRow] = {
+    new Field[LocalDateTime, PaymentsRow](
+      _path,
+      "created_at",
+      _.createdAt,
+      None,
+      None,
+      (row, value) => row.copy(createdAt = value),
+      MariaTypes.datetime
+    )
+  }
 
-  def processedAt: OptField[LocalDateTime, PaymentsRow]
+  def processedAt: OptField[LocalDateTime, PaymentsRow] = {
+    new OptField[LocalDateTime, PaymentsRow](
+      _path,
+      "processed_at",
+      _.processedAt,
+      None,
+      None,
+      (row, value) => row.copy(processedAt = value),
+      MariaTypes.datetime
+    )
+  }
 
   def fkPaymentMethods: ForeignKey[PaymentMethodsFields, PaymentMethodsRow] = ForeignKey.of[PaymentMethodsFields, PaymentMethodsRow]("fk_pay_method").withColumnPair[PaymentMethodsId](methodId, _.methodId)
 
   def fkOrders: ForeignKey[OrdersFields, OrdersRow] = ForeignKey.of[OrdersFields, OrdersRow]("fk_pay_order").withColumnPair[OrdersId](orderId, _.orderId)
 
-  override def columns: java.util.List[FieldLike[?, PaymentsRow]]
+  override def columns: java.util.List[FieldLike[?, PaymentsRow]] = java.util.List.of(this.paymentId.underlying, this.orderId.underlying, this.methodId.underlying, this.transactionId.underlying, this.amount.underlying, this.currencyCode.underlying, this.status.underlying, this.processorResponse.underlying, this.errorMessage.underlying, this.ipAddress.underlying, this.createdAt.underlying, this.processedAt.underlying)
 
   override def rowParser: RowParser[PaymentsRow] = PaymentsRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[PaymentsFields, PaymentsRow] = new PaymentsFields(`_path`)
+
+  override def `_1`: SqlExpr[PaymentsId] = paymentId
+
+  override def `_2`: SqlExpr[OrdersId] = orderId
+
+  override def `_3`: SqlExpr[PaymentMethodsId] = methodId
+
+  override def `_4`: SqlExpr[String] = transactionId
+
+  override def `_5`: SqlExpr[BigDecimal] = amount
+
+  override def `_6`: SqlExpr[String] = currencyCode
+
+  override def `_7`: SqlExpr[String] = status
+
+  override def `_8`: SqlExpr[Json] = processorResponse
+
+  override def `_9`: SqlExpr[String] = errorMessage
+
+  override def `_10`: SqlExpr[Inet6] = ipAddress
+
+  override def `_11`: SqlExpr[LocalDateTime] = createdAt
+
+  override def `_12`: SqlExpr[LocalDateTime] = processedAt
 }
 
 object PaymentsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends PaymentsFields with RelationStructure[PaymentsFields, PaymentsRow] {
-
-    override def paymentId: IdField[PaymentsId, PaymentsRow] = {
-      new IdField[PaymentsId, PaymentsRow](
-        _path,
-        "payment_id",
-        _.paymentId,
-        None,
-        None,
-        (row, value) => row.copy(paymentId = value),
-        PaymentsId.pgType
-      )
-    }
-
-    override def orderId: Field[OrdersId, PaymentsRow] = {
-      new Field[OrdersId, PaymentsRow](
-        _path,
-        "order_id",
-        _.orderId,
-        None,
-        None,
-        (row, value) => row.copy(orderId = value),
-        OrdersId.pgType
-      )
-    }
-
-    override def methodId: Field[PaymentMethodsId, PaymentsRow] = {
-      new Field[PaymentMethodsId, PaymentsRow](
-        _path,
-        "method_id",
-        _.methodId,
-        None,
-        None,
-        (row, value) => row.copy(methodId = value),
-        PaymentMethodsId.pgType
-      )
-    }
-
-    override def transactionId: OptField[String, PaymentsRow] = {
-      new OptField[String, PaymentsRow](
-        _path,
-        "transaction_id",
-        _.transactionId,
-        None,
-        None,
-        (row, value) => row.copy(transactionId = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def amount: Field[BigDecimal, PaymentsRow] = {
-      new Field[BigDecimal, PaymentsRow](
-        _path,
-        "amount",
-        _.amount,
-        None,
-        None,
-        (row, value) => row.copy(amount = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def currencyCode: Field[String, PaymentsRow] = {
-      new Field[String, PaymentsRow](
-        _path,
-        "currency_code",
-        _.currencyCode,
-        None,
-        None,
-        (row, value) => row.copy(currencyCode = value),
-        MariaTypes.char_
-      )
-    }
-
-    override def status: Field[String, PaymentsRow] = {
-      new Field[String, PaymentsRow](
-        _path,
-        "status",
-        _.status,
-        None,
-        None,
-        (row, value) => row.copy(status = value),
-        MariaTypes.text
-      )
-    }
-
-    override def processorResponse: OptField[String, PaymentsRow] = {
-      new OptField[String, PaymentsRow](
-        _path,
-        "processor_response",
-        _.processorResponse,
-        None,
-        None,
-        (row, value) => row.copy(processorResponse = value),
-        MariaTypes.longtext
-      )
-    }
-
-    override def errorMessage: OptField[String, PaymentsRow] = {
-      new OptField[String, PaymentsRow](
-        _path,
-        "error_message",
-        _.errorMessage,
-        None,
-        None,
-        (row, value) => row.copy(errorMessage = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def ipAddress: OptField[Inet6, PaymentsRow] = {
-      new OptField[Inet6, PaymentsRow](
-        _path,
-        "ip_address",
-        _.ipAddress,
-        None,
-        None,
-        (row, value) => row.copy(ipAddress = value),
-        MariaTypes.inet6
-      )
-    }
-
-    override def createdAt: Field[LocalDateTime, PaymentsRow] = {
-      new Field[LocalDateTime, PaymentsRow](
-        _path,
-        "created_at",
-        _.createdAt,
-        None,
-        None,
-        (row, value) => row.copy(createdAt = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def processedAt: OptField[LocalDateTime, PaymentsRow] = {
-      new OptField[LocalDateTime, PaymentsRow](
-        _path,
-        "processed_at",
-        _.processedAt,
-        None,
-        None,
-        (row, value) => row.copy(processedAt = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, PaymentsRow]] = java.util.List.of(this.paymentId.underlying, this.orderId.underlying, this.methodId.underlying, this.transactionId.underlying, this.amount.underlying, this.currencyCode.underlying, this.status.underlying, this.processorResponse.underlying, this.errorMessage.underlying, this.ipAddress.underlying, this.createdAt.underlying, this.processedAt.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[PaymentsFields, PaymentsRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: PaymentsFields = new PaymentsFields(java.util.Collections.emptyList())
 }

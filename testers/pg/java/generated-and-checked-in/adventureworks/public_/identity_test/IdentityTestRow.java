@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple3;
 
 /** Table: public.identity-test Primary key: name */
 public record IdentityTestRow(
@@ -24,7 +25,8 @@ public record IdentityTestRow(
      * identityMinimum: 1
      */
     @JsonProperty("default_generated") Integer defaultGenerated,
-    IdentityTestId name) {
+    IdentityTestId name)
+    implements Tuple3<Integer, Integer, IdentityTestId> {
   /**
    * Identity ALWAYS, identityStart: 1, identityIncrement: 1, identityMaximum: 2147483647,
    * identityMinimum: 1
@@ -52,12 +54,30 @@ public record IdentityTestRow(
       RowParsers.of(
           PgTypes.int4,
           PgTypes.int4,
-          IdentityTestId.pgType,
+          IdentityTestId.dbType,
           IdentityTestRow::new,
           row -> new Object[] {row.alwaysGenerated(), row.defaultGenerated(), row.name()});
   ;
 
   public static PgText<IdentityTestRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public Integer _1() {
+    return alwaysGenerated;
+  }
+  ;
+
+  @Override
+  public Integer _2() {
+    return defaultGenerated;
+  }
+  ;
+
+  @Override
+  public IdentityTestId _3() {
+    return name;
+  }
+  ;
 
   public IdentityTestId id() {
     return name;

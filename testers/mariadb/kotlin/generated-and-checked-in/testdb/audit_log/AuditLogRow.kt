@@ -7,6 +7,8 @@ package testdb.audit_log
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple10
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.Inet6
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -31,11 +33,11 @@ data class AuditLogRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("old_values") val oldValues: String?,
+  @JsonProperty("old_values") val oldValues: Json?,
   /** 
     * Default: NULL
     */
-  @JsonProperty("new_values") val newValues: String?,
+  @JsonProperty("new_values") val newValues: Json?,
   /** 
     * Default: NULL
     */
@@ -52,12 +54,32 @@ data class AuditLogRow(
     * Default: NULL
     */
   @JsonProperty("session_id") val sessionId: ByteArray?
-) {
+) : Tuple10<AuditLogId, String, String, String, Json?, Json?, String?, LocalDateTime, Inet6?, ByteArray?> {
+  override fun _1(): AuditLogId = logId
+
+  override fun _10(): ByteArray? = sessionId
+
+  override fun _2(): String = tableName
+
+  override fun _3(): String = recordId
+
+  override fun _4(): String = action
+
+  override fun _5(): Json? = oldValues
+
+  override fun _6(): Json? = newValues
+
+  override fun _7(): String? = changedBy
+
+  override fun _8(): LocalDateTime = changedAt
+
+  override fun _9(): Inet6? = clientIp
+
   fun id(): AuditLogId = logId
 
   fun toUnsavedRow(
-    oldValues: Defaulted<String?> = Defaulted.Provided(this.oldValues),
-    newValues: Defaulted<String?> = Defaulted.Provided(this.newValues),
+    oldValues: Defaulted<Json?> = Defaulted.Provided(this.oldValues),
+    newValues: Defaulted<Json?> = Defaulted.Provided(this.newValues),
     changedBy: Defaulted<String?> = Defaulted.Provided(this.changedBy),
     changedAt: Defaulted<LocalDateTime> = Defaulted.Provided(this.changedAt),
     clientIp: Defaulted<Inet6?> = Defaulted.Provided(this.clientIp),
@@ -65,6 +87,6 @@ data class AuditLogRow(
   ): AuditLogRowUnsaved = AuditLogRowUnsaved(tableName, recordId, action, oldValues, newValues, changedBy, changedAt, clientIp, sessionId)
 
   companion object {
-    val _rowParser: RowParser<AuditLogRow> = RowParsers.of(AuditLogId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, MariaTypes.longtext.nullable(), MariaTypes.longtext.nullable(), MariaTypes.varchar.nullable(), MariaTypes.datetime, MariaTypes.inet6.nullable(), MariaTypes.varbinary.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> AuditLogRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.logId, row.tableName, row.recordId, row.action, row.oldValues, row.newValues, row.changedBy, row.changedAt, row.clientIp, row.sessionId) })
+    val _rowParser: RowParser<AuditLogRow> = RowParsers.of(AuditLogId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text, MariaTypes.json.nullable(), MariaTypes.json.nullable(), MariaTypes.varchar.nullable(), MariaTypes.datetime, MariaTypes.inet6.nullable(), MariaTypes.varbinary.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> AuditLogRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.logId, row.tableName, row.recordId, row.action, row.oldValues, row.newValues, row.changedBy, row.changedAt, row.clientIp, row.sessionId) })
   }
 }

@@ -6,10 +6,14 @@
 package testdb.mariatest
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint2
+import dev.typr.foundations.data.Uint4
+import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.data.maria.Inet4
 import dev.typr.foundations.data.maria.Inet6
 import dev.typr.foundations.data.maria.MariaSet
-import java.math.BigInteger
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -30,15 +34,15 @@ case class MariatestRowUnsaved(
   /**  */
   @JsonProperty("bigint_col") bigintCol: Long,
   /**  */
-  @JsonProperty("tinyint_u_col") tinyintUCol: Short,
+  @JsonProperty("tinyint_u_col") tinyintUCol: Uint1,
   /**  */
-  @JsonProperty("smallint_u_col") smallintUCol: Int,
+  @JsonProperty("smallint_u_col") smallintUCol: Uint2,
   /**  */
-  @JsonProperty("mediumint_u_col") mediumintUCol: Int,
+  @JsonProperty("mediumint_u_col") mediumintUCol: Uint4,
   /**  */
-  @JsonProperty("int_u_col") intUCol: Long,
+  @JsonProperty("int_u_col") intUCol: Uint4,
   /**  */
-  @JsonProperty("bigint_u_col") bigintUCol: BigInteger,
+  @JsonProperty("bigint_u_col") bigintUCol: Uint8,
   /**  */
   @JsonProperty("decimal_col") decimalCol: BigDecimal,
   /**  */
@@ -90,11 +94,9 @@ case class MariatestRowUnsaved(
   /**  */
   @JsonProperty("year_col") yearCol: Year,
   /**  */
-  @JsonProperty("enum_col") enumCol: String,
-  /**  */
   @JsonProperty("set_col") setCol: MariaSet,
   /**  */
-  @JsonProperty("json_col") jsonCol: String,
+  @JsonProperty("json_col") jsonCol: Json,
   /**  */
   @JsonProperty("inet4_col") inet4Col: Inet4,
   /**  */
@@ -150,7 +152,6 @@ case class MariatestRowUnsaved(
       timestampCol = timestampCol.getOrElse(timestampColDefault),
       timestampFspCol = timestampFspCol.getOrElse(timestampFspColDefault),
       yearCol = yearCol,
-      enumCol = enumCol,
       setCol = setCol,
       jsonCol = jsonCol,
       inet4Col = inet4Col,

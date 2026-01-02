@@ -863,10 +863,11 @@ def analyze_sql(sql: str, sqlglot_schema, sqlglot_schema_dict: dict, dialect: st
 
     # Build reverse index for fast schema lookups (table name -> full key in schema dict)
     # This is much faster than iterating all 395 tables for each column
+    # Use lowercase keys for case-insensitive lookups (DB2 stores in uppercase, SQL files use lowercase)
     table_name_to_schema_key = {}
     for schema_key in sqlglot_schema_dict.keys():
         # schema_key is like "schema.tablename" or just "tablename"
-        table_part = schema_key.split('.')[-1]  # Get just the table name
+        table_part = schema_key.split('.')[-1].lower()  # Get just the table name, lowercased
         if table_part not in table_name_to_schema_key:
             table_name_to_schema_key[table_part] = []
         table_name_to_schema_key[table_part].append(schema_key)
@@ -874,9 +875,33 @@ def analyze_sql(sql: str, sqlglot_schema, sqlglot_schema_dict: dict, dialect: st
     # Extract columns
     columns_start = time.time()
     columns = []
+
+    # Get column expressions - either from SELECT or from RETURNING clause
+    select_expressions = []
+    returning_target_table = None  # For UPDATE/INSERT/DELETE RETURNING, this is the target table
     if isinstance(parsed, exp.Select):
         annotated_select = annotated.find(exp.Select)
         select_expressions = list(annotated_select.expressions) if annotated_select else []
+    elif isinstance(parsed, (exp.Update, exp.Insert, exp.Delete)):
+        # Check for RETURNING clause - use annotated AST for type info
+        returning = annotated.find(exp.Returning)
+        if returning:
+            select_expressions = list(returning.expressions)
+            # Extract target table for type resolution
+            if isinstance(parsed, exp.Update):
+                table_expr = parsed.find(exp.Table)
+                if table_expr:
+                    returning_target_table = table_expr.name
+            elif isinstance(parsed, exp.Insert):
+                table_expr = parsed.find(exp.Table)
+                if table_expr:
+                    returning_target_table = table_expr.name
+            elif isinstance(parsed, exp.Delete):
+                table_expr = parsed.find(exp.Table)
+                if table_expr:
+                    returning_target_table = table_expr.name
+
+    if select_expressions:
 
         for i, select_col in enumerate(select_expressions):
             col_name = f"col_{i}"
@@ -901,6 +926,11 @@ def analyze_sql(sql: str, sqlglot_schema, sqlglot_schema_dict: dict, dialect: st
                 annotated, col_name, sqlglot_schema_dict, dialect
             )
 
+            # For RETURNING columns, use the target table as source if not already resolved
+            if returning_target_table and not source_table and isinstance(inner, exp.Column):
+                source_table = returning_target_table
+                source_col = inner.name
+                is_expr = False
 
             # Check nullable from join
             nullable_from_join = False
@@ -923,11 +953,15 @@ def analyze_sql(sql: str, sqlglot_schema, sqlglot_schema_dict: dict, dialect: st
                 nullable_in_schema = False
             elif source_table and source_col:
                 # Use reverse index for fast lookup (O(1) instead of O(n))
-                schema_keys = table_name_to_schema_key.get(source_table, [])
+                # Use lowercase for case-insensitive matching (DB2 stores in uppercase, SQL uses lowercase)
+                schema_keys = table_name_to_schema_key.get(source_table.lower(), [])
                 for schema_key in schema_keys:
                     cols = sqlglot_schema_dict.get(schema_key, {})
-                    if source_col in cols:
-                        col_schema = cols[source_col]
+                    # Case-insensitive column lookup
+                    col_lower_map = {k.lower(): k for k in cols.keys()}
+                    actual_col_key = col_lower_map.get(source_col.lower())
+                    if actual_col_key:
+                        col_schema = cols[actual_col_key]
                         if isinstance(col_schema, dict):
                             source_type = col_schema.get("type")
                             nullable_in_schema = col_schema.get("nullable", False)

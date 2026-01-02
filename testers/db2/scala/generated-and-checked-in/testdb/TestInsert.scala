@@ -5,6 +5,7 @@
  */
 package testdb
 
+import dev.typr.foundations.data.Xml
 import java.sql.Connection
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -18,6 +19,7 @@ import testdb.customers.CustomersRepoImpl
 import testdb.customers.CustomersRow
 import testdb.customers.CustomersRowUnsaved
 import testdb.customtypes.Defaulted
+import testdb.customtypes.Defaulted.UseDefault
 import testdb.db2test.Db2testId
 import testdb.db2test.Db2testRepoImpl
 import testdb.db2test.Db2testRow
@@ -54,7 +56,7 @@ case class TestInsert(random: Random) {
   def CheckConstraintTest(
     age: Int,
     status: String,
-    id: CheckConstraintTestId = CheckConstraintTestId(random.nextInt()),
+    id: CheckConstraintTestId = new CheckConstraintTestId(random.nextInt()),
     price: Option[BigDecimal] = None
   )(using c: Connection): CheckConstraintTestRow = {
     (new CheckConstraintTestRepoImpl()).insert(new CheckConstraintTestRow(
@@ -68,8 +70,8 @@ case class TestInsert(random: Random) {
   def Customers(
     name: String = random.alphanumeric.take(20).mkString,
     email: String = random.alphanumeric.take(20).mkString,
-    customerId: Defaulted[CustomersId] = Defaulted.UseDefault(),
-    createdAt: Defaulted[Option[LocalDateTime]] = Defaulted.UseDefault()
+    customerId: Defaulted[CustomersId] = new UseDefault(),
+    createdAt: Defaulted[Option[LocalDateTime]] = new UseDefault()
   )(using c: Connection): CustomersRow = {
     (new CustomersRepoImpl()).insert(new CustomersRowUnsaved(
       name = name,
@@ -83,13 +85,8 @@ case class TestInsert(random: Random) {
     binaryCol: Array[Byte],
     varbinaryCol: Array[Byte],
     blobCol: Array[Byte],
-    dateCol: LocalDate,
-    timeCol: LocalTime,
-    timestampCol: LocalDateTime,
-    timestamp6Col: LocalDateTime,
-    timestamp12Col: LocalDateTime,
     smallintCol: Short = random.nextInt(Short.MaxValue).toShort,
-    intCol: Db2testId = Db2testId(random.nextInt()),
+    intCol: Db2testId = new Db2testId(random.nextInt()),
     bigintCol: Long = random.nextLong(),
     decimalCol: BigDecimal = BigDecimal.decimal(random.nextDouble()),
     numericCol: BigDecimal = BigDecimal.decimal(random.nextDouble()),
@@ -98,12 +95,17 @@ case class TestInsert(random: Random) {
     realCol: Float = random.nextFloat(),
     doubleCol: Double = random.nextDouble(),
     boolCol: Boolean = random.nextBoolean(),
-    charCol: String = random.alphanumeric.take(20).mkString,
+    charCol: String = random.alphanumeric.take(10).mkString,
     varcharCol: String = random.alphanumeric.take(20).mkString,
     clobCol: String = random.alphanumeric.take(20).mkString,
     graphicCol: String = random.alphanumeric.take(20).mkString,
     vargraphicCol: String = random.alphanumeric.take(20).mkString,
-    xmlCol: String = random.alphanumeric.take(20).mkString
+    dateCol: LocalDate = LocalDate.ofEpochDay(random.nextInt(30000).toLong),
+    timeCol: LocalTime = LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong),
+    timestampCol: LocalDateTime = LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)),
+    timestamp6Col: LocalDateTime = LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)),
+    timestamp12Col: LocalDateTime = LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)),
+    xmlCol: Xml = new Xml("<root/>")
   )(using c: Connection): Db2testRow = {
     (new Db2testRepoImpl()).insert(new Db2testRow(
       smallintCol = smallintCol,
@@ -134,30 +136,30 @@ case class TestInsert(random: Random) {
   }
 
   def Db2testnull(
-    smallintCol: Option[Short] = if (random.nextBoolean()) None else Some(random.nextInt(Short.MaxValue).toShort),
-    intCol: Option[Int] = if (random.nextBoolean()) None else Some(random.nextInt()),
-    bigintCol: Option[Long] = if (random.nextBoolean()) None else Some(random.nextLong()),
-    decimalCol: Option[BigDecimal] = if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble())),
-    numericCol: Option[BigDecimal] = if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble())),
-    decfloat16Col: Option[BigDecimal] = if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble())),
-    decfloat34Col: Option[BigDecimal] = if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble())),
-    realCol: Option[Float] = if (random.nextBoolean()) None else Some(random.nextFloat()),
-    doubleCol: Option[Double] = if (random.nextBoolean()) None else Some(random.nextDouble()),
-    boolCol: Option[Boolean] = if (random.nextBoolean()) None else Some(random.nextBoolean()),
-    charCol: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    varcharCol: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    clobCol: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    graphicCol: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    vargraphicCol: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
+    smallintCol: Option[Short] = (if (random.nextBoolean()) None else Some(random.nextInt(Short.MaxValue).toShort)),
+    intCol: Option[Int] = (if (random.nextBoolean()) None else Some(random.nextInt())),
+    bigintCol: Option[Long] = (if (random.nextBoolean()) None else Some(random.nextLong())),
+    decimalCol: Option[BigDecimal] = (if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble()))),
+    numericCol: Option[BigDecimal] = (if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble()))),
+    decfloat16Col: Option[BigDecimal] = (if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble()))),
+    decfloat34Col: Option[BigDecimal] = (if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble()))),
+    realCol: Option[Float] = (if (random.nextBoolean()) None else Some(random.nextFloat())),
+    doubleCol: Option[Double] = (if (random.nextBoolean()) None else Some(random.nextDouble())),
+    boolCol: Option[Boolean] = (if (random.nextBoolean()) None else Some(random.nextBoolean())),
+    charCol: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(10).mkString)),
+    varcharCol: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString)),
+    clobCol: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString)),
+    graphicCol: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString)),
+    vargraphicCol: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString)),
     binaryCol: Option[Array[Byte]] = None,
     varbinaryCol: Option[Array[Byte]] = None,
     blobCol: Option[Array[Byte]] = None,
-    dateCol: Option[LocalDate] = None,
-    timeCol: Option[LocalTime] = None,
-    timestampCol: Option[LocalDateTime] = None,
-    timestamp6Col: Option[LocalDateTime] = None,
-    timestamp12Col: Option[LocalDateTime] = None,
-    xmlCol: Option[/* XML */ String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString)
+    dateCol: Option[LocalDate] = (if (random.nextBoolean()) None else Some(LocalDate.ofEpochDay(random.nextInt(30000).toLong))),
+    timeCol: Option[LocalTime] = (if (random.nextBoolean()) None else Some(LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong))),
+    timestampCol: Option[LocalDateTime] = (if (random.nextBoolean()) None else Some(LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)))),
+    timestamp6Col: Option[LocalDateTime] = (if (random.nextBoolean()) None else Some(LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)))),
+    timestamp12Col: Option[LocalDateTime] = (if (random.nextBoolean()) None else Some(LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)))),
+    xmlCol: Option[Xml] = (if (random.nextBoolean()) None else Some(new Xml("<root/>")))
   )(using c: Connection): Db2testnullRow = {
     (new Db2testnullRepoImpl()).insert(new Db2testnullRow(
       smallintCol = smallintCol,
@@ -191,7 +193,7 @@ case class TestInsert(random: Random) {
 
   def Db2testIdentityDefault(
     name: String = random.alphanumeric.take(20).mkString,
-    id: Defaulted[Db2testIdentityDefaultId] = Defaulted.UseDefault()
+    id: Defaulted[Db2testIdentityDefaultId] = new UseDefault()
   )(using c: Connection): Db2testIdentityDefaultRow = (new Db2testIdentityDefaultRepoImpl()).insert(new Db2testIdentityDefaultRowUnsaved(name = name, id = id))(using c)
 
   def Db2testUnique(
@@ -210,8 +212,8 @@ case class TestInsert(random: Random) {
   def NullabilityTest(
     id: Int = random.nextInt(),
     requiredCol: String = random.alphanumeric.take(20).mkString,
-    optionalCol: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    defaultedCol: Defaulted[Option[String]] = Defaulted.UseDefault()
+    optionalCol: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString)),
+    defaultedCol: Defaulted[Option[String]] = new UseDefault()
   )(using c: Connection): NullabilityTestRow = {
     (new NullabilityTestRepoImpl()).insert(new NullabilityTestRowUnsaved(
       id = id,
@@ -223,9 +225,9 @@ case class TestInsert(random: Random) {
 
   def Orders(
     customerId: CustomersId,
-    totalAmount: Option[BigDecimal] = if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble())),
-    orderDate: Defaulted[LocalDate] = Defaulted.UseDefault(),
-    status: Defaulted[Option[String]] = Defaulted.UseDefault()
+    totalAmount: Option[BigDecimal] = (if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble()))),
+    orderDate: Defaulted[LocalDate] = new UseDefault(),
+    status: Defaulted[Option[String]] = new UseDefault()
   )(using c: Connection): OrdersRow = {
     (new OrdersRepoImpl()).insert(new OrdersRowUnsaved(
       customerId = customerId,

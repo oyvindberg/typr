@@ -7,6 +7,7 @@ package testdb.db2test_identity_default
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import testdb.customtypes.Defaulted
@@ -18,10 +19,14 @@ case class Db2testIdentityDefaultRow(
   /** Identity BY DEFAULT */
   @JsonProperty("ID") id: Db2testIdentityDefaultId,
   @JsonProperty("NAME") name: String
-) {
+) extends Tuple2[Db2testIdentityDefaultId, String] {
   def toUnsavedRow(id: Defaulted[Db2testIdentityDefaultId]): Db2testIdentityDefaultRowUnsaved = new Db2testIdentityDefaultRowUnsaved(name, id)
+
+  override def `_1`: Db2testIdentityDefaultId = id
+
+  override def `_2`: String = name
 }
 
 object Db2testIdentityDefaultRow {
-  val `_rowParser`: RowParser[Db2testIdentityDefaultRow] = RowParsers.of(Db2testIdentityDefaultId.pgType, Db2Types.varchar)(Db2testIdentityDefaultRow.apply)(row => Array[Any](row.id, row.name))
+  val `_rowParser`: RowParser[Db2testIdentityDefaultRow] = RowParsers.of(Db2testIdentityDefaultId.dbType, Db2Types.varchar)(Db2testIdentityDefaultRow.apply)(row => Array[Any](row.id, row.name))
 }

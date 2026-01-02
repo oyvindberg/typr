@@ -8,6 +8,7 @@ package adventureworks.public.flaff
 import adventureworks.public.ShortText
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -18,8 +19,16 @@ case class FlaffId(
   @JsonProperty("another_code") anotherCode: String,
   @JsonProperty("some_number") someNumber: Int,
   specifier: ShortText
-)
+) extends Tuple4[ShortText, String, Int, ShortText] {
+  override def `_1`: ShortText = code
+
+  override def `_2`: String = anotherCode
+
+  override def `_3`: Int = someNumber
+
+  override def `_4`: ShortText = specifier
+}
 
 object FlaffId {
-  val `_rowParser`: RowParser[FlaffId] = RowParsers.of(ShortText.pgType, PgTypes.text, ScalaDbTypes.PgTypes.int4, ShortText.pgType)(FlaffId.apply)(row => Array[Any](row.code, row.anotherCode, row.someNumber, row.specifier))
+  val `_rowParser`: RowParser[FlaffId] = RowParsers.of(ShortText.dbType, PgTypes.text, ScalaDbTypes.PgTypes.int4, ShortText.dbType)(FlaffId.apply)(row => Array[Any](row.code, row.anotherCode, row.someNumber, row.specifier))
 }

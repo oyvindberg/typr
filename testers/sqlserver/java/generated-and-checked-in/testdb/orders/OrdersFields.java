@@ -7,14 +7,16 @@ package testdb.orders;
 
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.SqlServerTypes;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr4;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,101 +25,105 @@ import testdb.customers.CustomersFields;
 import testdb.customers.CustomersId;
 import testdb.customers.CustomersRow;
 
-public interface OrdersFields extends FieldsExpr<OrdersRow> {
-  record Impl(List<Path> _path)
-      implements OrdersFields, RelationStructure<OrdersFields, OrdersRow> {
-    @Override
-    public IdField<OrdersId, OrdersRow> orderId() {
-      return new IdField<OrdersId, OrdersRow>(
-          _path,
-          "order_id",
-          OrdersRow::orderId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderId(value),
-          OrdersId.sqlServerType);
-    }
-    ;
+public class OrdersFields
+    implements TupleExpr4<OrdersId, CustomersId, LocalDateTime, BigDecimal>,
+        RelationStructure<OrdersFields, OrdersRow>,
+        FieldsBase<OrdersRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<CustomersId, OrdersRow> customerId() {
-      return new Field<CustomersId, OrdersRow>(
-          _path,
-          "customer_id",
-          OrdersRow::customerId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerId(value),
-          CustomersId.sqlServerType);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, OrdersRow> orderDate() {
-      return new OptField<LocalDateTime, OrdersRow>(
-          _path,
-          "order_date",
-          OrdersRow::orderDate,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderDate(value),
-          SqlServerTypes.datetime2);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, OrdersRow> totalAmount() {
-      return new Field<BigDecimal, OrdersRow>(
-          _path,
-          "total_amount",
-          OrdersRow::totalAmount,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTotalAmount(value),
-          SqlServerTypes.money);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, OrdersRow>> columns() {
-      return java.util.List.of(
-          this.orderId(), this.customerId(), this.orderDate(), this.totalAmount());
-    }
-    ;
-
-    @Override
-    public RelationStructure<OrdersFields, OrdersRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public OrdersFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static OrdersFields structure = new OrdersFields(java.util.Collections.emptyList());
+
+  public IdField<OrdersId, OrdersRow> orderId() {
+    return new IdField<OrdersId, OrdersRow>(
+        _path,
+        "order_id",
+        OrdersRow::orderId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderId(value),
+        OrdersId.sqlServerType);
   }
-  ;
 
-  IdField<OrdersId, OrdersRow> orderId();
+  public Field<CustomersId, OrdersRow> customerId() {
+    return new Field<CustomersId, OrdersRow>(
+        _path,
+        "customer_id",
+        OrdersRow::customerId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerId(value),
+        CustomersId.sqlServerType);
+  }
 
-  Field<CustomersId, OrdersRow> customerId();
+  public OptField<LocalDateTime, OrdersRow> orderDate() {
+    return new OptField<LocalDateTime, OrdersRow>(
+        _path,
+        "order_date",
+        OrdersRow::orderDate,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderDate(value),
+        SqlServerTypes.datetime2);
+  }
 
-  OptField<LocalDateTime, OrdersRow> orderDate();
+  public Field<BigDecimal, OrdersRow> totalAmount() {
+    return new Field<BigDecimal, OrdersRow>(
+        _path,
+        "total_amount",
+        OrdersRow::totalAmount,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTotalAmount(value),
+        SqlServerTypes.money);
+  }
 
-  Field<BigDecimal, OrdersRow> totalAmount();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<CustomersFields, CustomersRow> fkCustomers() {
+  public ForeignKey<CustomersFields, CustomersRow> fkCustomers() {
     return ForeignKey.<CustomersFields, CustomersRow>of("FK__orders__customer__412EB0B6")
         .<CustomersId>withColumnPair(customerId(), CustomersFields::customerId);
   }
-  ;
 
   @Override
-  List<FieldLike<?, OrdersRow>> columns();
+  public List<FieldLike<?, OrdersRow>> columns() {
+    return java.util.List.of(
+        this.orderId(), this.customerId(), this.orderDate(), this.totalAmount());
+  }
 
   @Override
-  default RowParser<OrdersRow> rowParser() {
+  public RowParser<OrdersRow> rowParser() {
     return OrdersRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<OrdersFields, OrdersRow> withPaths(List<Path> _path) {
+    return new OrdersFields(_path);
+  }
+
+  @Override
+  public SqlExpr<OrdersId> _1() {
+    return orderId();
+  }
+
+  @Override
+  public SqlExpr<CustomersId> _2() {
+    return customerId();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _3() {
+    return orderDate();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _4() {
+    return totalAmount();
+  }
 }

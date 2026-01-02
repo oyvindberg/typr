@@ -27,34 +27,31 @@ public class DepartmentRepoImpl implements DepartmentRepo {
   @Override
   public DeleteBuilder<DepartmentFields, DepartmentRow> delete() {
     return DeleteBuilder.of(
-        "\"humanresources\".\"department\"", DepartmentFields.structure(), Dialect.POSTGRESQL);
+        "\"humanresources\".\"department\"", DepartmentFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(DepartmentId departmentid, Connection c) {
     return interpolate(
                 Fragment.lit(
                     "delete from \"humanresources\".\"department\" where \"departmentid\" = "),
-                Fragment.encode(DepartmentId.pgType, departmentid),
+                Fragment.encode(DepartmentId.dbType, departmentid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(DepartmentId[] departmentids, Connection c) {
     return interpolate(
             Fragment.lit(
                 "delete\nfrom \"humanresources\".\"department\"\nwhere \"departmentid\" = ANY("),
-            Fragment.encode(DepartmentId.pgTypeArray, departmentids),
+            Fragment.encode(DepartmentId.dbTypeArray, departmentids),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public DepartmentRow insert(DepartmentRow unsaved, Connection c) {
@@ -63,11 +60,11 @@ public class DepartmentRepoImpl implements DepartmentRepo {
                 "insert into \"humanresources\".\"department\"(\"departmentid\", \"name\","
                     + " \"groupname\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(DepartmentId.pgType, unsaved.departmentid()),
+            Fragment.encode(DepartmentId.dbType, unsaved.departmentid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
-            Fragment.encode(Name.pgType, unsaved.groupname()),
+            Fragment.encode(Name.dbType, unsaved.groupname()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()),
             Fragment.lit(
@@ -76,7 +73,6 @@ public class DepartmentRepoImpl implements DepartmentRepo {
         .updateReturning(DepartmentRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public DepartmentRow insert(DepartmentRowUnsaved unsaved, Connection c) {
@@ -86,10 +82,10 @@ public class DepartmentRepoImpl implements DepartmentRepo {
     ;
     columns.add(Fragment.lit("\"name\""));
     values.add(
-        interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
+        interpolate(Fragment.encode(Name.dbType, unsaved.name()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"groupname\""));
     values.add(
-        interpolate(Fragment.encode(Name.pgType, unsaved.groupname()), Fragment.lit("::varchar")));
+        interpolate(Fragment.encode(Name.dbType, unsaved.groupname()), Fragment.lit("::varchar")));
     unsaved
         .departmentid()
         .visit(
@@ -97,7 +93,7 @@ public class DepartmentRepoImpl implements DepartmentRepo {
             value -> {
               columns.add(Fragment.lit("\"departmentid\""));
               values.add(
-                  interpolate(Fragment.encode(DepartmentId.pgType, value), Fragment.lit("::int4")));
+                  interpolate(Fragment.encode(DepartmentId.dbType, value), Fragment.lit("::int4")));
             });
     ;
     unsaved
@@ -122,7 +118,6 @@ public class DepartmentRepoImpl implements DepartmentRepo {
     ;
     return q.updateReturning(DepartmentRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<DepartmentRow> unsaved, Integer batchSize, Connection c) {
@@ -134,7 +129,6 @@ public class DepartmentRepoImpl implements DepartmentRepo {
         c,
         DepartmentRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -148,17 +142,15 @@ public class DepartmentRepoImpl implements DepartmentRepo {
         c,
         DepartmentRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<DepartmentFields, DepartmentRow> select() {
     return SelectBuilder.of(
         "\"humanresources\".\"department\"",
-        DepartmentFields.structure(),
+        DepartmentFields.structure,
         DepartmentRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<DepartmentRow> selectAll(Connection c) {
@@ -169,7 +161,6 @@ public class DepartmentRepoImpl implements DepartmentRepo {
         .query(DepartmentRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<DepartmentRow> selectById(DepartmentId departmentid, Connection c) {
@@ -178,12 +169,11 @@ public class DepartmentRepoImpl implements DepartmentRepo {
                 "select \"departmentid\", \"name\", \"groupname\", \"modifieddate\"\n"
                     + "from \"humanresources\".\"department\"\n"
                     + "where \"departmentid\" = "),
-            Fragment.encode(DepartmentId.pgType, departmentid),
+            Fragment.encode(DepartmentId.dbType, departmentid),
             Fragment.lit(""))
         .query(DepartmentRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<DepartmentRow> selectByIds(DepartmentId[] departmentids, Connection c) {
@@ -192,12 +182,11 @@ public class DepartmentRepoImpl implements DepartmentRepo {
                 "select \"departmentid\", \"name\", \"groupname\", \"modifieddate\"\n"
                     + "from \"humanresources\".\"department\"\n"
                     + "where \"departmentid\" = ANY("),
-            Fragment.encode(DepartmentId.pgTypeArray, departmentids),
+            Fragment.encode(DepartmentId.dbTypeArray, departmentids),
             Fragment.lit(")"))
         .query(DepartmentRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<DepartmentId, DepartmentRow> selectByIdsTracked(
@@ -206,17 +195,15 @@ public class DepartmentRepoImpl implements DepartmentRepo {
     selectByIds(departmentids, c).forEach(row -> ret.put(row.departmentid(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<DepartmentFields, DepartmentRow> update() {
     return UpdateBuilder.of(
         "\"humanresources\".\"department\"",
-        DepartmentFields.structure(),
+        DepartmentFields.structure,
         DepartmentRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(DepartmentRow row, Connection c) {
@@ -224,19 +211,18 @@ public class DepartmentRepoImpl implements DepartmentRepo {
     ;
     return interpolate(
                 Fragment.lit("update \"humanresources\".\"department\"\nset \"name\" = "),
-                Fragment.encode(Name.pgType, row.name()),
+                Fragment.encode(Name.dbType, row.name()),
                 Fragment.lit("::varchar,\n\"groupname\" = "),
-                Fragment.encode(Name.pgType, row.groupname()),
+                Fragment.encode(Name.dbType, row.groupname()),
                 Fragment.lit("::varchar,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"departmentid\" = "),
-                Fragment.encode(DepartmentId.pgType, departmentid),
+                Fragment.encode(DepartmentId.dbType, departmentid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public DepartmentRow upsert(DepartmentRow unsaved, Connection c) {
@@ -245,11 +231,11 @@ public class DepartmentRepoImpl implements DepartmentRepo {
                 "insert into \"humanresources\".\"department\"(\"departmentid\", \"name\","
                     + " \"groupname\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(DepartmentId.pgType, unsaved.departmentid()),
+            Fragment.encode(DepartmentId.dbType, unsaved.departmentid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
-            Fragment.encode(Name.pgType, unsaved.groupname()),
+            Fragment.encode(Name.dbType, unsaved.groupname()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.timestamp, unsaved.modifieddate()),
             Fragment.lit(
@@ -263,7 +249,6 @@ public class DepartmentRepoImpl implements DepartmentRepo {
         .updateReturning(DepartmentRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<DepartmentRow> upsertBatch(Iterator<DepartmentRow> unsaved, Connection c) {
@@ -281,7 +266,6 @@ public class DepartmentRepoImpl implements DepartmentRepo {
         .updateManyReturning(DepartmentRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -314,5 +298,4 @@ public class DepartmentRepoImpl implements DepartmentRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

@@ -5,6 +5,7 @@
  */
 package testdb.product_search;
 
+import dev.typr.foundations.data.Uint2;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.Optional;
 
 public interface ProductSearchSqlRepo {
   List<ProductSearchSqlRow> apply(
-      Optional<Integer> brandId,
+      Optional<Uint2> brandId,
       Optional<BigDecimal> minPrice,
       Optional<BigDecimal> maxPrice,
       Optional<String> status,

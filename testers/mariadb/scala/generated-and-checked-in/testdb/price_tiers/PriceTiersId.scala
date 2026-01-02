@@ -7,14 +7,15 @@ package testdb.price_tiers
 
 import com.fasterxml.jackson.annotation.JsonValue
 import dev.typr.foundations.MariaType
+import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.data.Uint1
 import dev.typr.foundations.scala.Bijection
-import dev.typr.foundations.scala.ScalaDbTypes
 
 /** Type for the primary key of table `price_tiers` */
-case class PriceTiersId(@JsonValue value: Short) extends scala.AnyVal
+case class PriceTiersId(@JsonValue value: Uint1) extends scala.AnyVal
 
 object PriceTiersId {
-  given bijection: Bijection[PriceTiersId, Short] = Bijection.apply[PriceTiersId, Short](_.value)(PriceTiersId.apply)
+  given bijection: Bijection[PriceTiersId, Uint1] = Bijection.apply[PriceTiersId, Uint1](_.value)(PriceTiersId.apply)
 
-  given pgType: MariaType[PriceTiersId] = ScalaDbTypes.MariaTypes.tinyintUnsigned.bimap(PriceTiersId.apply, _.value)
+  given dbType: MariaType[PriceTiersId] = MariaTypes.tinyintUnsigned.bimap(PriceTiersId.apply, _.value)
 }

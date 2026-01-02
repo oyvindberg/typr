@@ -762,7 +762,7 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
         toText = CustomType.Text.string { expr =>
           lang.MapOps.mkStringKV(prop(expr, "value"), " => ", ",")
         },
-        pgTypeAnnotations = List(jvm.Annotation(jvm.Type.Qualified("java.lang.SuppressWarnings"), List(jvm.Annotation.Arg.Positional(jvm.StrLit("unchecked").code))))
+        dbTypeAnnotations = List(jvm.Annotation(jvm.Type.Qualified("java.lang.SuppressWarnings"), List(jvm.Annotation.Arg.Positional(jvm.StrLit("unchecked").code))))
       )
     case _: LangKotlin =>
       // In Kotlin, use kotlin.collections.Map with kotlin.String for native Kotlin interop
@@ -788,7 +788,7 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
         toText = CustomType.Text.string { expr =>
           lang.MapOps.mkStringKV(prop(expr, "value"), " => ", ",")
         },
-        pgTypeAnnotations = List(jvm.Annotation(jvm.Type.Qualified("kotlin.Suppress"), List(jvm.Annotation.Arg.Positional(jvm.StrLit("UNCHECKED_CAST").code))))
+        dbTypeAnnotations = List(jvm.Annotation(jvm.Type.Qualified("kotlin.Suppress"), List(jvm.Annotation.Arg.Positional(jvm.StrLit("UNCHECKED_CAST").code))))
       )
     case _: LangScala =>
       // In Scala code, always use Scala Map for TypoHStore, regardless of TypeSupport
@@ -1255,6 +1255,9 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
   lazy val TypoJson = obj("json", "TypoJson")
   lazy val TypoJsonb = obj("jsonb", "TypoJsonb")
   lazy val TypoInet = obj("inet", "TypoInet").copy(toTypoInArray = None)
+  lazy val TypoCidr = obj("cidr", "TypoCidr").copy(toTypoInArray = None)
+  lazy val TypoMacAddr = obj("macaddr", "TypoMacAddr").copy(toTypoInArray = None)
+  lazy val TypoMacAddr8 = obj("macaddr8", "TypoMacAddr8").copy(toTypoInArray = None)
   lazy val TypoAclItem = obj("aclitem", "TypoAclItem").copy(toTypoInArray = None)
   lazy val TypoAnyArray = obj("anyarray", "TypoAnyArray")
   lazy val TypoInt2Vector = obj("int2vector", "TypoInt2Vector").copy(toTypoInArray = None).withComment(""". Valid syntax: `TypoInt2Vector("1 2 3")""")
@@ -1283,7 +1286,9 @@ class CustomTypes(pkg: jvm.QIdent, lang: Lang) {
         TypoCircle,
         TypoHStore,
         TypoInet,
-        TypoInet,
+        TypoCidr,
+        TypoMacAddr,
+        TypoMacAddr8,
         TypoInt2Vector,
         TypoInterval,
         TypoJson,

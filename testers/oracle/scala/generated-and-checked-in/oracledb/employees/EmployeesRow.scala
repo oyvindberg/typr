@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple7
 import java.time.LocalDateTime
 import java.util.Optional
 import oracledb.MoneyT
@@ -29,7 +30,7 @@ case class EmployeesRow(
   @JsonProperty("SALARY") salary: Optional[MoneyT],
   /** Default: SYSDATE  */
   @JsonProperty("HIRE_DATE") hireDate: LocalDateTime
-) {
+) extends Tuple7[java.math.BigDecimal, String, String, String, String, Optional[MoneyT], LocalDateTime] {
   def compositeId: EmployeesId = new EmployeesId(empNumber, empSuffix)
 
   def id: EmployeesId = this.compositeId
@@ -47,6 +48,20 @@ case class EmployeesRow(
       hireDate
     )
   }
+
+  override def `_1`: java.math.BigDecimal = empNumber
+
+  override def `_2`: String = empSuffix
+
+  override def `_3`: String = deptCode
+
+  override def `_4`: String = deptRegion
+
+  override def `_5`: String = empName
+
+  override def `_6`: Optional[MoneyT] = salary
+
+  override def `_7`: LocalDateTime = hireDate
 }
 
 object EmployeesRow {

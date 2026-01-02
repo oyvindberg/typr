@@ -6,6 +6,7 @@
 package testdb.payments
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.Inet6
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -41,7 +42,7 @@ data class PaymentsRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("processor_response") val processorResponse: Defaulted<String?> = UseDefault(),
+  @JsonProperty("processor_response") val processorResponse: Defaulted<Json?> = UseDefault(),
   /** Default: NULL
 
     */
@@ -63,7 +64,7 @@ data class PaymentsRowUnsaved(
     transactionIdDefault: () -> String?,
     currencyCodeDefault: () -> String,
     statusDefault: () -> String,
-    processorResponseDefault: () -> String?,
+    processorResponseDefault: () -> Json?,
     errorMessageDefault: () -> String?,
     ipAddressDefault: () -> Inet6?,
     createdAtDefault: () -> LocalDateTime,

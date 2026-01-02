@@ -6,6 +6,7 @@
 package testdb.product_images;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.typr.foundations.data.Uint1;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
 import testdb.customtypes.Defaulted.UseDefault;
@@ -22,7 +23,7 @@ public record ProductImagesRowUnsaved(
     /** Default: NULL */
     @JsonProperty("alt_text") Defaulted<Optional<String>> altText,
     /** Default: 0 */
-    @JsonProperty("sort_order") Defaulted<Short> sortOrder,
+    @JsonProperty("sort_order") Defaulted<Uint1> sortOrder,
     /** Default: 0 */
     @JsonProperty("is_primary") Defaulted<Boolean> isPrimary,
     /** Default: NULL Optional embedded image data */
@@ -72,7 +73,7 @@ public record ProductImagesRowUnsaved(
   ;
 
   /** Default: 0 */
-  public ProductImagesRowUnsaved withSortOrder(Defaulted<Short> sortOrder) {
+  public ProductImagesRowUnsaved withSortOrder(Defaulted<Uint1> sortOrder) {
     return new ProductImagesRowUnsaved(
         productId, imageUrl, thumbnailUrl, altText, sortOrder, isPrimary, imageData);
   }
@@ -95,7 +96,7 @@ public record ProductImagesRowUnsaved(
   public ProductImagesRow toRow(
       java.util.function.Supplier<Optional<String>> thumbnailUrlDefault,
       java.util.function.Supplier<Optional<String>> altTextDefault,
-      java.util.function.Supplier<Short> sortOrderDefault,
+      java.util.function.Supplier<Uint1> sortOrderDefault,
       java.util.function.Supplier<Boolean> isPrimaryDefault,
       java.util.function.Supplier<Optional<byte[]>> imageDataDefault,
       java.util.function.Supplier<ProductImagesId> imageIdDefault) {

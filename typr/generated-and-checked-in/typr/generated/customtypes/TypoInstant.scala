@@ -31,7 +31,7 @@ object TypoInstant {
 
   def apply(str: String): TypoInstant = TypoInstant.apply(OffsetDateTime.parse(str, (if (str.contains("T")) jsonParser else parser)).toInstant())
 
-  implicit lazy val arrayColumn: Column[Array[TypoInstant]] = {
+  given arrayColumn: Column[Array[TypoInstant]] = {
     Column.nonNull[Array[TypoInstant]]((v1: Any, _) =>
       v1 match {
           case v: PgArray =>
@@ -45,9 +45,9 @@ object TypoInstant {
     )
   }
 
-  implicit lazy val arrayToStatement: ToStatement[Array[TypoInstant]] = ToStatement[Array[TypoInstant]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("timestamptz", v.map(v => v.value.toString()))))
+  given arrayToStatement: ToStatement[Array[TypoInstant]] = ToStatement[Array[TypoInstant]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("timestamptz", v.map(v => v.value.toString()))))
 
-  implicit lazy val column: Column[TypoInstant] = {
+  given column: Column[TypoInstant] = {
     Column.nonNull[TypoInstant]((v1: Any, _) =>
       v1 match {
         case v: String => Right(apply(v))
@@ -60,7 +60,7 @@ object TypoInstant {
 
   def now: TypoInstant = TypoInstant.apply(Instant.now())
 
-  implicit lazy val parameterMetadata: ParameterMetaData[TypoInstant] = {
+  given parameterMetadata: ParameterMetaData[TypoInstant] = {
     new ParameterMetaData[TypoInstant] {
       override def sqlType: String = "timestamptz"
       override def jdbcType: Int = Types.OTHER
@@ -69,16 +69,16 @@ object TypoInstant {
 
   val parser: DateTimeFormatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true).appendPattern("X").toFormatter()
 
-  implicit lazy val pgText: Text[TypoInstant] = {
+  given pgText: Text[TypoInstant] = {
     new Text[TypoInstant] {
       override def unsafeEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value.toString(), sb)
       override def unsafeArrayEncode(v: TypoInstant, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value.toString(), sb)
     }
   }
 
-  implicit lazy val reads: Reads[TypoInstant] = Reads.DefaultInstantReads.map(TypoInstant.apply)
+  given reads: Reads[TypoInstant] = Reads.DefaultInstantReads.map(TypoInstant.apply)
 
-  implicit lazy val toStatement: ToStatement[TypoInstant] = ToStatement[TypoInstant]((s, index, v) => s.setObject(index, v.value.toString()))
+  given toStatement: ToStatement[TypoInstant] = ToStatement[TypoInstant]((s, index, v) => s.setObject(index, v.value.toString()))
 
-  implicit lazy val writes: Writes[TypoInstant] = Writes.DefaultInstantWrites.contramap(_.value)
+  given writes: Writes[TypoInstant] = Writes.DefaultInstantWrites.contramap(_.value)
 }

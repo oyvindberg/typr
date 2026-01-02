@@ -10,5 +10,5 @@ package typr.generated.custom.enums
 import java.sql.Connection
 
 trait EnumsSqlRepo {
-  def apply(implicit c: Connection): List[EnumsSqlRow]
+  def apply(using c: Connection): List[EnumsSqlRow]
 }

@@ -48,7 +48,7 @@ public record Db2testUniqueRepoMock(
   @Override
   public DeleteBuilder<Db2testUniqueFields, Db2testUniqueRow> delete() {
     return new DeleteBuilderMock<>(
-        Db2testUniqueFields.structure(),
+        Db2testUniqueFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.id(),
@@ -97,7 +97,7 @@ public record Db2testUniqueRepoMock(
   @Override
   public SelectBuilder<Db2testUniqueFields, Db2testUniqueRow> select() {
     return new SelectBuilderMock<>(
-        Db2testUniqueFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        Db2testUniqueFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -153,7 +153,7 @@ public record Db2testUniqueRepoMock(
   @Override
   public UpdateBuilder<Db2testUniqueFields, Db2testUniqueRow> update() {
     return new UpdateBuilderMock<>(
-        Db2testUniqueFields.structure(),
+        Db2testUniqueFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

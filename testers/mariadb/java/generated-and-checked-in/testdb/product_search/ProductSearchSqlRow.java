@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple7;
 import java.math.BigDecimal;
 import java.util.Optional;
 import testdb.products.ProductsId;
@@ -28,7 +29,9 @@ public record ProductSearchSqlRow(
     /** Points to {@link testdb.products.ProductsRow#status()} */
     String status,
     /** Points to {@link testdb.brands.BrandsRow#name()} */
-    @JsonProperty("brand_name") Optional<String> brandName) {
+    @JsonProperty("brand_name") Optional<String> brandName)
+    implements Tuple7<
+        ProductsId, String, String, Optional<String>, BigDecimal, String, Optional<String>> {
   /** Points to {@link testdb.products.ProductsRow#productId()} */
   public ProductSearchSqlRow withProductId(ProductsId productId) {
     return new ProductSearchSqlRow(
@@ -80,7 +83,7 @@ public record ProductSearchSqlRow(
 
   public static RowParser<ProductSearchSqlRow> _rowParser =
       RowParsers.of(
-          ProductsId.pgType,
+          ProductsId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.varchar.opt(),
@@ -98,5 +101,47 @@ public record ProductSearchSqlRow(
                 row.status(),
                 row.brandName()
               });
+  ;
+
+  @Override
+  public ProductsId _1() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return sku;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return name;
+  }
+  ;
+
+  @Override
+  public Optional<String> _4() {
+    return shortDescription;
+  }
+  ;
+
+  @Override
+  public BigDecimal _5() {
+    return basePrice;
+  }
+  ;
+
+  @Override
+  public String _6() {
+    return status;
+  }
+  ;
+
+  @Override
+  public Optional<String> _7() {
+    return brandName;
+  }
   ;
 }

@@ -81,21 +81,36 @@ public class MariaTypeTest {
 
           // ==================== Integer Types (Unsigned) ====================
           new MariaTypeAndExample<>(
-              MariaTypes.tinyintUnsigned, (short) 255), // Max TINYINT UNSIGNED
+              MariaTypes.tinyintUnsigned,
+              new dev.typr.foundations.data.Uint1((short) 255)), // Max TINYINT UNSIGNED
           new MariaTypeAndExample<>(
-              MariaTypes.tinyintUnsigned, (short) 0), // Edge case: min unsigned
-          new MariaTypeAndExample<>(MariaTypes.smallintUnsigned, 65535), // Max SMALLINT UNSIGNED
-          new MariaTypeAndExample<>(MariaTypes.smallintUnsigned, 0), // Edge case: min unsigned
+              MariaTypes.tinyintUnsigned,
+              new dev.typr.foundations.data.Uint1((short) 0)), // Edge case: min unsigned
           new MariaTypeAndExample<>(
-              MariaTypes.mediumintUnsigned, 16777215), // Max MEDIUMINT UNSIGNED
-          new MariaTypeAndExample<>(MariaTypes.mediumintUnsigned, 0), // Edge case: min unsigned
-          new MariaTypeAndExample<>(MariaTypes.intUnsigned, 4294967295L), // Max INT UNSIGNED
-          new MariaTypeAndExample<>(MariaTypes.intUnsigned, 0L), // Edge case: min unsigned
+              MariaTypes.smallintUnsigned,
+              new dev.typr.foundations.data.Uint2(65535)), // Max SMALLINT UNSIGNED
+          new MariaTypeAndExample<>(
+              MariaTypes.smallintUnsigned,
+              new dev.typr.foundations.data.Uint2(0)), // Edge case: min unsigned
+          new MariaTypeAndExample<>(
+              MariaTypes.mediumintUnsigned,
+              new dev.typr.foundations.data.Uint4(16777215)), // Max MEDIUMINT UNSIGNED
+          new MariaTypeAndExample<>(
+              MariaTypes.mediumintUnsigned,
+              new dev.typr.foundations.data.Uint4(0)), // Edge case: min unsigned
+          new MariaTypeAndExample<>(
+              MariaTypes.intUnsigned,
+              new dev.typr.foundations.data.Uint4(4294967295L)), // Max INT UNSIGNED
+          new MariaTypeAndExample<>(
+              MariaTypes.intUnsigned,
+              new dev.typr.foundations.data.Uint4(0L)), // Edge case: min unsigned
           new MariaTypeAndExample<>(
               MariaTypes.bigintUnsigned,
-              new BigInteger("18446744073709551615")), // Max BIGINT UNSIGNED
+              new dev.typr.foundations.data.Uint8(
+                  new BigInteger("18446744073709551615"))), // Max BIGINT UNSIGNED
           new MariaTypeAndExample<>(
-              MariaTypes.bigintUnsigned, BigInteger.ZERO), // Edge case: min unsigned
+              MariaTypes.bigintUnsigned,
+              new dev.typr.foundations.data.Uint8(BigInteger.ZERO)), // Edge case: min unsigned
 
           // ==================== Fixed-Point Types ====================
           new MariaTypeAndExample<>(MariaTypes.decimal, new BigDecimal("12345")),

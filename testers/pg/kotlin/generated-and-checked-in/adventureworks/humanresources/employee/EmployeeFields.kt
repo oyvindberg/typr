@@ -11,96 +11,94 @@ import adventureworks.person.person.PersonRow
 import adventureworks.public.Flag
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.ForeignKey
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr15
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 import kotlin.collections.List
 
-interface EmployeeFields : FieldsExpr<EmployeeRow> {
-  abstract fun birthdate(): Field<LocalDate, EmployeeRow>
+data class EmployeeFields(val _path: List<Path>) : TupleExpr15<BusinessentityId, String, String, String, LocalDate, String, String, LocalDate, Flag, Short, Short, Flag, UUID, LocalDateTime, String>, RelationStructure<EmployeeFields, EmployeeRow>, FieldsBase<EmployeeRow> {
+  override fun _1(): SqlExpr<BusinessentityId> = businessentityid()
 
-  abstract fun businessentityid(): IdField<BusinessentityId, EmployeeRow>
+  override fun _10(): SqlExpr<Short> = vacationhours()
 
-  abstract override fun columns(): List<FieldLike<*, EmployeeRow>>
+  override fun _11(): SqlExpr<Short> = sickleavehours()
 
-  abstract fun currentflag(): Field<Flag, EmployeeRow>
+  override fun _12(): SqlExpr<Flag> = currentflag()
+
+  override fun _13(): SqlExpr<UUID> = rowguid()
+
+  override fun _14(): SqlExpr<LocalDateTime> = modifieddate()
+
+  override fun _15(): SqlExpr<String> = organizationnode()
+
+  override fun _2(): SqlExpr<String> = nationalidnumber()
+
+  override fun _3(): SqlExpr<String> = loginid()
+
+  override fun _4(): SqlExpr<String> = jobtitle()
+
+  override fun _5(): SqlExpr<LocalDate> = birthdate()
+
+  override fun _6(): SqlExpr<String> = maritalstatus()
+
+  override fun _7(): SqlExpr<String> = gender()
+
+  override fun _8(): SqlExpr<LocalDate> = hiredate()
+
+  override fun _9(): SqlExpr<Flag> = salariedflag()
+
+  override fun _path(): List<Path> = _path
+
+  fun birthdate(): Field<LocalDate, EmployeeRow> = Field<LocalDate, EmployeeRow>(_path, "birthdate", EmployeeRow::birthdate, null, "date", { row, value -> row.copy(birthdate = value) }, PgTypes.date)
+
+  fun businessentityid(): IdField<BusinessentityId, EmployeeRow> = IdField<BusinessentityId, EmployeeRow>(_path, "businessentityid", EmployeeRow::businessentityid, null, "int4", { row, value -> row.copy(businessentityid = value) }, BusinessentityId.dbType)
+
+  override fun columns(): List<FieldLike<*, EmployeeRow>> = listOf(this.businessentityid().underlying, this.nationalidnumber().underlying, this.loginid().underlying, this.jobtitle().underlying, this.birthdate().underlying, this.maritalstatus().underlying, this.gender().underlying, this.hiredate().underlying, this.salariedflag().underlying, this.vacationhours().underlying, this.sickleavehours().underlying, this.currentflag().underlying, this.rowguid().underlying, this.modifieddate().underlying, this.organizationnode().underlying)
+
+  fun currentflag(): Field<Flag, EmployeeRow> = Field<Flag, EmployeeRow>(_path, "currentflag", EmployeeRow::currentflag, null, "bool", { row, value -> row.copy(currentflag = value) }, Flag.dbType)
 
   fun fkPersonPerson(): ForeignKey<PersonFields, PersonRow> = ForeignKey.of<PersonFields, PersonRow>("humanresources.FK_Employee_Person_BusinessEntityID").withColumnPair<BusinessentityId>(businessentityid(), PersonFields::businessentityid)
 
-  abstract fun gender(): Field<String, EmployeeRow>
+  fun gender(): Field<String, EmployeeRow> = Field<String, EmployeeRow>(_path, "gender", EmployeeRow::gender, null, "bpchar", { row, value -> row.copy(gender = value) }, PgTypes.bpchar)
 
-  abstract fun hiredate(): Field<LocalDate, EmployeeRow>
+  fun hiredate(): Field<LocalDate, EmployeeRow> = Field<LocalDate, EmployeeRow>(_path, "hiredate", EmployeeRow::hiredate, null, "date", { row, value -> row.copy(hiredate = value) }, PgTypes.date)
 
-  abstract fun jobtitle(): Field<String, EmployeeRow>
+  fun jobtitle(): Field<String, EmployeeRow> = Field<String, EmployeeRow>(_path, "jobtitle", EmployeeRow::jobtitle, null, null, { row, value -> row.copy(jobtitle = value) }, PgTypes.text)
 
-  abstract fun loginid(): Field<String, EmployeeRow>
+  fun loginid(): Field<String, EmployeeRow> = Field<String, EmployeeRow>(_path, "loginid", EmployeeRow::loginid, null, null, { row, value -> row.copy(loginid = value) }, PgTypes.text)
 
-  abstract fun maritalstatus(): Field<String, EmployeeRow>
+  fun maritalstatus(): Field<String, EmployeeRow> = Field<String, EmployeeRow>(_path, "maritalstatus", EmployeeRow::maritalstatus, null, "bpchar", { row, value -> row.copy(maritalstatus = value) }, PgTypes.bpchar)
 
-  abstract fun modifieddate(): Field<LocalDateTime, EmployeeRow>
+  fun modifieddate(): Field<LocalDateTime, EmployeeRow> = Field<LocalDateTime, EmployeeRow>(_path, "modifieddate", EmployeeRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-  abstract fun nationalidnumber(): Field<String, EmployeeRow>
+  fun nationalidnumber(): Field<String, EmployeeRow> = Field<String, EmployeeRow>(_path, "nationalidnumber", EmployeeRow::nationalidnumber, null, null, { row, value -> row.copy(nationalidnumber = value) }, PgTypes.text)
 
-  abstract fun organizationnode(): OptField<String, EmployeeRow>
+  fun organizationnode(): OptField<String, EmployeeRow> = OptField<String, EmployeeRow>(_path, "organizationnode", EmployeeRow::organizationnode, null, null, { row, value -> row.copy(organizationnode = value) }, PgTypes.text)
 
   override fun rowParser(): RowParser<EmployeeRow> = EmployeeRow._rowParser.underlying
 
-  abstract fun rowguid(): Field<UUID, EmployeeRow>
+  fun rowguid(): Field<UUID, EmployeeRow> = Field<UUID, EmployeeRow>(_path, "rowguid", EmployeeRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-  abstract fun salariedflag(): Field<Flag, EmployeeRow>
+  fun salariedflag(): Field<Flag, EmployeeRow> = Field<Flag, EmployeeRow>(_path, "salariedflag", EmployeeRow::salariedflag, null, "bool", { row, value -> row.copy(salariedflag = value) }, Flag.dbType)
 
-  abstract fun sickleavehours(): Field<Short, EmployeeRow>
+  fun sickleavehours(): Field<Short, EmployeeRow> = Field<Short, EmployeeRow>(_path, "sickleavehours", EmployeeRow::sickleavehours, null, "int2", { row, value -> row.copy(sickleavehours = value) }, KotlinDbTypes.PgTypes.int2)
 
-  abstract fun vacationhours(): Field<Short, EmployeeRow>
+  fun vacationhours(): Field<Short, EmployeeRow> = Field<Short, EmployeeRow>(_path, "vacationhours", EmployeeRow::vacationhours, null, "int2", { row, value -> row.copy(vacationhours = value) }, KotlinDbTypes.PgTypes.int2)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<EmployeeFields, EmployeeRow> = EmployeeFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : EmployeeFields, RelationStructure<EmployeeFields, EmployeeRow> {
-      override fun businessentityid(): IdField<BusinessentityId, EmployeeRow> = IdField<BusinessentityId, EmployeeRow>(_path, "businessentityid", EmployeeRow::businessentityid, null, "int4", { row, value -> row.copy(businessentityid = value) }, BusinessentityId.pgType)
-
-      override fun nationalidnumber(): Field<String, EmployeeRow> = Field<String, EmployeeRow>(_path, "nationalidnumber", EmployeeRow::nationalidnumber, null, null, { row, value -> row.copy(nationalidnumber = value) }, PgTypes.text)
-
-      override fun loginid(): Field<String, EmployeeRow> = Field<String, EmployeeRow>(_path, "loginid", EmployeeRow::loginid, null, null, { row, value -> row.copy(loginid = value) }, PgTypes.text)
-
-      override fun jobtitle(): Field<String, EmployeeRow> = Field<String, EmployeeRow>(_path, "jobtitle", EmployeeRow::jobtitle, null, null, { row, value -> row.copy(jobtitle = value) }, PgTypes.text)
-
-      override fun birthdate(): Field<LocalDate, EmployeeRow> = Field<LocalDate, EmployeeRow>(_path, "birthdate", EmployeeRow::birthdate, null, "date", { row, value -> row.copy(birthdate = value) }, PgTypes.date)
-
-      override fun maritalstatus(): Field<String, EmployeeRow> = Field<String, EmployeeRow>(_path, "maritalstatus", EmployeeRow::maritalstatus, null, "bpchar", { row, value -> row.copy(maritalstatus = value) }, PgTypes.bpchar)
-
-      override fun gender(): Field<String, EmployeeRow> = Field<String, EmployeeRow>(_path, "gender", EmployeeRow::gender, null, "bpchar", { row, value -> row.copy(gender = value) }, PgTypes.bpchar)
-
-      override fun hiredate(): Field<LocalDate, EmployeeRow> = Field<LocalDate, EmployeeRow>(_path, "hiredate", EmployeeRow::hiredate, null, "date", { row, value -> row.copy(hiredate = value) }, PgTypes.date)
-
-      override fun salariedflag(): Field<Flag, EmployeeRow> = Field<Flag, EmployeeRow>(_path, "salariedflag", EmployeeRow::salariedflag, null, "bool", { row, value -> row.copy(salariedflag = value) }, Flag.pgType)
-
-      override fun vacationhours(): Field<Short, EmployeeRow> = Field<Short, EmployeeRow>(_path, "vacationhours", EmployeeRow::vacationhours, null, "int2", { row, value -> row.copy(vacationhours = value) }, KotlinDbTypes.PgTypes.int2)
-
-      override fun sickleavehours(): Field<Short, EmployeeRow> = Field<Short, EmployeeRow>(_path, "sickleavehours", EmployeeRow::sickleavehours, null, "int2", { row, value -> row.copy(sickleavehours = value) }, KotlinDbTypes.PgTypes.int2)
-
-      override fun currentflag(): Field<Flag, EmployeeRow> = Field<Flag, EmployeeRow>(_path, "currentflag", EmployeeRow::currentflag, null, "bool", { row, value -> row.copy(currentflag = value) }, Flag.pgType)
-
-      override fun rowguid(): Field<UUID, EmployeeRow> = Field<UUID, EmployeeRow>(_path, "rowguid", EmployeeRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
-
-      override fun modifieddate(): Field<LocalDateTime, EmployeeRow> = Field<LocalDateTime, EmployeeRow>(_path, "modifieddate", EmployeeRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
-
-      override fun organizationnode(): OptField<String, EmployeeRow> = OptField<String, EmployeeRow>(_path, "organizationnode", EmployeeRow::organizationnode, null, null, { row, value -> row.copy(organizationnode = value) }, PgTypes.text)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, EmployeeRow>> = listOf(this.businessentityid().underlying, this.nationalidnumber().underlying, this.loginid().underlying, this.jobtitle().underlying, this.birthdate().underlying, this.maritalstatus().underlying, this.gender().underlying, this.hiredate().underlying, this.salariedflag().underlying, this.vacationhours().underlying, this.sickleavehours().underlying, this.currentflag().underlying, this.rowguid().underlying, this.modifieddate().underlying, this.organizationnode().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<EmployeeFields, EmployeeRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: EmployeeFields = EmployeeFields(emptyList<Path>())
   }
 }

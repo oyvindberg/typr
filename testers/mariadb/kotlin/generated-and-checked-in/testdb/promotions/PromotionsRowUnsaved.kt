@@ -6,6 +6,9 @@
 package testdb.promotions
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.data.maria.MariaSet
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -37,15 +40,15 @@ data class PromotionsRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("max_uses") val maxUses: Defaulted<Long?> = UseDefault(),
+  @JsonProperty("max_uses") val maxUses: Defaulted<Uint4?> = UseDefault(),
   /** Default: 0
 
     */
-  @JsonProperty("uses_count") val usesCount: Defaulted<Long> = UseDefault(),
+  @JsonProperty("uses_count") val usesCount: Defaulted<Uint4> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("max_uses_per_customer") val maxUsesPerCustomer: Defaulted<Short?> = UseDefault(),
+  @JsonProperty("max_uses_per_customer") val maxUsesPerCustomer: Defaulted<Uint1?> = UseDefault(),
   /** Default: NULL
 
     */
@@ -53,7 +56,7 @@ data class PromotionsRowUnsaved(
   /** Default: NULL
     * Complex eligibility rules
     */
-  @JsonProperty("rules_json") val rulesJson: Defaulted<String?> = UseDefault(),
+  @JsonProperty("rules_json") val rulesJson: Defaulted<Json?> = UseDefault(),
   /** Default: 1
 
     */
@@ -66,11 +69,11 @@ data class PromotionsRowUnsaved(
   fun toRow(
     descriptionDefault: () -> String?,
     minOrderAmountDefault: () -> BigDecimal?,
-    maxUsesDefault: () -> Long?,
-    usesCountDefault: () -> Long,
-    maxUsesPerCustomerDefault: () -> Short?,
+    maxUsesDefault: () -> Uint4?,
+    usesCountDefault: () -> Uint4,
+    maxUsesPerCustomerDefault: () -> Uint1?,
     applicableToDefault: () -> MariaSet?,
-    rulesJsonDefault: () -> String?,
+    rulesJsonDefault: () -> Json?,
     isActiveDefault: () -> Boolean,
     createdAtDefault: () -> LocalDateTime,
     promotionIdDefault: () -> PromotionsId

@@ -18,32 +18,86 @@ import adventureworks.public.Flag
 import adventureworks.public.Name
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.ForeignKey
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr25
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.UUID
 import kotlin.collections.List
 
-interface ProductFields : FieldsExpr<ProductRow> {
-  abstract fun `class`(): OptField</* bpchar, max 2 chars */ String, ProductRow>
+data class ProductFields(val _path: List<Path>) : TupleExpr25<ProductId, Name, String, Flag, Flag, /* max 15 chars */ String, Short, Short, BigDecimal, BigDecimal, /* max 5 chars */ String, UnitmeasureId, UnitmeasureId, BigDecimal, Int, /* bpchar, max 2 chars */ String, /* bpchar, max 2 chars */ String, /* bpchar, max 2 chars */ String, ProductsubcategoryId, ProductmodelId, LocalDateTime, LocalDateTime, LocalDateTime, UUID, LocalDateTime>, RelationStructure<ProductFields, ProductRow>, FieldsBase<ProductRow> {
+  override fun _1(): SqlExpr<ProductId> = productid()
 
-  abstract fun color(): OptField</* max 15 chars */ String, ProductRow>
+  override fun _10(): SqlExpr<BigDecimal> = listprice()
 
-  abstract override fun columns(): List<FieldLike<*, ProductRow>>
+  override fun _11(): SqlExpr</* max 5 chars */ String> = size()
 
-  abstract fun daystomanufacture(): Field<Int, ProductRow>
+  override fun _12(): SqlExpr<UnitmeasureId> = sizeunitmeasurecode()
 
-  abstract fun discontinueddate(): OptField<LocalDateTime, ProductRow>
+  override fun _13(): SqlExpr<UnitmeasureId> = weightunitmeasurecode()
 
-  abstract fun finishedgoodsflag(): Field<Flag, ProductRow>
+  override fun _14(): SqlExpr<BigDecimal> = weight()
+
+  override fun _15(): SqlExpr<Int> = daystomanufacture()
+
+  override fun _16(): SqlExpr</* bpchar, max 2 chars */ String> = productline()
+
+  override fun _17(): SqlExpr</* bpchar, max 2 chars */ String> = `class`()
+
+  override fun _18(): SqlExpr</* bpchar, max 2 chars */ String> = style()
+
+  override fun _19(): SqlExpr<ProductsubcategoryId> = productsubcategoryid()
+
+  override fun _2(): SqlExpr<Name> = name()
+
+  override fun _20(): SqlExpr<ProductmodelId> = productmodelid()
+
+  override fun _21(): SqlExpr<LocalDateTime> = sellstartdate()
+
+  override fun _22(): SqlExpr<LocalDateTime> = sellenddate()
+
+  override fun _23(): SqlExpr<LocalDateTime> = discontinueddate()
+
+  override fun _24(): SqlExpr<UUID> = rowguid()
+
+  override fun _25(): SqlExpr<LocalDateTime> = modifieddate()
+
+  override fun _3(): SqlExpr<String> = productnumber()
+
+  override fun _4(): SqlExpr<Flag> = makeflag()
+
+  override fun _5(): SqlExpr<Flag> = finishedgoodsflag()
+
+  override fun _6(): SqlExpr</* max 15 chars */ String> = color()
+
+  override fun _7(): SqlExpr<Short> = safetystocklevel()
+
+  override fun _8(): SqlExpr<Short> = reorderpoint()
+
+  override fun _9(): SqlExpr<BigDecimal> = standardcost()
+
+  override fun _path(): List<Path> = _path
+
+  fun `class`(): OptField<String, ProductRow> = OptField<String, ProductRow>(_path, "class", ProductRow::`class`, null, "bpchar", { row, value -> row.copy(`class` = value) }, PgTypes.bpchar)
+
+  fun color(): OptField<String, ProductRow> = OptField<String, ProductRow>(_path, "color", ProductRow::color, null, null, { row, value -> row.copy(color = value) }, PgTypes.text)
+
+  override fun columns(): List<FieldLike<*, ProductRow>> = listOf(this.productid().underlying, this.name().underlying, this.productnumber().underlying, this.makeflag().underlying, this.finishedgoodsflag().underlying, this.color().underlying, this.safetystocklevel().underlying, this.reorderpoint().underlying, this.standardcost().underlying, this.listprice().underlying, this.size().underlying, this.sizeunitmeasurecode().underlying, this.weightunitmeasurecode().underlying, this.weight().underlying, this.daystomanufacture().underlying, this.productline().underlying, this.`class`().underlying, this.style().underlying, this.productsubcategoryid().underlying, this.productmodelid().underlying, this.sellstartdate().underlying, this.sellenddate().underlying, this.discontinueddate().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+  fun daystomanufacture(): Field<Int, ProductRow> = Field<Int, ProductRow>(_path, "daystomanufacture", ProductRow::daystomanufacture, null, "int4", { row, value -> row.copy(daystomanufacture = value) }, KotlinDbTypes.PgTypes.int4)
+
+  fun discontinueddate(): OptField<LocalDateTime, ProductRow> = OptField<LocalDateTime, ProductRow>(_path, "discontinueddate", ProductRow::discontinueddate, null, "timestamp", { row, value -> row.copy(discontinueddate = value) }, PgTypes.timestamp)
+
+  fun finishedgoodsflag(): Field<Flag, ProductRow> = Field<Flag, ProductRow>(_path, "finishedgoodsflag", ProductRow::finishedgoodsflag, null, "bool", { row, value -> row.copy(finishedgoodsflag = value) }, Flag.dbType)
 
   fun fkProductmodel(): ForeignKey<ProductmodelFields, ProductmodelRow> = ForeignKey.of<ProductmodelFields, ProductmodelRow>("production.FK_Product_ProductModel_ProductModelID").withColumnPair<ProductmodelId>(productmodelid(), ProductmodelFields::productmodelid)
 
@@ -53,107 +107,51 @@ interface ProductFields : FieldsExpr<ProductRow> {
 
   fun fkUnitmeasureWeightunitmeasurecode(): ForeignKey<UnitmeasureFields, UnitmeasureRow> = ForeignKey.of<UnitmeasureFields, UnitmeasureRow>("production.FK_Product_UnitMeasure_WeightUnitMeasureCode").withColumnPair<UnitmeasureId>(weightunitmeasurecode(), UnitmeasureFields::unitmeasurecode)
 
-  abstract fun listprice(): Field<BigDecimal, ProductRow>
+  fun listprice(): Field<BigDecimal, ProductRow> = Field<BigDecimal, ProductRow>(_path, "listprice", ProductRow::listprice, null, "numeric", { row, value -> row.copy(listprice = value) }, PgTypes.numeric)
 
-  abstract fun makeflag(): Field<Flag, ProductRow>
+  fun makeflag(): Field<Flag, ProductRow> = Field<Flag, ProductRow>(_path, "makeflag", ProductRow::makeflag, null, "bool", { row, value -> row.copy(makeflag = value) }, Flag.dbType)
 
-  abstract fun modifieddate(): Field<LocalDateTime, ProductRow>
+  fun modifieddate(): Field<LocalDateTime, ProductRow> = Field<LocalDateTime, ProductRow>(_path, "modifieddate", ProductRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-  abstract fun name(): Field<Name, ProductRow>
+  fun name(): Field<Name, ProductRow> = Field<Name, ProductRow>(_path, "name", ProductRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.dbType)
 
-  abstract fun productid(): IdField<ProductId, ProductRow>
+  fun productid(): IdField<ProductId, ProductRow> = IdField<ProductId, ProductRow>(_path, "productid", ProductRow::productid, null, "int4", { row, value -> row.copy(productid = value) }, ProductId.dbType)
 
-  abstract fun productline(): OptField</* bpchar, max 2 chars */ String, ProductRow>
+  fun productline(): OptField<String, ProductRow> = OptField<String, ProductRow>(_path, "productline", ProductRow::productline, null, "bpchar", { row, value -> row.copy(productline = value) }, PgTypes.bpchar)
 
-  abstract fun productmodelid(): OptField<ProductmodelId, ProductRow>
+  fun productmodelid(): OptField<ProductmodelId, ProductRow> = OptField<ProductmodelId, ProductRow>(_path, "productmodelid", ProductRow::productmodelid, null, "int4", { row, value -> row.copy(productmodelid = value) }, ProductmodelId.dbType)
 
-  abstract fun productnumber(): Field<String, ProductRow>
+  fun productnumber(): Field<String, ProductRow> = Field<String, ProductRow>(_path, "productnumber", ProductRow::productnumber, null, null, { row, value -> row.copy(productnumber = value) }, PgTypes.text)
 
-  abstract fun productsubcategoryid(): OptField<ProductsubcategoryId, ProductRow>
+  fun productsubcategoryid(): OptField<ProductsubcategoryId, ProductRow> = OptField<ProductsubcategoryId, ProductRow>(_path, "productsubcategoryid", ProductRow::productsubcategoryid, null, "int4", { row, value -> row.copy(productsubcategoryid = value) }, ProductsubcategoryId.dbType)
 
-  abstract fun reorderpoint(): Field<Short, ProductRow>
+  fun reorderpoint(): Field<Short, ProductRow> = Field<Short, ProductRow>(_path, "reorderpoint", ProductRow::reorderpoint, null, "int2", { row, value -> row.copy(reorderpoint = value) }, KotlinDbTypes.PgTypes.int2)
 
   override fun rowParser(): RowParser<ProductRow> = ProductRow._rowParser.underlying
 
-  abstract fun rowguid(): Field<UUID, ProductRow>
+  fun rowguid(): Field<UUID, ProductRow> = Field<UUID, ProductRow>(_path, "rowguid", ProductRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
 
-  abstract fun safetystocklevel(): Field<Short, ProductRow>
+  fun safetystocklevel(): Field<Short, ProductRow> = Field<Short, ProductRow>(_path, "safetystocklevel", ProductRow::safetystocklevel, null, "int2", { row, value -> row.copy(safetystocklevel = value) }, KotlinDbTypes.PgTypes.int2)
 
-  abstract fun sellenddate(): OptField<LocalDateTime, ProductRow>
+  fun sellenddate(): OptField<LocalDateTime, ProductRow> = OptField<LocalDateTime, ProductRow>(_path, "sellenddate", ProductRow::sellenddate, null, "timestamp", { row, value -> row.copy(sellenddate = value) }, PgTypes.timestamp)
 
-  abstract fun sellstartdate(): Field<LocalDateTime, ProductRow>
+  fun sellstartdate(): Field<LocalDateTime, ProductRow> = Field<LocalDateTime, ProductRow>(_path, "sellstartdate", ProductRow::sellstartdate, null, "timestamp", { row, value -> row.copy(sellstartdate = value) }, PgTypes.timestamp)
 
-  abstract fun size(): OptField</* max 5 chars */ String, ProductRow>
+  fun size(): OptField<String, ProductRow> = OptField<String, ProductRow>(_path, "size", ProductRow::size, null, null, { row, value -> row.copy(size = value) }, PgTypes.text)
 
-  abstract fun sizeunitmeasurecode(): OptField<UnitmeasureId, ProductRow>
+  fun sizeunitmeasurecode(): OptField<UnitmeasureId, ProductRow> = OptField<UnitmeasureId, ProductRow>(_path, "sizeunitmeasurecode", ProductRow::sizeunitmeasurecode, null, "bpchar", { row, value -> row.copy(sizeunitmeasurecode = value) }, UnitmeasureId.dbType)
 
-  abstract fun standardcost(): Field<BigDecimal, ProductRow>
+  fun standardcost(): Field<BigDecimal, ProductRow> = Field<BigDecimal, ProductRow>(_path, "standardcost", ProductRow::standardcost, null, "numeric", { row, value -> row.copy(standardcost = value) }, PgTypes.numeric)
 
-  abstract fun style(): OptField</* bpchar, max 2 chars */ String, ProductRow>
+  fun style(): OptField<String, ProductRow> = OptField<String, ProductRow>(_path, "style", ProductRow::style, null, "bpchar", { row, value -> row.copy(style = value) }, PgTypes.bpchar)
 
-  abstract fun weight(): OptField<BigDecimal, ProductRow>
+  fun weight(): OptField<BigDecimal, ProductRow> = OptField<BigDecimal, ProductRow>(_path, "weight", ProductRow::weight, null, "numeric", { row, value -> row.copy(weight = value) }, PgTypes.numeric)
 
-  abstract fun weightunitmeasurecode(): OptField<UnitmeasureId, ProductRow>
+  fun weightunitmeasurecode(): OptField<UnitmeasureId, ProductRow> = OptField<UnitmeasureId, ProductRow>(_path, "weightunitmeasurecode", ProductRow::weightunitmeasurecode, null, "bpchar", { row, value -> row.copy(weightunitmeasurecode = value) }, UnitmeasureId.dbType)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<ProductFields, ProductRow> = ProductFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : ProductFields, RelationStructure<ProductFields, ProductRow> {
-      override fun productid(): IdField<ProductId, ProductRow> = IdField<ProductId, ProductRow>(_path, "productid", ProductRow::productid, null, "int4", { row, value -> row.copy(productid = value) }, ProductId.pgType)
-
-      override fun name(): Field<Name, ProductRow> = Field<Name, ProductRow>(_path, "name", ProductRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.pgType)
-
-      override fun productnumber(): Field<String, ProductRow> = Field<String, ProductRow>(_path, "productnumber", ProductRow::productnumber, null, null, { row, value -> row.copy(productnumber = value) }, PgTypes.text)
-
-      override fun makeflag(): Field<Flag, ProductRow> = Field<Flag, ProductRow>(_path, "makeflag", ProductRow::makeflag, null, "bool", { row, value -> row.copy(makeflag = value) }, Flag.pgType)
-
-      override fun finishedgoodsflag(): Field<Flag, ProductRow> = Field<Flag, ProductRow>(_path, "finishedgoodsflag", ProductRow::finishedgoodsflag, null, "bool", { row, value -> row.copy(finishedgoodsflag = value) }, Flag.pgType)
-
-      override fun color(): OptField<String, ProductRow> = OptField<String, ProductRow>(_path, "color", ProductRow::color, null, null, { row, value -> row.copy(color = value) }, PgTypes.text)
-
-      override fun safetystocklevel(): Field<Short, ProductRow> = Field<Short, ProductRow>(_path, "safetystocklevel", ProductRow::safetystocklevel, null, "int2", { row, value -> row.copy(safetystocklevel = value) }, KotlinDbTypes.PgTypes.int2)
-
-      override fun reorderpoint(): Field<Short, ProductRow> = Field<Short, ProductRow>(_path, "reorderpoint", ProductRow::reorderpoint, null, "int2", { row, value -> row.copy(reorderpoint = value) }, KotlinDbTypes.PgTypes.int2)
-
-      override fun standardcost(): Field<BigDecimal, ProductRow> = Field<BigDecimal, ProductRow>(_path, "standardcost", ProductRow::standardcost, null, "numeric", { row, value -> row.copy(standardcost = value) }, PgTypes.numeric)
-
-      override fun listprice(): Field<BigDecimal, ProductRow> = Field<BigDecimal, ProductRow>(_path, "listprice", ProductRow::listprice, null, "numeric", { row, value -> row.copy(listprice = value) }, PgTypes.numeric)
-
-      override fun size(): OptField<String, ProductRow> = OptField<String, ProductRow>(_path, "size", ProductRow::size, null, null, { row, value -> row.copy(size = value) }, PgTypes.text)
-
-      override fun sizeunitmeasurecode(): OptField<UnitmeasureId, ProductRow> = OptField<UnitmeasureId, ProductRow>(_path, "sizeunitmeasurecode", ProductRow::sizeunitmeasurecode, null, "bpchar", { row, value -> row.copy(sizeunitmeasurecode = value) }, UnitmeasureId.pgType)
-
-      override fun weightunitmeasurecode(): OptField<UnitmeasureId, ProductRow> = OptField<UnitmeasureId, ProductRow>(_path, "weightunitmeasurecode", ProductRow::weightunitmeasurecode, null, "bpchar", { row, value -> row.copy(weightunitmeasurecode = value) }, UnitmeasureId.pgType)
-
-      override fun weight(): OptField<BigDecimal, ProductRow> = OptField<BigDecimal, ProductRow>(_path, "weight", ProductRow::weight, null, "numeric", { row, value -> row.copy(weight = value) }, PgTypes.numeric)
-
-      override fun daystomanufacture(): Field<Int, ProductRow> = Field<Int, ProductRow>(_path, "daystomanufacture", ProductRow::daystomanufacture, null, "int4", { row, value -> row.copy(daystomanufacture = value) }, KotlinDbTypes.PgTypes.int4)
-
-      override fun productline(): OptField<String, ProductRow> = OptField<String, ProductRow>(_path, "productline", ProductRow::productline, null, "bpchar", { row, value -> row.copy(productline = value) }, PgTypes.bpchar)
-
-      override fun `class`(): OptField<String, ProductRow> = OptField<String, ProductRow>(_path, "class", ProductRow::`class`, null, "bpchar", { row, value -> row.copy(`class` = value) }, PgTypes.bpchar)
-
-      override fun style(): OptField<String, ProductRow> = OptField<String, ProductRow>(_path, "style", ProductRow::style, null, "bpchar", { row, value -> row.copy(style = value) }, PgTypes.bpchar)
-
-      override fun productsubcategoryid(): OptField<ProductsubcategoryId, ProductRow> = OptField<ProductsubcategoryId, ProductRow>(_path, "productsubcategoryid", ProductRow::productsubcategoryid, null, "int4", { row, value -> row.copy(productsubcategoryid = value) }, ProductsubcategoryId.pgType)
-
-      override fun productmodelid(): OptField<ProductmodelId, ProductRow> = OptField<ProductmodelId, ProductRow>(_path, "productmodelid", ProductRow::productmodelid, null, "int4", { row, value -> row.copy(productmodelid = value) }, ProductmodelId.pgType)
-
-      override fun sellstartdate(): Field<LocalDateTime, ProductRow> = Field<LocalDateTime, ProductRow>(_path, "sellstartdate", ProductRow::sellstartdate, null, "timestamp", { row, value -> row.copy(sellstartdate = value) }, PgTypes.timestamp)
-
-      override fun sellenddate(): OptField<LocalDateTime, ProductRow> = OptField<LocalDateTime, ProductRow>(_path, "sellenddate", ProductRow::sellenddate, null, "timestamp", { row, value -> row.copy(sellenddate = value) }, PgTypes.timestamp)
-
-      override fun discontinueddate(): OptField<LocalDateTime, ProductRow> = OptField<LocalDateTime, ProductRow>(_path, "discontinueddate", ProductRow::discontinueddate, null, "timestamp", { row, value -> row.copy(discontinueddate = value) }, PgTypes.timestamp)
-
-      override fun rowguid(): Field<UUID, ProductRow> = Field<UUID, ProductRow>(_path, "rowguid", ProductRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
-
-      override fun modifieddate(): Field<LocalDateTime, ProductRow> = Field<LocalDateTime, ProductRow>(_path, "modifieddate", ProductRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, ProductRow>> = listOf(this.productid().underlying, this.name().underlying, this.productnumber().underlying, this.makeflag().underlying, this.finishedgoodsflag().underlying, this.color().underlying, this.safetystocklevel().underlying, this.reorderpoint().underlying, this.standardcost().underlying, this.listprice().underlying, this.size().underlying, this.sizeunitmeasurecode().underlying, this.weightunitmeasurecode().underlying, this.weight().underlying, this.daystomanufacture().underlying, this.productline().underlying, this.`class`().underlying, this.style().underlying, this.productsubcategoryid().underlying, this.productmodelid().underlying, this.sellstartdate().underlying, this.sellenddate().underlying, this.discontinueddate().underlying, this.rowguid().underlying, this.modifieddate().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<ProductFields, ProductRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: ProductFields = ProductFields(emptyList<Path>())
   }
 }

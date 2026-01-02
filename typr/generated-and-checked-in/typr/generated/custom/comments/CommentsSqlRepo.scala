@@ -10,5 +10,5 @@ package typr.generated.custom.comments
 import java.sql.Connection
 
 trait CommentsSqlRepo {
-  def apply(implicit c: Connection): List[CommentsSqlRow]
+  def apply(using c: Connection): List[CommentsSqlRow]
 }

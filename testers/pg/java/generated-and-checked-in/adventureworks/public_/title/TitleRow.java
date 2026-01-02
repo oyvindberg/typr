@@ -8,19 +8,26 @@ package adventureworks.public_.title;
 import dev.typr.foundations.PgText;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple1;
 
 /** Table: public.title Primary key: code */
-public record TitleRow(TitleId code) {
+public record TitleRow(TitleId code) implements Tuple1<TitleId> {
   public TitleRow withCode(TitleId code) {
     return new TitleRow(code);
   }
   ;
 
   public static RowParser<TitleRow> _rowParser =
-      RowParsers.of(TitleId.pgType, TitleRow::new, row -> new Object[] {row.code()});
+      RowParsers.of(TitleId.dbType, TitleRow::new, row -> new Object[] {row.code()});
   ;
 
   public static PgText<TitleRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public TitleId _1() {
+    return code;
+  }
+  ;
 
   public TitleId id() {
     return code;

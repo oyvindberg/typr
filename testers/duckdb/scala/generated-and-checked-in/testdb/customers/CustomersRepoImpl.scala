@@ -25,7 +25,7 @@ class CustomersRepoImpl extends CustomersRepo {
   override def deleteByIds(customerIds: Array[CustomersId])(using c: Connection): Int = {
     sql"""delete
     from "customers"
-    where "customer_id" = ANY(${Fragment.encode(CustomersId.pgTypeArray, customerIds)})"""
+    where "customer_id" = ANY(${Fragment.encode(CustomersId.dbTypeArray, customerIds)})"""
       .update()
       .runUnchecked(c)
   }
@@ -81,7 +81,7 @@ class CustomersRepoImpl extends CustomersRepo {
   override def selectByIds(customerIds: Array[CustomersId])(using c: Connection): List[CustomersRow] = {
     sql"""select "customer_id", "name", "email", "created_at", "priority"
     from "customers"
-    where "customer_id" = ANY(${Fragment.encode(CustomersId.pgTypeArray, customerIds)})""".query(CustomersRow.`_rowParser`.all()).runUnchecked(c)
+    where "customer_id" = ANY(${Fragment.encode(CustomersId.dbTypeArray, customerIds)})""".query(CustomersRow.`_rowParser`.all()).runUnchecked(c)
   }
 
   override def selectByIdsTracked(customerIds: Array[CustomersId])(using c: Connection): Map[CustomersId, CustomersRow] = {

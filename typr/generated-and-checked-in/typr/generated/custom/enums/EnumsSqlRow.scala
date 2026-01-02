@@ -40,14 +40,14 @@ case class EnumsSqlRow(
 )
 
 object EnumsSqlRow {
-  implicit lazy val reads: Reads[EnumsSqlRow] = {
+  given reads: Reads[EnumsSqlRow] = {
     Reads[EnumsSqlRow](json => JsResult.fromTry(
         Try(
           EnumsSqlRow(
-            enumSchema = json.\("enum_schema").toOption.map(_.as(Reads.StringReads)),
-            enumName = json.\("enum_name").as(Reads.StringReads),
-            enumSortOrder = json.\("enum_sort_order").as(Reads.FloatReads),
-            enumValue = json.\("enum_value").as(Reads.StringReads)
+            enumSchema = json.\("enum_schema").toOption.map(_.as(using Reads.StringReads)),
+            enumName = json.\("enum_name").as(using Reads.StringReads),
+            enumSortOrder = json.\("enum_sort_order").as(using Reads.FloatReads),
+            enumValue = json.\("enum_value").as(using Reads.StringReads)
           )
         )
       ),
@@ -58,19 +58,19 @@ object EnumsSqlRow {
     RowParser[EnumsSqlRow] { row =>
       Success(
         EnumsSqlRow(
-          enumSchema = row(idx + 0)(Column.columnToOption(Column.columnToString)),
-          enumName = row(idx + 1)(Column.columnToString),
-          enumSortOrder = row(idx + 2)(Column.columnToFloat),
-          enumValue = row(idx + 3)(Column.columnToString)
+          enumSchema = row(idx + 0)(using Column.columnToOption(using Column.columnToString)),
+          enumName = row(idx + 1)(using Column.columnToString),
+          enumSortOrder = row(idx + 2)(using Column.columnToFloat),
+          enumValue = row(idx + 3)(using Column.columnToString)
         )
       )
     }
   }
 
-  implicit lazy val writes: OWrites[EnumsSqlRow] = {
+  given writes: OWrites[EnumsSqlRow] = {
     OWrites[EnumsSqlRow](o =>
       new JsObject(ListMap[String, JsValue](
-        "enum_schema" -> Writes.OptionWrites(Writes.StringWrites).writes(o.enumSchema),
+        "enum_schema" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.enumSchema),
         "enum_name" -> Writes.StringWrites.writes(o.enumName),
         "enum_sort_order" -> Writes.FloatWrites.writes(o.enumSortOrder),
         "enum_value" -> Writes.StringWrites.writes(o.enumValue)

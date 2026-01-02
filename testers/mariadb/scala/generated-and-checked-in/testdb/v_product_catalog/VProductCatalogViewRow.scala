@@ -7,6 +7,7 @@ package testdb.v_product_catalog
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple11
 import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
@@ -66,8 +67,30 @@ case class VProductCatalogViewRow(
    * Default: 0
    */
   @JsonProperty("review_count") reviewCount: Long
-)
+) extends Tuple11[ProductsId, String, String, Option[String], BigDecimal, String, Option[MariaSet], Option[String], BigDecimal, BigDecimal, Long] {
+  override def `_1`: ProductsId = productId
+
+  override def `_2`: String = sku
+
+  override def `_3`: String = name
+
+  override def `_4`: Option[String] = shortDescription
+
+  override def `_5`: BigDecimal = basePrice
+
+  override def `_6`: String = status
+
+  override def `_7`: Option[MariaSet] = tags
+
+  override def `_8`: Option[String] = brandName
+
+  override def `_9`: BigDecimal = availableQuantity
+
+  override def `_10`: BigDecimal = avgRating
+
+  override def `_11`: Long = reviewCount
+}
 
 object VProductCatalogViewRow {
-  val `_rowParser`: RowParser[VProductCatalogViewRow] = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.numeric, MariaTypes.text, MariaTypes.set.nullable, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.bigint)(VProductCatalogViewRow.apply)(row => Array[Any](row.productId, row.sku, row.name, row.shortDescription, row.basePrice, row.status, row.tags, row.brandName, row.availableQuantity, row.avgRating, row.reviewCount))
+  val `_rowParser`: RowParser[VProductCatalogViewRow] = RowParsers.of(ProductsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.numeric, MariaTypes.text, MariaTypes.set.nullable, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.bigint)(VProductCatalogViewRow.apply)(row => Array[Any](row.productId, row.sku, row.name, row.shortDescription, row.basePrice, row.status, row.tags, row.brandName, row.availableQuantity, row.avgRating, row.reviewCount))
 }

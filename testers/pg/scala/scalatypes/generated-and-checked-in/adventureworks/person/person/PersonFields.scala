@@ -14,215 +14,212 @@ import adventureworks.userdefined.FirstName
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.data.Xml
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr13
 import java.time.LocalDateTime
 import java.util.UUID
 
-trait PersonFields extends FieldsExpr0[PersonRow] {
-  def businessentityid: IdField[BusinessentityId, PersonRow]
+class PersonFields(val `_path`: java.util.List[Path]) extends TupleExpr13[BusinessentityId, String, NameStyle, /* max 8 chars */ String, /* user-picked */ FirstName, Name, Name, /* max 10 chars */ String, Int, Xml, Xml, UUID, LocalDateTime] with RelationStructure[PersonFields, PersonRow]  with FieldsBase[PersonRow] {
+  def businessentityid: IdField[BusinessentityId, PersonRow] = {
+    new IdField[BusinessentityId, PersonRow](
+      _path,
+      "businessentityid",
+      _.businessentityid,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(businessentityid = value),
+      BusinessentityId.dbType
+    )
+  }
 
-  def persontype: Field[String, PersonRow]
+  def persontype: Field[String, PersonRow] = {
+    new Field[String, PersonRow](
+      _path,
+      "persontype",
+      _.persontype,
+      None,
+      Some("bpchar"),
+      (row, value) => row.copy(persontype = value),
+      PgTypes.bpchar
+    )
+  }
 
-  def namestyle: Field[NameStyle, PersonRow]
+  def namestyle: Field[NameStyle, PersonRow] = {
+    new Field[NameStyle, PersonRow](
+      _path,
+      "namestyle",
+      _.namestyle,
+      None,
+      Some("bool"),
+      (row, value) => row.copy(namestyle = value),
+      NameStyle.dbType
+    )
+  }
 
-  def title: OptField[/* max 8 chars */ String, PersonRow]
+  def title: OptField[String, PersonRow] = {
+    new OptField[String, PersonRow](
+      _path,
+      "title",
+      _.title,
+      None,
+      None,
+      (row, value) => row.copy(title = value),
+      PgTypes.text
+    )
+  }
 
-  def firstname: Field[/* user-picked */ FirstName, PersonRow]
+  def firstname: Field[/* user-picked */ FirstName, PersonRow] = {
+    new Field[/* user-picked */ FirstName, PersonRow](
+      _path,
+      "firstname",
+      _.firstname,
+      None,
+      Some("varchar"),
+      (row, value) => row.copy(firstname = value),
+      FirstName.dbType
+    )
+  }
 
-  def middlename: OptField[Name, PersonRow]
+  def middlename: OptField[Name, PersonRow] = {
+    new OptField[Name, PersonRow](
+      _path,
+      "middlename",
+      _.middlename,
+      None,
+      Some("varchar"),
+      (row, value) => row.copy(middlename = value),
+      Name.dbType
+    )
+  }
 
-  def lastname: Field[Name, PersonRow]
+  def lastname: Field[Name, PersonRow] = {
+    new Field[Name, PersonRow](
+      _path,
+      "lastname",
+      _.lastname,
+      None,
+      Some("varchar"),
+      (row, value) => row.copy(lastname = value),
+      Name.dbType
+    )
+  }
 
-  def suffix: OptField[/* max 10 chars */ String, PersonRow]
+  def suffix: OptField[String, PersonRow] = {
+    new OptField[String, PersonRow](
+      _path,
+      "suffix",
+      _.suffix,
+      None,
+      None,
+      (row, value) => row.copy(suffix = value),
+      PgTypes.text
+    )
+  }
 
-  def emailpromotion: Field[Int, PersonRow]
+  def emailpromotion: Field[Int, PersonRow] = {
+    new Field[Int, PersonRow](
+      _path,
+      "emailpromotion",
+      _.emailpromotion,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(emailpromotion = value),
+      ScalaDbTypes.PgTypes.int4
+    )
+  }
 
-  def additionalcontactinfo: OptField[Xml, PersonRow]
+  def additionalcontactinfo: OptField[Xml, PersonRow] = {
+    new OptField[Xml, PersonRow](
+      _path,
+      "additionalcontactinfo",
+      _.additionalcontactinfo,
+      None,
+      Some("xml"),
+      (row, value) => row.copy(additionalcontactinfo = value),
+      PgTypes.xml
+    )
+  }
 
-  def demographics: OptField[Xml, PersonRow]
+  def demographics: OptField[Xml, PersonRow] = {
+    new OptField[Xml, PersonRow](
+      _path,
+      "demographics",
+      _.demographics,
+      None,
+      Some("xml"),
+      (row, value) => row.copy(demographics = value),
+      PgTypes.xml
+    )
+  }
 
-  def rowguid: Field[UUID, PersonRow]
+  def rowguid: Field[UUID, PersonRow] = {
+    new Field[UUID, PersonRow](
+      _path,
+      "rowguid",
+      _.rowguid,
+      None,
+      Some("uuid"),
+      (row, value) => row.copy(rowguid = value),
+      PgTypes.uuid
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, PersonRow]
+  def modifieddate: Field[LocalDateTime, PersonRow] = {
+    new Field[LocalDateTime, PersonRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      None,
+      Some("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
   def fkBusinessentity: ForeignKey[BusinessentityFields, BusinessentityRow] = ForeignKey.of[BusinessentityFields, BusinessentityRow]("person.FK_Person_BusinessEntity_BusinessEntityID").withColumnPair[BusinessentityId](businessentityid, _.businessentityid)
 
-  override def columns: java.util.List[FieldLike[?, PersonRow]]
+  override def columns: java.util.List[FieldLike[?, PersonRow]] = java.util.List.of(this.businessentityid.underlying, this.persontype.underlying, this.namestyle.underlying, this.title.underlying, this.firstname.underlying, this.middlename.underlying, this.lastname.underlying, this.suffix.underlying, this.emailpromotion.underlying, this.additionalcontactinfo.underlying, this.demographics.underlying, this.rowguid.underlying, this.modifieddate.underlying)
 
   override def rowParser: RowParser[PersonRow] = PersonRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[PersonFields, PersonRow] = new PersonFields(`_path`)
+
+  override def `_1`: SqlExpr[BusinessentityId] = businessentityid
+
+  override def `_2`: SqlExpr[String] = persontype
+
+  override def `_3`: SqlExpr[NameStyle] = namestyle
+
+  override def `_4`: SqlExpr[/* max 8 chars */ String] = title
+
+  override def `_5`: SqlExpr[/* user-picked */ FirstName] = firstname
+
+  override def `_6`: SqlExpr[Name] = middlename
+
+  override def `_7`: SqlExpr[Name] = lastname
+
+  override def `_8`: SqlExpr[/* max 10 chars */ String] = suffix
+
+  override def `_9`: SqlExpr[Int] = emailpromotion
+
+  override def `_10`: SqlExpr[Xml] = additionalcontactinfo
+
+  override def `_11`: SqlExpr[Xml] = demographics
+
+  override def `_12`: SqlExpr[UUID] = rowguid
+
+  override def `_13`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object PersonFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends PersonFields with RelationStructure[PersonFields, PersonRow] {
-
-    override def businessentityid: IdField[BusinessentityId, PersonRow] = {
-      new IdField[BusinessentityId, PersonRow](
-        _path,
-        "businessentityid",
-        _.businessentityid,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(businessentityid = value),
-        BusinessentityId.pgType
-      )
-    }
-
-    override def persontype: Field[String, PersonRow] = {
-      new Field[String, PersonRow](
-        _path,
-        "persontype",
-        _.persontype,
-        None,
-        Some("bpchar"),
-        (row, value) => row.copy(persontype = value),
-        PgTypes.bpchar
-      )
-    }
-
-    override def namestyle: Field[NameStyle, PersonRow] = {
-      new Field[NameStyle, PersonRow](
-        _path,
-        "namestyle",
-        _.namestyle,
-        None,
-        Some("bool"),
-        (row, value) => row.copy(namestyle = value),
-        NameStyle.pgType
-      )
-    }
-
-    override def title: OptField[String, PersonRow] = {
-      new OptField[String, PersonRow](
-        _path,
-        "title",
-        _.title,
-        None,
-        None,
-        (row, value) => row.copy(title = value),
-        PgTypes.text
-      )
-    }
-
-    override def firstname: Field[/* user-picked */ FirstName, PersonRow] = {
-      new Field[/* user-picked */ FirstName, PersonRow](
-        _path,
-        "firstname",
-        _.firstname,
-        None,
-        Some("varchar"),
-        (row, value) => row.copy(firstname = value),
-        FirstName.pgType
-      )
-    }
-
-    override def middlename: OptField[Name, PersonRow] = {
-      new OptField[Name, PersonRow](
-        _path,
-        "middlename",
-        _.middlename,
-        None,
-        Some("varchar"),
-        (row, value) => row.copy(middlename = value),
-        Name.pgType
-      )
-    }
-
-    override def lastname: Field[Name, PersonRow] = {
-      new Field[Name, PersonRow](
-        _path,
-        "lastname",
-        _.lastname,
-        None,
-        Some("varchar"),
-        (row, value) => row.copy(lastname = value),
-        Name.pgType
-      )
-    }
-
-    override def suffix: OptField[String, PersonRow] = {
-      new OptField[String, PersonRow](
-        _path,
-        "suffix",
-        _.suffix,
-        None,
-        None,
-        (row, value) => row.copy(suffix = value),
-        PgTypes.text
-      )
-    }
-
-    override def emailpromotion: Field[Int, PersonRow] = {
-      new Field[Int, PersonRow](
-        _path,
-        "emailpromotion",
-        _.emailpromotion,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(emailpromotion = value),
-        ScalaDbTypes.PgTypes.int4
-      )
-    }
-
-    override def additionalcontactinfo: OptField[Xml, PersonRow] = {
-      new OptField[Xml, PersonRow](
-        _path,
-        "additionalcontactinfo",
-        _.additionalcontactinfo,
-        None,
-        Some("xml"),
-        (row, value) => row.copy(additionalcontactinfo = value),
-        PgTypes.xml
-      )
-    }
-
-    override def demographics: OptField[Xml, PersonRow] = {
-      new OptField[Xml, PersonRow](
-        _path,
-        "demographics",
-        _.demographics,
-        None,
-        Some("xml"),
-        (row, value) => row.copy(demographics = value),
-        PgTypes.xml
-      )
-    }
-
-    override def rowguid: Field[UUID, PersonRow] = {
-      new Field[UUID, PersonRow](
-        _path,
-        "rowguid",
-        _.rowguid,
-        None,
-        Some("uuid"),
-        (row, value) => row.copy(rowguid = value),
-        PgTypes.uuid
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, PersonRow] = {
-      new Field[LocalDateTime, PersonRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        None,
-        Some("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, PersonRow]] = java.util.List.of(this.businessentityid.underlying, this.persontype.underlying, this.namestyle.underlying, this.title.underlying, this.firstname.underlying, this.middlename.underlying, this.lastname.underlying, this.suffix.underlying, this.emailpromotion.underlying, this.additionalcontactinfo.underlying, this.demographics.underlying, this.rowguid.underlying, this.modifieddate.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[PersonFields, PersonRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: PersonFields = new PersonFields(java.util.Collections.emptyList())
 }

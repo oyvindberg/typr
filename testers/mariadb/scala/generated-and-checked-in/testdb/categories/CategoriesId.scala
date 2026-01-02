@@ -7,14 +7,15 @@ package testdb.categories
 
 import com.fasterxml.jackson.annotation.JsonValue
 import dev.typr.foundations.MariaType
+import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.scala.Bijection
-import dev.typr.foundations.scala.ScalaDbTypes
 
 /** Type for the primary key of table `categories` */
-case class CategoriesId(@JsonValue value: Int) extends scala.AnyVal
+case class CategoriesId(@JsonValue value: Uint4) extends scala.AnyVal
 
 object CategoriesId {
-  given bijection: Bijection[CategoriesId, Int] = Bijection.apply[CategoriesId, Int](_.value)(CategoriesId.apply)
+  given bijection: Bijection[CategoriesId, Uint4] = Bijection.apply[CategoriesId, Uint4](_.value)(CategoriesId.apply)
 
-  given pgType: MariaType[CategoriesId] = ScalaDbTypes.MariaTypes.mediumintUnsigned.bimap(CategoriesId.apply, _.value)
+  given dbType: MariaType[CategoriesId] = MariaTypes.mediumintUnsigned.bimap(CategoriesId.apply, _.value)
 }

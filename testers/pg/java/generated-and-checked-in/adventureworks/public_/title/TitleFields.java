@@ -6,56 +6,59 @@
 package adventureworks.public_.title;
 
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr1;
 import java.util.List;
 import java.util.Optional;
 
-public interface TitleFields extends FieldsExpr<TitleRow> {
-  record Impl(List<Path> _path) implements TitleFields, RelationStructure<TitleFields, TitleRow> {
-    @Override
-    public IdField<TitleId, TitleRow> code() {
-      return new IdField<TitleId, TitleRow>(
-          _path,
-          "code",
-          TitleRow::code,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCode(value),
-          TitleId.pgType);
-    }
-    ;
+public class TitleFields
+    implements TupleExpr1<TitleId>, RelationStructure<TitleFields, TitleRow>, FieldsBase<TitleRow> {
+  List<Path> _path;
 
-    @Override
-    public List<FieldLike<?, TitleRow>> columns() {
-      return java.util.List.of(this.code());
-    }
-    ;
-
-    @Override
-    public RelationStructure<TitleFields, TitleRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public TitleFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static TitleFields structure = new TitleFields(java.util.Collections.emptyList());
+
+  public IdField<TitleId, TitleRow> code() {
+    return new IdField<TitleId, TitleRow>(
+        _path,
+        "code",
+        TitleRow::code,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCode(value),
+        TitleId.dbType);
   }
-  ;
-
-  IdField<TitleId, TitleRow> code();
 
   @Override
-  List<FieldLike<?, TitleRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<TitleRow> rowParser() {
+  public List<FieldLike<?, TitleRow>> columns() {
+    return java.util.List.of(this.code());
+  }
+
+  @Override
+  public RowParser<TitleRow> rowParser() {
     return TitleRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<TitleFields, TitleRow> withPaths(List<Path> _path) {
+    return new TitleFields(_path);
+  }
+
+  @Override
+  public SqlExpr<TitleId> _1() {
+    return code();
+  }
 }

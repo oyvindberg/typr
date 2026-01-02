@@ -6,6 +6,7 @@
 package testdb.order_items
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -25,7 +26,17 @@ data class OrderItemsRow(
   @JsonProperty("product_id") val productId: ProductsId,
   val quantity: Int,
   val price: BigDecimal
-) {
+) : Tuple5<OrderItemsId, OrdersId, ProductsId, Int, BigDecimal> {
+  override fun _1(): OrderItemsId = orderItemId
+
+  override fun _2(): OrdersId = orderId
+
+  override fun _3(): ProductsId = productId
+
+  override fun _4(): Int = quantity
+
+  override fun _5(): BigDecimal = price
+
   fun id(): OrderItemsId = orderItemId
 
   fun toUnsavedRow(): OrderItemsRowUnsaved = OrderItemsRowUnsaved(orderId, productId, quantity, price)

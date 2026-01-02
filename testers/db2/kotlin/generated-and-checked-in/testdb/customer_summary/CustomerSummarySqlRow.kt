@@ -7,6 +7,7 @@ package testdb.customer_summary
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -18,10 +19,20 @@ data class CustomerSummarySqlRow(
   @JsonProperty("customer_id") val customerId: Int,
   val name: String,
   val email: String,
-  @JsonProperty("order_count") val orderCount: Long?,
+  @JsonProperty("order_count") val orderCount: Int?,
   @JsonProperty("total_spent") val totalSpent: BigDecimal?
-) {
+) : Tuple5<Int, String, String, Int?, BigDecimal?> {
+  override fun _1(): Int = customerId
+
+  override fun _2(): String = name
+
+  override fun _3(): String = email
+
+  override fun _4(): Int? = orderCount
+
+  override fun _5(): BigDecimal? = totalSpent
+
   companion object {
-    val _rowParser: RowParser<CustomerSummarySqlRow> = RowParsers.of(KotlinDbTypes.Db2Types.integer, Db2Types.varchar, Db2Types.varchar, KotlinDbTypes.Db2Types.bigint.nullable(), KotlinDbTypes.Db2Types.decimal.nullable(), { t0, t1, t2, t3, t4 -> CustomerSummarySqlRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.customerId, row.name, row.email, row.orderCount, row.totalSpent) })
+    val _rowParser: RowParser<CustomerSummarySqlRow> = RowParsers.of(KotlinDbTypes.Db2Types.integer, Db2Types.varchar, Db2Types.varchar, KotlinDbTypes.Db2Types.integer.nullable(), KotlinDbTypes.Db2Types.decimal.nullable(), { t0, t1, t2, t3, t4 -> CustomerSummarySqlRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.customerId, row.name, row.email, row.orderCount, row.totalSpent) })
   }
 }

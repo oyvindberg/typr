@@ -8,98 +8,95 @@ package adventureworks.humanresources.shift
 import adventureworks.public.Name
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
+import dev.typr.foundations.scala.TupleExpr5
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-trait ShiftFields extends FieldsExpr0[ShiftRow] {
-  def shiftid: IdField[ShiftId, ShiftRow]
+class ShiftFields(val `_path`: java.util.List[Path]) extends TupleExpr5[ShiftId, Name, LocalTime, LocalTime, LocalDateTime] with RelationStructure[ShiftFields, ShiftRow]  with FieldsBase[ShiftRow] {
+  def shiftid: IdField[ShiftId, ShiftRow] = {
+    new IdField[ShiftId, ShiftRow](
+      _path,
+      "shiftid",
+      _.shiftid,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(shiftid = value),
+      ShiftId.dbType
+    )
+  }
 
-  def name: Field[Name, ShiftRow]
+  def name: Field[Name, ShiftRow] = {
+    new Field[Name, ShiftRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      Some("varchar"),
+      (row, value) => row.copy(name = value),
+      Name.dbType
+    )
+  }
 
-  def starttime: Field[LocalTime, ShiftRow]
+  def starttime: Field[LocalTime, ShiftRow] = {
+    new Field[LocalTime, ShiftRow](
+      _path,
+      "starttime",
+      _.starttime,
+      None,
+      Some("time"),
+      (row, value) => row.copy(starttime = value),
+      PgTypes.time
+    )
+  }
 
-  def endtime: Field[LocalTime, ShiftRow]
+  def endtime: Field[LocalTime, ShiftRow] = {
+    new Field[LocalTime, ShiftRow](
+      _path,
+      "endtime",
+      _.endtime,
+      None,
+      Some("time"),
+      (row, value) => row.copy(endtime = value),
+      PgTypes.time
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, ShiftRow]
+  def modifieddate: Field[LocalDateTime, ShiftRow] = {
+    new Field[LocalDateTime, ShiftRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      None,
+      Some("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, ShiftRow]]
+  override def columns: java.util.List[FieldLike[?, ShiftRow]] = java.util.List.of(this.shiftid.underlying, this.name.underlying, this.starttime.underlying, this.endtime.underlying, this.modifieddate.underlying)
 
   override def rowParser: RowParser[ShiftRow] = ShiftRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ShiftFields, ShiftRow] = new ShiftFields(`_path`)
+
+  override def `_1`: SqlExpr[ShiftId] = shiftid
+
+  override def `_2`: SqlExpr[Name] = name
+
+  override def `_3`: SqlExpr[LocalTime] = starttime
+
+  override def `_4`: SqlExpr[LocalTime] = endtime
+
+  override def `_5`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object ShiftFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ShiftFields with RelationStructure[ShiftFields, ShiftRow] {
-
-    override def shiftid: IdField[ShiftId, ShiftRow] = {
-      new IdField[ShiftId, ShiftRow](
-        _path,
-        "shiftid",
-        _.shiftid,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(shiftid = value),
-        ShiftId.pgType
-      )
-    }
-
-    override def name: Field[Name, ShiftRow] = {
-      new Field[Name, ShiftRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        Some("varchar"),
-        (row, value) => row.copy(name = value),
-        Name.pgType
-      )
-    }
-
-    override def starttime: Field[LocalTime, ShiftRow] = {
-      new Field[LocalTime, ShiftRow](
-        _path,
-        "starttime",
-        _.starttime,
-        None,
-        Some("time"),
-        (row, value) => row.copy(starttime = value),
-        PgTypes.time
-      )
-    }
-
-    override def endtime: Field[LocalTime, ShiftRow] = {
-      new Field[LocalTime, ShiftRow](
-        _path,
-        "endtime",
-        _.endtime,
-        None,
-        Some("time"),
-        (row, value) => row.copy(endtime = value),
-        PgTypes.time
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, ShiftRow] = {
-      new Field[LocalDateTime, ShiftRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        None,
-        Some("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, ShiftRow]] = java.util.List.of(this.shiftid.underlying, this.name.underlying, this.starttime.underlying, this.endtime.underlying, this.modifieddate.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ShiftFields, ShiftRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: ShiftFields = new ShiftFields(java.util.Collections.emptyList())
 }

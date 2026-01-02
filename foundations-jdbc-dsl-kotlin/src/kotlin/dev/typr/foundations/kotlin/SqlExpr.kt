@@ -1,150 +1,409 @@
 package dev.typr.foundations.kotlin
 
 import dev.typr.foundations.DbType
+import dev.typr.foundations.PgTypes
+import dev.typr.foundations.data.Json
+import java.math.BigDecimal
 import java.util.Optional
 
 /**
- * Kotlin wrapper for dev.typr.foundations.dsl.SqlExpr that provides Kotlin-idiomatic API.
- * Wraps Java DSL types to convert Optional<T> to T? where appropriate.
+ * Kotlin ADT for SqlExpr that wraps the Java SqlExpr nodes.
+ * Each node corresponds to a node in Java and has an `underlying` field.
  */
-object SqlExpr {
-    // Forward static methods from Java SqlExpr
-    fun all(vararg exprs: dev.typr.foundations.dsl.SqlExpr<Boolean>): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-        dev.typr.foundations.dsl.SqlExpr.all(*exprs)
+sealed interface SqlExpr<T> {
+    val underlying: dev.typr.foundations.dsl.SqlExpr<T>
 
-    /**
-     * Base interface for field-like expressions.
-     * Note: This wraps the Java FieldLike - we don't extend it because it's sealed in Java
-     * and Kotlin 2.2 prohibits extending sealed classes from other modules.
-     */
-    interface FieldLike<T, Row> {
-        val underlying: dev.typr.foundations.dsl.SqlExpr.FieldLike<T, Row>
+    // ==================== Comparison operators ====================
+    fun isEqual(other: SqlExpr<T>): SqlExpr<Boolean> =
+        wrapBool(underlying.isEqual(other.underlying))
+
+    fun isNotEqual(other: SqlExpr<T>): SqlExpr<Boolean> =
+        wrapBool(underlying.isNotEqual(other.underlying))
+
+    fun greaterThan(other: SqlExpr<T>): SqlExpr<Boolean> =
+        wrapBool(underlying.greaterThan(other.underlying))
+
+    fun greaterThanOrEqual(other: SqlExpr<T>): SqlExpr<Boolean> =
+        wrapBool(underlying.greaterThanOrEqual(other.underlying))
+
+    fun lessThan(other: SqlExpr<T>): SqlExpr<Boolean> =
+        wrapBool(underlying.lessThan(other.underlying))
+
+    fun lessThanOrEqual(other: SqlExpr<T>): SqlExpr<Boolean> =
+        wrapBool(underlying.lessThanOrEqual(other.underlying))
+
+    // Logical operators
+    fun or(other: SqlExpr<T>, bijection: dev.typr.foundations.dsl.Bijection<T, Boolean>): SqlExpr<T> =
+        wrap(underlying.or(other.underlying, bijection))
+
+    fun and(other: SqlExpr<T>, bijection: dev.typr.foundations.dsl.Bijection<T, Boolean>): SqlExpr<T> =
+        wrap(underlying.and(other.underlying, bijection))
+
+    fun not(bijection: dev.typr.foundations.dsl.Bijection<T, Boolean>): SqlExpr<T> =
+        wrap(underlying.not(bijection))
+
+    // Arithmetic operators
+    fun plus(other: SqlExpr<T>): SqlExpr<T> =
+        wrap(underlying.plus(other.underlying))
+
+    fun minus(other: SqlExpr<T>): SqlExpr<T> =
+        wrap(underlying.minus(other.underlying))
+
+    fun multiply(other: SqlExpr<T>): SqlExpr<T> =
+        wrap(underlying.multiply(other.underlying))
+
+    // String operations
+    fun like(pattern: String, bijection: dev.typr.foundations.dsl.Bijection<T, String>): SqlExpr<Boolean> =
+        wrapBool(underlying.like(pattern, bijection))
+
+    fun stringAppend(other: SqlExpr<T>, bijection: dev.typr.foundations.dsl.Bijection<T, String>): SqlExpr<T> =
+        wrap(underlying.stringAppend(other.underlying, bijection))
+
+    fun lower(bijection: dev.typr.foundations.dsl.Bijection<T, String>): SqlExpr<T> =
+        wrap(underlying.lower(bijection))
+
+    fun upper(bijection: dev.typr.foundations.dsl.Bijection<T, String>): SqlExpr<T> =
+        wrap(underlying.upper(bijection))
+
+    fun reverse(bijection: dev.typr.foundations.dsl.Bijection<T, String>): SqlExpr<T> =
+        wrap(underlying.reverse(bijection))
+
+    fun strpos(substring: SqlExpr<String>, bijection: dev.typr.foundations.dsl.Bijection<T, String>): SqlExpr<Int> =
+        wrapInt(underlying.strpos(substring.underlying, bijection))
+
+    fun strLength(bijection: dev.typr.foundations.dsl.Bijection<T, String>): SqlExpr<Int> =
+        wrapInt(underlying.strLength(bijection))
+
+    fun substring(
+        from: SqlExpr<Int>,
+        count: SqlExpr<Int>,
+        bijection: dev.typr.foundations.dsl.Bijection<T, String>
+    ): SqlExpr<T> =
+        wrap(underlying.substring(unwrapInt(from), unwrapInt(count), bijection))
+
+    // Null handling
+    fun isNull(): SqlExpr<Boolean> =
+        wrapBool(underlying.isNull())
+
+    fun isNotNull(): SqlExpr<Boolean> =
+        wrapBool(underlying.isNotNull())
+
+    fun coalesce(defaultValue: SqlExpr<T>): SqlExpr<T> =
+        wrap(underlying.coalesce(defaultValue.underlying))
+
+    // Type conversion
+    fun <TT> underlyingValue(bijection: dev.typr.foundations.dsl.Bijection<T, TT>): SqlExpr<TT> =
+        wrap(underlying.underlying(bijection))
+
+    // Range operations
+    fun between(low: SqlExpr<T>, high: SqlExpr<T>): SqlExpr<Boolean> =
+        wrapBool(underlying.between(low.underlying, high.underlying))
+
+    fun notBetween(low: SqlExpr<T>, high: SqlExpr<T>): SqlExpr<Boolean> =
+        wrapBool(underlying.notBetween(low.underlying, high.underlying))
+
+    // Custom operators
+    fun <T2> customBinaryOp(op: String, right: SqlExpr<T2>, eval: (T, T2) -> Boolean): SqlExpr<Boolean> =
+        wrapBool(underlying.customBinaryOp(op, right.underlying, java.util.function.BiFunction { a, b -> eval(a, b) }))
+
+    // Sorting
+    fun asc(): dev.typr.foundations.dsl.SortOrder<T> = dev.typr.foundations.dsl.SortOrder.asc(underlying)
+    fun desc(): dev.typr.foundations.dsl.SortOrder<T> = dev.typr.foundations.dsl.SortOrder.desc(underlying)
+
+    // ==================== IN expressions ====================
+
+    /** Check if this expression is IN a list of values */
+    fun `in`(values: List<T>): SqlExpr<Boolean> {
+        val rows = dev.typr.foundations.dsl.SqlExpr.Rows.of(underlying, values)
+        return wrapBool(dev.typr.foundations.dsl.SqlExpr.In(underlying, rows))
+    }
+
+    /** Check if this expression is IN a vararg of values */
+    fun `in`(vararg values: T): SqlExpr<Boolean> =
+        wrapBool(underlying.`in`(*values))
+
+    /** Check if this expression is IN a subquery result */
+    fun <F> `in`(subquery: Subquery<F, T>): SqlExpr<Boolean> =
+        wrapBool(dev.typr.foundations.dsl.SqlExpr.In(underlying, subquery.javaSubquery))
+
+    fun notIn(vararg values: T): SqlExpr<Boolean> =
+        SqlExpr.wrapBool(underlying.notIn(*values))
+
+    /** Kotlin-friendly alias for `in` since 'in' is a reserved keyword */
+    fun among(values: List<T>): SqlExpr<Boolean> = `in`(values)
+
+    /** Kotlin-friendly alias for `in` since 'in' is a reserved keyword */
+    fun among(vararg values: T): SqlExpr<Boolean> = `in`(*values)
+
+    /** Kotlin-friendly alias for `in` with subquery */
+    fun <F> among(subquery: Subquery<F, T>): SqlExpr<Boolean> = `in`(subquery)
+
+    // ==================== Tuple creation with tupleWith() ====================
+
+    /** Create a 1-element tuple expression (wraps this expression) */
+    fun tupleWith(): TupleExpr1<T> = TupleExpr.of(this)
+
+    /** Create a 2-element tuple expression */
+    fun <T1> tupleWith(e1: SqlExpr<T1>): TupleExpr2<T, T1> = TupleExpr.of(this, e1)
+
+    /** Create a 3-element tuple expression */
+    fun <T1, T2> tupleWith(e1: SqlExpr<T1>, e2: SqlExpr<T2>): TupleExpr3<T, T1, T2> = TupleExpr.of(this, e1, e2)
+
+    /** Create a 4-element tuple expression */
+    fun <T1, T2, T3> tupleWith(e1: SqlExpr<T1>, e2: SqlExpr<T2>, e3: SqlExpr<T3>): TupleExpr4<T, T1, T2, T3> =
+        TupleExpr.of(this, e1, e2, e3)
+
+    /** Create a 5-element tuple expression */
+    fun <T1, T2, T3, T4> tupleWith(e1: SqlExpr<T1>, e2: SqlExpr<T2>, e3: SqlExpr<T3>, e4: SqlExpr<T4>): TupleExpr5<T, T1, T2, T3, T4> =
+        TupleExpr.of(this, e1, e2, e3, e4)
+
+    /** Create a 6-element tuple expression */
+    fun <T1, T2, T3, T4, T5> tupleWith(e1: SqlExpr<T1>, e2: SqlExpr<T2>, e3: SqlExpr<T3>, e4: SqlExpr<T4>, e5: SqlExpr<T5>): TupleExpr6<T, T1, T2, T3, T4, T5> =
+        TupleExpr.of(this, e1, e2, e3, e4, e5)
+
+
+    companion object {
+        // ========== Bijections for primitive type conversion ==========
+
+        @JvmField
+        val JavaToKotlinBool: dev.typr.foundations.dsl.Bijection<Boolean, Boolean> =
+            dev.typr.foundations.dsl.Bijection.identity()
+
+        @JvmField
+        val JavaToKotlinInt: dev.typr.foundations.dsl.Bijection<Int, Int> =
+            dev.typr.foundations.dsl.Bijection.identity()
+
+        @JvmField
+        val JavaToKotlinLong: dev.typr.foundations.dsl.Bijection<Long, Long> =
+            dev.typr.foundations.dsl.Bijection.identity()
+
+        @JvmField
+        val JavaToKotlinDouble: dev.typr.foundations.dsl.Bijection<Double, Double> =
+            dev.typr.foundations.dsl.Bijection.identity()
+
+        // ========== Wrapping/Unwrapping helpers ==========
+
+        /** Wrap any Java SqlExpr */
+        @JvmStatic
+        fun <T> wrap(expr: dev.typr.foundations.dsl.SqlExpr<T>): SqlExpr<T> =
+            Wrapped(expr)
+
+        /** Wrap a Java SqlExpr<Boolean> to Kotlin SqlExpr<Boolean> */
+        @JvmStatic
+        fun wrapBool(expr: dev.typr.foundations.dsl.SqlExpr<Boolean>): SqlExpr<Boolean> =
+            Wrapped(expr)
+
+        /** Unwrap a Kotlin SqlExpr<Boolean> to Java SqlExpr<Boolean> */
+        @JvmStatic
+        fun unwrapBool(expr: SqlExpr<Boolean>): dev.typr.foundations.dsl.SqlExpr<Boolean> =
+            expr.underlying
+
+        /** Wrap a Java SqlExpr<Int> to Kotlin SqlExpr<Int> */
+        @JvmStatic
+        fun wrapInt(expr: dev.typr.foundations.dsl.SqlExpr<Int>): SqlExpr<Int> =
+            Wrapped(expr)
+
+        /** Unwrap a Kotlin SqlExpr<Int> to Java SqlExpr<Int> */
+        @JvmStatic
+        fun unwrapInt(expr: SqlExpr<Int>): dev.typr.foundations.dsl.SqlExpr<Int> =
+            expr.underlying
+
+        /** Wrap a Java SqlExpr<Long> to Kotlin SqlExpr<Long> */
+        @JvmStatic
+        fun wrapLong(expr: dev.typr.foundations.dsl.SqlExpr<Long>): SqlExpr<Long> =
+            Wrapped(expr)
+
+        /** Unwrap a Kotlin SqlExpr<Long> to Java SqlExpr<Long> */
+        @JvmStatic
+        fun unwrapLong(expr: SqlExpr<Long>): dev.typr.foundations.dsl.SqlExpr<Long> =
+            expr.underlying
+
+        /** Wrap a Java SqlExpr<Double> to Kotlin SqlExpr<Double> */
+        @JvmStatic
+        fun wrapDouble(expr: dev.typr.foundations.dsl.SqlExpr<Double>): SqlExpr<Double> =
+            Wrapped(expr)
+
+        /** Unwrap a Kotlin SqlExpr<Double> to Java SqlExpr<Double> */
+        @JvmStatic
+        fun unwrapDouble(expr: SqlExpr<Double>): dev.typr.foundations.dsl.SqlExpr<Double> =
+            expr.underlying
+
+        // ========== Static factory methods ==========
+
+        /** Combine multiple boolean expressions with AND */
+        @JvmStatic
+        fun all(vararg exprs: SqlExpr<Boolean>): SqlExpr<Boolean> {
+            val javaExprs = exprs.map { it.underlying }.toTypedArray()
+            return wrapBool(dev.typr.foundations.dsl.SqlExpr.all(*javaExprs))
+        }
+
+        /** Combine multiple boolean expressions with OR */
+        @JvmStatic
+        fun any(vararg exprs: SqlExpr<Boolean>): SqlExpr<Boolean> {
+            val javaExprs = exprs.map { it.underlying }.toTypedArray()
+            return wrapBool(dev.typr.foundations.dsl.SqlExpr.any(*javaExprs))
+        }
+
+        /** Check if a subquery returns any rows */
+        @JvmStatic
+        fun <F, R> exists(subquery: dev.typr.foundations.dsl.SelectBuilder<F, R>): SqlExpr<Boolean> =
+            wrapBool(dev.typr.foundations.dsl.SqlExpr.exists(subquery))
+
+        /** Check if a subquery returns no rows */
+        @JvmStatic
+        fun <F, R> notExists(subquery: dev.typr.foundations.dsl.SelectBuilder<F, R>): SqlExpr<Boolean> =
+            wrapBool(dev.typr.foundations.dsl.SqlExpr.notExists(subquery))
+
+        // ========== Aggregate factory methods ==========
+
+        /** COUNT(*) - count all rows */
+        @JvmStatic
+        fun count(): SqlExpr<Long> =
+            wrapLong(dev.typr.foundations.dsl.SqlExpr.CountStar())
+
+        /** COUNT(expr) - count non-null values */
+        @JvmStatic
+        fun <T> count(expr: SqlExpr<T>): SqlExpr<Long> =
+            wrapLong(dev.typr.foundations.dsl.SqlExpr.Count(expr.underlying))
+
+        /** COUNT(DISTINCT expr) - count distinct non-null values */
+        @JvmStatic
+        fun <T> countDistinct(expr: SqlExpr<T>): SqlExpr<Long> =
+            wrapLong(dev.typr.foundations.dsl.SqlExpr.CountDistinct(expr.underlying))
+
+        /** SUM(expr) for Int - returns Long */
+        @JvmStatic
+        fun sum(expr: SqlExpr<Int>): SqlExpr<Long> =
+            wrapLong(dev.typr.foundations.dsl.SqlExpr.Sum(expr.underlying, PgTypes.int8))
+
+        /** SUM(expr) for Long - returns Long */
+        @JvmStatic
+        fun sumLong(expr: SqlExpr<Long>): SqlExpr<Long> =
+            wrapLong(dev.typr.foundations.dsl.SqlExpr.Sum(expr.underlying, PgTypes.int8))
+
+        /** SUM(expr) for BigDecimal - returns BigDecimal */
+        @JvmStatic
+        fun sumBigDecimal(expr: SqlExpr<BigDecimal>): SqlExpr<BigDecimal> =
+            wrap(dev.typr.foundations.dsl.SqlExpr.Sum(expr.underlying, PgTypes.numeric))
+
+        /** SUM(expr) for Double - returns Double */
+        @JvmStatic
+        fun sumDouble(expr: SqlExpr<Double>): SqlExpr<Double> =
+            wrapDouble(dev.typr.foundations.dsl.SqlExpr.Sum(expr.underlying, PgTypes.float8))
+
+        /** AVG(expr) - average of numeric values, returns Double */
+        @JvmStatic
+        fun <T : Number> avg(expr: SqlExpr<T>): SqlExpr<Double> =
+            wrapDouble(dev.typr.foundations.dsl.SqlExpr.Avg(expr.underlying))
+
+        /** MIN(expr) - minimum value */
+        @JvmStatic
+        fun <T> min(expr: SqlExpr<T>): SqlExpr<T> =
+            wrap(dev.typr.foundations.dsl.SqlExpr.min(expr.underlying))
+
+        /** MAX(expr) - maximum value */
+        @JvmStatic
+        fun <T> max(expr: SqlExpr<T>): SqlExpr<T> =
+            wrap(dev.typr.foundations.dsl.SqlExpr.max(expr.underlying))
+
+        /** STRING_AGG(expr, delimiter) - concatenate strings */
+        @JvmStatic
+        fun stringAgg(expr: SqlExpr<String>, delimiter: String): SqlExpr<String> =
+            wrap(dev.typr.foundations.dsl.SqlExpr.StringAgg(expr.underlying, delimiter))
+
+        /** ARRAY_AGG(expr) - collect values into array */
+        @JvmStatic
+        fun <T> arrayAgg(expr: SqlExpr<T>, arrayType: DbType<List<T>>): SqlExpr<List<T>> =
+            wrap(dev.typr.foundations.dsl.SqlExpr.ArrayAgg(expr.underlying, arrayType))
+
+        /** JSON_AGG(expr) - collect values into JSON array */
+        @JvmStatic
+        fun <T> jsonAgg(expr: SqlExpr<T>): SqlExpr<Json> =
+            wrap(dev.typr.foundations.dsl.SqlExpr.JsonAgg(expr.underlying, PgTypes.json))
+
+        /** BOOL_AND(expr) - true if all values are true */
+        @JvmStatic
+        fun boolAnd(expr: SqlExpr<Boolean>): SqlExpr<Boolean> =
+            wrapBool(dev.typr.foundations.dsl.SqlExpr.BoolAnd(expr.underlying))
+
+        /** BOOL_OR(expr) - true if any value is true */
+        @JvmStatic
+        fun boolOr(expr: SqlExpr<Boolean>): SqlExpr<Boolean> =
+            wrapBool(dev.typr.foundations.dsl.SqlExpr.BoolOr(expr.underlying))
+
+        /** Create a constant expression */
+        @JvmStatic
+        fun <T> const(value: T, dbType: DbType<T>): SqlExpr<T> =
+            ConstReq(dev.typr.foundations.dsl.SqlExpr.ConstReq(value, dbType))
+
+        /** Create an optional constant expression */
+        @JvmStatic
+        fun <T> constOpt(value: T?, dbType: DbType<T>): SqlExpr<T> =
+            ConstOpt(dev.typr.foundations.dsl.SqlExpr.ConstOpt(Optional.ofNullable(value), dbType))
+    }
+
+    // ========== Generic wrapper for any Java SqlExpr ==========
+
+    data class Wrapped<T>(override val underlying: dev.typr.foundations.dsl.SqlExpr<T>) : SqlExpr<T>
+
+    // ========== FieldLike and subclasses ==========
+
+    sealed interface FieldLike<T, Row> : SqlExpr<T> {
+        override val underlying: dev.typr.foundations.dsl.SqlExpr.FieldLike<T, Row>
 
         fun path(): List<dev.typr.foundations.dsl.Path> = underlying._path()
         fun column(): String = underlying.column()
-        fun get(row: Row): Optional<T> = underlying.get(row)
-        fun set(row: Row, value: Optional<T>): dev.typr.foundations.Either<String, Row> =
-            underlying.set(row, value)
-        fun sqlReadCast(): Optional<String> = underlying.sqlReadCast()
-        fun sqlWriteCast(): Optional<String> = underlying.sqlWriteCast()
-        fun pgType(): DbType<T> = underlying.pgType()
-        fun render(ctx: dev.typr.foundations.dsl.RenderCtx, counter: java.util.concurrent.atomic.AtomicInteger): dev.typr.foundations.Fragment =
-            underlying.render(ctx, counter)
+        fun name(): String = underlying.name()
 
-        // Comparison operators
-        fun isEqual(other: dev.typr.foundations.dsl.SqlExpr<T>): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-            underlying.isEqual(other)
+        fun get(row: Row): T? = underlying.get(row).orElse(null)
 
-        fun isEqual(value: T): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-            underlying.isEqual(value)
+        fun set(row: Row, value: T?): dev.typr.foundations.Either<String, Row> =
+            underlying.set(row, value.toOptional())
 
-        fun isNotEqual(other: dev.typr.foundations.dsl.SqlExpr<T>): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-            underlying.isNotEqual(other)
+        fun sqlReadCast(): String? = underlying.sqlReadCast().orElse(null)
+        fun sqlWriteCast(): String? = underlying.sqlWriteCast().orElse(null)
+        fun dbType(): DbType<T> = underlying.dbType()
 
-        fun isNotEqual(value: T): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-            underlying.isNotEqual(value)
+        // Value-accepting comparison operators
+        fun isEqual(value: T): SqlExpr<Boolean> = SqlExpr.wrapBool(underlying.isEqual(value))
+        fun isNotEqual(value: T): SqlExpr<Boolean> = SqlExpr.wrapBool(underlying.isNotEqual(value))
+        fun greaterThan(value: T): SqlExpr<Boolean> = SqlExpr.wrapBool(underlying.greaterThan(value))
+        fun greaterThanOrEqual(value: T): SqlExpr<Boolean> = SqlExpr.wrapBool(underlying.greaterThanOrEqual(value))
+        fun lessThan(value: T): SqlExpr<Boolean> = SqlExpr.wrapBool(underlying.lessThan(value))
+        fun lessThanOrEqual(value: T): SqlExpr<Boolean> = SqlExpr.wrapBool(underlying.lessThanOrEqual(value))
 
-        fun greaterThan(other: dev.typr.foundations.dsl.SqlExpr<T>): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-            underlying.greaterThan(other)
+        // Value-accepting range operators
+        fun between(low: T, high: T): SqlExpr<Boolean> = SqlExpr.wrapBool(underlying.between(low, high))
+        fun notBetween(low: T, high: T): SqlExpr<Boolean> = SqlExpr.wrapBool(underlying.notBetween(low, high))
 
-        fun greaterThan(value: T): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-            underlying.greaterThan(value)
+        // Value-accepting coalesce
+        fun coalesce(defaultValue: T): SqlExpr<T> = SqlExpr.wrap(underlying.coalesce(defaultValue))
 
-        fun greaterThanOrEqual(other: dev.typr.foundations.dsl.SqlExpr<T>): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-            underlying.greaterThanOrEqual(other)
+        // Value-accepting arithmetic
+        fun plus(value: T): SqlExpr<T> = SqlExpr.wrap(underlying.plus(value))
+        fun minus(value: T): SqlExpr<T> = SqlExpr.wrap(underlying.minus(value))
+        fun multiply(value: T): SqlExpr<T> = SqlExpr.wrap(underlying.multiply(value))
 
-        fun greaterThanOrEqual(value: T): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-            underlying.greaterThanOrEqual(value)
+        // String operations with value
+        fun stringAppend(value: T, bijection: dev.typr.foundations.dsl.Bijection<T, String>): SqlExpr<T> =
+            SqlExpr.wrap(underlying.stringAppend(value, bijection))
 
-        fun lessThan(other: dev.typr.foundations.dsl.SqlExpr<T>): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-            underlying.lessThan(other)
-
-        fun lessThan(value: T): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-            underlying.lessThan(value)
-
-        fun lessThanOrEqual(other: dev.typr.foundations.dsl.SqlExpr<T>): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-            underlying.lessThanOrEqual(other)
-
-        fun lessThanOrEqual(value: T): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-            underlying.lessThanOrEqual(value)
-
-        // Logical operators
-        fun or(other: dev.typr.foundations.dsl.SqlExpr<T>, bijection: Bijection<T, Boolean>): dev.typr.foundations.dsl.SqlExpr<T> =
-            underlying.or(other, bijection)
-
-        fun and(other: dev.typr.foundations.dsl.SqlExpr<T>, bijection: Bijection<T, Boolean>): dev.typr.foundations.dsl.SqlExpr<T> =
-            underlying.and(other, bijection)
-
-        fun not(bijection: Bijection<T, Boolean>): dev.typr.foundations.dsl.SqlExpr<T> =
-            underlying.not(bijection)
-
-        // Arithmetic operators
-        fun plus(other: dev.typr.foundations.dsl.SqlExpr<T>): dev.typr.foundations.dsl.SqlExpr<T> =
-            underlying.plus(other)
-
-        fun minus(other: dev.typr.foundations.dsl.SqlExpr<T>): dev.typr.foundations.dsl.SqlExpr<T> =
-            underlying.minus(other)
-
-        fun multiply(other: dev.typr.foundations.dsl.SqlExpr<T>): dev.typr.foundations.dsl.SqlExpr<T> =
-            underlying.multiply(other)
-
-        // String operations
-        fun like(pattern: String, bijection: Bijection<T, String>): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-            underlying.like(pattern, bijection)
-
-        fun stringAppend(other: dev.typr.foundations.dsl.SqlExpr<T>, bijection: Bijection<T, String>): dev.typr.foundations.dsl.SqlExpr<T> =
-            underlying.stringAppend(other, bijection)
-
-        fun lower(bijection: Bijection<T, String>): dev.typr.foundations.dsl.SqlExpr<T> =
-            underlying.lower(bijection)
-
-        fun upper(bijection: Bijection<T, String>): dev.typr.foundations.dsl.SqlExpr<T> =
-            underlying.upper(bijection)
-
-        fun reverse(bijection: Bijection<T, String>): dev.typr.foundations.dsl.SqlExpr<T> =
-            underlying.reverse(bijection)
-
-        fun strpos(substring: dev.typr.foundations.dsl.SqlExpr<String>, bijection: Bijection<T, String>): dev.typr.foundations.dsl.SqlExpr<Int> =
-            underlying.strpos(substring, bijection)
-
-        fun strLength(bijection: Bijection<T, String>): dev.typr.foundations.dsl.SqlExpr<Int> =
-            underlying.strLength(bijection)
-
-        fun substring(from: dev.typr.foundations.dsl.SqlExpr<Int>, count: dev.typr.foundations.dsl.SqlExpr<Int>, bijection: Bijection<T, String>): dev.typr.foundations.dsl.SqlExpr<T> =
-            underlying.substring(from, count, bijection)
-
-        // Null handling
-        fun isNull(): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-            underlying.isNull()
-
-        fun coalesce(defaultValue: dev.typr.foundations.dsl.SqlExpr<T>): dev.typr.foundations.dsl.SqlExpr<T> =
-            underlying.coalesce(defaultValue)
-
-        // Type conversion
-        fun <TT> underlying(bijection: Bijection<T, TT>): dev.typr.foundations.dsl.SqlExpr<TT> =
-            underlying.underlying(bijection)
-
-        // Array operations
-        fun `in`(values: Array<T>, pgType: dev.typr.foundations.DbType<T>): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-            underlying.`in`(values, pgType)
-
-        // Custom operators
-        fun <T2> customBinaryOp(op: String, right: dev.typr.foundations.dsl.SqlExpr<T2>, eval: (T, T2) -> Boolean): dev.typr.foundations.dsl.SqlExpr<Boolean> =
-            underlying.customBinaryOp(op, right, java.util.function.BiFunction { a, b -> eval(a, b) })
-
-        // Sorting
-        fun asc(): dev.typr.foundations.dsl.SortOrder<T> = underlying.asc()
-        fun desc(): dev.typr.foundations.dsl.SortOrder<T> = underlying.desc()
+        companion object {
+            /** Wrap a Java FieldLike into the appropriate Kotlin FieldLike subtype */
+            @JvmStatic
+            fun <T, Row> wrap(javaFieldLike: dev.typr.foundations.dsl.SqlExpr.FieldLike<T, Row>): FieldLike<T, Row> =
+                when (javaFieldLike) {
+                    is dev.typr.foundations.dsl.SqlExpr.Field<T, Row> -> Field(javaFieldLike)
+                    is dev.typr.foundations.dsl.SqlExpr.OptField<T, Row> -> OptField(javaFieldLike)
+                    is dev.typr.foundations.dsl.SqlExpr.IdField<T, Row> -> IdField(javaFieldLike)
+                    else -> throw IllegalArgumentException("Unknown FieldLike type: ${javaFieldLike::class}")
+                }
+        }
     }
 
-    /**
-     * Wrapper for non-nullable field.
-     * The underlying Java Field has Function<R, T> so it returns T directly.
-     */
     data class Field<T, Row>(
         override val underlying: dev.typr.foundations.dsl.SqlExpr.Field<T, Row>
     ) : FieldLike<T, Row> {
-        // Secondary constructor that builds the Java Field
         constructor(
             path: List<dev.typr.foundations.dsl.Path>,
             column: String,
@@ -152,7 +411,7 @@ object SqlExpr {
             sqlReadCast: String?,
             sqlWriteCast: String?,
             setter: (Row, T) -> Row,
-            pgType: DbType<T>
+            dbType: DbType<T>
         ) : this(
             dev.typr.foundations.dsl.SqlExpr.Field(
                 path,
@@ -161,20 +420,14 @@ object SqlExpr {
                 Optional.ofNullable(sqlReadCast),
                 Optional.ofNullable(sqlWriteCast),
                 java.util.function.BiFunction { row, value -> setter(row, value) },
-                pgType
+                dbType
             )
         )
     }
 
-    /**
-     * Wrapper for nullable field.
-     * The underlying Java OptField has Function<R, Optional<T>>.
-     * In Kotlin, we can expose this as T? instead of Optional<T>.
-     */
     data class OptField<T, Row>(
         override val underlying: dev.typr.foundations.dsl.SqlExpr.OptField<T, Row>
     ) : FieldLike<T, Row> {
-        // Secondary constructor that builds the Java OptField
         constructor(
             path: List<dev.typr.foundations.dsl.Path>,
             column: String,
@@ -182,34 +435,30 @@ object SqlExpr {
             sqlReadCast: String?,
             sqlWriteCast: String?,
             setter: (Row, T?) -> Row,
-            pgType: DbType<T>
+            dbType: DbType<T>
         ) : this(
             dev.typr.foundations.dsl.SqlExpr.OptField<T, Row>(
                 path,
                 column,
-                java.util.function.Function<Row, Optional<T>> { row ->
-                    val value: T? = get(row)
-                    Optional.ofNullable(value) as Optional<T>
-                },
+                java.util.function.Function<Row, Optional<T>> { row -> get(row).toOptional() },
                 Optional.ofNullable(sqlReadCast),
                 Optional.ofNullable(sqlWriteCast),
-                java.util.function.BiFunction<Row, Optional<T>, Row> { row, value -> setter(row, value.orElse(null)) },
-                pgType
+                java.util.function.BiFunction<Row, Optional<T>, Row> { row, value ->
+                    setter(
+                        row,
+                        value.orElse(null)
+                    )
+                },
+                dbType
             )
         )
 
-        // Kotlin-friendly nullable getter
         fun getOrNull(row: Row): T? = underlying.get(row).orElse(null)
     }
 
-    /**
-     * Wrapper for ID field (non-nullable).
-     * The underlying Java IdField has Function<R, T> so it returns T directly.
-     */
     data class IdField<T, Row>(
         override val underlying: dev.typr.foundations.dsl.SqlExpr.IdField<T, Row>
     ) : FieldLike<T, Row> {
-        // Secondary constructor that builds the Java IdField
         constructor(
             path: List<dev.typr.foundations.dsl.Path>,
             column: String,
@@ -217,7 +466,7 @@ object SqlExpr {
             sqlReadCast: String?,
             sqlWriteCast: String?,
             setter: (Row, T) -> Row,
-            pgType: DbType<T>
+            dbType: DbType<T>
         ) : this(
             dev.typr.foundations.dsl.SqlExpr.IdField(
                 path,
@@ -226,40 +475,54 @@ object SqlExpr {
                 Optional.ofNullable(sqlReadCast),
                 Optional.ofNullable(sqlWriteCast),
                 java.util.function.BiFunction { row, value -> setter(row, value) },
-                pgType
+                dbType
             )
         )
     }
 
-    // CompositeIn with invoke operator for construction
-    object CompositeIn {
-        operator fun <Tuple, Row> invoke(
-            parts: List<dev.typr.foundations.dsl.SqlExpr.CompositeIn.Part<*, Tuple, Row>>,
-            tuples: List<Tuple>
-        ): dev.typr.foundations.dsl.SqlExpr.CompositeIn<Tuple, Row> =
-            dev.typr.foundations.dsl.SqlExpr.CompositeIn(parts, tuples)
+    // ========== Const types ==========
 
-        /**
-         * Factory function for creating Part instances that accepts Kotlin FieldLike types.
-         */
-        fun <Id, Tuple, Row> Part(
-            field: FieldLike<Id, Row>,
-            extract: (Tuple) -> Id,
-            pgType: dev.typr.foundations.DbType<Id>
-        ): dev.typr.foundations.dsl.SqlExpr.CompositeIn.Part<Id, Tuple, Row> =
-            dev.typr.foundations.dsl.SqlExpr.CompositeIn.Part(
-                field.underlying,
-                java.util.function.Function { tuple -> extract(tuple) },
-                pgType
-            )
+    sealed interface Const<T> : SqlExpr<T> {
+        override val underlying: dev.typr.foundations.dsl.SqlExpr.Const<T>
+        fun dbType(): DbType<T> = underlying.dbType()
+    }
+
+    data class ConstReq<T>(override val underlying: dev.typr.foundations.dsl.SqlExpr.ConstReq<T>) : Const<T> {
+        fun value(): T = underlying.value()
+
+        companion object {
+            @JvmStatic
+            operator fun <T> invoke(value: T, dbType: DbType<T>): ConstReq<T> =
+                ConstReq(dev.typr.foundations.dsl.SqlExpr.ConstReq(value, dbType))
+        }
+    }
+
+    data class ConstOpt<T>(override val underlying: dev.typr.foundations.dsl.SqlExpr.ConstOpt<T>) : Const<T> {
+        fun value(): T? = underlying.value().orElse(null)
+
+        companion object {
+            @JvmStatic
+            operator fun <T> invoke(value: T?, dbType: DbType<T>): ConstOpt<T> =
+                ConstOpt(dev.typr.foundations.dsl.SqlExpr.ConstOpt(Optional.ofNullable(value), dbType))
+        }
+    }
+
+    /**
+     * Subquery expression for use in IN clauses.
+     * Wraps a Java Subquery and provides the underlying SqlExpr for the IN operator.
+     */
+    class Subquery<F, R>(
+        val javaSubquery: dev.typr.foundations.dsl.SqlExpr.Subquery<F, R>
+    ) : SqlExpr<List<R>> {
+        override val underlying: dev.typr.foundations.dsl.SqlExpr<List<R>> = javaSubquery
     }
 }
 
-/**
- * Kotlin wrapper for ForeignKey that accepts Kotlin FieldLike wrappers.
- */
+// ========== ForeignKey ==========
+
 class ForeignKey<Fields, Row>(val underlying: dev.typr.foundations.dsl.ForeignKey<Fields, Row>) {
     companion object {
+        @JvmStatic
         fun <Fields, Row> of(constraintName: String): ForeignKey<Fields, Row> =
             ForeignKey(dev.typr.foundations.dsl.ForeignKey.of(constraintName))
     }
@@ -272,3 +535,4 @@ class ForeignKey<Fields, Row>(val underlying: dev.typr.foundations.dsl.ForeignKe
             otherGetter(fields).underlying
         })
 }
+

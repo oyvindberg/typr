@@ -7,6 +7,7 @@ package testdb.product_prices
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -45,7 +46,7 @@ case class ProductPricesRow(
    * Default: NULL
    */
   @JsonProperty("valid_to") validTo: Option[LocalDate]
-) {
+) extends Tuple7[ProductPricesId, ProductsId, Option[PriceTiersId], BigDecimal, String, LocalDate, Option[LocalDate]] {
   def id: ProductPricesId = priceId
 
   def toUnsavedRow(
@@ -62,8 +63,22 @@ case class ProductPricesRow(
       validTo
     )
   }
+
+  override def `_1`: ProductPricesId = priceId
+
+  override def `_2`: ProductsId = productId
+
+  override def `_3`: Option[PriceTiersId] = tierId
+
+  override def `_4`: BigDecimal = price
+
+  override def `_5`: String = currencyCode
+
+  override def `_6`: LocalDate = validFrom
+
+  override def `_7`: Option[LocalDate] = validTo
 }
 
 object ProductPricesRow {
-  val `_rowParser`: RowParser[ProductPricesRow] = RowParsers.of(ProductPricesId.pgType, ProductsId.pgType, PriceTiersId.pgType.nullable, ScalaDbTypes.MariaTypes.numeric, MariaTypes.char_, MariaTypes.date, MariaTypes.date.nullable)(ProductPricesRow.apply)(row => Array[Any](row.priceId, row.productId, row.tierId, row.price, row.currencyCode, row.validFrom, row.validTo))
+  val `_rowParser`: RowParser[ProductPricesRow] = RowParsers.of(ProductPricesId.dbType, ProductsId.dbType, PriceTiersId.dbType.nullable, ScalaDbTypes.MariaTypes.numeric, MariaTypes.char_, MariaTypes.date, MariaTypes.date.nullable)(ProductPricesRow.apply)(row => Array[Any](row.priceId, row.productId, row.tierId, row.price, row.currencyCode, row.validFrom, row.validTo))
 }

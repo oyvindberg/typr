@@ -34,13 +34,13 @@ case class TableCommentsSqlRow(
 )
 
 object TableCommentsSqlRow {
-  implicit lazy val reads: Reads[TableCommentsSqlRow] = {
+  given reads: Reads[TableCommentsSqlRow] = {
     Reads[TableCommentsSqlRow](json => JsResult.fromTry(
         Try(
           TableCommentsSqlRow(
-            schema = json.\("schema").toOption.map(_.as(Reads.StringReads)),
-            name = json.\("name").as(Reads.StringReads),
-            description = json.\("description").toOption.map(_.as(Reads.StringReads))
+            schema = json.\("schema").toOption.map(_.as(using Reads.StringReads)),
+            name = json.\("name").as(using Reads.StringReads),
+            description = json.\("description").toOption.map(_.as(using Reads.StringReads))
           )
         )
       ),
@@ -51,20 +51,20 @@ object TableCommentsSqlRow {
     RowParser[TableCommentsSqlRow] { row =>
       Success(
         TableCommentsSqlRow(
-          schema = row(idx + 0)(Column.columnToOption(Column.columnToString)),
-          name = row(idx + 1)(Column.columnToString),
-          description = row(idx + 2)(Column.columnToOption(Column.columnToString))
+          schema = row(idx + 0)(using Column.columnToOption(using Column.columnToString)),
+          name = row(idx + 1)(using Column.columnToString),
+          description = row(idx + 2)(using Column.columnToOption(using Column.columnToString))
         )
       )
     }
   }
 
-  implicit lazy val writes: OWrites[TableCommentsSqlRow] = {
+  given writes: OWrites[TableCommentsSqlRow] = {
     OWrites[TableCommentsSqlRow](o =>
       new JsObject(ListMap[String, JsValue](
-        "schema" -> Writes.OptionWrites(Writes.StringWrites).writes(o.schema),
+        "schema" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.schema),
         "name" -> Writes.StringWrites.writes(o.name),
-        "description" -> Writes.OptionWrites(Writes.StringWrites).writes(o.description)
+        "description" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.description)
       ))
     )
   }

@@ -48,7 +48,7 @@ public record PromotionsRepoMock(
   @Override
   public DeleteBuilder<PromotionsFields, PromotionsRow> delete() {
     return new DeleteBuilderMock<>(
-        PromotionsFields.structure(),
+        PromotionsFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.promotionId(),
@@ -97,7 +97,7 @@ public record PromotionsRepoMock(
   @Override
   public SelectBuilder<PromotionsFields, PromotionsRow> select() {
     return new SelectBuilderMock<>(
-        PromotionsFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        PromotionsFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -145,7 +145,7 @@ public record PromotionsRepoMock(
   @Override
   public UpdateBuilder<PromotionsFields, PromotionsRow> update() {
     return new UpdateBuilderMock<>(
-        PromotionsFields.structure(),
+        PromotionsFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

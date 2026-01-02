@@ -22,7 +22,7 @@ import typr.generated.Text
 case class TypoAclItem(value: String)
 
 object TypoAclItem {
-  implicit lazy val arrayColumn: Column[Array[TypoAclItem]] = {
+  given arrayColumn: Column[Array[TypoAclItem]] = {
     Column.nonNull[Array[TypoAclItem]]((v1: Any, _) =>
       v1 match {
           case v: PgArray =>
@@ -36,7 +36,7 @@ object TypoAclItem {
     )
   }
 
-  implicit lazy val arrayToStatement: ToStatement[Array[TypoAclItem]] = {
+  given arrayToStatement: ToStatement[Array[TypoAclItem]] = {
     ToStatement[Array[TypoAclItem]]((s, index, v) => s.setArray(index, s.getConnection.createArrayOf("aclitem", v.map(v => {
       val obj = new PGobject()
       obj.setType("aclitem")
@@ -45,7 +45,7 @@ object TypoAclItem {
     }))))
   }
 
-  implicit lazy val column: Column[TypoAclItem] = {
+  given column: Column[TypoAclItem] = {
     Column.nonNull[TypoAclItem]((v1: Any, _) =>
       v1 match {
         case v: PGobject => Right(new TypoAclItem(v.getValue))
@@ -54,23 +54,23 @@ object TypoAclItem {
     )
   }
 
-  implicit lazy val parameterMetadata: ParameterMetaData[TypoAclItem] = {
+  given parameterMetadata: ParameterMetaData[TypoAclItem] = {
     new ParameterMetaData[TypoAclItem] {
       override def sqlType: String = "aclitem"
       override def jdbcType: Int = Types.OTHER
     }
   }
 
-  implicit lazy val pgText: Text[TypoAclItem] = {
+  given pgText: Text[TypoAclItem] = {
     new Text[TypoAclItem] {
       override def unsafeEncode(v: TypoAclItem, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
       override def unsafeArrayEncode(v: TypoAclItem, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
     }
   }
 
-  implicit lazy val reads: Reads[TypoAclItem] = Reads.StringReads.map(TypoAclItem.apply)
+  given reads: Reads[TypoAclItem] = Reads.StringReads.map(TypoAclItem.apply)
 
-  implicit lazy val toStatement: ToStatement[TypoAclItem] = {
+  given toStatement: ToStatement[TypoAclItem] = {
     ToStatement[TypoAclItem]((s, index, v) => s.setObject(index, {
       val obj = new PGobject()
       obj.setType("aclitem")
@@ -79,5 +79,5 @@ object TypoAclItem {
     }))
   }
 
-  implicit lazy val writes: Writes[TypoAclItem] = Writes.StringWrites.contramap(_.value)
+  given writes: Writes[TypoAclItem] = Writes.StringWrites.contramap(_.value)
 }

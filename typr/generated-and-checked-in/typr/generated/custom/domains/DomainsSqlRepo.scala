@@ -10,5 +10,5 @@ package typr.generated.custom.domains
 import java.sql.Connection
 
 trait DomainsSqlRepo {
-  def apply(implicit c: Connection): List[DomainsSqlRow]
+  def apply(using c: Connection): List[DomainsSqlRow]
 }

@@ -143,11 +143,11 @@ public record EmployeedepartmenthistoryRowUnsaved(
   public static PgText<EmployeedepartmenthistoryRowUnsaved> pgText =
       PgText.instance(
           (row, sb) -> {
-            BusinessentityId.pgType.text().unsafeEncode(row.businessentityid, sb);
+            BusinessentityId.dbType.text().unsafeEncode(row.businessentityid, sb);
             sb.append(PgText.DELIMETER);
-            DepartmentId.pgType.text().unsafeEncode(row.departmentid, sb);
+            DepartmentId.dbType.text().unsafeEncode(row.departmentid, sb);
             sb.append(PgText.DELIMETER);
-            ShiftId.pgType.text().unsafeEncode(row.shiftid, sb);
+            ShiftId.dbType.text().unsafeEncode(row.shiftid, sb);
             sb.append(PgText.DELIMETER);
             PgTypes.date.text().unsafeEncode(row.startdate, sb);
             sb.append(PgText.DELIMETER);

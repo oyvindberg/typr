@@ -329,7 +329,7 @@ object MariaSqlFileMetadata {
       // Get DB type from user-specified type override
       val fallbackFromUserType: Option[String] = userOverriddenType.flatMap {
         case OverriddenType.Primitive(p) => Some(mariaDbTypeNameFor(p))
-        case OverriddenType.Qualified(_) => None // Qualified types provide their own pgType
+        case OverriddenType.Qualified(_) => None // Qualified types provide their own dbType
       }
 
       // Prefer schema type > sqlglot inferred type > user type fallback

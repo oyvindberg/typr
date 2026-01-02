@@ -6,6 +6,7 @@
 package testdb.shipments
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -40,7 +41,7 @@ data class ShipmentsRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("dimensions_json") val dimensionsJson: Defaulted<String?> = UseDefault(),
+  @JsonProperty("dimensions_json") val dimensionsJson: Defaulted<Json?> = UseDefault(),
   /** Default: NULL
 
     */
@@ -81,7 +82,7 @@ data class ShipmentsRowUnsaved(
   fun toRow(
     trackingNumberDefault: () -> String?,
     weightKgDefault: () -> BigDecimal?,
-    dimensionsJsonDefault: () -> String?,
+    dimensionsJsonDefault: () -> Json?,
     labelDataDefault: () -> ByteArray?,
     statusDefault: () -> String,
     estimatedDeliveryDateDefault: () -> LocalDate?,

@@ -7,63 +7,59 @@ package testdb.order_items
 
 import dev.typr.foundations.Db2Types
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
-import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.ForeignKey
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
-import dev.typr.foundations.kotlin.SqlExpr.CompositeIn
-import dev.typr.foundations.kotlin.SqlExpr.CompositeIn.Part
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
+import dev.typr.foundations.kotlin.TupleExpr
+import dev.typr.foundations.kotlin.TupleExpr5
 import java.math.BigDecimal
 import kotlin.collections.List
 import testdb.orders.OrdersFields
 import testdb.orders.OrdersId
 import testdb.orders.OrdersRow
 
-interface OrderItemsFields : FieldsExpr<OrderItemsRow> {
-  abstract override fun columns(): List<FieldLike<*, OrderItemsRow>>
+data class OrderItemsFields(val _path: List<Path>) : TupleExpr5<OrdersId, Int, String, Int, BigDecimal>, RelationStructure<OrderItemsFields, OrderItemsRow>, FieldsBase<OrderItemsRow> {
+  override fun _1(): SqlExpr<OrdersId> = orderId()
 
-  fun compositeIdIn(compositeIds: List<OrderItemsId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<OrdersId, OrderItemsId, OrderItemsRow>(orderId(), OrderItemsId::orderId, OrdersId.pgType), Part<Int, OrderItemsId, OrderItemsRow>(itemNumber(), OrderItemsId::itemNumber, KotlinDbTypes.Db2Types.integer)), compositeIds)
+  override fun _2(): SqlExpr<Int> = itemNumber()
+
+  override fun _3(): SqlExpr<String> = productName()
+
+  override fun _4(): SqlExpr<Int> = quantity()
+
+  override fun _5(): SqlExpr<BigDecimal> = unitPrice()
+
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, OrderItemsRow>> = listOf(this.orderId().underlying, this.itemNumber().underlying, this.productName().underlying, this.quantity().underlying, this.unitPrice().underlying)
+
+  fun compositeIdIn(compositeIds: List<OrderItemsId>): SqlExpr<Boolean> = TupleExpr.of(orderId(), itemNumber()).among(compositeIds)
 
   fun compositeIdIs(compositeId: OrderItemsId): SqlExpr<Boolean> = SqlExpr.all(orderId().isEqual(compositeId.orderId), itemNumber().isEqual(compositeId.itemNumber))
 
   fun fkOrders(): ForeignKey<OrdersFields, OrdersRow> = ForeignKey.of<OrdersFields, OrdersRow>("FK_ORDER").withColumnPair<OrdersId>(orderId(), OrdersFields::orderId)
 
-  abstract fun itemNumber(): IdField<Int, OrderItemsRow>
+  fun itemNumber(): IdField<Int, OrderItemsRow> = IdField<Int, OrderItemsRow>(_path, "ITEM_NUMBER", OrderItemsRow::itemNumber, null, null, { row, value -> row.copy(itemNumber = value) }, KotlinDbTypes.Db2Types.integer)
 
-  abstract fun orderId(): IdField<OrdersId, OrderItemsRow>
+  fun orderId(): IdField<OrdersId, OrderItemsRow> = IdField<OrdersId, OrderItemsRow>(_path, "ORDER_ID", OrderItemsRow::orderId, null, null, { row, value -> row.copy(orderId = value) }, OrdersId.dbType)
 
-  abstract fun productName(): Field<String, OrderItemsRow>
+  fun productName(): Field<String, OrderItemsRow> = Field<String, OrderItemsRow>(_path, "PRODUCT_NAME", OrderItemsRow::productName, null, null, { row, value -> row.copy(productName = value) }, Db2Types.varchar)
 
-  abstract fun quantity(): Field<Int, OrderItemsRow>
+  fun quantity(): Field<Int, OrderItemsRow> = Field<Int, OrderItemsRow>(_path, "QUANTITY", OrderItemsRow::quantity, null, null, { row, value -> row.copy(quantity = value) }, KotlinDbTypes.Db2Types.integer)
 
   override fun rowParser(): RowParser<OrderItemsRow> = OrderItemsRow._rowParser.underlying
 
-  abstract fun unitPrice(): Field<BigDecimal, OrderItemsRow>
+  fun unitPrice(): Field<BigDecimal, OrderItemsRow> = Field<BigDecimal, OrderItemsRow>(_path, "UNIT_PRICE", OrderItemsRow::unitPrice, null, null, { row, value -> row.copy(unitPrice = value) }, KotlinDbTypes.Db2Types.decimal)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<OrderItemsFields, OrderItemsRow> = OrderItemsFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : OrderItemsFields, RelationStructure<OrderItemsFields, OrderItemsRow> {
-      override fun orderId(): IdField<OrdersId, OrderItemsRow> = IdField<OrdersId, OrderItemsRow>(_path, "ORDER_ID", OrderItemsRow::orderId, null, null, { row, value -> row.copy(orderId = value) }, OrdersId.pgType)
-
-      override fun itemNumber(): IdField<Int, OrderItemsRow> = IdField<Int, OrderItemsRow>(_path, "ITEM_NUMBER", OrderItemsRow::itemNumber, null, null, { row, value -> row.copy(itemNumber = value) }, KotlinDbTypes.Db2Types.integer)
-
-      override fun productName(): Field<String, OrderItemsRow> = Field<String, OrderItemsRow>(_path, "PRODUCT_NAME", OrderItemsRow::productName, null, null, { row, value -> row.copy(productName = value) }, Db2Types.varchar)
-
-      override fun quantity(): Field<Int, OrderItemsRow> = Field<Int, OrderItemsRow>(_path, "QUANTITY", OrderItemsRow::quantity, null, null, { row, value -> row.copy(quantity = value) }, KotlinDbTypes.Db2Types.integer)
-
-      override fun unitPrice(): Field<BigDecimal, OrderItemsRow> = Field<BigDecimal, OrderItemsRow>(_path, "UNIT_PRICE", OrderItemsRow::unitPrice, null, null, { row, value -> row.copy(unitPrice = value) }, KotlinDbTypes.Db2Types.decimal)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, OrderItemsRow>> = listOf(this.orderId().underlying, this.itemNumber().underlying, this.productName().underlying, this.quantity().underlying, this.unitPrice().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<OrderItemsFields, OrderItemsRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: OrderItemsFields = OrderItemsFields(emptyList<Path>())
   }
 }

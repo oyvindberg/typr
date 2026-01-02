@@ -79,8 +79,22 @@ object ComputedTestInserts {
             val max: Int =
               Option(dbType)
                 .collect {
+                  // PostgreSQL
                   case db.PgType.VarChar(Some(maxLength)) => maxLength
                   case db.PgType.Bpchar(Some(maxLength))  => maxLength
+                  // SQL Server
+                  case db.SqlServerType.Char(Some(maxLength))     => maxLength
+                  case db.SqlServerType.VarChar(Some(maxLength))  => maxLength
+                  case db.SqlServerType.NChar(Some(maxLength))    => maxLength
+                  case db.SqlServerType.NVarChar(Some(maxLength)) => maxLength
+                  // MariaDB/MySQL
+                  case db.MariaType.Char(Some(maxLength))    => maxLength
+                  case db.MariaType.VarChar(Some(maxLength)) => maxLength
+                  // DB2
+                  case db.DB2Type.Char(Some(maxLength))    => maxLength
+                  case db.DB2Type.VarChar(Some(maxLength)) => maxLength
+                  // DuckDB
+                  case db.DuckDbType.VarChar(Some(maxLength)) => maxLength
                 }
                 .getOrElse(20)
                 .min(20)
@@ -91,8 +105,10 @@ object ComputedTestInserts {
           case lang.Short      => Some(lang.toShort(lang.Random.nextIntBounded(r, lang.maxValue(lang.Short))))
           case lang.Int =>
             dbType match {
-              case db.PgType.Int2 => Some(lang.Random.nextIntBounded(r, lang.maxValue(lang.Short)))
-              case _              => Some(lang.Random.nextInt(r))
+              case db.PgType.Int2                 => Some(lang.Random.nextIntBounded(r, lang.maxValue(lang.Short)))
+              case db.MariaType.MediumInt         => Some(lang.Random.nextIntBounded(r, code"8388607"))
+              case db.MariaType.MediumIntUnsigned => Some(lang.Random.nextIntBounded(r, code"16777215"))
+              case _                              => Some(lang.Random.nextInt(r))
             }
           case lang.Long       => Some(lang.Random.nextLong(r))
           case lang.Float      => Some(lang.Random.nextFloat(r))
@@ -128,6 +144,27 @@ object ComputedTestInserts {
           case TypesJava.runtime.Vector =>
             // Use string constructor for simplicity: "[1.0,2.0,3.0]"
             Some(jvm.New(TypesJava.runtime.Vector, List(jvm.Arg.Pos(lang.stringLiteral("[1.0,2.0,3.0]")))).code)
+          // Unsigned integer types
+          case TypesJava.unsigned.Uint1 =>
+            // 0-255
+            Some(code"${TypesJava.unsigned.Uint1}.of(${lang.Random.nextIntBounded(r, code"256")})")
+          case TypesJava.unsigned.Uint2 =>
+            // 0-65535
+            Some(code"${TypesJava.unsigned.Uint2}.of(${lang.Random.nextIntBounded(r, code"65536")})")
+          case TypesJava.unsigned.Uint4 =>
+            dbType match {
+              case db.MariaType.MediumIntUnsigned =>
+                // 0-16777215 for MEDIUMINT UNSIGNED
+                Some(code"${TypesJava.unsigned.Uint4}.of(${lang.toLong(lang.Random.nextIntBounded(r, code"16777216"))})")
+              case _ =>
+                // 0-4294967295, use positive int range for practical tests
+                val Math = jvm.Type.Qualified("java.lang.Math")
+                Some(code"${TypesJava.unsigned.Uint4}.of(${lang.toLong(code"$Math.abs(${lang.Random.nextInt(r)})")})")
+            }
+          case TypesJava.unsigned.Uint8 =>
+            // 0-18446744073709551615, use positive long range for practical tests
+            val Math = jvm.Type.Qualified("java.lang.Math")
+            Some(code"${TypesJava.unsigned.Uint8}.of($Math.abs(${lang.Random.nextLong(r)}))")
           // PostgreSQL geometric types
           case TypesJava.PGpoint =>
             Some(jvm.New(TypesJava.PGpoint, List(jvm.Arg.Pos(lang.Random.nextDouble(r)), jvm.Arg.Pos(lang.Random.nextDouble(r)))).code)

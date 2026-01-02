@@ -7,6 +7,8 @@ package testdb.order_items
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple13
+import dev.typr.foundations.data.Uint2
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -37,7 +39,7 @@ case class OrderItemsRow(
   /**  */
   @JsonProperty("product_name") productName: String,
   /**  */
-  quantity: Int,
+  quantity: Uint2,
   /**  */
   @JsonProperty("unit_price") unitPrice: BigDecimal,
   /** 
@@ -63,7 +65,7 @@ case class OrderItemsRow(
    * Default: NULL
    */
   notes: Option[String]
-) {
+) extends Tuple13[OrderItemsId, OrdersId, ProductsId, String, String, Uint2, BigDecimal, BigDecimal, BigDecimal, BigDecimal, String, Option[WarehousesId], Option[String]] {
   def id: OrderItemsId = itemId
 
   def toUnsavedRow(
@@ -88,8 +90,34 @@ case class OrderItemsRow(
       notes
     )
   }
+
+  override def `_1`: OrderItemsId = itemId
+
+  override def `_2`: OrdersId = orderId
+
+  override def `_3`: ProductsId = productId
+
+  override def `_4`: String = sku
+
+  override def `_5`: String = productName
+
+  override def `_6`: Uint2 = quantity
+
+  override def `_7`: BigDecimal = unitPrice
+
+  override def `_8`: BigDecimal = discountAmount
+
+  override def `_9`: BigDecimal = taxAmount
+
+  override def `_10`: BigDecimal = lineTotal
+
+  override def `_11`: String = fulfillmentStatus
+
+  override def `_12`: Option[WarehousesId] = warehouseId
+
+  override def `_13`: Option[String] = notes
 }
 
 object OrderItemsRow {
-  val `_rowParser`: RowParser[OrderItemsRow] = RowParsers.of(OrderItemsId.pgType, OrdersId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, ScalaDbTypes.MariaTypes.smallintUnsigned, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, MariaTypes.text, WarehousesId.pgType.nullable, MariaTypes.tinytext.nullable)(OrderItemsRow.apply)(row => Array[Any](row.itemId, row.orderId, row.productId, row.sku, row.productName, row.quantity, row.unitPrice, row.discountAmount, row.taxAmount, row.lineTotal, row.fulfillmentStatus, row.warehouseId, row.notes))
+  val `_rowParser`: RowParser[OrderItemsRow] = RowParsers.of(OrderItemsId.dbType, OrdersId.dbType, ProductsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.smallintUnsigned, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, MariaTypes.text, WarehousesId.dbType.nullable, MariaTypes.tinytext.nullable)(OrderItemsRow.apply)(row => Array[Any](row.itemId, row.orderId, row.productId, row.sku, row.productName, row.quantity, row.unitPrice, row.discountAmount, row.taxAmount, row.lineTotal, row.fulfillmentStatus, row.warehouseId, row.notes))
 }

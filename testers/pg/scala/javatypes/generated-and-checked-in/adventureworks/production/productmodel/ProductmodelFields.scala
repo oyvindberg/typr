@@ -9,114 +9,111 @@ import adventureworks.public.Name
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.data.Xml
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
+import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
 import dev.typr.foundations.dsl.SqlExpr.OptField
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr6
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
 
-trait ProductmodelFields extends FieldsExpr0[ProductmodelRow] {
-  def productmodelid: IdField[ProductmodelId, ProductmodelRow]
+class ProductmodelFields(val `_path`: java.util.List[Path]) extends TupleExpr6[ProductmodelId, Name, Xml, Xml, UUID, LocalDateTime] with RelationStructure[ProductmodelFields, ProductmodelRow]  with FieldsBase[ProductmodelRow] {
+  def productmodelid: IdField[ProductmodelId, ProductmodelRow] = {
+    new IdField[ProductmodelId, ProductmodelRow](
+      _path,
+      "productmodelid",
+      _.productmodelid,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(productmodelid = value),
+      ProductmodelId.dbType
+    )
+  }
 
-  def name: Field[Name, ProductmodelRow]
+  def name: Field[Name, ProductmodelRow] = {
+    new Field[Name, ProductmodelRow](
+      _path,
+      "name",
+      _.name,
+      Optional.empty(),
+      Optional.of("varchar"),
+      (row, value) => row.copy(name = value),
+      Name.dbType
+    )
+  }
 
-  def catalogdescription: OptField[Xml, ProductmodelRow]
+  def catalogdescription: OptField[Xml, ProductmodelRow] = {
+    new OptField[Xml, ProductmodelRow](
+      _path,
+      "catalogdescription",
+      _.catalogdescription,
+      Optional.empty(),
+      Optional.of("xml"),
+      (row, value) => row.copy(catalogdescription = value),
+      PgTypes.xml
+    )
+  }
 
-  def instructions: OptField[Xml, ProductmodelRow]
+  def instructions: OptField[Xml, ProductmodelRow] = {
+    new OptField[Xml, ProductmodelRow](
+      _path,
+      "instructions",
+      _.instructions,
+      Optional.empty(),
+      Optional.of("xml"),
+      (row, value) => row.copy(instructions = value),
+      PgTypes.xml
+    )
+  }
 
-  def rowguid: Field[UUID, ProductmodelRow]
+  def rowguid: Field[UUID, ProductmodelRow] = {
+    new Field[UUID, ProductmodelRow](
+      _path,
+      "rowguid",
+      _.rowguid,
+      Optional.empty(),
+      Optional.of("uuid"),
+      (row, value) => row.copy(rowguid = value),
+      PgTypes.uuid
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, ProductmodelRow]
+  def modifieddate: Field[LocalDateTime, ProductmodelRow] = {
+    new Field[LocalDateTime, ProductmodelRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      Optional.empty(),
+      Optional.of("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, ProductmodelRow]]
+  override def columns: java.util.List[FieldLike[?, ProductmodelRow]] = java.util.List.of(this.productmodelid, this.name, this.catalogdescription, this.instructions, this.rowguid, this.modifieddate)
 
   override def rowParser: RowParser[ProductmodelRow] = ProductmodelRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductmodelFields, ProductmodelRow] = new ProductmodelFields(`_path`)
+
+  override def `_1`: SqlExpr[ProductmodelId] = productmodelid
+
+  override def `_2`: SqlExpr[Name] = name
+
+  override def `_3`: SqlExpr[Xml] = catalogdescription
+
+  override def `_4`: SqlExpr[Xml] = instructions
+
+  override def `_5`: SqlExpr[UUID] = rowguid
+
+  override def `_6`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object ProductmodelFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ProductmodelFields with RelationStructure[ProductmodelFields, ProductmodelRow] {
-
-    override def productmodelid: IdField[ProductmodelId, ProductmodelRow] = {
-      new IdField[ProductmodelId, ProductmodelRow](
-        _path,
-        "productmodelid",
-        _.productmodelid,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(productmodelid = value),
-        ProductmodelId.pgType
-      )
-    }
-
-    override def name: Field[Name, ProductmodelRow] = {
-      new Field[Name, ProductmodelRow](
-        _path,
-        "name",
-        _.name,
-        Optional.empty(),
-        Optional.of("varchar"),
-        (row, value) => row.copy(name = value),
-        Name.pgType
-      )
-    }
-
-    override def catalogdescription: OptField[Xml, ProductmodelRow] = {
-      new OptField[Xml, ProductmodelRow](
-        _path,
-        "catalogdescription",
-        _.catalogdescription,
-        Optional.empty(),
-        Optional.of("xml"),
-        (row, value) => row.copy(catalogdescription = value),
-        PgTypes.xml
-      )
-    }
-
-    override def instructions: OptField[Xml, ProductmodelRow] = {
-      new OptField[Xml, ProductmodelRow](
-        _path,
-        "instructions",
-        _.instructions,
-        Optional.empty(),
-        Optional.of("xml"),
-        (row, value) => row.copy(instructions = value),
-        PgTypes.xml
-      )
-    }
-
-    override def rowguid: Field[UUID, ProductmodelRow] = {
-      new Field[UUID, ProductmodelRow](
-        _path,
-        "rowguid",
-        _.rowguid,
-        Optional.empty(),
-        Optional.of("uuid"),
-        (row, value) => row.copy(rowguid = value),
-        PgTypes.uuid
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, ProductmodelRow] = {
-      new Field[LocalDateTime, ProductmodelRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        Optional.empty(),
-        Optional.of("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, ProductmodelRow]] = java.util.List.of(this.productmodelid, this.name, this.catalogdescription, this.instructions, this.rowguid, this.modifieddate)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductmodelFields, ProductmodelRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: ProductmodelFields = new ProductmodelFields(java.util.Collections.emptyList())
 }

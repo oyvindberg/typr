@@ -16,7 +16,7 @@ class DeleteOldOrdersSqlRepoImpl extends DeleteOldOrdersSqlRepo {
   override def apply(
     cutoffDate: LocalDate,
     status: Option[String]
-  )(using c: Connection): Int = {
+  )(using c: Connection): List[DeleteOldOrdersSqlRow] = {
     sql"""-- Delete old orders and return what was deleted
     -- Tests: DELETE with RETURNING, date comparisons, status filtering
   
@@ -29,6 +29,6 @@ class DeleteOldOrdersSqlRepoImpl extends DeleteOldOrdersSqlRepo {
         customer_id,
         order_date,
         total_amount,
-        status""".update().runUnchecked(c)
+        status""".query(DeleteOldOrdersSqlRow.`_rowParser`.all()).runUnchecked(c)
   }
 }

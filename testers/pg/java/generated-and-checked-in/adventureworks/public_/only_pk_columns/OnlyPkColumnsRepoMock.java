@@ -39,7 +39,7 @@ public record OnlyPkColumnsRepoMock(HashMap<OnlyPkColumnsId, OnlyPkColumnsRow> m
   @Override
   public DeleteBuilder<OnlyPkColumnsFields, OnlyPkColumnsRow> delete() {
     return new DeleteBuilderMock<>(
-        OnlyPkColumnsFields.structure(),
+        OnlyPkColumnsFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.compositeId(),
@@ -95,7 +95,7 @@ public record OnlyPkColumnsRepoMock(HashMap<OnlyPkColumnsId, OnlyPkColumnsRow> m
   @Override
   public SelectBuilder<OnlyPkColumnsFields, OnlyPkColumnsRow> select() {
     return new SelectBuilderMock<>(
-        OnlyPkColumnsFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        OnlyPkColumnsFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -138,7 +138,7 @@ public record OnlyPkColumnsRepoMock(HashMap<OnlyPkColumnsId, OnlyPkColumnsRow> m
   @Override
   public UpdateBuilder<OnlyPkColumnsFields, OnlyPkColumnsRow> update() {
     return new UpdateBuilderMock<>(
-        OnlyPkColumnsFields.structure(),
+        OnlyPkColumnsFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

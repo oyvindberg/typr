@@ -7,14 +7,17 @@ package testdb.shipments;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.data.Json;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr17;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,324 +33,356 @@ import testdb.warehouses.WarehousesFields;
 import testdb.warehouses.WarehousesId;
 import testdb.warehouses.WarehousesRow;
 
-public interface ShipmentsFields extends FieldsExpr<ShipmentsRow> {
-  record Impl(List<Path> _path)
-      implements ShipmentsFields, RelationStructure<ShipmentsFields, ShipmentsRow> {
-    @Override
-    public IdField<ShipmentsId, ShipmentsRow> shipmentId() {
-      return new IdField<ShipmentsId, ShipmentsRow>(
-          _path,
-          "shipment_id",
-          ShipmentsRow::shipmentId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withShipmentId(value),
-          ShipmentsId.pgType);
-    }
-    ;
+public class ShipmentsFields
+    implements TupleExpr17<
+            ShipmentsId,
+            OrdersId,
+            ShippingCarriersId,
+            String,
+            String,
+            BigDecimal,
+            Json,
+            byte[],
+            String,
+            LocalDate,
+            LocalDateTime,
+            BigDecimal,
+            BigDecimal,
+            WarehousesId,
+            LocalDateTime,
+            LocalDateTime,
+            LocalDateTime>,
+        RelationStructure<ShipmentsFields, ShipmentsRow>,
+        FieldsBase<ShipmentsRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<OrdersId, ShipmentsRow> orderId() {
-      return new Field<OrdersId, ShipmentsRow>(
-          _path,
-          "order_id",
-          ShipmentsRow::orderId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderId(value),
-          OrdersId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<ShippingCarriersId, ShipmentsRow> carrierId() {
-      return new Field<ShippingCarriersId, ShipmentsRow>(
-          _path,
-          "carrier_id",
-          ShipmentsRow::carrierId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCarrierId(value),
-          ShippingCarriersId.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<String, ShipmentsRow> trackingNumber() {
-      return new OptField<String, ShipmentsRow>(
-          _path,
-          "tracking_number",
-          ShipmentsRow::trackingNumber,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTrackingNumber(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, ShipmentsRow> shippingMethod() {
-      return new Field<String, ShipmentsRow>(
-          _path,
-          "shipping_method",
-          ShipmentsRow::shippingMethod,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withShippingMethod(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, ShipmentsRow> weightKg() {
-      return new OptField<BigDecimal, ShipmentsRow>(
-          _path,
-          "weight_kg",
-          ShipmentsRow::weightKg,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withWeightKg(value),
-          MariaTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<String, ShipmentsRow> dimensionsJson() {
-      return new OptField<String, ShipmentsRow>(
-          _path,
-          "dimensions_json",
-          ShipmentsRow::dimensionsJson,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDimensionsJson(value),
-          MariaTypes.longtext);
-    }
-    ;
-
-    @Override
-    public OptField<byte[], ShipmentsRow> labelData() {
-      return new OptField<byte[], ShipmentsRow>(
-          _path,
-          "label_data",
-          ShipmentsRow::labelData,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withLabelData(value),
-          MariaTypes.longblob);
-    }
-    ;
-
-    @Override
-    public Field<String, ShipmentsRow> status() {
-      return new Field<String, ShipmentsRow>(
-          _path,
-          "status",
-          ShipmentsRow::status,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withStatus(value),
-          MariaTypes.text);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDate, ShipmentsRow> estimatedDeliveryDate() {
-      return new OptField<LocalDate, ShipmentsRow>(
-          _path,
-          "estimated_delivery_date",
-          ShipmentsRow::estimatedDeliveryDate,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withEstimatedDeliveryDate(value),
-          MariaTypes.date);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, ShipmentsRow> actualDeliveryAt() {
-      return new OptField<LocalDateTime, ShipmentsRow>(
-          _path,
-          "actual_delivery_at",
-          ShipmentsRow::actualDeliveryAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withActualDeliveryAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, ShipmentsRow> shippingCost() {
-      return new Field<BigDecimal, ShipmentsRow>(
-          _path,
-          "shipping_cost",
-          ShipmentsRow::shippingCost,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withShippingCost(value),
-          MariaTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, ShipmentsRow> insuranceAmount() {
-      return new OptField<BigDecimal, ShipmentsRow>(
-          _path,
-          "insurance_amount",
-          ShipmentsRow::insuranceAmount,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withInsuranceAmount(value),
-          MariaTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<WarehousesId, ShipmentsRow> originWarehouseId() {
-      return new OptField<WarehousesId, ShipmentsRow>(
-          _path,
-          "origin_warehouse_id",
-          ShipmentsRow::originWarehouseId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOriginWarehouseId(value),
-          WarehousesId.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, ShipmentsRow> shippedAt() {
-      return new OptField<LocalDateTime, ShipmentsRow>(
-          _path,
-          "shipped_at",
-          ShipmentsRow::shippedAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withShippedAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, ShipmentsRow> createdAt() {
-      return new Field<LocalDateTime, ShipmentsRow>(
-          _path,
-          "created_at",
-          ShipmentsRow::createdAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCreatedAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, ShipmentsRow> updatedAt() {
-      return new Field<LocalDateTime, ShipmentsRow>(
-          _path,
-          "updated_at",
-          ShipmentsRow::updatedAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withUpdatedAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, ShipmentsRow>> columns() {
-      return java.util.List.of(
-          this.shipmentId(),
-          this.orderId(),
-          this.carrierId(),
-          this.trackingNumber(),
-          this.shippingMethod(),
-          this.weightKg(),
-          this.dimensionsJson(),
-          this.labelData(),
-          this.status(),
-          this.estimatedDeliveryDate(),
-          this.actualDeliveryAt(),
-          this.shippingCost(),
-          this.insuranceAmount(),
-          this.originWarehouseId(),
-          this.shippedAt(),
-          this.createdAt(),
-          this.updatedAt());
-    }
-    ;
-
-    @Override
-    public RelationStructure<ShipmentsFields, ShipmentsRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public ShipmentsFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static ShipmentsFields structure = new ShipmentsFields(java.util.Collections.emptyList());
+
+  public IdField<ShipmentsId, ShipmentsRow> shipmentId() {
+    return new IdField<ShipmentsId, ShipmentsRow>(
+        _path,
+        "shipment_id",
+        ShipmentsRow::shipmentId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withShipmentId(value),
+        ShipmentsId.dbType);
   }
-  ;
 
-  IdField<ShipmentsId, ShipmentsRow> shipmentId();
+  public Field<OrdersId, ShipmentsRow> orderId() {
+    return new Field<OrdersId, ShipmentsRow>(
+        _path,
+        "order_id",
+        ShipmentsRow::orderId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderId(value),
+        OrdersId.dbType);
+  }
 
-  Field<OrdersId, ShipmentsRow> orderId();
+  public Field<ShippingCarriersId, ShipmentsRow> carrierId() {
+    return new Field<ShippingCarriersId, ShipmentsRow>(
+        _path,
+        "carrier_id",
+        ShipmentsRow::carrierId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCarrierId(value),
+        ShippingCarriersId.dbType);
+  }
 
-  Field<ShippingCarriersId, ShipmentsRow> carrierId();
+  public OptField<String, ShipmentsRow> trackingNumber() {
+    return new OptField<String, ShipmentsRow>(
+        _path,
+        "tracking_number",
+        ShipmentsRow::trackingNumber,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTrackingNumber(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, ShipmentsRow> trackingNumber();
+  public Field<String, ShipmentsRow> shippingMethod() {
+    return new Field<String, ShipmentsRow>(
+        _path,
+        "shipping_method",
+        ShipmentsRow::shippingMethod,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withShippingMethod(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, ShipmentsRow> shippingMethod();
+  public OptField<BigDecimal, ShipmentsRow> weightKg() {
+    return new OptField<BigDecimal, ShipmentsRow>(
+        _path,
+        "weight_kg",
+        ShipmentsRow::weightKg,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withWeightKg(value),
+        MariaTypes.numeric);
+  }
 
-  OptField<BigDecimal, ShipmentsRow> weightKg();
+  public OptField<Json, ShipmentsRow> dimensionsJson() {
+    return new OptField<Json, ShipmentsRow>(
+        _path,
+        "dimensions_json",
+        ShipmentsRow::dimensionsJson,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDimensionsJson(value),
+        MariaTypes.json);
+  }
 
-  OptField<String, ShipmentsRow> dimensionsJson();
+  public OptField<byte[], ShipmentsRow> labelData() {
+    return new OptField<byte[], ShipmentsRow>(
+        _path,
+        "label_data",
+        ShipmentsRow::labelData,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withLabelData(value),
+        MariaTypes.longblob);
+  }
 
-  OptField<byte[], ShipmentsRow> labelData();
+  public Field<String, ShipmentsRow> status() {
+    return new Field<String, ShipmentsRow>(
+        _path,
+        "status",
+        ShipmentsRow::status,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withStatus(value),
+        MariaTypes.text);
+  }
 
-  Field<String, ShipmentsRow> status();
+  public OptField<LocalDate, ShipmentsRow> estimatedDeliveryDate() {
+    return new OptField<LocalDate, ShipmentsRow>(
+        _path,
+        "estimated_delivery_date",
+        ShipmentsRow::estimatedDeliveryDate,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withEstimatedDeliveryDate(value),
+        MariaTypes.date);
+  }
 
-  OptField<LocalDate, ShipmentsRow> estimatedDeliveryDate();
+  public OptField<LocalDateTime, ShipmentsRow> actualDeliveryAt() {
+    return new OptField<LocalDateTime, ShipmentsRow>(
+        _path,
+        "actual_delivery_at",
+        ShipmentsRow::actualDeliveryAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withActualDeliveryAt(value),
+        MariaTypes.datetime);
+  }
 
-  OptField<LocalDateTime, ShipmentsRow> actualDeliveryAt();
+  public Field<BigDecimal, ShipmentsRow> shippingCost() {
+    return new Field<BigDecimal, ShipmentsRow>(
+        _path,
+        "shipping_cost",
+        ShipmentsRow::shippingCost,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withShippingCost(value),
+        MariaTypes.numeric);
+  }
 
-  Field<BigDecimal, ShipmentsRow> shippingCost();
+  public OptField<BigDecimal, ShipmentsRow> insuranceAmount() {
+    return new OptField<BigDecimal, ShipmentsRow>(
+        _path,
+        "insurance_amount",
+        ShipmentsRow::insuranceAmount,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withInsuranceAmount(value),
+        MariaTypes.numeric);
+  }
 
-  OptField<BigDecimal, ShipmentsRow> insuranceAmount();
+  public OptField<WarehousesId, ShipmentsRow> originWarehouseId() {
+    return new OptField<WarehousesId, ShipmentsRow>(
+        _path,
+        "origin_warehouse_id",
+        ShipmentsRow::originWarehouseId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOriginWarehouseId(value),
+        WarehousesId.dbType);
+  }
 
-  OptField<WarehousesId, ShipmentsRow> originWarehouseId();
+  public OptField<LocalDateTime, ShipmentsRow> shippedAt() {
+    return new OptField<LocalDateTime, ShipmentsRow>(
+        _path,
+        "shipped_at",
+        ShipmentsRow::shippedAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withShippedAt(value),
+        MariaTypes.datetime);
+  }
 
-  OptField<LocalDateTime, ShipmentsRow> shippedAt();
+  public Field<LocalDateTime, ShipmentsRow> createdAt() {
+    return new Field<LocalDateTime, ShipmentsRow>(
+        _path,
+        "created_at",
+        ShipmentsRow::createdAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCreatedAt(value),
+        MariaTypes.datetime);
+  }
 
-  Field<LocalDateTime, ShipmentsRow> createdAt();
+  public Field<LocalDateTime, ShipmentsRow> updatedAt() {
+    return new Field<LocalDateTime, ShipmentsRow>(
+        _path,
+        "updated_at",
+        ShipmentsRow::updatedAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withUpdatedAt(value),
+        MariaTypes.datetime);
+  }
 
-  Field<LocalDateTime, ShipmentsRow> updatedAt();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<ShippingCarriersFields, ShippingCarriersRow> fkShippingCarriers() {
+  public ForeignKey<ShippingCarriersFields, ShippingCarriersRow> fkShippingCarriers() {
     return ForeignKey.<ShippingCarriersFields, ShippingCarriersRow>of("fk_ship_carrier")
         .<ShippingCarriersId>withColumnPair(carrierId(), ShippingCarriersFields::carrierId);
   }
-  ;
 
-  default ForeignKey<OrdersFields, OrdersRow> fkOrders() {
+  public ForeignKey<OrdersFields, OrdersRow> fkOrders() {
     return ForeignKey.<OrdersFields, OrdersRow>of("fk_ship_order")
         .<OrdersId>withColumnPair(orderId(), OrdersFields::orderId);
   }
-  ;
 
-  default ForeignKey<WarehousesFields, WarehousesRow> fkWarehouses() {
+  public ForeignKey<WarehousesFields, WarehousesRow> fkWarehouses() {
     return ForeignKey.<WarehousesFields, WarehousesRow>of("fk_ship_warehouse")
         .<WarehousesId>withColumnPair(originWarehouseId(), WarehousesFields::warehouseId);
   }
-  ;
 
   @Override
-  List<FieldLike<?, ShipmentsRow>> columns();
+  public List<FieldLike<?, ShipmentsRow>> columns() {
+    return java.util.List.of(
+        this.shipmentId(),
+        this.orderId(),
+        this.carrierId(),
+        this.trackingNumber(),
+        this.shippingMethod(),
+        this.weightKg(),
+        this.dimensionsJson(),
+        this.labelData(),
+        this.status(),
+        this.estimatedDeliveryDate(),
+        this.actualDeliveryAt(),
+        this.shippingCost(),
+        this.insuranceAmount(),
+        this.originWarehouseId(),
+        this.shippedAt(),
+        this.createdAt(),
+        this.updatedAt());
+  }
 
   @Override
-  default RowParser<ShipmentsRow> rowParser() {
+  public RowParser<ShipmentsRow> rowParser() {
     return ShipmentsRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<ShipmentsFields, ShipmentsRow> withPaths(List<Path> _path) {
+    return new ShipmentsFields(_path);
+  }
+
+  @Override
+  public SqlExpr<ShipmentsId> _1() {
+    return shipmentId();
+  }
+
+  @Override
+  public SqlExpr<OrdersId> _2() {
+    return orderId();
+  }
+
+  @Override
+  public SqlExpr<ShippingCarriersId> _3() {
+    return carrierId();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return trackingNumber();
+  }
+
+  @Override
+  public SqlExpr<String> _5() {
+    return shippingMethod();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _6() {
+    return weightKg();
+  }
+
+  @Override
+  public SqlExpr<Json> _7() {
+    return dimensionsJson();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _8() {
+    return labelData();
+  }
+
+  @Override
+  public SqlExpr<String> _9() {
+    return status();
+  }
+
+  @Override
+  public SqlExpr<LocalDate> _10() {
+    return estimatedDeliveryDate();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _11() {
+    return actualDeliveryAt();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _12() {
+    return shippingCost();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _13() {
+    return insuranceAmount();
+  }
+
+  @Override
+  public SqlExpr<WarehousesId> _14() {
+    return originWarehouseId();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _15() {
+    return shippedAt();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _16() {
+    return createdAt();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _17() {
+    return updatedAt();
+  }
 }

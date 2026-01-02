@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple10;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -36,7 +37,18 @@ public record CustomerOrdersSqlRow(
     /** Points to {@link testdb.orders.OrdersRow#totalAmount()} */
     @JsonProperty("total_amount") Optional<BigDecimal> totalAmount,
     /** Points to {@link testdb.orders.OrdersRow#orderedAt()} */
-    @JsonProperty("ordered_at") Optional<LocalDateTime> orderedAt) {
+    @JsonProperty("ordered_at") Optional<LocalDateTime> orderedAt)
+    implements Tuple10<
+        CustomersId,
+        String,
+        String,
+        String,
+        String,
+        Optional<OrdersId>,
+        Optional<String>,
+        Optional<String>,
+        Optional<BigDecimal>,
+        Optional<LocalDateTime>> {
   /** Points to {@link testdb.customers.CustomersRow#customerId()} */
   public CustomerOrdersSqlRow withCustomerId(CustomersId customerId) {
     return new CustomerOrdersSqlRow(
@@ -199,12 +211,12 @@ public record CustomerOrdersSqlRow(
 
   public static RowParser<CustomerOrdersSqlRow> _rowParser =
       RowParsers.of(
-          CustomersId.pgType,
+          CustomersId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.text,
-          OrdersId.pgType.opt(),
+          OrdersId.dbType.opt(),
           MariaTypes.varchar.opt(),
           MariaTypes.text.opt(),
           MariaTypes.numeric.opt(),
@@ -223,5 +235,65 @@ public record CustomerOrdersSqlRow(
                 row.totalAmount(),
                 row.orderedAt()
               });
+  ;
+
+  @Override
+  public CustomersId _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _10() {
+    return orderedAt;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return email;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return firstName;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return lastName;
+  }
+  ;
+
+  @Override
+  public String _5() {
+    return tier;
+  }
+  ;
+
+  @Override
+  public Optional<OrdersId> _6() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public Optional<String> _7() {
+    return orderNumber;
+  }
+  ;
+
+  @Override
+  public Optional<String> _8() {
+    return orderStatus;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _9() {
+    return totalAmount;
+  }
   ;
 }

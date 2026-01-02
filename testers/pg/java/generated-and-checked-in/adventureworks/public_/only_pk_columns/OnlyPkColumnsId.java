@@ -9,11 +9,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple2;
 
 /** Type for the composite primary key of table `public.only_pk_columns` */
 public record OnlyPkColumnsId(
     @JsonProperty("key_column_1") String keyColumn1,
-    @JsonProperty("key_column_2") Integer keyColumn2) {
+    @JsonProperty("key_column_2") Integer keyColumn2)
+    implements Tuple2<String, Integer> {
   public OnlyPkColumnsId withKeyColumn1(String keyColumn1) {
     return new OnlyPkColumnsId(keyColumn1, keyColumn2);
   }
@@ -30,5 +32,17 @@ public record OnlyPkColumnsId(
           PgTypes.int4,
           OnlyPkColumnsId::new,
           row -> new Object[] {row.keyColumn1(), row.keyColumn2()});
+  ;
+
+  @Override
+  public String _1() {
+    return keyColumn1;
+  }
+  ;
+
+  @Override
+  public Integer _2() {
+    return keyColumn2;
+  }
   ;
 }

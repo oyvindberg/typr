@@ -11,172 +11,169 @@ import adventureworks.person.countryregion.CountryregionRow
 import adventureworks.public.Name
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.ForeignKey
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
+import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr10
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
 
-trait SalesterritoryFields extends FieldsExpr0[SalesterritoryRow] {
-  def territoryid: IdField[SalesterritoryId, SalesterritoryRow]
+class SalesterritoryFields(val `_path`: java.util.List[Path]) extends TupleExpr10[SalesterritoryId, Name, CountryregionId, String, java.math.BigDecimal, java.math.BigDecimal, java.math.BigDecimal, java.math.BigDecimal, UUID, LocalDateTime] with RelationStructure[SalesterritoryFields, SalesterritoryRow]  with FieldsBase[SalesterritoryRow] {
+  def territoryid: IdField[SalesterritoryId, SalesterritoryRow] = {
+    new IdField[SalesterritoryId, SalesterritoryRow](
+      _path,
+      "territoryid",
+      _.territoryid,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(territoryid = value),
+      SalesterritoryId.dbType
+    )
+  }
 
-  def name: Field[Name, SalesterritoryRow]
+  def name: Field[Name, SalesterritoryRow] = {
+    new Field[Name, SalesterritoryRow](
+      _path,
+      "name",
+      _.name,
+      Optional.empty(),
+      Optional.of("varchar"),
+      (row, value) => row.copy(name = value),
+      Name.dbType
+    )
+  }
 
-  def countryregioncode: Field[CountryregionId, SalesterritoryRow]
+  def countryregioncode: Field[CountryregionId, SalesterritoryRow] = {
+    new Field[CountryregionId, SalesterritoryRow](
+      _path,
+      "countryregioncode",
+      _.countryregioncode,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(countryregioncode = value),
+      CountryregionId.dbType
+    )
+  }
 
-  def group: Field[String, SalesterritoryRow]
+  def group: Field[String, SalesterritoryRow] = {
+    new Field[String, SalesterritoryRow](
+      _path,
+      "group",
+      _.group,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(group = value),
+      PgTypes.text
+    )
+  }
 
-  def salesytd: Field[java.math.BigDecimal, SalesterritoryRow]
+  def salesytd: Field[java.math.BigDecimal, SalesterritoryRow] = {
+    new Field[java.math.BigDecimal, SalesterritoryRow](
+      _path,
+      "salesytd",
+      _.salesytd,
+      Optional.empty(),
+      Optional.of("numeric"),
+      (row, value) => row.copy(salesytd = value),
+      PgTypes.numeric
+    )
+  }
 
-  def saleslastyear: Field[java.math.BigDecimal, SalesterritoryRow]
+  def saleslastyear: Field[java.math.BigDecimal, SalesterritoryRow] = {
+    new Field[java.math.BigDecimal, SalesterritoryRow](
+      _path,
+      "saleslastyear",
+      _.saleslastyear,
+      Optional.empty(),
+      Optional.of("numeric"),
+      (row, value) => row.copy(saleslastyear = value),
+      PgTypes.numeric
+    )
+  }
 
-  def costytd: Field[java.math.BigDecimal, SalesterritoryRow]
+  def costytd: Field[java.math.BigDecimal, SalesterritoryRow] = {
+    new Field[java.math.BigDecimal, SalesterritoryRow](
+      _path,
+      "costytd",
+      _.costytd,
+      Optional.empty(),
+      Optional.of("numeric"),
+      (row, value) => row.copy(costytd = value),
+      PgTypes.numeric
+    )
+  }
 
-  def costlastyear: Field[java.math.BigDecimal, SalesterritoryRow]
+  def costlastyear: Field[java.math.BigDecimal, SalesterritoryRow] = {
+    new Field[java.math.BigDecimal, SalesterritoryRow](
+      _path,
+      "costlastyear",
+      _.costlastyear,
+      Optional.empty(),
+      Optional.of("numeric"),
+      (row, value) => row.copy(costlastyear = value),
+      PgTypes.numeric
+    )
+  }
 
-  def rowguid: Field[UUID, SalesterritoryRow]
+  def rowguid: Field[UUID, SalesterritoryRow] = {
+    new Field[UUID, SalesterritoryRow](
+      _path,
+      "rowguid",
+      _.rowguid,
+      Optional.empty(),
+      Optional.of("uuid"),
+      (row, value) => row.copy(rowguid = value),
+      PgTypes.uuid
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, SalesterritoryRow]
+  def modifieddate: Field[LocalDateTime, SalesterritoryRow] = {
+    new Field[LocalDateTime, SalesterritoryRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      Optional.empty(),
+      Optional.of("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
   def fkPersonCountryregion: ForeignKey[CountryregionFields, CountryregionRow] = ForeignKey.of[CountryregionFields, CountryregionRow]("sales.FK_SalesTerritory_CountryRegion_CountryRegionCode").withColumnPair[CountryregionId](countryregioncode, _.countryregioncode)
 
-  override def columns: java.util.List[FieldLike[?, SalesterritoryRow]]
+  override def columns: java.util.List[FieldLike[?, SalesterritoryRow]] = java.util.List.of(this.territoryid, this.name, this.countryregioncode, this.group, this.salesytd, this.saleslastyear, this.costytd, this.costlastyear, this.rowguid, this.modifieddate)
 
   override def rowParser: RowParser[SalesterritoryRow] = SalesterritoryRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[SalesterritoryFields, SalesterritoryRow] = new SalesterritoryFields(`_path`)
+
+  override def `_1`: SqlExpr[SalesterritoryId] = territoryid
+
+  override def `_2`: SqlExpr[Name] = name
+
+  override def `_3`: SqlExpr[CountryregionId] = countryregioncode
+
+  override def `_4`: SqlExpr[String] = group
+
+  override def `_5`: SqlExpr[java.math.BigDecimal] = salesytd
+
+  override def `_6`: SqlExpr[java.math.BigDecimal] = saleslastyear
+
+  override def `_7`: SqlExpr[java.math.BigDecimal] = costytd
+
+  override def `_8`: SqlExpr[java.math.BigDecimal] = costlastyear
+
+  override def `_9`: SqlExpr[UUID] = rowguid
+
+  override def `_10`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object SalesterritoryFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends SalesterritoryFields with RelationStructure[SalesterritoryFields, SalesterritoryRow] {
-
-    override def territoryid: IdField[SalesterritoryId, SalesterritoryRow] = {
-      new IdField[SalesterritoryId, SalesterritoryRow](
-        _path,
-        "territoryid",
-        _.territoryid,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(territoryid = value),
-        SalesterritoryId.pgType
-      )
-    }
-
-    override def name: Field[Name, SalesterritoryRow] = {
-      new Field[Name, SalesterritoryRow](
-        _path,
-        "name",
-        _.name,
-        Optional.empty(),
-        Optional.of("varchar"),
-        (row, value) => row.copy(name = value),
-        Name.pgType
-      )
-    }
-
-    override def countryregioncode: Field[CountryregionId, SalesterritoryRow] = {
-      new Field[CountryregionId, SalesterritoryRow](
-        _path,
-        "countryregioncode",
-        _.countryregioncode,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(countryregioncode = value),
-        CountryregionId.pgType
-      )
-    }
-
-    override def group: Field[String, SalesterritoryRow] = {
-      new Field[String, SalesterritoryRow](
-        _path,
-        "group",
-        _.group,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(group = value),
-        PgTypes.text
-      )
-    }
-
-    override def salesytd: Field[java.math.BigDecimal, SalesterritoryRow] = {
-      new Field[java.math.BigDecimal, SalesterritoryRow](
-        _path,
-        "salesytd",
-        _.salesytd,
-        Optional.empty(),
-        Optional.of("numeric"),
-        (row, value) => row.copy(salesytd = value),
-        PgTypes.numeric
-      )
-    }
-
-    override def saleslastyear: Field[java.math.BigDecimal, SalesterritoryRow] = {
-      new Field[java.math.BigDecimal, SalesterritoryRow](
-        _path,
-        "saleslastyear",
-        _.saleslastyear,
-        Optional.empty(),
-        Optional.of("numeric"),
-        (row, value) => row.copy(saleslastyear = value),
-        PgTypes.numeric
-      )
-    }
-
-    override def costytd: Field[java.math.BigDecimal, SalesterritoryRow] = {
-      new Field[java.math.BigDecimal, SalesterritoryRow](
-        _path,
-        "costytd",
-        _.costytd,
-        Optional.empty(),
-        Optional.of("numeric"),
-        (row, value) => row.copy(costytd = value),
-        PgTypes.numeric
-      )
-    }
-
-    override def costlastyear: Field[java.math.BigDecimal, SalesterritoryRow] = {
-      new Field[java.math.BigDecimal, SalesterritoryRow](
-        _path,
-        "costlastyear",
-        _.costlastyear,
-        Optional.empty(),
-        Optional.of("numeric"),
-        (row, value) => row.copy(costlastyear = value),
-        PgTypes.numeric
-      )
-    }
-
-    override def rowguid: Field[UUID, SalesterritoryRow] = {
-      new Field[UUID, SalesterritoryRow](
-        _path,
-        "rowguid",
-        _.rowguid,
-        Optional.empty(),
-        Optional.of("uuid"),
-        (row, value) => row.copy(rowguid = value),
-        PgTypes.uuid
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, SalesterritoryRow] = {
-      new Field[LocalDateTime, SalesterritoryRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        Optional.empty(),
-        Optional.of("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, SalesterritoryRow]] = java.util.List.of(this.territoryid, this.name, this.countryregioncode, this.group, this.salesytd, this.saleslastyear, this.costytd, this.costlastyear, this.rowguid, this.modifieddate)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[SalesterritoryFields, SalesterritoryRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: SalesterritoryFields = new SalesterritoryFields(java.util.Collections.emptyList())
 }

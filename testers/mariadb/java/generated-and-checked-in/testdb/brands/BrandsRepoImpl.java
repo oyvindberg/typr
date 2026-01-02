@@ -24,27 +24,25 @@ import java.util.Optional;
 public class BrandsRepoImpl implements BrandsRepo {
   @Override
   public DeleteBuilder<BrandsFields, BrandsRow> delete() {
-    return DeleteBuilder.of("`brands`", BrandsFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`brands`", BrandsFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(BrandsId brandId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `brands` where `brand_id` = "),
-                Fragment.encode(BrandsId.pgType, brandId),
+                Fragment.encode(BrandsId.dbType, brandId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(BrandsId[] brandIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : brandIds) {
-      fragments.add(Fragment.encode(BrandsId.pgType, id));
+      fragments.add(Fragment.encode(BrandsId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -54,7 +52,6 @@ public class BrandsRepoImpl implements BrandsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public BrandsRow insert(BrandsRow unsaved, Connection c) {
@@ -81,7 +78,6 @@ public class BrandsRepoImpl implements BrandsRepo {
         .updateReturning(BrandsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public BrandsRow insert(BrandsRowUnsaved unsaved, Connection c) {
@@ -146,14 +142,12 @@ public class BrandsRepoImpl implements BrandsRepo {
     ;
     return q.updateReturning(BrandsRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<BrandsFields, BrandsRow> select() {
     return SelectBuilder.of(
-        "`brands`", BrandsFields.structure(), BrandsRow._rowParser, Dialect.MARIADB);
+        "`brands`", BrandsFields.structure, BrandsRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<BrandsRow> selectAll(Connection c) {
@@ -165,7 +159,6 @@ public class BrandsRepoImpl implements BrandsRepo {
         .query(BrandsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<BrandsRow> selectById(BrandsId brandId, Connection c) {
@@ -175,18 +168,17 @@ public class BrandsRepoImpl implements BrandsRepo {
                     + " `country_of_origin`, `is_active`\n"
                     + "from `brands`\n"
                     + "where `brand_id` = "),
-            Fragment.encode(BrandsId.pgType, brandId),
+            Fragment.encode(BrandsId.dbType, brandId),
             Fragment.lit(""))
         .query(BrandsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<BrandsRow> selectByIds(BrandsId[] brandIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : brandIds) {
-      fragments.add(Fragment.encode(BrandsId.pgType, id));
+      fragments.add(Fragment.encode(BrandsId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -198,7 +190,6 @@ public class BrandsRepoImpl implements BrandsRepo {
         .query(BrandsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<BrandsId, BrandsRow> selectByIdsTracked(BrandsId[] brandIds, Connection c) {
@@ -206,7 +197,6 @@ public class BrandsRepoImpl implements BrandsRepo {
     selectByIds(brandIds, c).forEach(row -> ret.put(row.brandId(), row));
     return ret;
   }
-  ;
 
   @Override
   public Optional<BrandsRow> selectByUniqueSlug(String slug, Connection c) {
@@ -221,14 +211,12 @@ public class BrandsRepoImpl implements BrandsRepo {
         .query(BrandsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<BrandsFields, BrandsRow> update() {
     return UpdateBuilder.of(
-        "`brands`", BrandsFields.structure(), BrandsRow._rowParser, Dialect.MARIADB);
+        "`brands`", BrandsFields.structure, BrandsRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(BrandsRow row, Connection c) {
@@ -248,21 +236,22 @@ public class BrandsRepoImpl implements BrandsRepo {
                 Fragment.lit(",\n`is_active` = "),
                 Fragment.encode(MariaTypes.bool, row.isActive()),
                 Fragment.lit("\nwhere `brand_id` = "),
-                Fragment.encode(BrandsId.pgType, brandId),
+                Fragment.encode(BrandsId.dbType, brandId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public BrandsRow upsert(BrandsRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `brands`(`name`, `slug`, `logo_blob`, `website_url`,"
+                "INSERT INTO `brands`(`brand_id`, `name`, `slug`, `logo_blob`, `website_url`,"
                     + " `country_of_origin`, `is_active`)\n"
                     + "VALUES ("),
+            Fragment.encode(BrandsId.dbType, unsaved.brandId()),
+            Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.name()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.slug()),
@@ -287,7 +276,6 @@ public class BrandsRepoImpl implements BrandsRepo {
         .updateReturning(BrandsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<BrandsRow> upsertBatch(Iterator<BrandsRow> unsaved, Connection c) {
@@ -307,5 +295,4 @@ public class BrandsRepoImpl implements BrandsRepo {
         .updateReturningEach(BrandsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

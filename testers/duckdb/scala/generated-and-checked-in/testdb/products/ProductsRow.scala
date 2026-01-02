@@ -7,6 +7,7 @@ package testdb.products
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.data.Json
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
@@ -22,8 +23,18 @@ case class ProductsRow(
   name: String,
   price: BigDecimal,
   metadata: Option[Json]
-) {
+) extends Tuple5[ProductsId, String, String, BigDecimal, Option[Json]] {
   def id: ProductsId = productId
+
+  override def `_1`: ProductsId = productId
+
+  override def `_2`: String = sku
+
+  override def `_3`: String = name
+
+  override def `_4`: BigDecimal = price
+
+  override def `_5`: Option[Json] = metadata
 }
 
 object ProductsRow {

@@ -7,106 +7,112 @@ package testdb.nullability_test;
 
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr4;
 import java.util.List;
 import java.util.Optional;
 
-public interface NullabilityTestFields extends FieldsExpr<NullabilityTestRow> {
-  record Impl(List<Path> _path)
-      implements NullabilityTestFields,
-          RelationStructure<NullabilityTestFields, NullabilityTestRow> {
-    @Override
-    public Field<Integer, NullabilityTestRow> id() {
-      return new Field<Integer, NullabilityTestRow>(
-          _path,
-          "ID",
-          NullabilityTestRow::id,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withId(value),
-          Db2Types.integer);
-    }
-    ;
+public class NullabilityTestFields
+    implements TupleExpr4<Integer, String, String, String>,
+        RelationStructure<NullabilityTestFields, NullabilityTestRow>,
+        FieldsBase<NullabilityTestRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, NullabilityTestRow> requiredCol() {
-      return new Field<String, NullabilityTestRow>(
-          _path,
-          "REQUIRED_COL",
-          NullabilityTestRow::requiredCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withRequiredCol(value),
-          Db2Types.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, NullabilityTestRow> optionalCol() {
-      return new OptField<String, NullabilityTestRow>(
-          _path,
-          "OPTIONAL_COL",
-          NullabilityTestRow::optionalCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOptionalCol(value),
-          Db2Types.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, NullabilityTestRow> defaultedCol() {
-      return new OptField<String, NullabilityTestRow>(
-          _path,
-          "DEFAULTED_COL",
-          NullabilityTestRow::defaultedCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDefaultedCol(value),
-          Db2Types.varchar);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, NullabilityTestRow>> columns() {
-      return java.util.List.of(
-          this.id(), this.requiredCol(), this.optionalCol(), this.defaultedCol());
-    }
-    ;
-
-    @Override
-    public RelationStructure<NullabilityTestFields, NullabilityTestRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public NullabilityTestFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static NullabilityTestFields structure =
+      new NullabilityTestFields(java.util.Collections.emptyList());
+
+  public Field<Integer, NullabilityTestRow> id() {
+    return new Field<Integer, NullabilityTestRow>(
+        _path,
+        "ID",
+        NullabilityTestRow::id,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withId(value),
+        Db2Types.integer);
   }
-  ;
 
-  Field<Integer, NullabilityTestRow> id();
+  public Field<String, NullabilityTestRow> requiredCol() {
+    return new Field<String, NullabilityTestRow>(
+        _path,
+        "REQUIRED_COL",
+        NullabilityTestRow::requiredCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withRequiredCol(value),
+        Db2Types.varchar);
+  }
 
-  Field<String, NullabilityTestRow> requiredCol();
+  public OptField<String, NullabilityTestRow> optionalCol() {
+    return new OptField<String, NullabilityTestRow>(
+        _path,
+        "OPTIONAL_COL",
+        NullabilityTestRow::optionalCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOptionalCol(value),
+        Db2Types.varchar);
+  }
 
-  OptField<String, NullabilityTestRow> optionalCol();
-
-  OptField<String, NullabilityTestRow> defaultedCol();
+  public OptField<String, NullabilityTestRow> defaultedCol() {
+    return new OptField<String, NullabilityTestRow>(
+        _path,
+        "DEFAULTED_COL",
+        NullabilityTestRow::defaultedCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDefaultedCol(value),
+        Db2Types.varchar);
+  }
 
   @Override
-  List<FieldLike<?, NullabilityTestRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<NullabilityTestRow> rowParser() {
+  public List<FieldLike<?, NullabilityTestRow>> columns() {
+    return java.util.List.of(
+        this.id(), this.requiredCol(), this.optionalCol(), this.defaultedCol());
+  }
+
+  @Override
+  public RowParser<NullabilityTestRow> rowParser() {
     return NullabilityTestRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<NullabilityTestFields, NullabilityTestRow> withPaths(List<Path> _path) {
+    return new NullabilityTestFields(_path);
+  }
+
+  @Override
+  public SqlExpr<Integer> _1() {
+    return id();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return requiredCol();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return optionalCol();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return defaultedCol();
+  }
 }

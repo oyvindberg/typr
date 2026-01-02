@@ -67,5 +67,4 @@ public class ProductDetailsWithSalesSqlRepoImpl implements ProductDetailsWithSal
         .query(ProductDetailsWithSalesSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

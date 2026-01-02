@@ -11,7 +11,7 @@ import java.sql.Connection
 import anorm.SqlStringInterpolation
 
 class ConstraintsSqlRepoImpl extends ConstraintsSqlRepo {
-  override def apply(implicit c: Connection): List[ConstraintsSqlRow] = {
+  override def apply(using c: Connection): List[ConstraintsSqlRow] = {
     val sql =
       SQL"""with cols as (SELECT nc.nspname AS table_schema,
                            c.relname  AS table_name,

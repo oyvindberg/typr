@@ -25,27 +25,25 @@ import testdb.customer_status.CustomerStatusId;
 public class CustomersRepoImpl implements CustomersRepo {
   @Override
   public DeleteBuilder<CustomersFields, CustomersRow> delete() {
-    return DeleteBuilder.of("`customers`", CustomersFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`customers`", CustomersFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(CustomersId customerId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `customers` where `customer_id` = "),
-                Fragment.encode(CustomersId.pgType, customerId),
+                Fragment.encode(CustomersId.dbType, customerId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(CustomersId[] customerIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : customerIds) {
-      fragments.add(Fragment.encode(CustomersId.pgType, id));
+      fragments.add(Fragment.encode(CustomersId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -55,7 +53,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CustomersRow insert(CustomersRow unsaved, Connection c) {
@@ -75,11 +72,11 @@ public class CustomersRepoImpl implements CustomersRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar.opt(), unsaved.phone()),
             Fragment.lit(", "),
-            Fragment.encode(CustomerStatusId.pgType, unsaved.status()),
+            Fragment.encode(CustomerStatusId.dbType, unsaved.status()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text, unsaved.tier()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.preferences()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.preferences()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.set.opt(), unsaved.marketingFlags()),
             Fragment.lit(", "),
@@ -98,7 +95,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .updateReturning(CustomersRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CustomersRow insert(CustomersRowUnsaved unsaved, Connection c) {
@@ -134,7 +130,7 @@ public class CustomersRepoImpl implements CustomersRepo {
             value -> {
               columns.add(Fragment.lit("`status`"));
               values.add(
-                  interpolate(Fragment.encode(CustomerStatusId.pgType, value), Fragment.lit("")));
+                  interpolate(Fragment.encode(CustomerStatusId.dbType, value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -153,7 +149,7 @@ public class CustomersRepoImpl implements CustomersRepo {
             value -> {
               columns.add(Fragment.lit("`preferences`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(MariaTypes.json.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -220,14 +216,12 @@ public class CustomersRepoImpl implements CustomersRepo {
     ;
     return q.updateReturning(CustomersRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<CustomersFields, CustomersRow> select() {
     return SelectBuilder.of(
-        "`customers`", CustomersFields.structure(), CustomersRow._rowParser, Dialect.MARIADB);
+        "`customers`", CustomersFields.structure, CustomersRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<CustomersRow> selectAll(Connection c) {
@@ -240,7 +234,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .query(CustomersRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<CustomersRow> selectById(CustomersId customerId, Connection c) {
@@ -251,18 +244,17 @@ public class CustomersRepoImpl implements CustomersRepo {
                     + " `created_at`, `updated_at`, `last_login_at`\n"
                     + "from `customers`\n"
                     + "where `customer_id` = "),
-            Fragment.encode(CustomersId.pgType, customerId),
+            Fragment.encode(CustomersId.dbType, customerId),
             Fragment.lit(""))
         .query(CustomersRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<CustomersRow> selectByIds(CustomersId[] customerIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : customerIds) {
-      fragments.add(Fragment.encode(CustomersId.pgType, id));
+      fragments.add(Fragment.encode(CustomersId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -276,7 +268,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .query(CustomersRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<CustomersId, CustomersRow> selectByIdsTracked(
@@ -285,7 +276,6 @@ public class CustomersRepoImpl implements CustomersRepo {
     selectByIds(customerIds, c).forEach(row -> ret.put(row.customerId(), row));
     return ret;
   }
-  ;
 
   @Override
   public Optional<CustomersRow> selectByUniqueEmail(String email, Connection c) {
@@ -301,14 +291,12 @@ public class CustomersRepoImpl implements CustomersRepo {
         .query(CustomersRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<CustomersFields, CustomersRow> update() {
     return UpdateBuilder.of(
-        "`customers`", CustomersFields.structure(), CustomersRow._rowParser, Dialect.MARIADB);
+        "`customers`", CustomersFields.structure, CustomersRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(CustomersRow row, Connection c) {
@@ -326,11 +314,11 @@ public class CustomersRepoImpl implements CustomersRepo {
                 Fragment.lit(",\n`phone` = "),
                 Fragment.encode(MariaTypes.varchar.opt(), row.phone()),
                 Fragment.lit(",\n`status` = "),
-                Fragment.encode(CustomerStatusId.pgType, row.status()),
+                Fragment.encode(CustomerStatusId.dbType, row.status()),
                 Fragment.lit(",\n`tier` = "),
                 Fragment.encode(MariaTypes.text, row.tier()),
                 Fragment.lit(",\n`preferences` = "),
-                Fragment.encode(MariaTypes.longtext.opt(), row.preferences()),
+                Fragment.encode(MariaTypes.json.opt(), row.preferences()),
                 Fragment.lit(",\n`marketing_flags` = "),
                 Fragment.encode(MariaTypes.set.opt(), row.marketingFlags()),
                 Fragment.lit(",\n`notes` = "),
@@ -342,22 +330,23 @@ public class CustomersRepoImpl implements CustomersRepo {
                 Fragment.lit(",\n`last_login_at` = "),
                 Fragment.encode(MariaTypes.datetime.opt(), row.lastLoginAt()),
                 Fragment.lit("\nwhere `customer_id` = "),
-                Fragment.encode(CustomersId.pgType, customerId),
+                Fragment.encode(CustomersId.dbType, customerId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public CustomersRow upsert(CustomersRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `customers`(`email`, `password_hash`, `first_name`, `last_name`,"
-                    + " `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`,"
-                    + " `created_at`, `updated_at`, `last_login_at`)\n"
+                "INSERT INTO `customers`(`customer_id`, `email`, `password_hash`, `first_name`,"
+                    + " `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`,"
+                    + " `notes`, `created_at`, `updated_at`, `last_login_at`)\n"
                     + "VALUES ("),
+            Fragment.encode(CustomersId.dbType, unsaved.customerId()),
+            Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.email()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.binary, unsaved.passwordHash()),
@@ -368,11 +357,11 @@ public class CustomersRepoImpl implements CustomersRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar.opt(), unsaved.phone()),
             Fragment.lit(", "),
-            Fragment.encode(CustomerStatusId.pgType, unsaved.status()),
+            Fragment.encode(CustomerStatusId.dbType, unsaved.status()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text, unsaved.tier()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.preferences()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.preferences()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.set.opt(), unsaved.marketingFlags()),
             Fragment.lit(", "),
@@ -404,7 +393,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .updateReturning(CustomersRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<CustomersRow> upsertBatch(Iterator<CustomersRow> unsaved, Connection c) {
@@ -433,5 +421,4 @@ public class CustomersRepoImpl implements CustomersRepo {
         .updateReturningEach(CustomersRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

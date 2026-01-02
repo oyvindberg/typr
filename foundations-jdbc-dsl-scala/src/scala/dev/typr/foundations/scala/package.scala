@@ -7,11 +7,9 @@ package object scala {
   type GroupedBuilder[Fields, Rows] = dev.typr.foundations.dsl.GroupedBuilder[Fields, Rows]
   type SortOrder[T] = dev.typr.foundations.dsl.SortOrder[T]
   type Path = dev.typr.foundations.dsl.Path
+  type FieldsBase[Row] = dev.typr.foundations.dsl.FieldsBase[Row]
   type FieldsExpr[Row] = dev.typr.foundations.dsl.FieldsExpr[Row]
   type Bijection[Wrapper, Underlying] = dev.typr.foundations.dsl.Bijection[Wrapper, Underlying]
-
-  // SqlExpr type alias (the object is defined separately in SqlExpr.scala)
-  type SqlExpr[T] = dev.typr.foundations.dsl.SqlExpr[T]
 
   // Type aliases for dev.typr.foundations types
   type PgType[A] = dev.typr.foundations.PgType[A]
@@ -79,23 +77,5 @@ package object scala {
     val ORACLE: dev.typr.foundations.dsl.Dialect = dev.typr.foundations.dsl.Dialect.ORACLE
     val SQLSERVER: dev.typr.foundations.dsl.Dialect = dev.typr.foundations.dsl.Dialect.SQLSERVER
     val DB2: dev.typr.foundations.dsl.Dialect = dev.typr.foundations.dsl.Dialect.DB2
-  }
-
-  // Bijection companion object with factory methods
-  object Bijection {
-    def apply[T, TT](unwrap: T => TT)(wrap: TT => T): dev.typr.foundations.dsl.Bijection[T, TT] =
-      dev.typr.foundations.dsl.Bijection.of[T, TT](t => unwrap(t), tt => wrap(tt))
-
-    def of[T, TT](unwrap: T => TT, wrap: TT => T): dev.typr.foundations.dsl.Bijection[T, TT] =
-      dev.typr.foundations.dsl.Bijection.of[T, TT](t => unwrap(t), tt => wrap(tt))
-
-    def identity[T](): dev.typr.foundations.dsl.Bijection[T, T] =
-      dev.typr.foundations.dsl.Bijection.identity[T]()
-
-    def asString: dev.typr.foundations.dsl.Bijection[String, String] =
-      dev.typr.foundations.dsl.Bijection.asString()
-
-    def asBool: dev.typr.foundations.dsl.Bijection[java.lang.Boolean, java.lang.Boolean] =
-      dev.typr.foundations.dsl.Bijection.asBool()
   }
 }

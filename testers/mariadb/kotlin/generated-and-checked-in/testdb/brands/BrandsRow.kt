@@ -7,6 +7,7 @@ package testdb.brands
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -41,7 +42,21 @@ data class BrandsRow(
     * Default: 1
     */
   @JsonProperty("is_active") val isActive: Boolean
-) {
+) : Tuple7<BrandsId, String, String, ByteArray?, String?, String?, Boolean> {
+  override fun _1(): BrandsId = brandId
+
+  override fun _2(): String = name
+
+  override fun _3(): String = slug
+
+  override fun _4(): ByteArray? = logoBlob
+
+  override fun _5(): String? = websiteUrl
+
+  override fun _6(): String? = countryOfOrigin
+
+  override fun _7(): Boolean = isActive
+
   fun id(): BrandsId = brandId
 
   fun toUnsavedRow(
@@ -52,6 +67,6 @@ data class BrandsRow(
   ): BrandsRowUnsaved = BrandsRowUnsaved(name, slug, logoBlob, websiteUrl, countryOfOrigin, isActive)
 
   companion object {
-    val _rowParser: RowParser<BrandsRow> = RowParsers.of(BrandsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.mediumblob.nullable(), MariaTypes.varchar.nullable(), MariaTypes.char_.nullable(), KotlinDbTypes.MariaTypes.bool, { t0, t1, t2, t3, t4, t5, t6 -> BrandsRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.brandId, row.name, row.slug, row.logoBlob, row.websiteUrl, row.countryOfOrigin, row.isActive) })
+    val _rowParser: RowParser<BrandsRow> = RowParsers.of(BrandsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.mediumblob.nullable(), MariaTypes.varchar.nullable(), MariaTypes.char_.nullable(), KotlinDbTypes.MariaTypes.bool, { t0, t1, t2, t3, t4, t5, t6 -> BrandsRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.brandId, row.name, row.slug, row.logoBlob, row.websiteUrl, row.countryOfOrigin, row.isActive) })
   }
 }

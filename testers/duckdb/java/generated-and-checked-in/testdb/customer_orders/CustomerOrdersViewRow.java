@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple7;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -21,7 +22,15 @@ public record CustomerOrdersViewRow(
     @JsonProperty("order_id") Optional<Integer> orderId,
     @JsonProperty("order_date") Optional<LocalDate> orderDate,
     @JsonProperty("total_amount") Optional<BigDecimal> totalAmount,
-    Optional<String> status) {
+    Optional<String> status)
+    implements Tuple7<
+        Optional<Integer>,
+        Optional<String>,
+        Optional<String>,
+        Optional<Integer>,
+        Optional<LocalDate>,
+        Optional<BigDecimal>,
+        Optional<String>> {
   public CustomerOrdersViewRow withCustomerId(Optional<Integer> customerId) {
     return new CustomerOrdersViewRow(
         customerId, customerName, email, orderId, orderDate, totalAmount, status);
@@ -84,5 +93,47 @@ public record CustomerOrdersViewRow(
                 row.totalAmount(),
                 row.status()
               });
+  ;
+
+  @Override
+  public Optional<Integer> _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public Optional<String> _2() {
+    return customerName;
+  }
+  ;
+
+  @Override
+  public Optional<String> _3() {
+    return email;
+  }
+  ;
+
+  @Override
+  public Optional<Integer> _4() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDate> _5() {
+    return orderDate;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _6() {
+    return totalAmount;
+  }
+  ;
+
+  @Override
+  public Optional<String> _7() {
+    return status;
+  }
   ;
 }

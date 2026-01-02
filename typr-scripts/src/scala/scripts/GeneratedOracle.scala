@@ -1,6 +1,6 @@
 package scripts
 
-import bleep.{FileWatching, cli}
+import bleep.FileWatching
 import ryddig.{Formatter, LogLevel, LogPatterns, Loggers}
 import typr.*
 import typr.internal.codegen.*
@@ -42,7 +42,7 @@ object GeneratedOracle {
           username = "typr",
           password = "typr_password"
         )
-        val scriptsPath = buildDir.resolve("oracle_sql")
+        val scriptsPath = buildDir.resolve("sql-scripts/oracle")
         val selector = Selector.All
         val typoLogger = TypoLogger.Console
         val externalTools = ExternalTools.init(typoLogger, ExternalToolsConfig.default)
@@ -72,10 +72,7 @@ object GeneratedOracle {
               lang = lang,
               dbLib = Some(dbLib), // Use Typo's Java DSL
               jsonLibs = List(jsonLib), // Jackson for JSON serialization
-              generateMockRepos = lang match {
-                case LangJava => Selector.All // Only Java has full mock support for Oracle
-                case _        => Selector.None // Scala/Kotlin DSL wrappers for Oracle not yet implemented
-              },
+              generateMockRepos = Selector.All,
               enablePrimaryKeyType = Selector.All, // Generate type-safe ID types
               enableTestInserts = Selector.All, // Generate test data factories
               enableDsl = true // Generate type-safe SQL DSL
@@ -95,13 +92,7 @@ object GeneratedOracle {
 
             logger.warn(s"Generated ${changedFiles.size} files for $projectPath")
 
-            cli(
-              "add files to git",
-              buildDir,
-              List("git", "add", "-f", targetSources.toString),
-              logger = logger,
-              cli.Out.Raw
-            )
+            GitOps.gitAdd("add files to git", buildDir, List(targetSources.toString), logger)
           }
         }
 

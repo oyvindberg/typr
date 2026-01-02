@@ -21,29 +21,29 @@ import typr.generated.Text
 case class Flag(value: Boolean)
 
 object Flag {
-  implicit lazy val arrayColumn: Column[Array[Flag]] = Column.columnToArray(column, implicitly)
+  given arrayColumn: Column[Array[Flag]] = Column.columnToArray(using column, summon)
 
-  implicit lazy val arrayToStatement: ToStatement[Array[Flag]] = typr.generated.BooleanArrayToStatement.contramap(_.map(_.value))
+  given arrayToStatement: ToStatement[Array[Flag]] = typr.generated.BooleanArrayToStatement.contramap(_.map(_.value))
 
-  implicit lazy val column: Column[Flag] = Column.columnToBoolean.map(Flag.apply)
+  given column: Column[Flag] = Column.columnToBoolean.map(Flag.apply)
 
-  implicit lazy val parameterMetadata: ParameterMetaData[Flag] = {
+  given parameterMetadata: ParameterMetaData[Flag] = {
     new ParameterMetaData[Flag] {
       override def sqlType: String = """"public"."Flag""""
       override def jdbcType: Int = Types.OTHER
     }
   }
 
-  implicit lazy val pgText: Text[Flag] = {
+  given pgText: Text[Flag] = {
     new Text[Flag] {
       override def unsafeEncode(v: Flag, sb: StringBuilder): Unit = Text.booleanInstance.unsafeEncode(v.value, sb)
       override def unsafeArrayEncode(v: Flag, sb: StringBuilder): Unit = Text.booleanInstance.unsafeArrayEncode(v.value, sb)
     }
   }
 
-  implicit lazy val reads: Reads[Flag] = Reads.BooleanReads.map(Flag.apply)
+  given reads: Reads[Flag] = Reads.BooleanReads.map(Flag.apply)
 
-  implicit lazy val toStatement: ToStatement[Flag] = ToStatement.booleanToStatement.contramap(_.value)
+  given toStatement: ToStatement[Flag] = ToStatement.booleanToStatement.contramap(_.value)
 
-  implicit lazy val writes: Writes[Flag] = Writes.BooleanWrites.contramap(_.value)
+  given writes: Writes[Flag] = Writes.BooleanWrites.contramap(_.value)
 }

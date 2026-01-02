@@ -7,6 +7,7 @@ package testdb.customer_orders_summary
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -31,7 +32,21 @@ case class CustomerOrdersSummarySqlRow(
   @JsonProperty("avg_order_amount") avgOrderAmount: Option[BigDecimal],
   /** Points to [[testdb.orders.OrdersRow.orderDate]] */
   @JsonProperty("last_order_date") lastOrderDate: Option[LocalDateTime]
-)
+) extends Tuple7[CustomersId, String, String, Option[OrdersId], Option[BigDecimal], Option[BigDecimal], Option[LocalDateTime]] {
+  override def `_1`: CustomersId = customerId
+
+  override def `_2`: String = customerName
+
+  override def `_3`: String = customerEmail
+
+  override def `_4`: Option[OrdersId] = orderCount
+
+  override def `_5`: Option[BigDecimal] = totalSpent
+
+  override def `_6`: Option[BigDecimal] = avgOrderAmount
+
+  override def `_7`: Option[LocalDateTime] = lastOrderDate
+}
 
 object CustomerOrdersSummarySqlRow {
   val `_rowParser`: RowParser[CustomerOrdersSummarySqlRow] = RowParsers.of(CustomersId.sqlServerType, SqlServerTypes.nvarchar, SqlServerTypes.nvarchar, OrdersId.sqlServerType.nullable, ScalaDbTypes.SqlServerTypes.money.nullable, ScalaDbTypes.SqlServerTypes.money.nullable, SqlServerTypes.datetime2.nullable)(CustomerOrdersSummarySqlRow.apply)(row => Array[Any](row.customerId, row.customerName, row.customerEmail, row.orderCount, row.totalSpent, row.avgOrderAmount, row.lastOrderDate))

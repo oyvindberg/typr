@@ -27,32 +27,29 @@ public class ShiftRepoImpl implements ShiftRepo {
   @Override
   public DeleteBuilder<ShiftFields, ShiftRow> delete() {
     return DeleteBuilder.of(
-        "\"humanresources\".\"shift\"", ShiftFields.structure(), Dialect.POSTGRESQL);
+        "\"humanresources\".\"shift\"", ShiftFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(ShiftId shiftid, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"humanresources\".\"shift\" where \"shiftid\" = "),
-                Fragment.encode(ShiftId.pgType, shiftid),
+                Fragment.encode(ShiftId.dbType, shiftid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(ShiftId[] shiftids, Connection c) {
     return interpolate(
             Fragment.lit("delete\nfrom \"humanresources\".\"shift\"\nwhere \"shiftid\" = ANY("),
-            Fragment.encode(ShiftId.pgTypeArray, shiftids),
+            Fragment.encode(ShiftId.dbTypeArray, shiftids),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ShiftRow insert(ShiftRow unsaved, Connection c) {
@@ -61,9 +58,9 @@ public class ShiftRepoImpl implements ShiftRepo {
                 "insert into \"humanresources\".\"shift\"(\"shiftid\", \"name\", \"starttime\","
                     + " \"endtime\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(ShiftId.pgType, unsaved.shiftid()),
+            Fragment.encode(ShiftId.dbType, unsaved.shiftid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.time, unsaved.starttime()),
             Fragment.lit("::time, "),
@@ -77,7 +74,6 @@ public class ShiftRepoImpl implements ShiftRepo {
         .updateReturning(ShiftRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ShiftRow insert(ShiftRowUnsaved unsaved, Connection c) {
@@ -87,7 +83,7 @@ public class ShiftRepoImpl implements ShiftRepo {
     ;
     columns.add(Fragment.lit("\"name\""));
     values.add(
-        interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
+        interpolate(Fragment.encode(Name.dbType, unsaved.name()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"starttime\""));
     values.add(
         interpolate(Fragment.encode(PgTypes.time, unsaved.starttime()), Fragment.lit("::time")));
@@ -101,7 +97,7 @@ public class ShiftRepoImpl implements ShiftRepo {
             value -> {
               columns.add(Fragment.lit("\"shiftid\""));
               values.add(
-                  interpolate(Fragment.encode(ShiftId.pgType, value), Fragment.lit("::int4")));
+                  interpolate(Fragment.encode(ShiftId.dbType, value), Fragment.lit("::int4")));
             });
     ;
     unsaved
@@ -128,7 +124,6 @@ public class ShiftRepoImpl implements ShiftRepo {
     ;
     return q.updateReturning(ShiftRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<ShiftRow> unsaved, Integer batchSize, Connection c) {
@@ -140,7 +135,6 @@ public class ShiftRepoImpl implements ShiftRepo {
         c,
         ShiftRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -154,17 +148,15 @@ public class ShiftRepoImpl implements ShiftRepo {
         c,
         ShiftRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<ShiftFields, ShiftRow> select() {
     return SelectBuilder.of(
         "\"humanresources\".\"shift\"",
-        ShiftFields.structure(),
+        ShiftFields.structure,
         ShiftRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<ShiftRow> selectAll(Connection c) {
@@ -175,7 +167,6 @@ public class ShiftRepoImpl implements ShiftRepo {
         .query(ShiftRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<ShiftRow> selectById(ShiftId shiftid, Connection c) {
@@ -184,12 +175,11 @@ public class ShiftRepoImpl implements ShiftRepo {
                 "select \"shiftid\", \"name\", \"starttime\", \"endtime\", \"modifieddate\"\n"
                     + "from \"humanresources\".\"shift\"\n"
                     + "where \"shiftid\" = "),
-            Fragment.encode(ShiftId.pgType, shiftid),
+            Fragment.encode(ShiftId.dbType, shiftid),
             Fragment.lit(""))
         .query(ShiftRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ShiftRow> selectByIds(ShiftId[] shiftids, Connection c) {
@@ -198,12 +188,11 @@ public class ShiftRepoImpl implements ShiftRepo {
                 "select \"shiftid\", \"name\", \"starttime\", \"endtime\", \"modifieddate\"\n"
                     + "from \"humanresources\".\"shift\"\n"
                     + "where \"shiftid\" = ANY("),
-            Fragment.encode(ShiftId.pgTypeArray, shiftids),
+            Fragment.encode(ShiftId.dbTypeArray, shiftids),
             Fragment.lit(")"))
         .query(ShiftRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<ShiftId, ShiftRow> selectByIdsTracked(ShiftId[] shiftids, Connection c) {
@@ -211,17 +200,15 @@ public class ShiftRepoImpl implements ShiftRepo {
     selectByIds(shiftids, c).forEach(row -> ret.put(row.shiftid(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<ShiftFields, ShiftRow> update() {
     return UpdateBuilder.of(
         "\"humanresources\".\"shift\"",
-        ShiftFields.structure(),
+        ShiftFields.structure,
         ShiftRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(ShiftRow row, Connection c) {
@@ -229,7 +216,7 @@ public class ShiftRepoImpl implements ShiftRepo {
     ;
     return interpolate(
                 Fragment.lit("update \"humanresources\".\"shift\"\nset \"name\" = "),
-                Fragment.encode(Name.pgType, row.name()),
+                Fragment.encode(Name.dbType, row.name()),
                 Fragment.lit("::varchar,\n\"starttime\" = "),
                 Fragment.encode(PgTypes.time, row.starttime()),
                 Fragment.lit("::time,\n\"endtime\" = "),
@@ -237,13 +224,12 @@ public class ShiftRepoImpl implements ShiftRepo {
                 Fragment.lit("::time,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"shiftid\" = "),
-                Fragment.encode(ShiftId.pgType, shiftid),
+                Fragment.encode(ShiftId.dbType, shiftid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public ShiftRow upsert(ShiftRow unsaved, Connection c) {
@@ -252,9 +238,9 @@ public class ShiftRepoImpl implements ShiftRepo {
                 "insert into \"humanresources\".\"shift\"(\"shiftid\", \"name\", \"starttime\","
                     + " \"endtime\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(ShiftId.pgType, unsaved.shiftid()),
+            Fragment.encode(ShiftId.dbType, unsaved.shiftid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
             Fragment.encode(PgTypes.time, unsaved.starttime()),
             Fragment.lit("::time, "),
@@ -274,7 +260,6 @@ public class ShiftRepoImpl implements ShiftRepo {
         .updateReturning(ShiftRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ShiftRow> upsertBatch(Iterator<ShiftRow> unsaved, Connection c) {
@@ -294,7 +279,6 @@ public class ShiftRepoImpl implements ShiftRepo {
         .updateManyReturning(ShiftRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -328,5 +312,4 @@ public class ShiftRepoImpl implements ShiftRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

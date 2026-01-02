@@ -45,7 +45,7 @@ public record ShiftRepoMock(
   @Override
   public DeleteBuilder<ShiftFields, ShiftRow> delete() {
     return new DeleteBuilderMock<>(
-        ShiftFields.structure(),
+        ShiftFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.shiftid(),
@@ -123,7 +123,7 @@ public record ShiftRepoMock(
   @Override
   public SelectBuilder<ShiftFields, ShiftRow> select() {
     return new SelectBuilderMock<>(
-        ShiftFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        ShiftFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -164,7 +164,7 @@ public record ShiftRepoMock(
   @Override
   public UpdateBuilder<ShiftFields, ShiftRow> update() {
     return new UpdateBuilderMock<>(
-        ShiftFields.structure(),
+        ShiftFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

@@ -824,11 +824,11 @@ case class LangScala(dialect: Dialect, typeSupport: TypeSupport, dsl: DslQualifi
 
 object LangScala {
 
-  /** LangScala using the Java DSL (dev.typr.foundations.dsl) - for DbLibTypo with Java types */
+  /** LangScala using the Java DSL (dev.typr.foundations.dsl) - for DbLibFoundations with Java types */
   def javaDsl(dialect: Dialect, typeSupport: TypeSupport): LangScala =
     LangScala(dialect, typeSupport, DslQualifiedNames.Java)
 
-  /** LangScala using the Scala DSL (dev.typr.foundations.scala) - for DbLibTypo with Scala types */
+  /** LangScala using the Scala DSL (dev.typr.foundations.scala) - for DbLibFoundations with Scala types */
   def scalaDsl(dialect: Dialect, typeSupport: TypeSupport): LangScala =
     LangScala(dialect, typeSupport, DslQualifiedNames.Scala)
 

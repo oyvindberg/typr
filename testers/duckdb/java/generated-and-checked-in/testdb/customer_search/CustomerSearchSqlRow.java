@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import testdb.Priority;
@@ -25,7 +26,8 @@ public record CustomerSearchSqlRow(
     /** Points to {@link testdb.customers.CustomersRow#createdAt()} */
     @JsonProperty("created_at") LocalDateTime createdAt,
     /** Points to {@link testdb.customers.CustomersRow#priority()} */
-    Optional<Priority> priority) {
+    Optional<Priority> priority)
+    implements Tuple5<CustomersId, String, Optional<String>, LocalDateTime, Optional<Priority>> {
   /** Points to {@link testdb.customers.CustomersRow#customerId()} */
   public CustomerSearchSqlRow withCustomerId(CustomersId customerId) {
     return new CustomerSearchSqlRow(customerId, name, email, createdAt, priority);
@@ -68,5 +70,35 @@ public record CustomerSearchSqlRow(
               new Object[] {
                 row.customerId(), row.name(), row.email(), row.createdAt(), row.priority()
               });
+  ;
+
+  @Override
+  public CustomersId _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public Optional<String> _3() {
+    return email;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _4() {
+    return createdAt;
+  }
+  ;
+
+  @Override
+  public Optional<Priority> _5() {
+    return priority;
+  }
   ;
 }

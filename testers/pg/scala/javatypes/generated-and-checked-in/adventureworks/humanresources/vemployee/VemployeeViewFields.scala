@@ -12,278 +12,275 @@ import adventureworks.userdefined.FirstName
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.data.Xml
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
+import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr18
 import java.util.Optional
 
-trait VemployeeViewFields extends FieldsExpr0[VemployeeViewRow] {
-  def businessentityid: Field[BusinessentityId, VemployeeViewRow]
+class VemployeeViewFields(val `_path`: java.util.List[Path]) extends TupleExpr18[BusinessentityId, String, /* user-picked */ FirstName, Name, Name, String, String, Phone, Name, String, Integer, String, String, String, Name, String, Name, Xml] with RelationStructure[VemployeeViewFields, VemployeeViewRow]  with FieldsBase[VemployeeViewRow] {
+  def businessentityid: Field[BusinessentityId, VemployeeViewRow] = {
+    new Field[BusinessentityId, VemployeeViewRow](
+      _path,
+      "businessentityid",
+      _.businessentityid,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(businessentityid = value),
+      BusinessentityId.dbType
+    )
+  }
 
-  def title: Field[String, VemployeeViewRow]
+  def title: Field[String, VemployeeViewRow] = {
+    new Field[String, VemployeeViewRow](
+      _path,
+      "title",
+      _.title,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(title = value),
+      PgTypes.text
+    )
+  }
 
-  def firstname: Field[/* user-picked */ FirstName, VemployeeViewRow]
+  def firstname: Field[/* user-picked */ FirstName, VemployeeViewRow] = {
+    new Field[/* user-picked */ FirstName, VemployeeViewRow](
+      _path,
+      "firstname",
+      _.firstname,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(firstname = value),
+      FirstName.dbType
+    )
+  }
 
-  def middlename: Field[Name, VemployeeViewRow]
+  def middlename: Field[Name, VemployeeViewRow] = {
+    new Field[Name, VemployeeViewRow](
+      _path,
+      "middlename",
+      _.middlename,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(middlename = value),
+      Name.dbType
+    )
+  }
 
-  def lastname: Field[Name, VemployeeViewRow]
+  def lastname: Field[Name, VemployeeViewRow] = {
+    new Field[Name, VemployeeViewRow](
+      _path,
+      "lastname",
+      _.lastname,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(lastname = value),
+      Name.dbType
+    )
+  }
 
-  def suffix: Field[String, VemployeeViewRow]
+  def suffix: Field[String, VemployeeViewRow] = {
+    new Field[String, VemployeeViewRow](
+      _path,
+      "suffix",
+      _.suffix,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(suffix = value),
+      PgTypes.text
+    )
+  }
 
-  def jobtitle: Field[String, VemployeeViewRow]
+  def jobtitle: Field[String, VemployeeViewRow] = {
+    new Field[String, VemployeeViewRow](
+      _path,
+      "jobtitle",
+      _.jobtitle,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(jobtitle = value),
+      PgTypes.text
+    )
+  }
 
-  def phonenumber: Field[Phone, VemployeeViewRow]
+  def phonenumber: Field[Phone, VemployeeViewRow] = {
+    new Field[Phone, VemployeeViewRow](
+      _path,
+      "phonenumber",
+      _.phonenumber,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(phonenumber = value),
+      Phone.dbType
+    )
+  }
 
-  def phonenumbertype: Field[Name, VemployeeViewRow]
+  def phonenumbertype: Field[Name, VemployeeViewRow] = {
+    new Field[Name, VemployeeViewRow](
+      _path,
+      "phonenumbertype",
+      _.phonenumbertype,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(phonenumbertype = value),
+      Name.dbType
+    )
+  }
 
-  def emailaddress: Field[String, VemployeeViewRow]
+  def emailaddress: Field[String, VemployeeViewRow] = {
+    new Field[String, VemployeeViewRow](
+      _path,
+      "emailaddress",
+      _.emailaddress,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(emailaddress = value),
+      PgTypes.text
+    )
+  }
 
-  def emailpromotion: Field[Integer, VemployeeViewRow]
+  def emailpromotion: Field[Integer, VemployeeViewRow] = {
+    new Field[Integer, VemployeeViewRow](
+      _path,
+      "emailpromotion",
+      _.emailpromotion,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(emailpromotion = value),
+      PgTypes.int4
+    )
+  }
 
-  def addressline1: Field[String, VemployeeViewRow]
+  def addressline1: Field[String, VemployeeViewRow] = {
+    new Field[String, VemployeeViewRow](
+      _path,
+      "addressline1",
+      _.addressline1,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(addressline1 = value),
+      PgTypes.text
+    )
+  }
 
-  def addressline2: Field[String, VemployeeViewRow]
+  def addressline2: Field[String, VemployeeViewRow] = {
+    new Field[String, VemployeeViewRow](
+      _path,
+      "addressline2",
+      _.addressline2,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(addressline2 = value),
+      PgTypes.text
+    )
+  }
 
-  def city: Field[String, VemployeeViewRow]
+  def city: Field[String, VemployeeViewRow] = {
+    new Field[String, VemployeeViewRow](
+      _path,
+      "city",
+      _.city,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(city = value),
+      PgTypes.text
+    )
+  }
 
-  def stateprovincename: Field[Name, VemployeeViewRow]
+  def stateprovincename: Field[Name, VemployeeViewRow] = {
+    new Field[Name, VemployeeViewRow](
+      _path,
+      "stateprovincename",
+      _.stateprovincename,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(stateprovincename = value),
+      Name.dbType
+    )
+  }
 
-  def postalcode: Field[String, VemployeeViewRow]
+  def postalcode: Field[String, VemployeeViewRow] = {
+    new Field[String, VemployeeViewRow](
+      _path,
+      "postalcode",
+      _.postalcode,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(postalcode = value),
+      PgTypes.text
+    )
+  }
 
-  def countryregionname: Field[Name, VemployeeViewRow]
+  def countryregionname: Field[Name, VemployeeViewRow] = {
+    new Field[Name, VemployeeViewRow](
+      _path,
+      "countryregionname",
+      _.countryregionname,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(countryregionname = value),
+      Name.dbType
+    )
+  }
 
-  def additionalcontactinfo: Field[Xml, VemployeeViewRow]
+  def additionalcontactinfo: Field[Xml, VemployeeViewRow] = {
+    new Field[Xml, VemployeeViewRow](
+      _path,
+      "additionalcontactinfo",
+      _.additionalcontactinfo,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(additionalcontactinfo = value),
+      PgTypes.xml
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, VemployeeViewRow]]
+  override def columns: java.util.List[FieldLike[?, VemployeeViewRow]] = java.util.List.of(this.businessentityid, this.title, this.firstname, this.middlename, this.lastname, this.suffix, this.jobtitle, this.phonenumber, this.phonenumbertype, this.emailaddress, this.emailpromotion, this.addressline1, this.addressline2, this.city, this.stateprovincename, this.postalcode, this.countryregionname, this.additionalcontactinfo)
 
   override def rowParser: RowParser[VemployeeViewRow] = VemployeeViewRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[VemployeeViewFields, VemployeeViewRow] = new VemployeeViewFields(`_path`)
+
+  override def `_1`: SqlExpr[BusinessentityId] = businessentityid
+
+  override def `_2`: SqlExpr[String] = title
+
+  override def `_3`: SqlExpr[/* user-picked */ FirstName] = firstname
+
+  override def `_4`: SqlExpr[Name] = middlename
+
+  override def `_5`: SqlExpr[Name] = lastname
+
+  override def `_6`: SqlExpr[String] = suffix
+
+  override def `_7`: SqlExpr[String] = jobtitle
+
+  override def `_8`: SqlExpr[Phone] = phonenumber
+
+  override def `_9`: SqlExpr[Name] = phonenumbertype
+
+  override def `_10`: SqlExpr[String] = emailaddress
+
+  override def `_11`: SqlExpr[Integer] = emailpromotion
+
+  override def `_12`: SqlExpr[String] = addressline1
+
+  override def `_13`: SqlExpr[String] = addressline2
+
+  override def `_14`: SqlExpr[String] = city
+
+  override def `_15`: SqlExpr[Name] = stateprovincename
+
+  override def `_16`: SqlExpr[String] = postalcode
+
+  override def `_17`: SqlExpr[Name] = countryregionname
+
+  override def `_18`: SqlExpr[Xml] = additionalcontactinfo
 }
 
 object VemployeeViewFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends VemployeeViewFields with RelationStructure[VemployeeViewFields, VemployeeViewRow] {
-
-    override def businessentityid: Field[BusinessentityId, VemployeeViewRow] = {
-      new Field[BusinessentityId, VemployeeViewRow](
-        _path,
-        "businessentityid",
-        _.businessentityid,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(businessentityid = value),
-        BusinessentityId.pgType
-      )
-    }
-
-    override def title: Field[String, VemployeeViewRow] = {
-      new Field[String, VemployeeViewRow](
-        _path,
-        "title",
-        _.title,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(title = value),
-        PgTypes.text
-      )
-    }
-
-    override def firstname: Field[/* user-picked */ FirstName, VemployeeViewRow] = {
-      new Field[/* user-picked */ FirstName, VemployeeViewRow](
-        _path,
-        "firstname",
-        _.firstname,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(firstname = value),
-        FirstName.pgType
-      )
-    }
-
-    override def middlename: Field[Name, VemployeeViewRow] = {
-      new Field[Name, VemployeeViewRow](
-        _path,
-        "middlename",
-        _.middlename,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(middlename = value),
-        Name.pgType
-      )
-    }
-
-    override def lastname: Field[Name, VemployeeViewRow] = {
-      new Field[Name, VemployeeViewRow](
-        _path,
-        "lastname",
-        _.lastname,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(lastname = value),
-        Name.pgType
-      )
-    }
-
-    override def suffix: Field[String, VemployeeViewRow] = {
-      new Field[String, VemployeeViewRow](
-        _path,
-        "suffix",
-        _.suffix,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(suffix = value),
-        PgTypes.text
-      )
-    }
-
-    override def jobtitle: Field[String, VemployeeViewRow] = {
-      new Field[String, VemployeeViewRow](
-        _path,
-        "jobtitle",
-        _.jobtitle,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(jobtitle = value),
-        PgTypes.text
-      )
-    }
-
-    override def phonenumber: Field[Phone, VemployeeViewRow] = {
-      new Field[Phone, VemployeeViewRow](
-        _path,
-        "phonenumber",
-        _.phonenumber,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(phonenumber = value),
-        Phone.pgType
-      )
-    }
-
-    override def phonenumbertype: Field[Name, VemployeeViewRow] = {
-      new Field[Name, VemployeeViewRow](
-        _path,
-        "phonenumbertype",
-        _.phonenumbertype,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(phonenumbertype = value),
-        Name.pgType
-      )
-    }
-
-    override def emailaddress: Field[String, VemployeeViewRow] = {
-      new Field[String, VemployeeViewRow](
-        _path,
-        "emailaddress",
-        _.emailaddress,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(emailaddress = value),
-        PgTypes.text
-      )
-    }
-
-    override def emailpromotion: Field[Integer, VemployeeViewRow] = {
-      new Field[Integer, VemployeeViewRow](
-        _path,
-        "emailpromotion",
-        _.emailpromotion,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(emailpromotion = value),
-        PgTypes.int4
-      )
-    }
-
-    override def addressline1: Field[String, VemployeeViewRow] = {
-      new Field[String, VemployeeViewRow](
-        _path,
-        "addressline1",
-        _.addressline1,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(addressline1 = value),
-        PgTypes.text
-      )
-    }
-
-    override def addressline2: Field[String, VemployeeViewRow] = {
-      new Field[String, VemployeeViewRow](
-        _path,
-        "addressline2",
-        _.addressline2,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(addressline2 = value),
-        PgTypes.text
-      )
-    }
-
-    override def city: Field[String, VemployeeViewRow] = {
-      new Field[String, VemployeeViewRow](
-        _path,
-        "city",
-        _.city,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(city = value),
-        PgTypes.text
-      )
-    }
-
-    override def stateprovincename: Field[Name, VemployeeViewRow] = {
-      new Field[Name, VemployeeViewRow](
-        _path,
-        "stateprovincename",
-        _.stateprovincename,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(stateprovincename = value),
-        Name.pgType
-      )
-    }
-
-    override def postalcode: Field[String, VemployeeViewRow] = {
-      new Field[String, VemployeeViewRow](
-        _path,
-        "postalcode",
-        _.postalcode,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(postalcode = value),
-        PgTypes.text
-      )
-    }
-
-    override def countryregionname: Field[Name, VemployeeViewRow] = {
-      new Field[Name, VemployeeViewRow](
-        _path,
-        "countryregionname",
-        _.countryregionname,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(countryregionname = value),
-        Name.pgType
-      )
-    }
-
-    override def additionalcontactinfo: Field[Xml, VemployeeViewRow] = {
-      new Field[Xml, VemployeeViewRow](
-        _path,
-        "additionalcontactinfo",
-        _.additionalcontactinfo,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(additionalcontactinfo = value),
-        PgTypes.xml
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, VemployeeViewRow]] = java.util.List.of(this.businessentityid, this.title, this.firstname, this.middlename, this.lastname, this.suffix, this.jobtitle, this.phonenumber, this.phonenumbertype, this.emailaddress, this.emailpromotion, this.addressline1, this.addressline2, this.city, this.stateprovincename, this.postalcode, this.countryregionname, this.additionalcontactinfo)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[VemployeeViewFields, VemployeeViewRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: VemployeeViewFields = new VemployeeViewFields(java.util.Collections.emptyList())
 }

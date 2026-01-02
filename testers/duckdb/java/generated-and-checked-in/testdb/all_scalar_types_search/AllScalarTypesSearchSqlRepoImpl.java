@@ -115,5 +115,4 @@ public class AllScalarTypesSearchSqlRepoImpl implements AllScalarTypesSearchSqlR
         .query(AllScalarTypesSearchSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

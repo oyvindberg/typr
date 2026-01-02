@@ -6,57 +6,61 @@
 package adventureworks.public_.issue142;
 
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr1;
 import java.util.List;
 import java.util.Optional;
 
-public interface Issue142Fields extends FieldsExpr<Issue142Row> {
-  record Impl(List<Path> _path)
-      implements Issue142Fields, RelationStructure<Issue142Fields, Issue142Row> {
-    @Override
-    public IdField<Issue142Id, Issue142Row> tabellkode() {
-      return new IdField<Issue142Id, Issue142Row>(
-          _path,
-          "tabellkode",
-          Issue142Row::tabellkode,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTabellkode(value),
-          Issue142Id.pgType);
-    }
-    ;
+public class Issue142Fields
+    implements TupleExpr1<Issue142Id>,
+        RelationStructure<Issue142Fields, Issue142Row>,
+        FieldsBase<Issue142Row> {
+  List<Path> _path;
 
-    @Override
-    public List<FieldLike<?, Issue142Row>> columns() {
-      return java.util.List.of(this.tabellkode());
-    }
-    ;
-
-    @Override
-    public RelationStructure<Issue142Fields, Issue142Row> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public Issue142Fields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static Issue142Fields structure = new Issue142Fields(java.util.Collections.emptyList());
+
+  public IdField<Issue142Id, Issue142Row> tabellkode() {
+    return new IdField<Issue142Id, Issue142Row>(
+        _path,
+        "tabellkode",
+        Issue142Row::tabellkode,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTabellkode(value),
+        Issue142Id.dbType);
   }
-  ;
-
-  IdField<Issue142Id, Issue142Row> tabellkode();
 
   @Override
-  List<FieldLike<?, Issue142Row>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<Issue142Row> rowParser() {
+  public List<FieldLike<?, Issue142Row>> columns() {
+    return java.util.List.of(this.tabellkode());
+  }
+
+  @Override
+  public RowParser<Issue142Row> rowParser() {
     return Issue142Row._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<Issue142Fields, Issue142Row> withPaths(List<Path> _path) {
+    return new Issue142Fields(_path);
+  }
+
+  @Override
+  public SqlExpr<Issue142Id> _1() {
+    return tabellkode();
+  }
 }

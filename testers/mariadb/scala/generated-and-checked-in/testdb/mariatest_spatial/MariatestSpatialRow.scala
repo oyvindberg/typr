@@ -7,6 +7,7 @@ package testdb.mariatest_spatial
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple9
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import org.mariadb.jdbc.`type`.Geometry
@@ -42,7 +43,7 @@ case class MariatestSpatialRow(
   @JsonProperty("multipolygon_col") multipolygonCol: MultiPolygon,
   /**  */
   @JsonProperty("geometrycollection_col") geometrycollectionCol: GeometryCollection
-) {
+) extends Tuple9[MariatestSpatialId, Geometry, Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, GeometryCollection] {
   def toUnsavedRow: MariatestSpatialRowUnsaved = {
     new MariatestSpatialRowUnsaved(
       geometryCol,
@@ -55,8 +56,26 @@ case class MariatestSpatialRow(
       geometrycollectionCol
     )
   }
+
+  override def `_1`: MariatestSpatialId = id
+
+  override def `_2`: Geometry = geometryCol
+
+  override def `_3`: Point = pointCol
+
+  override def `_4`: LineString = linestringCol
+
+  override def `_5`: Polygon = polygonCol
+
+  override def `_6`: MultiPoint = multipointCol
+
+  override def `_7`: MultiLineString = multilinestringCol
+
+  override def `_8`: MultiPolygon = multipolygonCol
+
+  override def `_9`: GeometryCollection = geometrycollectionCol
 }
 
 object MariatestSpatialRow {
-  val `_rowParser`: RowParser[MariatestSpatialRow] = RowParsers.of(MariatestSpatialId.pgType, MariaTypes.geometry, MariaTypes.point, MariaTypes.linestring, MariaTypes.polygon, MariaTypes.multipoint, MariaTypes.multilinestring, MariaTypes.multipolygon, MariaTypes.geometrycollection)(MariatestSpatialRow.apply)(row => Array[Any](row.id, row.geometryCol, row.pointCol, row.linestringCol, row.polygonCol, row.multipointCol, row.multilinestringCol, row.multipolygonCol, row.geometrycollectionCol))
+  val `_rowParser`: RowParser[MariatestSpatialRow] = RowParsers.of(MariatestSpatialId.dbType, MariaTypes.geometry, MariaTypes.point, MariaTypes.linestring, MariaTypes.polygon, MariaTypes.multipoint, MariaTypes.multilinestring, MariaTypes.multipolygon, MariaTypes.geometrycollection)(MariatestSpatialRow.apply)(row => Array[Any](row.id, row.geometryCol, row.pointCol, row.linestringCol, row.polygonCol, row.multipointCol, row.multilinestringCol, row.multipolygonCol, row.geometrycollectionCol))
 }

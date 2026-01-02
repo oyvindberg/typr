@@ -22,22 +22,13 @@ trait DbLibLegacy extends DbLib {
       fieldNames: List[jvm.Ident],
       constAsExprs: List[jvm.Code]
   ): jvm.Code = {
-    // Create TuplePart for each field
     val parts = fieldExprs.zip(fieldNames).zip(constAsExprs).map { case ((fieldExpr, fieldName), constAs) =>
       val getterRef = jvm.FieldGetterRef(idType, fieldName)
       code"${CompositeTuplePart.of(idType)}($fieldExpr)($getterRef)(using $constAs, implicitly)"
     }
-    // Create CompositeIn expression
     code"new $CompositeIn($idsExpr)(${parts.mkCode(", ")})"
   }
 
-  /** Legacy DSLs don't use the new compositeInPart pattern - they use generateCompositeIn instead. This is implemented to satisfy the DbLib trait but should not be called for legacy DSLs.
-    */
-  override def compositeInPart(fieldType: jvm.Type, idType: jvm.Type, rowType: jvm.Type, fieldExpr: jvm.Code, fieldName: jvm.Ident, pgType: jvm.Code): jvm.Code =
-    throw new UnsupportedOperationException("Legacy DSLs should use generateCompositeIn, not compositeInPart")
-
-  /** Legacy DSLs don't use the new compositeInConstruct pattern - they use generateCompositeIn instead. This is implemented to satisfy the DbLib trait but should not be called for legacy DSLs.
-    */
-  override def compositeInConstruct(partsExpr: jvm.Code, idsExpr: jvm.Code): jvm.Code =
-    throw new UnsupportedOperationException("Legacy DSLs should use generateCompositeIn, not compositeInConstruct")
+  override def booleanAndChain(exprs: NonEmptyList[jvm.Code]): jvm.Code =
+    exprs.toList.reduceLeft[jvm.Code] { case (acc, current) => code"$acc.and($current)" }
 }

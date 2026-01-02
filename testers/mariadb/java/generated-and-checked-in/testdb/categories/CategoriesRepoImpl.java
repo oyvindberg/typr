@@ -24,27 +24,25 @@ import java.util.Optional;
 public class CategoriesRepoImpl implements CategoriesRepo {
   @Override
   public DeleteBuilder<CategoriesFields, CategoriesRow> delete() {
-    return DeleteBuilder.of("`categories`", CategoriesFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`categories`", CategoriesFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(CategoriesId categoryId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `categories` where `category_id` = "),
-                Fragment.encode(CategoriesId.pgType, categoryId),
+                Fragment.encode(CategoriesId.dbType, categoryId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(CategoriesId[] categoryIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : categoryIds) {
-      fragments.add(Fragment.encode(CategoriesId.pgType, id));
+      fragments.add(Fragment.encode(CategoriesId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -54,7 +52,6 @@ public class CategoriesRepoImpl implements CategoriesRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CategoriesRow insert(CategoriesRow unsaved, Connection c) {
@@ -63,7 +60,7 @@ public class CategoriesRepoImpl implements CategoriesRepo {
                 "insert into `categories`(`parent_id`, `name`, `slug`, `description`, `image_url`,"
                     + " `sort_order`, `is_visible`, `metadata`)\n"
                     + "values ("),
-            Fragment.encode(CategoriesId.pgType.opt(), unsaved.parentId()),
+            Fragment.encode(CategoriesId.dbType.opt(), unsaved.parentId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.name()),
             Fragment.lit(", "),
@@ -77,7 +74,7 @@ public class CategoriesRepoImpl implements CategoriesRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.bool, unsaved.isVisible()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.metadata()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.metadata()),
             Fragment.lit(
                 ")\n"
                     + "RETURNING `category_id`, `parent_id`, `name`, `slug`, `description`,"
@@ -85,7 +82,6 @@ public class CategoriesRepoImpl implements CategoriesRepo {
         .updateReturning(CategoriesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CategoriesRow insert(CategoriesRowUnsaved unsaved, Connection c) {
@@ -104,7 +100,7 @@ public class CategoriesRepoImpl implements CategoriesRepo {
             value -> {
               columns.add(Fragment.lit("`parent_id`"));
               values.add(
-                  interpolate(Fragment.encode(CategoriesId.pgType.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(CategoriesId.dbType.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -154,7 +150,7 @@ public class CategoriesRepoImpl implements CategoriesRepo {
             value -> {
               columns.add(Fragment.lit("`metadata`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(MariaTypes.json.opt(), value), Fragment.lit("")));
             });
     ;
     Fragment q =
@@ -170,14 +166,12 @@ public class CategoriesRepoImpl implements CategoriesRepo {
     ;
     return q.updateReturning(CategoriesRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<CategoriesFields, CategoriesRow> select() {
     return SelectBuilder.of(
-        "`categories`", CategoriesFields.structure(), CategoriesRow._rowParser, Dialect.MARIADB);
+        "`categories`", CategoriesFields.structure, CategoriesRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<CategoriesRow> selectAll(Connection c) {
@@ -189,7 +183,6 @@ public class CategoriesRepoImpl implements CategoriesRepo {
         .query(CategoriesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<CategoriesRow> selectById(CategoriesId categoryId, Connection c) {
@@ -199,18 +192,17 @@ public class CategoriesRepoImpl implements CategoriesRepo {
                     + " `sort_order`, `is_visible`, `metadata`\n"
                     + "from `categories`\n"
                     + "where `category_id` = "),
-            Fragment.encode(CategoriesId.pgType, categoryId),
+            Fragment.encode(CategoriesId.dbType, categoryId),
             Fragment.lit(""))
         .query(CategoriesRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<CategoriesRow> selectByIds(CategoriesId[] categoryIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : categoryIds) {
-      fragments.add(Fragment.encode(CategoriesId.pgType, id));
+      fragments.add(Fragment.encode(CategoriesId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -223,7 +215,6 @@ public class CategoriesRepoImpl implements CategoriesRepo {
         .query(CategoriesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<CategoriesId, CategoriesRow> selectByIdsTracked(
@@ -232,7 +223,6 @@ public class CategoriesRepoImpl implements CategoriesRepo {
     selectByIds(categoryIds, c).forEach(row -> ret.put(row.categoryId(), row));
     return ret;
   }
-  ;
 
   @Override
   public Optional<CategoriesRow> selectByUniqueSlug(String slug, Connection c) {
@@ -247,14 +237,12 @@ public class CategoriesRepoImpl implements CategoriesRepo {
         .query(CategoriesRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<CategoriesFields, CategoriesRow> update() {
     return UpdateBuilder.of(
-        "`categories`", CategoriesFields.structure(), CategoriesRow._rowParser, Dialect.MARIADB);
+        "`categories`", CategoriesFields.structure, CategoriesRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(CategoriesRow row, Connection c) {
@@ -262,7 +250,7 @@ public class CategoriesRepoImpl implements CategoriesRepo {
     ;
     return interpolate(
                 Fragment.lit("update `categories`\nset `parent_id` = "),
-                Fragment.encode(CategoriesId.pgType.opt(), row.parentId()),
+                Fragment.encode(CategoriesId.dbType.opt(), row.parentId()),
                 Fragment.lit(",\n`name` = "),
                 Fragment.encode(MariaTypes.varchar, row.name()),
                 Fragment.lit(",\n`slug` = "),
@@ -276,24 +264,25 @@ public class CategoriesRepoImpl implements CategoriesRepo {
                 Fragment.lit(",\n`is_visible` = "),
                 Fragment.encode(MariaTypes.bool, row.isVisible()),
                 Fragment.lit(",\n`metadata` = "),
-                Fragment.encode(MariaTypes.longtext.opt(), row.metadata()),
+                Fragment.encode(MariaTypes.json.opt(), row.metadata()),
                 Fragment.lit("\nwhere `category_id` = "),
-                Fragment.encode(CategoriesId.pgType, categoryId),
+                Fragment.encode(CategoriesId.dbType, categoryId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public CategoriesRow upsert(CategoriesRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `categories`(`parent_id`, `name`, `slug`, `description`, `image_url`,"
-                    + " `sort_order`, `is_visible`, `metadata`)\n"
+                "INSERT INTO `categories`(`category_id`, `parent_id`, `name`, `slug`,"
+                    + " `description`, `image_url`, `sort_order`, `is_visible`, `metadata`)\n"
                     + "VALUES ("),
-            Fragment.encode(CategoriesId.pgType.opt(), unsaved.parentId()),
+            Fragment.encode(CategoriesId.dbType, unsaved.categoryId()),
+            Fragment.lit(", "),
+            Fragment.encode(CategoriesId.dbType.opt(), unsaved.parentId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.name()),
             Fragment.lit(", "),
@@ -307,7 +296,7 @@ public class CategoriesRepoImpl implements CategoriesRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.bool, unsaved.isVisible()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.metadata()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.metadata()),
             Fragment.lit(
                 ")\n"
                     + "ON DUPLICATE KEY UPDATE `parent_id` = VALUES(`parent_id`),\n"
@@ -323,7 +312,6 @@ public class CategoriesRepoImpl implements CategoriesRepo {
         .updateReturning(CategoriesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<CategoriesRow> upsertBatch(Iterator<CategoriesRow> unsaved, Connection c) {
@@ -345,5 +333,4 @@ public class CategoriesRepoImpl implements CategoriesRepo {
         .updateReturningEach(CategoriesRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

@@ -25,27 +25,25 @@ import testdb.orders.OrdersId;
 public class OrderHistoryRepoImpl implements OrderHistoryRepo {
   @Override
   public DeleteBuilder<OrderHistoryFields, OrderHistoryRow> delete() {
-    return DeleteBuilder.of("`order_history`", OrderHistoryFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`order_history`", OrderHistoryFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(OrderHistoryId historyId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `order_history` where `history_id` = "),
-                Fragment.encode(OrderHistoryId.pgType, historyId),
+                Fragment.encode(OrderHistoryId.dbType, historyId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(OrderHistoryId[] historyIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : historyIds) {
-      fragments.add(Fragment.encode(OrderHistoryId.pgType, id));
+      fragments.add(Fragment.encode(OrderHistoryId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -55,7 +53,6 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public OrderHistoryRow insert(OrderHistoryRow unsaved, Connection c) {
@@ -64,7 +61,7 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
                 "insert into `order_history`(`order_id`, `previous_status`, `new_status`,"
                     + " `changed_by`, `change_reason`, `metadata`, `created_at`)\n"
                     + "values ("),
-            Fragment.encode(OrdersId.pgType, unsaved.orderId()),
+            Fragment.encode(OrdersId.dbType, unsaved.orderId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text.opt(), unsaved.previousStatus()),
             Fragment.lit(", "),
@@ -74,7 +71,7 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar.opt(), unsaved.changeReason()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.metadata()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.metadata()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.datetime, unsaved.createdAt()),
             Fragment.lit(
@@ -84,7 +81,6 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
         .updateReturning(OrderHistoryRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public OrderHistoryRow insert(OrderHistoryRowUnsaved unsaved, Connection c) {
@@ -93,7 +89,7 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
     ArrayList<Fragment> values = new ArrayList<>();
     ;
     columns.add(Fragment.lit("`order_id`"));
-    values.add(interpolate(Fragment.encode(OrdersId.pgType, unsaved.orderId()), Fragment.lit("")));
+    values.add(interpolate(Fragment.encode(OrdersId.dbType, unsaved.orderId()), Fragment.lit("")));
     columns.add(Fragment.lit("`new_status`"));
     values.add(
         interpolate(Fragment.encode(MariaTypes.text, unsaved.newStatus()), Fragment.lit("")));
@@ -134,7 +130,7 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
             value -> {
               columns.add(Fragment.lit("`metadata`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(MariaTypes.json.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -160,17 +156,15 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
     ;
     return q.updateReturning(OrderHistoryRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<OrderHistoryFields, OrderHistoryRow> select() {
     return SelectBuilder.of(
         "`order_history`",
-        OrderHistoryFields.structure(),
+        OrderHistoryFields.structure,
         OrderHistoryRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<OrderHistoryRow> selectAll(Connection c) {
@@ -182,7 +176,6 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
         .query(OrderHistoryRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<OrderHistoryRow> selectById(OrderHistoryId historyId, Connection c) {
@@ -192,18 +185,17 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
                     + " `change_reason`, `metadata`, `created_at`\n"
                     + "from `order_history`\n"
                     + "where `history_id` = "),
-            Fragment.encode(OrderHistoryId.pgType, historyId),
+            Fragment.encode(OrderHistoryId.dbType, historyId),
             Fragment.lit(""))
         .query(OrderHistoryRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<OrderHistoryRow> selectByIds(OrderHistoryId[] historyIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : historyIds) {
-      fragments.add(Fragment.encode(OrderHistoryId.pgType, id));
+      fragments.add(Fragment.encode(OrderHistoryId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -216,7 +208,6 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
         .query(OrderHistoryRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<OrderHistoryId, OrderHistoryRow> selectByIdsTracked(
@@ -225,17 +216,15 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
     selectByIds(historyIds, c).forEach(row -> ret.put(row.historyId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<OrderHistoryFields, OrderHistoryRow> update() {
     return UpdateBuilder.of(
         "`order_history`",
-        OrderHistoryFields.structure(),
+        OrderHistoryFields.structure,
         OrderHistoryRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(OrderHistoryRow row, Connection c) {
@@ -243,7 +232,7 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
     ;
     return interpolate(
                 Fragment.lit("update `order_history`\nset `order_id` = "),
-                Fragment.encode(OrdersId.pgType, row.orderId()),
+                Fragment.encode(OrdersId.dbType, row.orderId()),
                 Fragment.lit(",\n`previous_status` = "),
                 Fragment.encode(MariaTypes.text.opt(), row.previousStatus()),
                 Fragment.lit(",\n`new_status` = "),
@@ -253,26 +242,27 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
                 Fragment.lit(",\n`change_reason` = "),
                 Fragment.encode(MariaTypes.varchar.opt(), row.changeReason()),
                 Fragment.lit(",\n`metadata` = "),
-                Fragment.encode(MariaTypes.longtext.opt(), row.metadata()),
+                Fragment.encode(MariaTypes.json.opt(), row.metadata()),
                 Fragment.lit(",\n`created_at` = "),
                 Fragment.encode(MariaTypes.datetime, row.createdAt()),
                 Fragment.lit("\nwhere `history_id` = "),
-                Fragment.encode(OrderHistoryId.pgType, historyId),
+                Fragment.encode(OrderHistoryId.dbType, historyId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public OrderHistoryRow upsert(OrderHistoryRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `order_history`(`order_id`, `previous_status`, `new_status`,"
-                    + " `changed_by`, `change_reason`, `metadata`, `created_at`)\n"
+                "INSERT INTO `order_history`(`history_id`, `order_id`, `previous_status`,"
+                    + " `new_status`, `changed_by`, `change_reason`, `metadata`, `created_at`)\n"
                     + "VALUES ("),
-            Fragment.encode(OrdersId.pgType, unsaved.orderId()),
+            Fragment.encode(OrderHistoryId.dbType, unsaved.historyId()),
+            Fragment.lit(", "),
+            Fragment.encode(OrdersId.dbType, unsaved.orderId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text.opt(), unsaved.previousStatus()),
             Fragment.lit(", "),
@@ -282,7 +272,7 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar.opt(), unsaved.changeReason()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.metadata()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.metadata()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.datetime, unsaved.createdAt()),
             Fragment.lit(
@@ -299,7 +289,6 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
         .updateReturning(OrderHistoryRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<OrderHistoryRow> upsertBatch(Iterator<OrderHistoryRow> unsaved, Connection c) {
@@ -320,5 +309,4 @@ public class OrderHistoryRepoImpl implements OrderHistoryRepo {
         .updateReturningEach(OrderHistoryRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

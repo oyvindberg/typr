@@ -9,9 +9,11 @@ import adventureworks.person.businessentity.BusinessentityId;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple2;
 
 /** Type for the composite primary key of table `person.emailaddress` */
-public record EmailaddressId(BusinessentityId businessentityid, Integer emailaddressid) {
+public record EmailaddressId(BusinessentityId businessentityid, Integer emailaddressid)
+    implements Tuple2<BusinessentityId, Integer> {
   public EmailaddressId withBusinessentityid(BusinessentityId businessentityid) {
     return new EmailaddressId(businessentityid, emailaddressid);
   }
@@ -24,9 +26,21 @@ public record EmailaddressId(BusinessentityId businessentityid, Integer emailadd
 
   public static RowParser<EmailaddressId> _rowParser =
       RowParsers.of(
-          BusinessentityId.pgType,
+          BusinessentityId.dbType,
           PgTypes.int4,
           EmailaddressId::new,
           row -> new Object[] {row.businessentityid(), row.emailaddressid()});
+  ;
+
+  @Override
+  public BusinessentityId _1() {
+    return businessentityid;
+  }
+  ;
+
+  @Override
+  public Integer _2() {
+    return emailaddressid;
+  }
   ;
 }

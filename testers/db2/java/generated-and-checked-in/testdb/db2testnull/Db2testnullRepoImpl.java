@@ -19,9 +19,8 @@ import java.util.List;
 public class Db2testnullRepoImpl implements Db2testnullRepo {
   @Override
   public DeleteBuilder<Db2testnullFields, Db2testnullRow> delete() {
-    return DeleteBuilder.of("\"DB2TESTNULL\"", Db2testnullFields.structure(), Dialect.DB2);
+    return DeleteBuilder.of("\"DB2TESTNULL\"", Db2testnullFields.structure, Dialect.DB2);
   }
-  ;
 
   @Override
   public Db2testnullRow insert(Db2testnullRow unsaved, Connection c) {
@@ -91,14 +90,12 @@ public class Db2testnullRepoImpl implements Db2testnullRepo {
         .updateReturning(Db2testnullRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<Db2testnullFields, Db2testnullRow> select() {
     return SelectBuilder.of(
-        "\"DB2TESTNULL\"", Db2testnullFields.structure(), Db2testnullRow._rowParser, Dialect.DB2);
+        "\"DB2TESTNULL\"", Db2testnullFields.structure, Db2testnullRow._rowParser, Dialect.DB2);
   }
-  ;
 
   @Override
   public List<Db2testnullRow> selectAll(Connection c) {
@@ -114,12 +111,10 @@ public class Db2testnullRepoImpl implements Db2testnullRepo {
         .query(Db2testnullRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<Db2testnullFields, Db2testnullRow> update() {
     return UpdateBuilder.of(
-        "\"DB2TESTNULL\"", Db2testnullFields.structure(), Db2testnullRow._rowParser, Dialect.DB2);
+        "\"DB2TESTNULL\"", Db2testnullFields.structure, Db2testnullRow._rowParser, Dialect.DB2);
   }
-  ;
 }

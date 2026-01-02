@@ -41,5 +41,4 @@ public class SubqueryTestSqlRepoImpl implements SubqueryTestSqlRepo {
         .query(SubqueryTestSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

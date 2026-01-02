@@ -11,6 +11,7 @@ import adventureworks.userdefined.FirstName;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple10;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,7 +36,18 @@ public record PersonDetailSqlRow(
     /** Points to {@link adventureworks.person.address.AddressRow#postalcode()} */
     Optional<String> postalcode,
     /** Points to {@link adventureworks.person.address.AddressRow#rowguid()} */
-    Optional<UUID> rowguid) {
+    Optional<UUID> rowguid)
+    implements Tuple10<
+        BusinessentityId,
+        Optional</* max 8 chars */ String>, /* user-picked */
+        FirstName,
+        Optional<Name>,
+        Name,
+        String,
+        Optional<String>,
+        Optional<String>,
+        Optional<String>,
+        Optional<UUID>> {
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#businessentityid()} */
   public PersonDetailSqlRow withBusinessentityid(BusinessentityId businessentityid) {
     return new PersonDetailSqlRow(
@@ -198,11 +210,11 @@ public record PersonDetailSqlRow(
 
   public static RowParser<PersonDetailSqlRow> _rowParser =
       RowParsers.of(
-          BusinessentityId.pgType,
+          BusinessentityId.dbType,
           PgTypes.text.opt(),
-          FirstName.pgType,
-          Name.pgType.opt(),
-          Name.pgType,
+          FirstName.dbType,
+          Name.dbType.opt(),
+          Name.dbType,
           PgTypes.text,
           PgTypes.text.opt(),
           PgTypes.text.opt(),
@@ -222,5 +234,65 @@ public record PersonDetailSqlRow(
                 row.postalcode(),
                 row.rowguid()
               });
+  ;
+
+  @Override
+  public BusinessentityId _1() {
+    return businessentityid;
+  }
+  ;
+
+  @Override
+  public Optional<UUID> _10() {
+    return rowguid;
+  }
+  ;
+
+  @Override
+  public Optional</* max 8 chars */ String> _2() {
+    return title;
+  }
+  ;
+
+  @Override
+  public /* user-picked */ FirstName _3() {
+    return firstname;
+  }
+  ;
+
+  @Override
+  public Optional<Name> _4() {
+    return middlename;
+  }
+  ;
+
+  @Override
+  public Name _5() {
+    return lastname;
+  }
+  ;
+
+  @Override
+  public String _6() {
+    return jobtitle;
+  }
+  ;
+
+  @Override
+  public Optional<String> _7() {
+    return addressline1;
+  }
+  ;
+
+  @Override
+  public Optional<String> _8() {
+    return city;
+  }
+  ;
+
+  @Override
+  public Optional<String> _9() {
+    return postalcode;
+  }
   ;
 }

@@ -1,5 +1,6 @@
 package dev.typr.foundations.dsl;
 
+import dev.typr.foundations.Tuple;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -127,7 +128,7 @@ public interface Structure<Fields, Row> {
           }
 
           @Override
-          public Optional<T> visitInExpr(SqlExpr.In<?> in) {
+          public Optional<T> visitInExpr(SqlExpr.In<?, ?> in) {
             // For In expressions, T is always Boolean, so we can safely cast the result
             Optional<Boolean> result = evaluateInExpressionHelper(Structure.this, in, row);
             return result.map(b -> (T) b);
@@ -154,26 +155,10 @@ public interface Structure<Fields, Row> {
           @Override
           public Optional<T> visitRowExpr(SqlExpr.RowExpr rowExpr) {
             List<Optional<?>> values = new ArrayList<>();
-            for (SqlExpr<?> e : rowExpr.exprs()) {
+            for (SqlExpr<?> e : rowExpr.children()) {
               values.add(untypedEval(e, row));
             }
             return Optional.of((T) values);
-          }
-
-          @Override
-          public <Tuple> Optional<T> visitCompositeInExpr(
-              SqlExpr.CompositeIn<Tuple, ?> compositeIn) {
-            // For CompositeIn expressions, T is always Boolean, so we can safely cast the result
-            Boolean result = evaluateCompositeInExpression(Structure.this, compositeIn, row);
-            return Optional.of((T) result);
-          }
-
-          @Override
-          public <F extends Tuples.TupleExpr<R>, R extends Tuples.Tuple>
-              Optional<T> visitInSubqueryExpr(SqlExpr.InSubquery<?, F, R> inSubquery) {
-            // For InSubquery expressions, T is always Boolean
-            Boolean result = evaluateInSubqueryExpression(Structure.this, inSubquery, row);
-            return Optional.of((T) result);
           }
 
           @Override
@@ -185,8 +170,24 @@ public interface Structure<Fields, Row> {
 
           @Override
           @SuppressWarnings("unchecked")
-          public Optional<T> visitTupleExpr(Tuples.TupleExpr<?> tupleExpr) {
-            // Evaluate each sub-expression and build the tuple
+          public Optional<T> visitTupleExpr(TupleExpr<?> tupleExpr) {
+            // Check if this TupleExpr also implements FieldsBase (generated Fields classes)
+            // If so, use the rowParser to decode instead of creating a generic Tuple
+            if (tupleExpr instanceof FieldsBase<?> fieldsBase) {
+              FieldsBase<Row> typed = (FieldsBase<Row>) fieldsBase;
+              var columns = typed.columns();
+              Object[] values = new Object[columns.size()];
+              for (int i = 0; i < columns.size(); i++) {
+                Optional<?> val = untypedGetFieldValue(columns.get(i), row);
+                if (val.isEmpty()) {
+                  values[i] = null;
+                } else {
+                  values[i] = val.get();
+                }
+              }
+              return Optional.of((T) typed.rowParser().decode().apply(values));
+            }
+            // Regular TupleExpr - evaluate each sub-expression and build the tuple
             return evaluateTupleExpr(Structure.this, tupleExpr, row).map(t -> (T) t);
           }
 
@@ -200,7 +201,6 @@ public interface Structure<Fields, Row> {
             for (int i = 0; i < columns.size(); i++) {
               Optional<?> val = untypedGetFieldValue(columns.get(i), row);
               if (val.isEmpty()) {
-                // If any column is null, return empty (or handle appropriately)
                 values[i] = null;
               } else {
                 values[i] = val.get();
@@ -309,13 +309,14 @@ public interface Structure<Fields, Row> {
     return visitor.accept(expr);
   }
 
-  default <Fields2, Row2> Structure<Tuple2<Fields, Fields2>, Tuple2<Row, Row2>> join(
+  default <Fields2, Row2> Structure<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Row2>> join(
       Structure<Fields2, Row2> other) {
     return new Tupled<>(sharedPrefix(this._path(), other._path()), this, other);
   }
 
-  default <Fields2, Row2> Structure<Tuple2<Fields, Fields2>, Tuple2<Row, Optional<Row2>>> leftJoin(
-      Structure<Fields2, Row2> other) {
+  default <Fields2, Row2>
+      Structure<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Optional<Row2>>> leftJoin(
+          Structure<Fields2, Row2> other) {
     return new LeftTupled<>(sharedPrefix(this._path(), other._path()), this, other);
   }
 
@@ -335,11 +336,11 @@ public interface Structure<Fields, Row> {
   // Implementation for joined structures
   record Tupled<Fields1, Fields2, Row1, Row2>(
       List<Path> path, Structure<Fields1, Row1> left, Structure<Fields2, Row2> right)
-      implements Structure<Tuple2<Fields1, Fields2>, Tuple2<Row1, Row2>> {
+      implements Structure<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Row2>> {
 
     @Override
-    public Tuple2<Fields1, Fields2> fields() {
-      return Tuple2.of(left.fields(), right.fields());
+    public Tuple.Tuple2<Fields1, Fields2> fields() {
+      return Tuple.of(left.fields(), right.fields());
     }
 
     @Override
@@ -356,7 +357,8 @@ public interface Structure<Fields, Row> {
     }
 
     @Override
-    public Structure<Tuple2<Fields1, Fields2>, Tuple2<Row1, Row2>> withPath(Path newPath) {
+    public Structure<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Row2>> withPath(
+        Path newPath) {
       List<Path> newPaths = new ArrayList<>();
       newPaths.add(newPath);
       newPaths.addAll(path);
@@ -365,7 +367,7 @@ public interface Structure<Fields, Row> {
 
     @Override
     public <T> Optional<T> untypedGetFieldValue(
-        SqlExpr.FieldLike<T, ?> field, Tuple2<Row1, Row2> row) {
+        SqlExpr.FieldLike<T, ?> field, Tuple.Tuple2<Row1, Row2> row) {
       if (containsField(left.allFields(), field)) {
         return left.untypedGetFieldValue(field, row._1());
       } else {
@@ -377,11 +379,11 @@ public interface Structure<Fields, Row> {
   // Implementation for left joined structures
   record LeftTupled<Fields1, Fields2, Row1, Row2>(
       List<Path> path, Structure<Fields1, Row1> left, Structure<Fields2, Row2> right)
-      implements Structure<Tuple2<Fields1, Fields2>, Tuple2<Row1, Optional<Row2>>> {
+      implements Structure<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Optional<Row2>>> {
 
     @Override
-    public Tuple2<Fields1, Fields2> fields() {
-      return Tuple2.of(left.fields(), right.fields());
+    public Tuple.Tuple2<Fields1, Fields2> fields() {
+      return Tuple.of(left.fields(), right.fields());
     }
 
     @Override
@@ -398,7 +400,7 @@ public interface Structure<Fields, Row> {
     }
 
     @Override
-    public Structure<Tuple2<Fields1, Fields2>, Tuple2<Row1, Optional<Row2>>> withPath(
+    public Structure<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, Optional<Row2>>> withPath(
         Path newPath) {
       List<Path> newPaths = new ArrayList<>();
       newPaths.add(newPath);
@@ -408,7 +410,7 @@ public interface Structure<Fields, Row> {
 
     @Override
     public <T> Optional<T> untypedGetFieldValue(
-        SqlExpr.FieldLike<T, ?> field, Tuple2<Row1, Optional<Row2>> row) {
+        SqlExpr.FieldLike<T, ?> field, Tuple.Tuple2<Row1, Optional<Row2>> row) {
       if (containsField(left.allFields(), field)) {
         return left.untypedGetFieldValue(field, row._1());
       } else {
@@ -438,89 +440,82 @@ public interface Structure<Fields, Row> {
   // They are not used by SelectBuilderSql which generates SQL strings.
   // ========================================================================
 
-  /** Mock-only: Helper for evaluating IN expressions. */
-  private static <T, Row> Optional<Boolean> evaluateInExpressionHelper(
-      Structure<?, Row> structure, SqlExpr.In<T> in, Row row) {
-    return structure
-        .untypedEval(in.expr(), row)
-        .map(
-            v -> {
-              for (T value : in.values()) {
-                if (v.equals(value)) {
-                  return Boolean.TRUE;
+  /**
+   * Mock-only: Helper for evaluating IN expressions. Handles both scalar and tuple IN expressions.
+   * The rhs() is a SqlExpr<List<T>> which is typically a Rows<T>.
+   */
+  @SuppressWarnings("unchecked")
+  private static <T, V extends T, Row> Optional<Boolean> evaluateInExpressionHelper(
+      Structure<?, Row> structure, SqlExpr.In<T, V> in, Row row) {
+    // Get the values from the rhs - must be a Rows
+    if (!(in.rhs() instanceof SqlExpr.Rows<?> rowsExpr)) {
+      throw new UnsupportedOperationException(
+          "Mock IN evaluation only supports Rows as rhs, got: " + in.rhs().getClass());
+    }
+    SqlExpr.Rows<T> rows = (SqlExpr.Rows<T>) rowsExpr;
+
+    if (rows.isEmpty()) {
+      return Optional.of(Boolean.FALSE);
+    }
+
+    if (in.lhs() instanceof TupleExpr<?> tupleExpr) {
+      // Tuple case: evaluate each expression and compare component-wise
+      return evaluateTupleInUnified(structure, tupleExpr, rows, row);
+    } else {
+      // Scalar case: simple equality check
+      return structure
+          .untypedEval(in.lhs(), row)
+          .map(
+              v -> {
+                for (SqlExpr<T> valueExpr : rows.rows()) {
+                  // Each row expression should be a ConstReq
+                  if (valueExpr instanceof SqlExpr.ConstReq<?> constReq) {
+                    if (v.equals(constReq.value())) {
+                      return Boolean.TRUE;
+                    }
+                  }
                 }
-              }
-              return Boolean.FALSE;
-            });
+                return Boolean.FALSE;
+              });
+    }
+  }
+
+  /**
+   * Mock-only: Evaluate a tuple IN expression using the unified In type. Evaluates each component
+   * of the tuple expression and compares against the Rows values.
+   */
+  @SuppressWarnings("unchecked")
+  private static <T, Row> Optional<Boolean> evaluateTupleInUnified(
+      Structure<?, Row> structure, TupleExpr<?> tupleExpr, SqlExpr.Rows<T> rows, Row row) {
+    // Evaluate each expression in the tuple
+    List<Object> thisRow = new ArrayList<>();
+    for (SqlExpr<?> expr : tupleExpr.children()) {
+      Optional<?> value = structure.untypedEval(expr, row);
+      if (value.isEmpty()) {
+        return Optional.of(Boolean.FALSE);
+      }
+      thisRow.add(value.get());
+    }
+
+    // Check if any tuple in rows matches
+    for (SqlExpr<T> valueExpr : rows.rows()) {
+      // Each row should be a ConstTuple
+      if (valueExpr instanceof SqlExpr.ConstTuple<?> constTuple) {
+        Tuple tuple = (Tuple) constTuple.value();
+        Object[] arr = tuple.asArray();
+        List<Object> thatRow = java.util.Arrays.asList(arr);
+        if (thisRow.equals(thatRow)) {
+          return Optional.of(Boolean.TRUE);
+        }
+      }
+    }
+    return Optional.of(Boolean.FALSE);
   }
 
   /** Mock-only: Helper for evaluating IS NULL expressions. */
   private static <Row> Boolean evaluateIsNullExpression(
       Structure<?, Row> structure, SqlExpr.IsNull<?> isNull, Row row) {
     return structure.untypedEval(isNull.expr(), row).isEmpty();
-  }
-
-  /** Mock-only: Helper for evaluating composite IN expressions (multiple columns). */
-  private static <Row, Tuple> Boolean evaluateCompositeInExpression(
-      Structure<?, Row> structure, SqlExpr.CompositeIn<Tuple, ?> compositeIn, Row row) {
-    // Build the row from current data
-    List<Object> thisRow = new ArrayList<>();
-    for (var part : compositeIn.parts()) {
-      Optional<?> value = structure.untypedEval(part.field(), row);
-      if (value.isEmpty()) {
-        return Boolean.FALSE;
-      }
-      thisRow.add(value.get());
-    }
-
-    // Check if any tuple matches
-    for (Tuple tuple : compositeIn.tuples()) {
-      List<Object> thatRow = new ArrayList<>();
-      for (var part : compositeIn.parts()) {
-        // Extract value from the part with proper typing
-        Object value = extractPartValue(part, tuple);
-        thatRow.add(value);
-      }
-      if (thisRow.equals(thatRow)) {
-        return Boolean.TRUE;
-      }
-    }
-    return Boolean.FALSE;
-  }
-
-  /** Mock-only: Helper for extracting values from composite IN tuples. */
-  private static <T, Tuple, Row> T extractPartValue(
-      SqlExpr.CompositeIn.Part<T, Tuple, Row> part, Tuple tuple) {
-    return part.extract().apply(tuple);
-  }
-
-  /**
-   * Mock-only: Evaluate an IN subquery expression against a row. Returns true if the expression
-   * value is in the subquery results.
-   */
-  private static <T, F extends Tuples.TupleExpr<R>, R extends Tuples.Tuple, Row>
-      Boolean evaluateInSubqueryExpression(
-          Structure<?, Row> structure, SqlExpr.InSubquery<T, F, R> inSubquery, Row row) {
-    // Evaluate the expression to get the value we're looking for
-    Optional<T> exprValue = structure.untypedEval(inSubquery.expr(), row);
-    if (exprValue.isEmpty()) {
-      return Boolean.FALSE;
-    }
-    T searchValue = exprValue.get();
-
-    // Execute the subquery to get all values
-    // For mock queries, we pass null for the connection since mock doesn't use it
-    List<R> subqueryResults = inSubquery.subquery().toList(null);
-
-    // Check if any result matches
-    for (R result : subqueryResults) {
-      // The subquery should return single-column tuples, get the first value
-      Object[] values = result.asArray();
-      if (values.length > 0 && searchValue.equals(values[0])) {
-        return Boolean.TRUE;
-      }
-    }
-    return Boolean.FALSE;
   }
 
   /**
@@ -538,9 +533,9 @@ public interface Structure<Fields, Row> {
    * Mock-only: Evaluate a TupleExpr by evaluating all its sub-expressions and constructing the
    * corresponding Tuple.
    */
-  private static <Row> Optional<Tuples.Tuple> evaluateTupleExpr(
-      Structure<?, Row> structure, Tuples.TupleExpr<?> tupleExpr, Row row) {
-    List<SqlExpr<?>> exprs = tupleExpr.exprs();
+  private static <Row> Optional<Tuple> evaluateTupleExpr(
+      Structure<?, Row> structure, TupleExpr<?> tupleExpr, Row row) {
+    List<SqlExpr<?>> exprs = tupleExpr.children();
     Object[] values = new Object[exprs.size()];
 
     for (int i = 0; i < exprs.size(); i++) {
@@ -552,6 +547,22 @@ public interface Structure<Fields, Row> {
     }
 
     // Create the appropriate tuple based on arity
-    return Optional.of(Tuples.createTuple(values));
+    return Optional.of(Tuple.createTuple(values));
+  }
+
+  /** Helper to compare two Object arrays for equality. */
+  private static boolean arraysEqual(Object[] a, Object[] b) {
+    if (a.length != b.length) {
+      return false;
+    }
+    for (int i = 0; i < a.length; i++) {
+      if (a[i] == null && b[i] == null) {
+        continue;
+      }
+      if (a[i] == null || !a[i].equals(b[i])) {
+        return false;
+      }
+    }
+    return true;
   }
 }

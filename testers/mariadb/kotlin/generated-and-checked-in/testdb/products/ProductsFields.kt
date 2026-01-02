@@ -7,16 +7,19 @@ package testdb.products
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.MariaSet
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.ForeignKey
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr18
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import kotlin.collections.List
@@ -24,94 +27,90 @@ import testdb.brands.BrandsFields
 import testdb.brands.BrandsId
 import testdb.brands.BrandsRow
 
-interface ProductsFields : FieldsExpr<ProductsRow> {
-  abstract fun attributes(): OptField<String, ProductsRow>
+data class ProductsFields(val _path: List<Path>) : TupleExpr18<ProductsId, String, BrandsId, String, String, String, BigDecimal, BigDecimal, BigDecimal, Json, String, String, MariaSet, Json, Json, LocalDateTime, LocalDateTime, LocalDateTime>, RelationStructure<ProductsFields, ProductsRow>, FieldsBase<ProductsRow> {
+  override fun _1(): SqlExpr<ProductsId> = productId()
 
-  abstract fun basePrice(): Field<BigDecimal, ProductsRow>
+  override fun _10(): SqlExpr<Json> = dimensionsJson()
 
-  abstract fun brandId(): OptField<BrandsId, ProductsRow>
+  override fun _11(): SqlExpr<String> = status()
 
-  abstract override fun columns(): List<FieldLike<*, ProductsRow>>
+  override fun _12(): SqlExpr<String> = taxClass()
 
-  abstract fun costPrice(): OptField<BigDecimal, ProductsRow>
+  override fun _13(): SqlExpr<MariaSet> = tags()
 
-  abstract fun createdAt(): Field<LocalDateTime, ProductsRow>
+  override fun _14(): SqlExpr<Json> = attributes()
 
-  abstract fun dimensionsJson(): OptField<String, ProductsRow>
+  override fun _15(): SqlExpr<Json> = seoMetadata()
+
+  override fun _16(): SqlExpr<LocalDateTime> = createdAt()
+
+  override fun _17(): SqlExpr<LocalDateTime> = updatedAt()
+
+  override fun _18(): SqlExpr<LocalDateTime> = publishedAt()
+
+  override fun _2(): SqlExpr<String> = sku()
+
+  override fun _3(): SqlExpr<BrandsId> = brandId()
+
+  override fun _4(): SqlExpr<String> = name()
+
+  override fun _5(): SqlExpr<String> = shortDescription()
+
+  override fun _6(): SqlExpr<String> = fullDescription()
+
+  override fun _7(): SqlExpr<BigDecimal> = basePrice()
+
+  override fun _8(): SqlExpr<BigDecimal> = costPrice()
+
+  override fun _9(): SqlExpr<BigDecimal> = weightKg()
+
+  override fun _path(): List<Path> = _path
+
+  fun attributes(): OptField<Json, ProductsRow> = OptField<Json, ProductsRow>(_path, "attributes", ProductsRow::attributes, null, null, { row, value -> row.copy(attributes = value) }, MariaTypes.json)
+
+  fun basePrice(): Field<BigDecimal, ProductsRow> = Field<BigDecimal, ProductsRow>(_path, "base_price", ProductsRow::basePrice, null, null, { row, value -> row.copy(basePrice = value) }, KotlinDbTypes.MariaTypes.numeric)
+
+  fun brandId(): OptField<BrandsId, ProductsRow> = OptField<BrandsId, ProductsRow>(_path, "brand_id", ProductsRow::brandId, null, null, { row, value -> row.copy(brandId = value) }, BrandsId.dbType)
+
+  override fun columns(): List<FieldLike<*, ProductsRow>> = listOf(this.productId().underlying, this.sku().underlying, this.brandId().underlying, this.name().underlying, this.shortDescription().underlying, this.fullDescription().underlying, this.basePrice().underlying, this.costPrice().underlying, this.weightKg().underlying, this.dimensionsJson().underlying, this.status().underlying, this.taxClass().underlying, this.tags().underlying, this.attributes().underlying, this.seoMetadata().underlying, this.createdAt().underlying, this.updatedAt().underlying, this.publishedAt().underlying)
+
+  fun costPrice(): OptField<BigDecimal, ProductsRow> = OptField<BigDecimal, ProductsRow>(_path, "cost_price", ProductsRow::costPrice, null, null, { row, value -> row.copy(costPrice = value) }, KotlinDbTypes.MariaTypes.numeric)
+
+  fun createdAt(): Field<LocalDateTime, ProductsRow> = Field<LocalDateTime, ProductsRow>(_path, "created_at", ProductsRow::createdAt, null, null, { row, value -> row.copy(createdAt = value) }, MariaTypes.datetime)
+
+  fun dimensionsJson(): OptField<Json, ProductsRow> = OptField<Json, ProductsRow>(_path, "dimensions_json", ProductsRow::dimensionsJson, null, null, { row, value -> row.copy(dimensionsJson = value) }, MariaTypes.json)
 
   fun fkBrands(): ForeignKey<BrandsFields, BrandsRow> = ForeignKey.of<BrandsFields, BrandsRow>("fk_product_brand").withColumnPair<BrandsId>(brandId(), BrandsFields::brandId)
 
-  abstract fun fullDescription(): OptField<String, ProductsRow>
+  fun fullDescription(): OptField<String, ProductsRow> = OptField<String, ProductsRow>(_path, "full_description", ProductsRow::fullDescription, null, null, { row, value -> row.copy(fullDescription = value) }, MariaTypes.longtext)
 
-  abstract fun name(): Field<String, ProductsRow>
+  fun name(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "name", ProductsRow::name, null, null, { row, value -> row.copy(name = value) }, MariaTypes.varchar)
 
-  abstract fun productId(): IdField<ProductsId, ProductsRow>
+  fun productId(): IdField<ProductsId, ProductsRow> = IdField<ProductsId, ProductsRow>(_path, "product_id", ProductsRow::productId, null, null, { row, value -> row.copy(productId = value) }, ProductsId.dbType)
 
-  abstract fun publishedAt(): OptField<LocalDateTime, ProductsRow>
+  fun publishedAt(): OptField<LocalDateTime, ProductsRow> = OptField<LocalDateTime, ProductsRow>(_path, "published_at", ProductsRow::publishedAt, null, null, { row, value -> row.copy(publishedAt = value) }, MariaTypes.datetime)
 
   override fun rowParser(): RowParser<ProductsRow> = ProductsRow._rowParser.underlying
 
-  abstract fun seoMetadata(): OptField<String, ProductsRow>
+  fun seoMetadata(): OptField<Json, ProductsRow> = OptField<Json, ProductsRow>(_path, "seo_metadata", ProductsRow::seoMetadata, null, null, { row, value -> row.copy(seoMetadata = value) }, MariaTypes.json)
 
-  abstract fun shortDescription(): OptField<String, ProductsRow>
+  fun shortDescription(): OptField<String, ProductsRow> = OptField<String, ProductsRow>(_path, "short_description", ProductsRow::shortDescription, null, null, { row, value -> row.copy(shortDescription = value) }, MariaTypes.varchar)
 
-  abstract fun sku(): Field<String, ProductsRow>
+  fun sku(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "sku", ProductsRow::sku, null, null, { row, value -> row.copy(sku = value) }, MariaTypes.varchar)
 
-  abstract fun status(): Field<String, ProductsRow>
+  fun status(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "status", ProductsRow::status, null, null, { row, value -> row.copy(status = value) }, MariaTypes.text)
 
-  abstract fun tags(): OptField<MariaSet, ProductsRow>
+  fun tags(): OptField<MariaSet, ProductsRow> = OptField<MariaSet, ProductsRow>(_path, "tags", ProductsRow::tags, null, null, { row, value -> row.copy(tags = value) }, MariaTypes.set)
 
-  abstract fun taxClass(): Field<String, ProductsRow>
+  fun taxClass(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "tax_class", ProductsRow::taxClass, null, null, { row, value -> row.copy(taxClass = value) }, MariaTypes.text)
 
-  abstract fun updatedAt(): Field<LocalDateTime, ProductsRow>
+  fun updatedAt(): Field<LocalDateTime, ProductsRow> = Field<LocalDateTime, ProductsRow>(_path, "updated_at", ProductsRow::updatedAt, null, null, { row, value -> row.copy(updatedAt = value) }, MariaTypes.datetime)
 
-  abstract fun weightKg(): OptField<BigDecimal, ProductsRow>
+  fun weightKg(): OptField<BigDecimal, ProductsRow> = OptField<BigDecimal, ProductsRow>(_path, "weight_kg", ProductsRow::weightKg, null, null, { row, value -> row.copy(weightKg = value) }, KotlinDbTypes.MariaTypes.numeric)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<ProductsFields, ProductsRow> = ProductsFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : ProductsFields, RelationStructure<ProductsFields, ProductsRow> {
-      override fun productId(): IdField<ProductsId, ProductsRow> = IdField<ProductsId, ProductsRow>(_path, "product_id", ProductsRow::productId, null, null, { row, value -> row.copy(productId = value) }, ProductsId.pgType)
-
-      override fun sku(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "sku", ProductsRow::sku, null, null, { row, value -> row.copy(sku = value) }, MariaTypes.varchar)
-
-      override fun brandId(): OptField<BrandsId, ProductsRow> = OptField<BrandsId, ProductsRow>(_path, "brand_id", ProductsRow::brandId, null, null, { row, value -> row.copy(brandId = value) }, BrandsId.pgType)
-
-      override fun name(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "name", ProductsRow::name, null, null, { row, value -> row.copy(name = value) }, MariaTypes.varchar)
-
-      override fun shortDescription(): OptField<String, ProductsRow> = OptField<String, ProductsRow>(_path, "short_description", ProductsRow::shortDescription, null, null, { row, value -> row.copy(shortDescription = value) }, MariaTypes.varchar)
-
-      override fun fullDescription(): OptField<String, ProductsRow> = OptField<String, ProductsRow>(_path, "full_description", ProductsRow::fullDescription, null, null, { row, value -> row.copy(fullDescription = value) }, MariaTypes.longtext)
-
-      override fun basePrice(): Field<BigDecimal, ProductsRow> = Field<BigDecimal, ProductsRow>(_path, "base_price", ProductsRow::basePrice, null, null, { row, value -> row.copy(basePrice = value) }, KotlinDbTypes.MariaTypes.numeric)
-
-      override fun costPrice(): OptField<BigDecimal, ProductsRow> = OptField<BigDecimal, ProductsRow>(_path, "cost_price", ProductsRow::costPrice, null, null, { row, value -> row.copy(costPrice = value) }, KotlinDbTypes.MariaTypes.numeric)
-
-      override fun weightKg(): OptField<BigDecimal, ProductsRow> = OptField<BigDecimal, ProductsRow>(_path, "weight_kg", ProductsRow::weightKg, null, null, { row, value -> row.copy(weightKg = value) }, KotlinDbTypes.MariaTypes.numeric)
-
-      override fun dimensionsJson(): OptField<String, ProductsRow> = OptField<String, ProductsRow>(_path, "dimensions_json", ProductsRow::dimensionsJson, null, null, { row, value -> row.copy(dimensionsJson = value) }, MariaTypes.longtext)
-
-      override fun status(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "status", ProductsRow::status, null, null, { row, value -> row.copy(status = value) }, MariaTypes.text)
-
-      override fun taxClass(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "tax_class", ProductsRow::taxClass, null, null, { row, value -> row.copy(taxClass = value) }, MariaTypes.text)
-
-      override fun tags(): OptField<MariaSet, ProductsRow> = OptField<MariaSet, ProductsRow>(_path, "tags", ProductsRow::tags, null, null, { row, value -> row.copy(tags = value) }, MariaTypes.set)
-
-      override fun attributes(): OptField<String, ProductsRow> = OptField<String, ProductsRow>(_path, "attributes", ProductsRow::attributes, null, null, { row, value -> row.copy(attributes = value) }, MariaTypes.longtext)
-
-      override fun seoMetadata(): OptField<String, ProductsRow> = OptField<String, ProductsRow>(_path, "seo_metadata", ProductsRow::seoMetadata, null, null, { row, value -> row.copy(seoMetadata = value) }, MariaTypes.longtext)
-
-      override fun createdAt(): Field<LocalDateTime, ProductsRow> = Field<LocalDateTime, ProductsRow>(_path, "created_at", ProductsRow::createdAt, null, null, { row, value -> row.copy(createdAt = value) }, MariaTypes.datetime)
-
-      override fun updatedAt(): Field<LocalDateTime, ProductsRow> = Field<LocalDateTime, ProductsRow>(_path, "updated_at", ProductsRow::updatedAt, null, null, { row, value -> row.copy(updatedAt = value) }, MariaTypes.datetime)
-
-      override fun publishedAt(): OptField<LocalDateTime, ProductsRow> = OptField<LocalDateTime, ProductsRow>(_path, "published_at", ProductsRow::publishedAt, null, null, { row, value -> row.copy(publishedAt = value) }, MariaTypes.datetime)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, ProductsRow>> = listOf(this.productId().underlying, this.sku().underlying, this.brandId().underlying, this.name().underlying, this.shortDescription().underlying, this.fullDescription().underlying, this.basePrice().underlying, this.costPrice().underlying, this.weightKg().underlying, this.dimensionsJson().underlying, this.status().underlying, this.taxClass().underlying, this.tags().underlying, this.attributes().underlying, this.seoMetadata().underlying, this.createdAt().underlying, this.updatedAt().underlying, this.publishedAt().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<ProductsFields, ProductsRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: ProductsFields = ProductsFields(emptyList<Path>())
   }
 }

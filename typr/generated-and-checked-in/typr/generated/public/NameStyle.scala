@@ -21,29 +21,29 @@ import typr.generated.Text
 case class NameStyle(value: Boolean)
 
 object NameStyle {
-  implicit lazy val arrayColumn: Column[Array[NameStyle]] = Column.columnToArray(column, implicitly)
+  given arrayColumn: Column[Array[NameStyle]] = Column.columnToArray(using column, summon)
 
-  implicit lazy val arrayToStatement: ToStatement[Array[NameStyle]] = typr.generated.BooleanArrayToStatement.contramap(_.map(_.value))
+  given arrayToStatement: ToStatement[Array[NameStyle]] = typr.generated.BooleanArrayToStatement.contramap(_.map(_.value))
 
-  implicit lazy val column: Column[NameStyle] = Column.columnToBoolean.map(NameStyle.apply)
+  given column: Column[NameStyle] = Column.columnToBoolean.map(NameStyle.apply)
 
-  implicit lazy val parameterMetadata: ParameterMetaData[NameStyle] = {
+  given parameterMetadata: ParameterMetaData[NameStyle] = {
     new ParameterMetaData[NameStyle] {
       override def sqlType: String = """"public"."NameStyle""""
       override def jdbcType: Int = Types.OTHER
     }
   }
 
-  implicit lazy val pgText: Text[NameStyle] = {
+  given pgText: Text[NameStyle] = {
     new Text[NameStyle] {
       override def unsafeEncode(v: NameStyle, sb: StringBuilder): Unit = Text.booleanInstance.unsafeEncode(v.value, sb)
       override def unsafeArrayEncode(v: NameStyle, sb: StringBuilder): Unit = Text.booleanInstance.unsafeArrayEncode(v.value, sb)
     }
   }
 
-  implicit lazy val reads: Reads[NameStyle] = Reads.BooleanReads.map(NameStyle.apply)
+  given reads: Reads[NameStyle] = Reads.BooleanReads.map(NameStyle.apply)
 
-  implicit lazy val toStatement: ToStatement[NameStyle] = ToStatement.booleanToStatement.contramap(_.value)
+  given toStatement: ToStatement[NameStyle] = ToStatement.booleanToStatement.contramap(_.value)
 
-  implicit lazy val writes: Writes[NameStyle] = Writes.BooleanWrites.contramap(_.value)
+  given writes: Writes[NameStyle] = Writes.BooleanWrites.contramap(_.value)
 }

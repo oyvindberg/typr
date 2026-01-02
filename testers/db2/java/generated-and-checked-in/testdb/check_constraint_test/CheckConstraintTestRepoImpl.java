@@ -25,27 +25,25 @@ public class CheckConstraintTestRepoImpl implements CheckConstraintTestRepo {
   @Override
   public DeleteBuilder<CheckConstraintTestFields, CheckConstraintTestRow> delete() {
     return DeleteBuilder.of(
-        "\"CHECK_CONSTRAINT_TEST\"", CheckConstraintTestFields.structure(), Dialect.DB2);
+        "\"CHECK_CONSTRAINT_TEST\"", CheckConstraintTestFields.structure, Dialect.DB2);
   }
-  ;
 
   @Override
   public Boolean deleteById(CheckConstraintTestId id, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"CHECK_CONSTRAINT_TEST\" where \"ID\" = "),
-                Fragment.encode(CheckConstraintTestId.pgType, id),
+                Fragment.encode(CheckConstraintTestId.dbType, id),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(CheckConstraintTestId[] ids, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : ids) {
-      fragments.add(Fragment.encode(CheckConstraintTestId.pgType, id));
+      fragments.add(Fragment.encode(CheckConstraintTestId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -55,7 +53,6 @@ public class CheckConstraintTestRepoImpl implements CheckConstraintTestRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CheckConstraintTestRow insert(CheckConstraintTestRow unsaved, Connection c) {
@@ -64,7 +61,7 @@ public class CheckConstraintTestRepoImpl implements CheckConstraintTestRepo {
                 "SELECT \"ID\", \"AGE\", \"STATUS\", \"PRICE\" FROM FINAL TABLE (INSERT INTO"
                     + " \"CHECK_CONSTRAINT_TEST\"(\"ID\", \"AGE\", \"STATUS\", \"PRICE\")\n"
                     + "VALUES ("),
-            Fragment.encode(CheckConstraintTestId.pgType, unsaved.id()),
+            Fragment.encode(CheckConstraintTestId.dbType, unsaved.id()),
             Fragment.lit(", "),
             Fragment.encode(Db2Types.integer, unsaved.age()),
             Fragment.lit(", "),
@@ -75,17 +72,15 @@ public class CheckConstraintTestRepoImpl implements CheckConstraintTestRepo {
         .updateReturning(CheckConstraintTestRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<CheckConstraintTestFields, CheckConstraintTestRow> select() {
     return SelectBuilder.of(
         "\"CHECK_CONSTRAINT_TEST\"",
-        CheckConstraintTestFields.structure(),
+        CheckConstraintTestFields.structure,
         CheckConstraintTestRow._rowParser,
         Dialect.DB2);
   }
-  ;
 
   @Override
   public List<CheckConstraintTestRow> selectAll(Connection c) {
@@ -95,7 +90,6 @@ public class CheckConstraintTestRepoImpl implements CheckConstraintTestRepo {
         .query(CheckConstraintTestRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<CheckConstraintTestRow> selectById(CheckConstraintTestId id, Connection c) {
@@ -104,18 +98,17 @@ public class CheckConstraintTestRepoImpl implements CheckConstraintTestRepo {
                 "select \"ID\", \"AGE\", \"STATUS\", \"PRICE\"\n"
                     + "from \"CHECK_CONSTRAINT_TEST\"\n"
                     + "where \"ID\" = "),
-            Fragment.encode(CheckConstraintTestId.pgType, id),
+            Fragment.encode(CheckConstraintTestId.dbType, id),
             Fragment.lit(""))
         .query(CheckConstraintTestRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<CheckConstraintTestRow> selectByIds(CheckConstraintTestId[] ids, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : ids) {
-      fragments.add(Fragment.encode(CheckConstraintTestId.pgType, id));
+      fragments.add(Fragment.encode(CheckConstraintTestId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -127,7 +120,6 @@ public class CheckConstraintTestRepoImpl implements CheckConstraintTestRepo {
         .query(CheckConstraintTestRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<CheckConstraintTestId, CheckConstraintTestRow> selectByIdsTracked(
@@ -137,17 +129,15 @@ public class CheckConstraintTestRepoImpl implements CheckConstraintTestRepo {
     selectByIds(ids, c).forEach(row -> ret.put(row.id(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<CheckConstraintTestFields, CheckConstraintTestRow> update() {
     return UpdateBuilder.of(
         "\"CHECK_CONSTRAINT_TEST\"",
-        CheckConstraintTestFields.structure(),
+        CheckConstraintTestFields.structure,
         CheckConstraintTestRow._rowParser,
         Dialect.DB2);
   }
-  ;
 
   @Override
   public Boolean update(CheckConstraintTestRow row, Connection c) {
@@ -161,19 +151,18 @@ public class CheckConstraintTestRepoImpl implements CheckConstraintTestRepo {
                 Fragment.lit(",\n\"PRICE\" = "),
                 Fragment.encode(Db2Types.decimal.opt(), row.price()),
                 Fragment.lit("\nwhere \"ID\" = "),
-                Fragment.encode(CheckConstraintTestId.pgType, id),
+                Fragment.encode(CheckConstraintTestId.dbType, id),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public void upsert(CheckConstraintTestRow unsaved, Connection c) {
     interpolate(
             Fragment.lit("MERGE INTO \"CHECK_CONSTRAINT_TEST\" AS t\nUSING (VALUES ("),
-            Fragment.encode(CheckConstraintTestId.pgType, unsaved.id()),
+            Fragment.encode(CheckConstraintTestId.dbType, unsaved.id()),
             Fragment.lit(", "),
             Fragment.encode(Db2Types.integer, unsaved.age()),
             Fragment.lit(", "),
@@ -188,7 +177,7 @@ public class CheckConstraintTestRepoImpl implements CheckConstraintTestRepo {
                     + "\"PRICE\" = s.\"PRICE\"\n"
                     + "WHEN NOT MATCHED THEN INSERT (\"ID\", \"AGE\", \"STATUS\", \"PRICE\") VALUES"
                     + " ("),
-            Fragment.encode(CheckConstraintTestId.pgType, unsaved.id()),
+            Fragment.encode(CheckConstraintTestId.dbType, unsaved.id()),
             Fragment.lit(", "),
             Fragment.encode(Db2Types.integer, unsaved.age()),
             Fragment.lit(", "),
@@ -199,7 +188,6 @@ public class CheckConstraintTestRepoImpl implements CheckConstraintTestRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public void upsertBatch(Iterator<CheckConstraintTestRow> unsaved, Connection c) {
@@ -216,5 +204,4 @@ public class CheckConstraintTestRepoImpl implements CheckConstraintTestRepo {
         .updateMany(CheckConstraintTestRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

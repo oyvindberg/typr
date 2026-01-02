@@ -7,6 +7,7 @@ package testdb.customer_addresses
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple14
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -64,7 +65,35 @@ data class CustomerAddressesRow(
     * Default: current_timestamp()
     */
   @JsonProperty("created_at") val createdAt: LocalDateTime
-) {
+) : Tuple14<CustomerAddressesId, CustomersId, String, Boolean, String, String, String?, String, String?, String, String, Point?, String?, LocalDateTime> {
+  override fun _1(): CustomerAddressesId = addressId
+
+  override fun _10(): String = postalCode
+
+  override fun _11(): String = countryCode
+
+  override fun _12(): Point? = location
+
+  override fun _13(): String? = deliveryNotes
+
+  override fun _14(): LocalDateTime = createdAt
+
+  override fun _2(): CustomersId = customerId
+
+  override fun _3(): String = addressType
+
+  override fun _4(): Boolean = isDefault
+
+  override fun _5(): String = recipientName
+
+  override fun _6(): String = streetLine1
+
+  override fun _7(): String? = streetLine2
+
+  override fun _8(): String = city
+
+  override fun _9(): String? = stateProvince
+
   fun id(): CustomerAddressesId = addressId
 
   fun toUnsavedRow(
@@ -77,6 +106,6 @@ data class CustomerAddressesRow(
   ): CustomerAddressesRowUnsaved = CustomerAddressesRowUnsaved(customerId, addressType, recipientName, streetLine1, city, postalCode, countryCode, isDefault, streetLine2, stateProvince, location, deliveryNotes, createdAt)
 
   companion object {
-    val _rowParser: RowParser<CustomerAddressesRow> = RowParsers.of(CustomerAddressesId.pgType, CustomersId.pgType, MariaTypes.text, KotlinDbTypes.MariaTypes.bool, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.varchar, MariaTypes.char_, MariaTypes.point.nullable(), MariaTypes.tinytext.nullable(), MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13 -> CustomerAddressesRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) }, { row -> arrayOf<Any?>(row.addressId, row.customerId, row.addressType, row.isDefault, row.recipientName, row.streetLine1, row.streetLine2, row.city, row.stateProvince, row.postalCode, row.countryCode, row.location, row.deliveryNotes, row.createdAt) })
+    val _rowParser: RowParser<CustomerAddressesRow> = RowParsers.of(CustomerAddressesId.dbType, CustomersId.dbType, MariaTypes.text, KotlinDbTypes.MariaTypes.bool, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.varchar, MariaTypes.char_, MariaTypes.point.nullable(), MariaTypes.tinytext.nullable(), MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13 -> CustomerAddressesRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) }, { row -> arrayOf<Any?>(row.addressId, row.customerId, row.addressType, row.isDefault, row.recipientName, row.streetLine1, row.streetLine2, row.city, row.stateProvince, row.postalCode, row.countryCode, row.location, row.deliveryNotes, row.createdAt) })
   }
 }

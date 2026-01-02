@@ -47,5 +47,4 @@ public class CustomerOrdersSummarySqlRepoImpl implements CustomerOrdersSummarySq
         .query(CustomerOrdersSummarySqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

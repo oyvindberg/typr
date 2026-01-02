@@ -26,27 +26,25 @@ import testdb.payment_methods.PaymentMethodsId;
 public class PaymentsRepoImpl implements PaymentsRepo {
   @Override
   public DeleteBuilder<PaymentsFields, PaymentsRow> delete() {
-    return DeleteBuilder.of("`payments`", PaymentsFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`payments`", PaymentsFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(PaymentsId paymentId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `payments` where `payment_id` = "),
-                Fragment.encode(PaymentsId.pgType, paymentId),
+                Fragment.encode(PaymentsId.dbType, paymentId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(PaymentsId[] paymentIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : paymentIds) {
-      fragments.add(Fragment.encode(PaymentsId.pgType, id));
+      fragments.add(Fragment.encode(PaymentsId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -56,7 +54,6 @@ public class PaymentsRepoImpl implements PaymentsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public PaymentsRow insert(PaymentsRow unsaved, Connection c) {
@@ -66,9 +63,9 @@ public class PaymentsRepoImpl implements PaymentsRepo {
                     + " `currency_code`, `status`, `processor_response`, `error_message`,"
                     + " `ip_address`, `created_at`, `processed_at`)\n"
                     + "values ("),
-            Fragment.encode(OrdersId.pgType, unsaved.orderId()),
+            Fragment.encode(OrdersId.dbType, unsaved.orderId()),
             Fragment.lit(", "),
-            Fragment.encode(PaymentMethodsId.pgType, unsaved.methodId()),
+            Fragment.encode(PaymentMethodsId.dbType, unsaved.methodId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar.opt(), unsaved.transactionId()),
             Fragment.lit(", "),
@@ -78,7 +75,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text, unsaved.status()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.processorResponse()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.processorResponse()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar.opt(), unsaved.errorMessage()),
             Fragment.lit(", "),
@@ -95,7 +92,6 @@ public class PaymentsRepoImpl implements PaymentsRepo {
         .updateReturning(PaymentsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public PaymentsRow insert(PaymentsRowUnsaved unsaved, Connection c) {
@@ -104,11 +100,11 @@ public class PaymentsRepoImpl implements PaymentsRepo {
     ArrayList<Fragment> values = new ArrayList<>();
     ;
     columns.add(Fragment.lit("`order_id`"));
-    values.add(interpolate(Fragment.encode(OrdersId.pgType, unsaved.orderId()), Fragment.lit("")));
+    values.add(interpolate(Fragment.encode(OrdersId.dbType, unsaved.orderId()), Fragment.lit("")));
     columns.add(Fragment.lit("`method_id`"));
     values.add(
         interpolate(
-            Fragment.encode(PaymentMethodsId.pgType, unsaved.methodId()), Fragment.lit("")));
+            Fragment.encode(PaymentMethodsId.dbType, unsaved.methodId()), Fragment.lit("")));
     columns.add(Fragment.lit("`amount`"));
     values.add(
         interpolate(Fragment.encode(MariaTypes.numeric, unsaved.amount()), Fragment.lit("")));
@@ -147,7 +143,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
             value -> {
               columns.add(Fragment.lit("`processor_response`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(MariaTypes.json.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -204,14 +200,12 @@ public class PaymentsRepoImpl implements PaymentsRepo {
     ;
     return q.updateReturning(PaymentsRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<PaymentsFields, PaymentsRow> select() {
     return SelectBuilder.of(
-        "`payments`", PaymentsFields.structure(), PaymentsRow._rowParser, Dialect.MARIADB);
+        "`payments`", PaymentsFields.structure, PaymentsRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<PaymentsRow> selectAll(Connection c) {
@@ -224,7 +218,6 @@ public class PaymentsRepoImpl implements PaymentsRepo {
         .query(PaymentsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<PaymentsRow> selectById(PaymentsId paymentId, Connection c) {
@@ -235,18 +228,17 @@ public class PaymentsRepoImpl implements PaymentsRepo {
                     + " `ip_address`, `created_at`, `processed_at`\n"
                     + "from `payments`\n"
                     + "where `payment_id` = "),
-            Fragment.encode(PaymentsId.pgType, paymentId),
+            Fragment.encode(PaymentsId.dbType, paymentId),
             Fragment.lit(""))
         .query(PaymentsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<PaymentsRow> selectByIds(PaymentsId[] paymentIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : paymentIds) {
-      fragments.add(Fragment.encode(PaymentsId.pgType, id));
+      fragments.add(Fragment.encode(PaymentsId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -260,7 +252,6 @@ public class PaymentsRepoImpl implements PaymentsRepo {
         .query(PaymentsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<PaymentsId, PaymentsRow> selectByIdsTracked(PaymentsId[] paymentIds, Connection c) {
@@ -268,14 +259,12 @@ public class PaymentsRepoImpl implements PaymentsRepo {
     selectByIds(paymentIds, c).forEach(row -> ret.put(row.paymentId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<PaymentsFields, PaymentsRow> update() {
     return UpdateBuilder.of(
-        "`payments`", PaymentsFields.structure(), PaymentsRow._rowParser, Dialect.MARIADB);
+        "`payments`", PaymentsFields.structure, PaymentsRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(PaymentsRow row, Connection c) {
@@ -283,9 +272,9 @@ public class PaymentsRepoImpl implements PaymentsRepo {
     ;
     return interpolate(
                 Fragment.lit("update `payments`\nset `order_id` = "),
-                Fragment.encode(OrdersId.pgType, row.orderId()),
+                Fragment.encode(OrdersId.dbType, row.orderId()),
                 Fragment.lit(",\n`method_id` = "),
-                Fragment.encode(PaymentMethodsId.pgType, row.methodId()),
+                Fragment.encode(PaymentMethodsId.dbType, row.methodId()),
                 Fragment.lit(",\n`transaction_id` = "),
                 Fragment.encode(MariaTypes.varchar.opt(), row.transactionId()),
                 Fragment.lit(",\n`amount` = "),
@@ -295,7 +284,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
                 Fragment.lit(",\n`status` = "),
                 Fragment.encode(MariaTypes.text, row.status()),
                 Fragment.lit(",\n`processor_response` = "),
-                Fragment.encode(MariaTypes.longtext.opt(), row.processorResponse()),
+                Fragment.encode(MariaTypes.json.opt(), row.processorResponse()),
                 Fragment.lit(",\n`error_message` = "),
                 Fragment.encode(MariaTypes.varchar.opt(), row.errorMessage()),
                 Fragment.lit(",\n`ip_address` = "),
@@ -305,25 +294,26 @@ public class PaymentsRepoImpl implements PaymentsRepo {
                 Fragment.lit(",\n`processed_at` = "),
                 Fragment.encode(MariaTypes.datetime.opt(), row.processedAt()),
                 Fragment.lit("\nwhere `payment_id` = "),
-                Fragment.encode(PaymentsId.pgType, paymentId),
+                Fragment.encode(PaymentsId.dbType, paymentId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public PaymentsRow upsert(PaymentsRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `payments`(`order_id`, `method_id`, `transaction_id`, `amount`,"
-                    + " `currency_code`, `status`, `processor_response`, `error_message`,"
+                "INSERT INTO `payments`(`payment_id`, `order_id`, `method_id`, `transaction_id`,"
+                    + " `amount`, `currency_code`, `status`, `processor_response`, `error_message`,"
                     + " `ip_address`, `created_at`, `processed_at`)\n"
                     + "VALUES ("),
-            Fragment.encode(OrdersId.pgType, unsaved.orderId()),
+            Fragment.encode(PaymentsId.dbType, unsaved.paymentId()),
             Fragment.lit(", "),
-            Fragment.encode(PaymentMethodsId.pgType, unsaved.methodId()),
+            Fragment.encode(OrdersId.dbType, unsaved.orderId()),
+            Fragment.lit(", "),
+            Fragment.encode(PaymentMethodsId.dbType, unsaved.methodId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar.opt(), unsaved.transactionId()),
             Fragment.lit(", "),
@@ -333,7 +323,7 @@ public class PaymentsRepoImpl implements PaymentsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text, unsaved.status()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.processorResponse()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.processorResponse()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar.opt(), unsaved.errorMessage()),
             Fragment.lit(", "),
@@ -361,7 +351,6 @@ public class PaymentsRepoImpl implements PaymentsRepo {
         .updateReturning(PaymentsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<PaymentsRow> upsertBatch(Iterator<PaymentsRow> unsaved, Connection c) {
@@ -388,5 +377,4 @@ public class PaymentsRepoImpl implements PaymentsRepo {
         .updateReturningEach(PaymentsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

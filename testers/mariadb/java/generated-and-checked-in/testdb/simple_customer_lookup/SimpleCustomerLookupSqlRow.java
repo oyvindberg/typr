@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple7;
 import java.time.LocalDateTime;
 import testdb.customer_status.CustomerStatusId;
 import testdb.customers.CustomersId;
@@ -28,7 +29,9 @@ public record SimpleCustomerLookupSqlRow(
     /** Points to {@link testdb.customers.CustomersRow#status()} */
     CustomerStatusId status,
     /** Points to {@link testdb.customers.CustomersRow#createdAt()} */
-    @JsonProperty("created_at") LocalDateTime createdAt) {
+    @JsonProperty("created_at") LocalDateTime createdAt)
+    implements Tuple7<
+        CustomersId, String, String, String, String, CustomerStatusId, LocalDateTime> {
   /** Points to {@link testdb.customers.CustomersRow#customerId()} */
   public SimpleCustomerLookupSqlRow withCustomerId(CustomersId customerId) {
     return new SimpleCustomerLookupSqlRow(
@@ -80,12 +83,12 @@ public record SimpleCustomerLookupSqlRow(
 
   public static RowParser<SimpleCustomerLookupSqlRow> _rowParser =
       RowParsers.of(
-          CustomersId.pgType,
+          CustomersId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.text,
-          CustomerStatusId.pgType,
+          CustomerStatusId.dbType,
           MariaTypes.datetime,
           SimpleCustomerLookupSqlRow::new,
           row ->
@@ -98,5 +101,47 @@ public record SimpleCustomerLookupSqlRow(
                 row.status(),
                 row.createdAt()
               });
+  ;
+
+  @Override
+  public CustomersId _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return email;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return firstName;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return lastName;
+  }
+  ;
+
+  @Override
+  public String _5() {
+    return tier;
+  }
+  ;
+
+  @Override
+  public CustomerStatusId _6() {
+    return status;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _7() {
+    return createdAt;
+  }
   ;
 }

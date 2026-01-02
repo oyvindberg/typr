@@ -7,6 +7,7 @@ package oracledb.all_scalar_types
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -26,7 +27,7 @@ case class AllScalarTypesRow(
   @JsonProperty("COL_TIMESTAMP") colTimestamp: Option[LocalDateTime],
   @JsonProperty("COL_CLOB") colClob: Option[String],
   @JsonProperty("COL_NOT_NULL") colNotNull: String
-) {
+) extends Tuple7[AllScalarTypesId, Option[String], Option[BigDecimal], Option[LocalDateTime], Option[LocalDateTime], Option[String], String] {
   def toUnsavedRow(id: Defaulted[AllScalarTypesId]): AllScalarTypesRowUnsaved = {
     new AllScalarTypesRowUnsaved(
       colVarchar2,
@@ -38,6 +39,20 @@ case class AllScalarTypesRow(
       id
     )
   }
+
+  override def `_1`: AllScalarTypesId = id
+
+  override def `_2`: Option[String] = colVarchar2
+
+  override def `_3`: Option[BigDecimal] = colNumber
+
+  override def `_4`: Option[LocalDateTime] = colDate
+
+  override def `_5`: Option[LocalDateTime] = colTimestamp
+
+  override def `_6`: Option[String] = colClob
+
+  override def `_7`: String = colNotNull
 }
 
 object AllScalarTypesRow {

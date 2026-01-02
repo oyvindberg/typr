@@ -6,6 +6,7 @@
 package testdb.product_search
 
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.data.Uint2
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.Fragment
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -14,7 +15,7 @@ import dev.typr.foundations.scala.Fragment.sql
 
 class ProductSearchSqlRepoImpl extends ProductSearchSqlRepo {
   override def apply(
-    brandId: Option[Int],
+    brandId: Option[Uint2],
     minPrice: Option[BigDecimal],
     maxPrice: Option[BigDecimal],
     status: Option[String],
@@ -30,7 +31,7 @@ class ProductSearchSqlRepoImpl extends ProductSearchSqlRepo {
            b.name AS brand_name
     FROM products p
     LEFT JOIN brands b ON p.brand_id = b.brand_id
-    WHERE (${Fragment.encode(ScalaDbTypes.MariaTypes.smallintUnsigned.nullable, brandId)} IS NULL OR p.brand_id = ${Fragment.encode(ScalaDbTypes.MariaTypes.smallintUnsigned.nullable, brandId)})
+    WHERE (${Fragment.encode(MariaTypes.smallintUnsigned.nullable, brandId)} IS NULL OR p.brand_id = ${Fragment.encode(MariaTypes.smallintUnsigned.nullable, brandId)})
       AND (${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, minPrice)} IS NULL OR p.base_price >= ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, minPrice)})
       AND (${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, maxPrice)} IS NULL OR p.base_price <= ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, maxPrice)})
       AND (${Fragment.encode(MariaTypes.text.nullable, status)} IS NULL OR p.status = ${Fragment.encode(MariaTypes.text.nullable, status)})

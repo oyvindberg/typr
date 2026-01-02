@@ -7,6 +7,7 @@ package testdb.products
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -22,7 +23,15 @@ data class ProductsRow(
   val name: String,
   val price: BigDecimal,
   val description: String?
-) {
+) : Tuple4<ProductsId, String, BigDecimal, String?> {
+  override fun _1(): ProductsId = productId
+
+  override fun _2(): String = name
+
+  override fun _3(): BigDecimal = price
+
+  override fun _4(): String? = description
+
   fun id(): ProductsId = productId
 
   fun toUnsavedRow(): ProductsRowUnsaved = ProductsRowUnsaved(name, price, description)

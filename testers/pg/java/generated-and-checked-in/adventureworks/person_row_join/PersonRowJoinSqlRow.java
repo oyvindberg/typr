@@ -9,13 +9,15 @@ import adventureworks.person.businessentity.BusinessentityId;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple3;
 import dev.typr.foundations.data.Record;
 import java.util.Optional;
 
 /** SQL file: person_row_join.sql */
 public record PersonRowJoinSqlRow(
     /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#businessentityid()} */
-    BusinessentityId businessentityid, Optional<Record[]> email, Optional<Record[]> emails) {
+    BusinessentityId businessentityid, Optional<Record[]> email, Optional<Record[]> emails)
+    implements Tuple3<BusinessentityId, Optional<Record[]>, Optional<Record[]>> {
   /** Points to {@link adventureworks.sales.salesperson.SalespersonRow#businessentityid()} */
   public PersonRowJoinSqlRow withBusinessentityid(BusinessentityId businessentityid) {
     return new PersonRowJoinSqlRow(businessentityid, email, emails);
@@ -34,10 +36,28 @@ public record PersonRowJoinSqlRow(
 
   public static RowParser<PersonRowJoinSqlRow> _rowParser =
       RowParsers.of(
-          BusinessentityId.pgType,
+          BusinessentityId.dbType,
           PgTypes.recordArray.opt(),
           PgTypes.recordArray.opt(),
           PersonRowJoinSqlRow::new,
           row -> new Object[] {row.businessentityid(), row.email(), row.emails()});
+  ;
+
+  @Override
+  public BusinessentityId _1() {
+    return businessentityid;
+  }
+  ;
+
+  @Override
+  public Optional<Record[]> _2() {
+    return email;
+  }
+  ;
+
+  @Override
+  public Optional<Record[]> _3() {
+    return emails;
+  }
   ;
 }

@@ -9,20 +9,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple6;
+import dev.typr.foundations.data.Uint8;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Optional;
 
 /** SQL file: cte_test.sql */
 public record CteTestSqlRow(
-    @JsonProperty("customer_id") BigInteger customerId,
+    @JsonProperty("customer_id") Uint8 customerId,
     String email,
     @JsonProperty("first_name") String firstName,
     @JsonProperty("order_count") Long orderCount,
     @JsonProperty("total_spent") BigDecimal totalSpent,
     /** Points to {@link testdb.brands.BrandsRow#name()} */
-    @JsonProperty("favorite_brand") Optional<String> favoriteBrand) {
-  public CteTestSqlRow withCustomerId(BigInteger customerId) {
+    @JsonProperty("favorite_brand") Optional<String> favoriteBrand)
+    implements Tuple6<Uint8, String, String, Long, BigDecimal, Optional<String>> {
+  public CteTestSqlRow withCustomerId(Uint8 customerId) {
     return new CteTestSqlRow(customerId, email, firstName, orderCount, totalSpent, favoriteBrand);
   }
   ;
@@ -71,5 +73,41 @@ public record CteTestSqlRow(
                 row.totalSpent(),
                 row.favoriteBrand()
               });
+  ;
+
+  @Override
+  public Uint8 _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return email;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return firstName;
+  }
+  ;
+
+  @Override
+  public Long _4() {
+    return orderCount;
+  }
+  ;
+
+  @Override
+  public BigDecimal _5() {
+    return totalSpent;
+  }
+  ;
+
+  @Override
+  public Optional<String> _6() {
+    return favoriteBrand;
+  }
   ;
 }

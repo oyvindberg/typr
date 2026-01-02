@@ -7,83 +7,80 @@ package testdb.nullability_test
 
 import dev.typr.foundations.Db2Types
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr4
 
-trait NullabilityTestFields extends FieldsExpr0[NullabilityTestRow] {
-  def id: Field[Int, NullabilityTestRow]
+class NullabilityTestFields(val `_path`: java.util.List[Path]) extends TupleExpr4[Int, String, String, String] with RelationStructure[NullabilityTestFields, NullabilityTestRow]  with FieldsBase[NullabilityTestRow] {
+  def id: Field[Int, NullabilityTestRow] = {
+    new Field[Int, NullabilityTestRow](
+      _path,
+      "ID",
+      _.id,
+      None,
+      None,
+      (row, value) => row.copy(id = value),
+      ScalaDbTypes.Db2Types.integer
+    )
+  }
 
-  def requiredCol: Field[String, NullabilityTestRow]
+  def requiredCol: Field[String, NullabilityTestRow] = {
+    new Field[String, NullabilityTestRow](
+      _path,
+      "REQUIRED_COL",
+      _.requiredCol,
+      None,
+      None,
+      (row, value) => row.copy(requiredCol = value),
+      Db2Types.varchar
+    )
+  }
 
-  def optionalCol: OptField[String, NullabilityTestRow]
+  def optionalCol: OptField[String, NullabilityTestRow] = {
+    new OptField[String, NullabilityTestRow](
+      _path,
+      "OPTIONAL_COL",
+      _.optionalCol,
+      None,
+      None,
+      (row, value) => row.copy(optionalCol = value),
+      Db2Types.varchar
+    )
+  }
 
-  def defaultedCol: OptField[String, NullabilityTestRow]
+  def defaultedCol: OptField[String, NullabilityTestRow] = {
+    new OptField[String, NullabilityTestRow](
+      _path,
+      "DEFAULTED_COL",
+      _.defaultedCol,
+      None,
+      None,
+      (row, value) => row.copy(defaultedCol = value),
+      Db2Types.varchar
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, NullabilityTestRow]]
+  override def columns: java.util.List[FieldLike[?, NullabilityTestRow]] = java.util.List.of(this.id.underlying, this.requiredCol.underlying, this.optionalCol.underlying, this.defaultedCol.underlying)
 
   override def rowParser: RowParser[NullabilityTestRow] = NullabilityTestRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[NullabilityTestFields, NullabilityTestRow] = new NullabilityTestFields(`_path`)
+
+  override def `_1`: SqlExpr[Int] = id
+
+  override def `_2`: SqlExpr[String] = requiredCol
+
+  override def `_3`: SqlExpr[String] = optionalCol
+
+  override def `_4`: SqlExpr[String] = defaultedCol
 }
 
 object NullabilityTestFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends NullabilityTestFields with RelationStructure[NullabilityTestFields, NullabilityTestRow] {
-
-    override def id: Field[Int, NullabilityTestRow] = {
-      new Field[Int, NullabilityTestRow](
-        _path,
-        "ID",
-        _.id,
-        None,
-        None,
-        (row, value) => row.copy(id = value),
-        ScalaDbTypes.Db2Types.integer
-      )
-    }
-
-    override def requiredCol: Field[String, NullabilityTestRow] = {
-      new Field[String, NullabilityTestRow](
-        _path,
-        "REQUIRED_COL",
-        _.requiredCol,
-        None,
-        None,
-        (row, value) => row.copy(requiredCol = value),
-        Db2Types.varchar
-      )
-    }
-
-    override def optionalCol: OptField[String, NullabilityTestRow] = {
-      new OptField[String, NullabilityTestRow](
-        _path,
-        "OPTIONAL_COL",
-        _.optionalCol,
-        None,
-        None,
-        (row, value) => row.copy(optionalCol = value),
-        Db2Types.varchar
-      )
-    }
-
-    override def defaultedCol: OptField[String, NullabilityTestRow] = {
-      new OptField[String, NullabilityTestRow](
-        _path,
-        "DEFAULTED_COL",
-        _.defaultedCol,
-        None,
-        None,
-        (row, value) => row.copy(defaultedCol = value),
-        Db2Types.varchar
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, NullabilityTestRow]] = java.util.List.of(this.id.underlying, this.requiredCol.underlying, this.optionalCol.underlying, this.defaultedCol.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[NullabilityTestFields, NullabilityTestRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: NullabilityTestFields = new NullabilityTestFields(java.util.Collections.emptyList())
 }

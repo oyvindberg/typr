@@ -6,6 +6,7 @@
 package testdb.order_items
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -14,7 +15,11 @@ import dev.typr.foundations.scala.ScalaDbTypes
 case class OrderItemsId(
   @JsonProperty("order_id") orderId: Int,
   @JsonProperty("product_id") productId: Int
-)
+) extends Tuple2[Int, Int] {
+  override def `_1`: Int = orderId
+
+  override def `_2`: Int = productId
+}
 
 object OrderItemsId {
   val `_rowParser`: RowParser[OrderItemsId] = RowParsers.of(ScalaDbTypes.DuckDbTypes.integer, ScalaDbTypes.DuckDbTypes.integer)(OrderItemsId.apply)(row => Array[Any](row.orderId, row.productId))

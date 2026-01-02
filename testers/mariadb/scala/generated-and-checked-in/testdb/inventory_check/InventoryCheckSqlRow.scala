@@ -7,6 +7,7 @@ package testdb.inventory_check
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple12
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -35,14 +36,38 @@ case class InventoryCheckSqlRow(
   @JsonProperty("quantity_on_hand") quantityOnHand: Int,
   /** Points to [[testdb.inventory.InventoryRow.quantityReserved]] */
   @JsonProperty("quantity_reserved") quantityReserved: Int,
-  /** Points to [[testdb.inventory.InventoryRow.quantityOnHand]] */
+  /** Points to [[testdb.inventory.InventoryRow.quantityReserved]] */
   available: Int,
   /** Points to [[testdb.inventory.InventoryRow.reorderPoint]] */
   @JsonProperty("reorder_point") reorderPoint: Int,
   /** Points to [[testdb.inventory.InventoryRow.binLocation]] */
   @JsonProperty("bin_location") binLocation: Option[String]
-)
+) extends Tuple12[InventoryId, ProductsId, String, String, WarehousesId, String, String, Int, Int, Int, Int, Option[String]] {
+  override def `_1`: InventoryId = inventoryId
+
+  override def `_2`: ProductsId = productId
+
+  override def `_3`: String = sku
+
+  override def `_4`: String = productName
+
+  override def `_5`: WarehousesId = warehouseId
+
+  override def `_6`: String = warehouseCode
+
+  override def `_7`: String = warehouseName
+
+  override def `_8`: Int = quantityOnHand
+
+  override def `_9`: Int = quantityReserved
+
+  override def `_10`: Int = available
+
+  override def `_11`: Int = reorderPoint
+
+  override def `_12`: Option[String] = binLocation
+}
 
 object InventoryCheckSqlRow {
-  val `_rowParser`: RowParser[InventoryCheckSqlRow] = RowParsers.of(InventoryId.pgType, ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, MariaTypes.varchar.nullable)(InventoryCheckSqlRow.apply)(row => Array[Any](row.inventoryId, row.productId, row.sku, row.productName, row.warehouseId, row.warehouseCode, row.warehouseName, row.quantityOnHand, row.quantityReserved, row.available, row.reorderPoint, row.binLocation))
+  val `_rowParser`: RowParser[InventoryCheckSqlRow] = RowParsers.of(InventoryId.dbType, ProductsId.dbType, MariaTypes.varchar, MariaTypes.varchar, WarehousesId.dbType, MariaTypes.char_, MariaTypes.varchar, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, ScalaDbTypes.MariaTypes.int_, MariaTypes.varchar.nullable)(InventoryCheckSqlRow.apply)(row => Array[Any](row.inventoryId, row.productId, row.sku, row.productName, row.warehouseId, row.warehouseCode, row.warehouseName, row.quantityOnHand, row.quantityReserved, row.available, row.reorderPoint, row.binLocation))
 }

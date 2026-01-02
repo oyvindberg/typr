@@ -21,29 +21,29 @@ import typr.generated.Text
 case class CardinalNumber(value: Int)
 
 object CardinalNumber {
-  implicit lazy val arrayColumn: Column[Array[CardinalNumber]] = Column.columnToArray(column, implicitly)
+  given arrayColumn: Column[Array[CardinalNumber]] = Column.columnToArray(using column, summon)
 
-  implicit lazy val arrayToStatement: ToStatement[Array[CardinalNumber]] = typr.generated.IntArrayToStatement.contramap(_.map(_.value))
+  given arrayToStatement: ToStatement[Array[CardinalNumber]] = typr.generated.IntArrayToStatement.contramap(_.map(_.value))
 
-  implicit lazy val column: Column[CardinalNumber] = Column.columnToInt.map(CardinalNumber.apply)
+  given column: Column[CardinalNumber] = Column.columnToInt.map(CardinalNumber.apply)
 
-  implicit lazy val parameterMetadata: ParameterMetaData[CardinalNumber] = {
+  given parameterMetadata: ParameterMetaData[CardinalNumber] = {
     new ParameterMetaData[CardinalNumber] {
       override def sqlType: String = """"information_schema"."cardinal_number""""
       override def jdbcType: Int = Types.OTHER
     }
   }
 
-  implicit lazy val pgText: Text[CardinalNumber] = {
+  given pgText: Text[CardinalNumber] = {
     new Text[CardinalNumber] {
       override def unsafeEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeEncode(v.value, sb)
       override def unsafeArrayEncode(v: CardinalNumber, sb: StringBuilder): Unit = Text.intInstance.unsafeArrayEncode(v.value, sb)
     }
   }
 
-  implicit lazy val reads: Reads[CardinalNumber] = Reads.IntReads.map(CardinalNumber.apply)
+  given reads: Reads[CardinalNumber] = Reads.IntReads.map(CardinalNumber.apply)
 
-  implicit lazy val toStatement: ToStatement[CardinalNumber] = ToStatement.intToStatement.contramap(_.value)
+  given toStatement: ToStatement[CardinalNumber] = ToStatement.intToStatement.contramap(_.value)
 
-  implicit lazy val writes: Writes[CardinalNumber] = Writes.IntWrites.contramap(_.value)
+  given writes: Writes[CardinalNumber] = Writes.IntWrites.contramap(_.value)
 }

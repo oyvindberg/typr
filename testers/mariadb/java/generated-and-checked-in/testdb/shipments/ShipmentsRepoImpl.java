@@ -27,27 +27,25 @@ import testdb.warehouses.WarehousesId;
 public class ShipmentsRepoImpl implements ShipmentsRepo {
   @Override
   public DeleteBuilder<ShipmentsFields, ShipmentsRow> delete() {
-    return DeleteBuilder.of("`shipments`", ShipmentsFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`shipments`", ShipmentsFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(ShipmentsId shipmentId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `shipments` where `shipment_id` = "),
-                Fragment.encode(ShipmentsId.pgType, shipmentId),
+                Fragment.encode(ShipmentsId.dbType, shipmentId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(ShipmentsId[] shipmentIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : shipmentIds) {
-      fragments.add(Fragment.encode(ShipmentsId.pgType, id));
+      fragments.add(Fragment.encode(ShipmentsId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -57,7 +55,6 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ShipmentsRow insert(ShipmentsRow unsaved, Connection c) {
@@ -69,9 +66,9 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
                     + " `insurance_amount`, `origin_warehouse_id`, `shipped_at`, `created_at`,"
                     + " `updated_at`)\n"
                     + "values ("),
-            Fragment.encode(OrdersId.pgType, unsaved.orderId()),
+            Fragment.encode(OrdersId.dbType, unsaved.orderId()),
             Fragment.lit(", "),
-            Fragment.encode(ShippingCarriersId.pgType, unsaved.carrierId()),
+            Fragment.encode(ShippingCarriersId.dbType, unsaved.carrierId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar.opt(), unsaved.trackingNumber()),
             Fragment.lit(", "),
@@ -79,7 +76,7 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.numeric.opt(), unsaved.weightKg()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.dimensionsJson()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.dimensionsJson()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.longblob.opt(), unsaved.labelData()),
             Fragment.lit(", "),
@@ -93,7 +90,7 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.numeric.opt(), unsaved.insuranceAmount()),
             Fragment.lit(", "),
-            Fragment.encode(WarehousesId.pgType.opt(), unsaved.originWarehouseId()),
+            Fragment.encode(WarehousesId.dbType.opt(), unsaved.originWarehouseId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.datetime.opt(), unsaved.shippedAt()),
             Fragment.lit(", "),
@@ -110,7 +107,6 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
         .updateReturning(ShipmentsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ShipmentsRow insert(ShipmentsRowUnsaved unsaved, Connection c) {
@@ -119,11 +115,11 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
     ArrayList<Fragment> values = new ArrayList<>();
     ;
     columns.add(Fragment.lit("`order_id`"));
-    values.add(interpolate(Fragment.encode(OrdersId.pgType, unsaved.orderId()), Fragment.lit("")));
+    values.add(interpolate(Fragment.encode(OrdersId.dbType, unsaved.orderId()), Fragment.lit("")));
     columns.add(Fragment.lit("`carrier_id`"));
     values.add(
         interpolate(
-            Fragment.encode(ShippingCarriersId.pgType, unsaved.carrierId()), Fragment.lit("")));
+            Fragment.encode(ShippingCarriersId.dbType, unsaved.carrierId()), Fragment.lit("")));
     columns.add(Fragment.lit("`shipping_method`"));
     values.add(
         interpolate(
@@ -158,7 +154,7 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
             value -> {
               columns.add(Fragment.lit("`dimensions_json`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(MariaTypes.json.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -217,7 +213,7 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
             value -> {
               columns.add(Fragment.lit("`origin_warehouse_id`"));
               values.add(
-                  interpolate(Fragment.encode(WarehousesId.pgType.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(WarehousesId.dbType.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -266,14 +262,12 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
     ;
     return q.updateReturning(ShipmentsRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<ShipmentsFields, ShipmentsRow> select() {
     return SelectBuilder.of(
-        "`shipments`", ShipmentsFields.structure(), ShipmentsRow._rowParser, Dialect.MARIADB);
+        "`shipments`", ShipmentsFields.structure, ShipmentsRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<ShipmentsRow> selectAll(Connection c) {
@@ -288,7 +282,6 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
         .query(ShipmentsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<ShipmentsRow> selectById(ShipmentsId shipmentId, Connection c) {
@@ -301,18 +294,17 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
                     + " `updated_at`\n"
                     + "from `shipments`\n"
                     + "where `shipment_id` = "),
-            Fragment.encode(ShipmentsId.pgType, shipmentId),
+            Fragment.encode(ShipmentsId.dbType, shipmentId),
             Fragment.lit(""))
         .query(ShipmentsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ShipmentsRow> selectByIds(ShipmentsId[] shipmentIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : shipmentIds) {
-      fragments.add(Fragment.encode(ShipmentsId.pgType, id));
+      fragments.add(Fragment.encode(ShipmentsId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -327,7 +319,6 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
         .query(ShipmentsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<ShipmentsId, ShipmentsRow> selectByIdsTracked(
@@ -336,14 +327,12 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
     selectByIds(shipmentIds, c).forEach(row -> ret.put(row.shipmentId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<ShipmentsFields, ShipmentsRow> update() {
     return UpdateBuilder.of(
-        "`shipments`", ShipmentsFields.structure(), ShipmentsRow._rowParser, Dialect.MARIADB);
+        "`shipments`", ShipmentsFields.structure, ShipmentsRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(ShipmentsRow row, Connection c) {
@@ -351,9 +340,9 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
     ;
     return interpolate(
                 Fragment.lit("update `shipments`\nset `order_id` = "),
-                Fragment.encode(OrdersId.pgType, row.orderId()),
+                Fragment.encode(OrdersId.dbType, row.orderId()),
                 Fragment.lit(",\n`carrier_id` = "),
-                Fragment.encode(ShippingCarriersId.pgType, row.carrierId()),
+                Fragment.encode(ShippingCarriersId.dbType, row.carrierId()),
                 Fragment.lit(",\n`tracking_number` = "),
                 Fragment.encode(MariaTypes.varchar.opt(), row.trackingNumber()),
                 Fragment.lit(",\n`shipping_method` = "),
@@ -361,7 +350,7 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
                 Fragment.lit(",\n`weight_kg` = "),
                 Fragment.encode(MariaTypes.numeric.opt(), row.weightKg()),
                 Fragment.lit(",\n`dimensions_json` = "),
-                Fragment.encode(MariaTypes.longtext.opt(), row.dimensionsJson()),
+                Fragment.encode(MariaTypes.json.opt(), row.dimensionsJson()),
                 Fragment.lit(",\n`label_data` = "),
                 Fragment.encode(MariaTypes.longblob.opt(), row.labelData()),
                 Fragment.lit(",\n`status` = "),
@@ -375,7 +364,7 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
                 Fragment.lit(",\n`insurance_amount` = "),
                 Fragment.encode(MariaTypes.numeric.opt(), row.insuranceAmount()),
                 Fragment.lit(",\n`origin_warehouse_id` = "),
-                Fragment.encode(WarehousesId.pgType.opt(), row.originWarehouseId()),
+                Fragment.encode(WarehousesId.dbType.opt(), row.originWarehouseId()),
                 Fragment.lit(",\n`shipped_at` = "),
                 Fragment.encode(MariaTypes.datetime.opt(), row.shippedAt()),
                 Fragment.lit(",\n`created_at` = "),
@@ -383,27 +372,28 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
                 Fragment.lit(",\n`updated_at` = "),
                 Fragment.encode(MariaTypes.datetime, row.updatedAt()),
                 Fragment.lit("\nwhere `shipment_id` = "),
-                Fragment.encode(ShipmentsId.pgType, shipmentId),
+                Fragment.encode(ShipmentsId.dbType, shipmentId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public ShipmentsRow upsert(ShipmentsRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `shipments`(`order_id`, `carrier_id`, `tracking_number`,"
-                    + " `shipping_method`, `weight_kg`, `dimensions_json`, `label_data`, `status`,"
-                    + " `estimated_delivery_date`, `actual_delivery_at`, `shipping_cost`,"
-                    + " `insurance_amount`, `origin_warehouse_id`, `shipped_at`, `created_at`,"
-                    + " `updated_at`)\n"
+                "INSERT INTO `shipments`(`shipment_id`, `order_id`, `carrier_id`,"
+                    + " `tracking_number`, `shipping_method`, `weight_kg`, `dimensions_json`,"
+                    + " `label_data`, `status`, `estimated_delivery_date`, `actual_delivery_at`,"
+                    + " `shipping_cost`, `insurance_amount`, `origin_warehouse_id`, `shipped_at`,"
+                    + " `created_at`, `updated_at`)\n"
                     + "VALUES ("),
-            Fragment.encode(OrdersId.pgType, unsaved.orderId()),
+            Fragment.encode(ShipmentsId.dbType, unsaved.shipmentId()),
             Fragment.lit(", "),
-            Fragment.encode(ShippingCarriersId.pgType, unsaved.carrierId()),
+            Fragment.encode(OrdersId.dbType, unsaved.orderId()),
+            Fragment.lit(", "),
+            Fragment.encode(ShippingCarriersId.dbType, unsaved.carrierId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar.opt(), unsaved.trackingNumber()),
             Fragment.lit(", "),
@@ -411,7 +401,7 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.numeric.opt(), unsaved.weightKg()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.dimensionsJson()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.dimensionsJson()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.longblob.opt(), unsaved.labelData()),
             Fragment.lit(", "),
@@ -425,7 +415,7 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.numeric.opt(), unsaved.insuranceAmount()),
             Fragment.lit(", "),
-            Fragment.encode(WarehousesId.pgType.opt(), unsaved.originWarehouseId()),
+            Fragment.encode(WarehousesId.dbType.opt(), unsaved.originWarehouseId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.datetime.opt(), unsaved.shippedAt()),
             Fragment.lit(", "),
@@ -458,7 +448,6 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
         .updateReturning(ShipmentsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ShipmentsRow> upsertBatch(Iterator<ShipmentsRow> unsaved, Connection c) {
@@ -494,5 +483,4 @@ public class ShipmentsRepoImpl implements ShipmentsRepo {
         .updateReturningEach(ShipmentsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

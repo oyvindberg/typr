@@ -7,122 +7,129 @@ package oracledb.products;
 
 import dev.typr.foundations.OracleTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5;
 import java.util.List;
 import java.util.Optional;
 import oracledb.MoneyT;
 import oracledb.TagVarrayT;
 
-public interface ProductsFields extends FieldsExpr<ProductsRow> {
-  record Impl(List<Path> _path)
-      implements ProductsFields, RelationStructure<ProductsFields, ProductsRow> {
-    @Override
-    public IdField<ProductsId, ProductsRow> productId() {
-      return new IdField<ProductsId, ProductsRow>(
-          _path,
-          "PRODUCT_ID",
-          ProductsRow::productId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withProductId(value),
-          ProductsId.oracleType);
-    }
-    ;
+public class ProductsFields
+    implements TupleExpr5<ProductsId, String, String, MoneyT, TagVarrayT>,
+        RelationStructure<ProductsFields, ProductsRow>,
+        FieldsBase<ProductsRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, ProductsRow> sku() {
-      return new Field<String, ProductsRow>(
-          _path,
-          "SKU",
-          ProductsRow::sku,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withSku(value),
-          OracleTypes.varchar2);
-    }
-    ;
-
-    @Override
-    public Field<String, ProductsRow> name() {
-      return new Field<String, ProductsRow>(
-          _path,
-          "NAME",
-          ProductsRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          OracleTypes.varchar2);
-    }
-    ;
-
-    @Override
-    public Field<MoneyT, ProductsRow> price() {
-      return new Field<MoneyT, ProductsRow>(
-          _path,
-          "PRICE",
-          ProductsRow::price,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPrice(value),
-          MoneyT.oracleType);
-    }
-    ;
-
-    @Override
-    public OptField<TagVarrayT, ProductsRow> tags() {
-      return new OptField<TagVarrayT, ProductsRow>(
-          _path,
-          "TAGS",
-          ProductsRow::tags,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTags(value),
-          TagVarrayT.oracleType);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, ProductsRow>> columns() {
-      return java.util.List.of(
-          this.productId(), this.sku(), this.name(), this.price(), this.tags());
-    }
-    ;
-
-    @Override
-    public RelationStructure<ProductsFields, ProductsRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public ProductsFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static ProductsFields structure = new ProductsFields(java.util.Collections.emptyList());
+
+  public IdField<ProductsId, ProductsRow> productId() {
+    return new IdField<ProductsId, ProductsRow>(
+        _path,
+        "PRODUCT_ID",
+        ProductsRow::productId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withProductId(value),
+        ProductsId.oracleType);
   }
-  ;
 
-  IdField<ProductsId, ProductsRow> productId();
+  public Field<String, ProductsRow> sku() {
+    return new Field<String, ProductsRow>(
+        _path,
+        "SKU",
+        ProductsRow::sku,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withSku(value),
+        OracleTypes.varchar2);
+  }
 
-  Field<String, ProductsRow> sku();
+  public Field<String, ProductsRow> name() {
+    return new Field<String, ProductsRow>(
+        _path,
+        "NAME",
+        ProductsRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        OracleTypes.varchar2);
+  }
 
-  Field<String, ProductsRow> name();
+  public Field<MoneyT, ProductsRow> price() {
+    return new Field<MoneyT, ProductsRow>(
+        _path,
+        "PRICE",
+        ProductsRow::price,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPrice(value),
+        MoneyT.oracleType);
+  }
 
-  Field<MoneyT, ProductsRow> price();
-
-  OptField<TagVarrayT, ProductsRow> tags();
+  public OptField<TagVarrayT, ProductsRow> tags() {
+    return new OptField<TagVarrayT, ProductsRow>(
+        _path,
+        "TAGS",
+        ProductsRow::tags,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTags(value),
+        TagVarrayT.oracleType);
+  }
 
   @Override
-  List<FieldLike<?, ProductsRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<ProductsRow> rowParser() {
+  public List<FieldLike<?, ProductsRow>> columns() {
+    return java.util.List.of(this.productId(), this.sku(), this.name(), this.price(), this.tags());
+  }
+
+  @Override
+  public RowParser<ProductsRow> rowParser() {
     return ProductsRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<ProductsFields, ProductsRow> withPaths(List<Path> _path) {
+    return new ProductsFields(_path);
+  }
+
+  @Override
+  public SqlExpr<ProductsId> _1() {
+    return productId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return sku();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<MoneyT> _4() {
+    return price();
+  }
+
+  @Override
+  public SqlExpr<TagVarrayT> _5() {
+    return tags();
+  }
 }

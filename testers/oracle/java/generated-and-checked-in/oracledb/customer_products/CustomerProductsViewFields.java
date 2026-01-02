@@ -7,144 +7,153 @@ package oracledb.customer_products;
 
 import dev.typr.foundations.OracleTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr6;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import oracledb.AddressT;
 import oracledb.MoneyT;
 
-public interface CustomerProductsViewFields extends FieldsExpr<CustomerProductsViewRow> {
-  record Impl(List<Path> _path)
-      implements CustomerProductsViewFields,
-          RelationStructure<CustomerProductsViewFields, CustomerProductsViewRow> {
-    @Override
-    public Field<BigDecimal, CustomerProductsViewRow> customerId() {
-      return new Field<BigDecimal, CustomerProductsViewRow>(
-          _path,
-          "CUSTOMER_ID",
-          CustomerProductsViewRow::customerId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerId(value),
-          OracleTypes.number);
-    }
-    ;
+public class CustomerProductsViewFields
+    implements TupleExpr6<BigDecimal, String, AddressT, BigDecimal, String, MoneyT>,
+        RelationStructure<CustomerProductsViewFields, CustomerProductsViewRow>,
+        FieldsBase<CustomerProductsViewRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, CustomerProductsViewRow> customerName() {
-      return new Field<String, CustomerProductsViewRow>(
-          _path,
-          "CUSTOMER_NAME",
-          CustomerProductsViewRow::customerName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerName(value),
-          OracleTypes.varchar2);
-    }
-    ;
-
-    @Override
-    public OptField<AddressT, CustomerProductsViewRow> billingAddress() {
-      return new OptField<AddressT, CustomerProductsViewRow>(
-          _path,
-          "BILLING_ADDRESS",
-          CustomerProductsViewRow::billingAddress,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withBillingAddress(value),
-          AddressT.oracleType);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, CustomerProductsViewRow> productId() {
-      return new Field<BigDecimal, CustomerProductsViewRow>(
-          _path,
-          "PRODUCT_ID",
-          CustomerProductsViewRow::productId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withProductId(value),
-          OracleTypes.number);
-    }
-    ;
-
-    @Override
-    public Field<String, CustomerProductsViewRow> productName() {
-      return new Field<String, CustomerProductsViewRow>(
-          _path,
-          "PRODUCT_NAME",
-          CustomerProductsViewRow::productName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withProductName(value),
-          OracleTypes.varchar2);
-    }
-    ;
-
-    @Override
-    public OptField<MoneyT, CustomerProductsViewRow> price() {
-      return new OptField<MoneyT, CustomerProductsViewRow>(
-          _path,
-          "PRICE",
-          CustomerProductsViewRow::price,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPrice(value),
-          MoneyT.oracleType);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, CustomerProductsViewRow>> columns() {
-      return java.util.List.of(
-          this.customerId(),
-          this.customerName(),
-          this.billingAddress(),
-          this.productId(),
-          this.productName(),
-          this.price());
-    }
-    ;
-
-    @Override
-    public RelationStructure<CustomerProductsViewFields, CustomerProductsViewRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public CustomerProductsViewFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static CustomerProductsViewFields structure =
+      new CustomerProductsViewFields(java.util.Collections.emptyList());
+
+  public Field<BigDecimal, CustomerProductsViewRow> customerId() {
+    return new Field<BigDecimal, CustomerProductsViewRow>(
+        _path,
+        "CUSTOMER_ID",
+        CustomerProductsViewRow::customerId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerId(value),
+        OracleTypes.number);
   }
-  ;
 
-  Field<BigDecimal, CustomerProductsViewRow> customerId();
+  public Field<String, CustomerProductsViewRow> customerName() {
+    return new Field<String, CustomerProductsViewRow>(
+        _path,
+        "CUSTOMER_NAME",
+        CustomerProductsViewRow::customerName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerName(value),
+        OracleTypes.varchar2);
+  }
 
-  Field<String, CustomerProductsViewRow> customerName();
+  public OptField<AddressT, CustomerProductsViewRow> billingAddress() {
+    return new OptField<AddressT, CustomerProductsViewRow>(
+        _path,
+        "BILLING_ADDRESS",
+        CustomerProductsViewRow::billingAddress,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withBillingAddress(value),
+        AddressT.oracleType);
+  }
 
-  OptField<AddressT, CustomerProductsViewRow> billingAddress();
+  public Field<BigDecimal, CustomerProductsViewRow> productId() {
+    return new Field<BigDecimal, CustomerProductsViewRow>(
+        _path,
+        "PRODUCT_ID",
+        CustomerProductsViewRow::productId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withProductId(value),
+        OracleTypes.number);
+  }
 
-  Field<BigDecimal, CustomerProductsViewRow> productId();
+  public Field<String, CustomerProductsViewRow> productName() {
+    return new Field<String, CustomerProductsViewRow>(
+        _path,
+        "PRODUCT_NAME",
+        CustomerProductsViewRow::productName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withProductName(value),
+        OracleTypes.varchar2);
+  }
 
-  Field<String, CustomerProductsViewRow> productName();
-
-  OptField<MoneyT, CustomerProductsViewRow> price();
+  public OptField<MoneyT, CustomerProductsViewRow> price() {
+    return new OptField<MoneyT, CustomerProductsViewRow>(
+        _path,
+        "PRICE",
+        CustomerProductsViewRow::price,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPrice(value),
+        MoneyT.oracleType);
+  }
 
   @Override
-  List<FieldLike<?, CustomerProductsViewRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<CustomerProductsViewRow> rowParser() {
+  public List<FieldLike<?, CustomerProductsViewRow>> columns() {
+    return java.util.List.of(
+        this.customerId(),
+        this.customerName(),
+        this.billingAddress(),
+        this.productId(),
+        this.productName(),
+        this.price());
+  }
+
+  @Override
+  public RowParser<CustomerProductsViewRow> rowParser() {
     return CustomerProductsViewRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<CustomerProductsViewFields, CustomerProductsViewRow> withPaths(
+      List<Path> _path) {
+    return new CustomerProductsViewFields(_path);
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _1() {
+    return customerId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return customerName();
+  }
+
+  @Override
+  public SqlExpr<AddressT> _3() {
+    return billingAddress();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _4() {
+    return productId();
+  }
+
+  @Override
+  public SqlExpr<String> _5() {
+    return productName();
+  }
+
+  @Override
+  public SqlExpr<MoneyT> _6() {
+    return price();
+  }
 }

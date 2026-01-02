@@ -1,0 +1,3 @@
+select humanresourcesdepartment0."departmentid", humanresourcesdepartment0."name", humanresourcesdepartment0."groupname", humanresourcesdepartment0."modifieddate"
+from (select * from "humanresources"."department" humanresourcesdepartment0 where ((humanresourcesdepartment0)."name" , (humanresourcesdepartment0)."groupname" , (humanresourcesdepartment0)."departmentid" ) IN (select humanresourcesdepartment0."name" , humanresourcesdepartment0."groupname" , humanresourcesdepartment0."departmentid" 
+from (SELECT * FROM "humanresources"."department" humanresourcesdepartment0 WHERE ((humanresourcesdepartment0)."groupname"  = ?::"public"."Name")) humanresourcesdepartment0)) humanresourcesdepartment0

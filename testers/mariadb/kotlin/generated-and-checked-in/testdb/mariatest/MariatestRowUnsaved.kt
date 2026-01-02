@@ -6,11 +6,15 @@
 package testdb.mariatest
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint2
+import dev.typr.foundations.data.Uint4
+import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.data.maria.Inet4
 import dev.typr.foundations.data.maria.Inet6
 import dev.typr.foundations.data.maria.MariaSet
 import java.math.BigDecimal
-import java.math.BigInteger
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -31,15 +35,15 @@ data class MariatestRowUnsaved(
   /**  */
   @JsonProperty("bigint_col") val bigintCol: Long,
   /**  */
-  @JsonProperty("tinyint_u_col") val tinyintUCol: Short,
+  @JsonProperty("tinyint_u_col") val tinyintUCol: Uint1,
   /**  */
-  @JsonProperty("smallint_u_col") val smallintUCol: Int,
+  @JsonProperty("smallint_u_col") val smallintUCol: Uint2,
   /**  */
-  @JsonProperty("mediumint_u_col") val mediumintUCol: Int,
+  @JsonProperty("mediumint_u_col") val mediumintUCol: Uint4,
   /**  */
-  @JsonProperty("int_u_col") val intUCol: Long,
+  @JsonProperty("int_u_col") val intUCol: Uint4,
   /**  */
-  @JsonProperty("bigint_u_col") val bigintUCol: BigInteger,
+  @JsonProperty("bigint_u_col") val bigintUCol: Uint8,
   /**  */
   @JsonProperty("decimal_col") val decimalCol: BigDecimal,
   /**  */
@@ -91,11 +95,9 @@ data class MariatestRowUnsaved(
   /**  */
   @JsonProperty("year_col") val yearCol: Year,
   /**  */
-  @JsonProperty("enum_col") val enumCol: String,
-  /**  */
   @JsonProperty("set_col") val setCol: MariaSet,
   /**  */
-  @JsonProperty("json_col") val jsonCol: String,
+  @JsonProperty("json_col") val jsonCol: Json,
   /**  */
   @JsonProperty("inet4_col") val inet4Col: Inet4,
   /**  */
@@ -112,5 +114,5 @@ data class MariatestRowUnsaved(
   fun toRow(
     timestampColDefault: () -> LocalDateTime,
     timestampFspColDefault: () -> LocalDateTime
-  ): MariatestRow = MariatestRow(tinyintCol = tinyintCol, smallintCol = smallintCol, mediumintCol = mediumintCol, intCol = intCol, bigintCol = bigintCol, tinyintUCol = tinyintUCol, smallintUCol = smallintUCol, mediumintUCol = mediumintUCol, intUCol = intUCol, bigintUCol = bigintUCol, decimalCol = decimalCol, numericCol = numericCol, floatCol = floatCol, doubleCol = doubleCol, boolCol = boolCol, bitCol = bitCol, bit1Col = bit1Col, charCol = charCol, varcharCol = varcharCol, tinytextCol = tinytextCol, textCol = textCol, mediumtextCol = mediumtextCol, longtextCol = longtextCol, binaryCol = binaryCol, varbinaryCol = varbinaryCol, tinyblobCol = tinyblobCol, blobCol = blobCol, mediumblobCol = mediumblobCol, longblobCol = longblobCol, dateCol = dateCol, timeCol = timeCol, timeFspCol = timeFspCol, datetimeCol = datetimeCol, datetimeFspCol = datetimeFspCol, timestampCol = timestampCol.getOrElse(timestampColDefault), timestampFspCol = timestampFspCol.getOrElse(timestampFspColDefault), yearCol = yearCol, enumCol = enumCol, setCol = setCol, jsonCol = jsonCol, inet4Col = inet4Col, inet6Col = inet6Col)
+  ): MariatestRow = MariatestRow(tinyintCol = tinyintCol, smallintCol = smallintCol, mediumintCol = mediumintCol, intCol = intCol, bigintCol = bigintCol, tinyintUCol = tinyintUCol, smallintUCol = smallintUCol, mediumintUCol = mediumintUCol, intUCol = intUCol, bigintUCol = bigintUCol, decimalCol = decimalCol, numericCol = numericCol, floatCol = floatCol, doubleCol = doubleCol, boolCol = boolCol, bitCol = bitCol, bit1Col = bit1Col, charCol = charCol, varcharCol = varcharCol, tinytextCol = tinytextCol, textCol = textCol, mediumtextCol = mediumtextCol, longtextCol = longtextCol, binaryCol = binaryCol, varbinaryCol = varbinaryCol, tinyblobCol = tinyblobCol, blobCol = blobCol, mediumblobCol = mediumblobCol, longblobCol = longblobCol, dateCol = dateCol, timeCol = timeCol, timeFspCol = timeFspCol, datetimeCol = datetimeCol, datetimeFspCol = datetimeFspCol, timestampCol = timestampCol.getOrElse(timestampColDefault), timestampFspCol = timestampFspCol.getOrElse(timestampFspColDefault), yearCol = yearCol, setCol = setCol, jsonCol = jsonCol, inet4Col = inet4Col, inet6Col = inet6Col)
 }

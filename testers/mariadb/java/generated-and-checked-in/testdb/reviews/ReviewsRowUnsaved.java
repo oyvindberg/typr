@@ -6,6 +6,9 @@
 package testdb.reviews;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.typr.foundations.data.Json;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint4;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import testdb.customers.CustomersId;
@@ -21,7 +24,7 @@ public record ReviewsRowUnsaved(
     /** Points to {@link testdb.customers.CustomersRow#customerId()} */
     @JsonProperty("customer_id") CustomersId customerId,
     /** */
-    Short rating,
+    Uint1 rating,
     /** Default: NULL Points to {@link testdb.order_items.OrderItemsRow#itemId()} */
     @JsonProperty("order_item_id") Defaulted<Optional<OrderItemsId>> orderItemId,
     /** Default: NULL */
@@ -29,19 +32,19 @@ public record ReviewsRowUnsaved(
     /** Default: NULL */
     Defaulted<Optional<String>> content,
     /** Default: NULL */
-    Defaulted<Optional<String>> pros,
+    Defaulted<Optional<Json>> pros,
     /** Default: NULL */
-    Defaulted<Optional<String>> cons,
+    Defaulted<Optional<Json>> cons,
     /** Default: NULL Array of image URLs */
-    Defaulted<Optional<String>> images,
+    Defaulted<Optional<Json>> images,
     /** Default: 0 */
     @JsonProperty("is_verified_purchase") Defaulted<Boolean> isVerifiedPurchase,
     /** Default: 0 */
     @JsonProperty("is_approved") Defaulted<Boolean> isApproved,
     /** Default: 0 */
-    @JsonProperty("helpful_votes") Defaulted<Long> helpfulVotes,
+    @JsonProperty("helpful_votes") Defaulted<Uint4> helpfulVotes,
     /** Default: 0 */
-    @JsonProperty("unhelpful_votes") Defaulted<Long> unhelpfulVotes,
+    @JsonProperty("unhelpful_votes") Defaulted<Uint4> unhelpfulVotes,
     /** Default: NULL */
     @JsonProperty("admin_response") Defaulted<Optional<String>> adminResponse,
     /** Default: NULL */
@@ -56,7 +59,7 @@ public record ReviewsRowUnsaved(
       /** Points to {@link testdb.customers.CustomersRow#customerId()} */
       @JsonProperty("customer_id") CustomersId customerId,
       /** */
-      Short rating) {
+      Uint1 rating) {
     this(
         productId,
         customerId,
@@ -125,7 +128,7 @@ public record ReviewsRowUnsaved(
   ;
 
   /** */
-  public ReviewsRowUnsaved withRating(Short rating) {
+  public ReviewsRowUnsaved withRating(Uint1 rating) {
     return new ReviewsRowUnsaved(
         productId,
         customerId,
@@ -217,7 +220,7 @@ public record ReviewsRowUnsaved(
   ;
 
   /** Default: NULL */
-  public ReviewsRowUnsaved withPros(Defaulted<Optional<String>> pros) {
+  public ReviewsRowUnsaved withPros(Defaulted<Optional<Json>> pros) {
     return new ReviewsRowUnsaved(
         productId,
         customerId,
@@ -240,7 +243,7 @@ public record ReviewsRowUnsaved(
   ;
 
   /** Default: NULL */
-  public ReviewsRowUnsaved withCons(Defaulted<Optional<String>> cons) {
+  public ReviewsRowUnsaved withCons(Defaulted<Optional<Json>> cons) {
     return new ReviewsRowUnsaved(
         productId,
         customerId,
@@ -263,7 +266,7 @@ public record ReviewsRowUnsaved(
   ;
 
   /** Default: NULL Array of image URLs */
-  public ReviewsRowUnsaved withImages(Defaulted<Optional<String>> images) {
+  public ReviewsRowUnsaved withImages(Defaulted<Optional<Json>> images) {
     return new ReviewsRowUnsaved(
         productId,
         customerId,
@@ -332,7 +335,7 @@ public record ReviewsRowUnsaved(
   ;
 
   /** Default: 0 */
-  public ReviewsRowUnsaved withHelpfulVotes(Defaulted<Long> helpfulVotes) {
+  public ReviewsRowUnsaved withHelpfulVotes(Defaulted<Uint4> helpfulVotes) {
     return new ReviewsRowUnsaved(
         productId,
         customerId,
@@ -355,7 +358,7 @@ public record ReviewsRowUnsaved(
   ;
 
   /** Default: 0 */
-  public ReviewsRowUnsaved withUnhelpfulVotes(Defaulted<Long> unhelpfulVotes) {
+  public ReviewsRowUnsaved withUnhelpfulVotes(Defaulted<Uint4> unhelpfulVotes) {
     return new ReviewsRowUnsaved(
         productId,
         customerId,
@@ -473,13 +476,13 @@ public record ReviewsRowUnsaved(
       java.util.function.Supplier<Optional<OrderItemsId>> orderItemIdDefault,
       java.util.function.Supplier<Optional<String>> titleDefault,
       java.util.function.Supplier<Optional<String>> contentDefault,
-      java.util.function.Supplier<Optional<String>> prosDefault,
-      java.util.function.Supplier<Optional<String>> consDefault,
-      java.util.function.Supplier<Optional<String>> imagesDefault,
+      java.util.function.Supplier<Optional<Json>> prosDefault,
+      java.util.function.Supplier<Optional<Json>> consDefault,
+      java.util.function.Supplier<Optional<Json>> imagesDefault,
       java.util.function.Supplier<Boolean> isVerifiedPurchaseDefault,
       java.util.function.Supplier<Boolean> isApprovedDefault,
-      java.util.function.Supplier<Long> helpfulVotesDefault,
-      java.util.function.Supplier<Long> unhelpfulVotesDefault,
+      java.util.function.Supplier<Uint4> helpfulVotesDefault,
+      java.util.function.Supplier<Uint4> unhelpfulVotesDefault,
       java.util.function.Supplier<Optional<String>> adminResponseDefault,
       java.util.function.Supplier<Optional<LocalDateTime>> respondedAtDefault,
       java.util.function.Supplier<LocalDateTime> createdAtDefault,

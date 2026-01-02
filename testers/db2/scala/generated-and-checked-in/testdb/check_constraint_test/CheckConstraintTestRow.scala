@@ -7,6 +7,7 @@ package testdb.check_constraint_test
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -23,8 +24,16 @@ case class CheckConstraintTestRow(
   @JsonProperty("STATUS") status: String,
   /** Constraint CHK_PRICE affecting columns PRICE: PRICE >= 0 */
   @JsonProperty("PRICE") price: Option[BigDecimal]
-)
+) extends Tuple4[CheckConstraintTestId, Int, String, Option[BigDecimal]] {
+  override def `_1`: CheckConstraintTestId = id
+
+  override def `_2`: Int = age
+
+  override def `_3`: String = status
+
+  override def `_4`: Option[BigDecimal] = price
+}
 
 object CheckConstraintTestRow {
-  val `_rowParser`: RowParser[CheckConstraintTestRow] = RowParsers.of(CheckConstraintTestId.pgType, ScalaDbTypes.Db2Types.integer, Db2Types.varchar, ScalaDbTypes.Db2Types.decimal.nullable)(CheckConstraintTestRow.apply)(row => Array[Any](row.id, row.age, row.status, row.price))
+  val `_rowParser`: RowParser[CheckConstraintTestRow] = RowParsers.of(CheckConstraintTestId.dbType, ScalaDbTypes.Db2Types.integer, Db2Types.varchar, ScalaDbTypes.Db2Types.decimal.nullable)(CheckConstraintTestRow.apply)(row => Array[Any](row.id, row.age, row.status, row.price))
 }

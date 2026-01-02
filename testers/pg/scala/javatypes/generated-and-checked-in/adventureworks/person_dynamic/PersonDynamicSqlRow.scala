@@ -10,6 +10,7 @@ import adventureworks.userdefined.FirstName
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple4
 import java.util.Optional
 
 /** SQL file: person_dynamic.sql */
@@ -22,8 +23,16 @@ case class PersonDynamicSqlRow(
   middlename: Optional[Name],
   /** Points to [[adventureworks.person.person.PersonRow.lastname]] */
   lastname: Name
-)
+) extends Tuple4[Optional[/* max 8 chars */ String], /* user-picked */ FirstName, Optional[Name], Name] {
+  override def `_1`: Optional[/* max 8 chars */ String] = title
+
+  override def `_2`: /* user-picked */ FirstName = firstname
+
+  override def `_3`: Optional[Name] = middlename
+
+  override def `_4`: Name = lastname
+}
 
 object PersonDynamicSqlRow {
-  val `_rowParser`: RowParser[PersonDynamicSqlRow] = RowParsers.of(PgTypes.text.opt(), FirstName.pgType, Name.pgType.opt(), Name.pgType, PersonDynamicSqlRow.apply, row => Array[Any](row.title, row.firstname, row.middlename, row.lastname))
+  val `_rowParser`: RowParser[PersonDynamicSqlRow] = RowParsers.of(PgTypes.text.opt(), FirstName.dbType, Name.dbType.opt(), Name.dbType, PersonDynamicSqlRow.apply, row => Array[Any](row.title, row.firstname, row.middlename, row.lastname))
 }

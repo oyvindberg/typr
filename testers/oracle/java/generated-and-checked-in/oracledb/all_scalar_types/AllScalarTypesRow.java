@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.OracleTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple7;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -23,7 +24,15 @@ public record AllScalarTypesRow(
     @JsonProperty("COL_DATE") Optional<LocalDateTime> colDate,
     @JsonProperty("COL_TIMESTAMP") Optional<LocalDateTime> colTimestamp,
     @JsonProperty("COL_CLOB") Optional<String> colClob,
-    @JsonProperty("COL_NOT_NULL") String colNotNull) {
+    @JsonProperty("COL_NOT_NULL") String colNotNull)
+    implements Tuple7<
+        AllScalarTypesId,
+        Optional<String>,
+        Optional<BigDecimal>,
+        Optional<LocalDateTime>,
+        Optional<LocalDateTime>,
+        Optional<String>,
+        String> {
   /** Default: "TYPR"."ISEQ$$_72838".nextval */
   public AllScalarTypesRow withId(AllScalarTypesId id) {
     return new AllScalarTypesRow(
@@ -87,6 +96,48 @@ public record AllScalarTypesRow(
                 row.colClob(),
                 row.colNotNull()
               });
+  ;
+
+  @Override
+  public AllScalarTypesId _1() {
+    return id;
+  }
+  ;
+
+  @Override
+  public Optional<String> _2() {
+    return colVarchar2;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _3() {
+    return colNumber;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _4() {
+    return colDate;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _5() {
+    return colTimestamp;
+  }
+  ;
+
+  @Override
+  public Optional<String> _6() {
+    return colClob;
+  }
+  ;
+
+  @Override
+  public String _7() {
+    return colNotNull;
+  }
   ;
 
   public AllScalarTypesRowUnsaved toUnsavedRow(Defaulted<AllScalarTypesId> id) {

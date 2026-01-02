@@ -7,6 +7,7 @@ package testdb.product_search
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -29,8 +30,22 @@ case class ProductSearchSqlRow(
   status: String,
   /** Points to [[testdb.brands.BrandsRow.name]] */
   @JsonProperty("brand_name") brandName: Option[String]
-)
+) extends Tuple7[ProductsId, String, String, Option[String], BigDecimal, String, Option[String]] {
+  override def `_1`: ProductsId = productId
+
+  override def `_2`: String = sku
+
+  override def `_3`: String = name
+
+  override def `_4`: Option[String] = shortDescription
+
+  override def `_5`: BigDecimal = basePrice
+
+  override def `_6`: String = status
+
+  override def `_7`: Option[String] = brandName
+}
 
 object ProductSearchSqlRow {
-  val `_rowParser`: RowParser[ProductSearchSqlRow] = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.numeric, MariaTypes.text, MariaTypes.varchar.nullable)(ProductSearchSqlRow.apply)(row => Array[Any](row.productId, row.sku, row.name, row.shortDescription, row.basePrice, row.status, row.brandName))
+  val `_rowParser`: RowParser[ProductSearchSqlRow] = RowParsers.of(ProductsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.numeric, MariaTypes.text, MariaTypes.varchar.nullable)(ProductSearchSqlRow.apply)(row => Array[Any](row.productId, row.sku, row.name, row.shortDescription, row.basePrice, row.status, row.brandName))
 }

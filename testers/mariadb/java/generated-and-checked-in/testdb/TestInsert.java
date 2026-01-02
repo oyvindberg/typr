@@ -6,12 +6,16 @@
 package testdb;
 
 import dev.typr.foundations.Inserter;
+import dev.typr.foundations.data.Json;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint2;
+import dev.typr.foundations.data.Uint4;
+import dev.typr.foundations.data.Uint8;
 import dev.typr.foundations.data.maria.Inet4;
 import dev.typr.foundations.data.maria.Inet6;
 import dev.typr.foundations.data.maria.MariaSet;
 import dev.typr.foundations.internal.RandomHelper;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -182,7 +186,7 @@ public record TestInsert(Random random) {
             RandomHelper.alphanumeric(random, 20),
             RandomHelper.alphanumeric(random, 20),
             RandomHelper.alphanumeric(random, 20),
-            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 2),
             new UseDefault(),
             new UseDefault(),
             new UseDefault(),
@@ -244,7 +248,6 @@ public record TestInsert(Random random) {
   ;
 
   public Inserter<MariatestRowUnsaved, MariatestRow> Mariatest(
-      BigInteger bigintUCol,
       byte[] bitCol,
       byte[] bit1Col,
       byte[] binaryCol,
@@ -261,14 +264,14 @@ public record TestInsert(Random random) {
         new MariatestRowUnsaved(
             (byte) (random.nextInt(Byte.MAX_VALUE)),
             (short) (random.nextInt(Short.MAX_VALUE)),
-            random.nextInt(),
+            random.nextInt(8388607),
             new MariatestId(random.nextInt()),
             random.nextLong(),
-            (short) (random.nextInt(Short.MAX_VALUE)),
-            random.nextInt(),
-            random.nextInt(),
-            random.nextLong(),
-            bigintUCol,
+            Uint1.of(random.nextInt(256)),
+            Uint2.of(random.nextInt(65536)),
+            Uint4.of((long) (random.nextInt(16777216))),
+            Uint4.of((long) (Math.abs(random.nextInt()))),
+            Uint8.of(Math.abs(random.nextLong())),
             BigDecimal.valueOf(random.nextDouble()),
             BigDecimal.valueOf(random.nextDouble()),
             random.nextFloat(),
@@ -276,7 +279,7 @@ public record TestInsert(Random random) {
             random.nextBoolean(),
             bitCol,
             bit1Col,
-            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 10),
             RandomHelper.alphanumeric(random, 20),
             RandomHelper.alphanumeric(random, 20),
             RandomHelper.alphanumeric(random, 20),
@@ -298,9 +301,8 @@ public record TestInsert(Random random) {
                 LocalDate.ofEpochDay((long) (random.nextInt(30000))),
                 LocalTime.ofSecondOfDay((long) (random.nextInt(24 * 60 * 60)))),
             yearCol,
-            RandomHelper.alphanumeric(random, 20),
             setCol,
-            RandomHelper.alphanumeric(random, 20),
+            new Json("{}"),
             inet4Col,
             inet6Col,
             new UseDefault(),
@@ -411,7 +413,6 @@ public record TestInsert(Random random) {
             new UseDefault(),
             new UseDefault(),
             new UseDefault(),
-            new UseDefault(),
             new UseDefault()),
         (MariatestnullRowUnsaved row, Connection c) ->
             (new MariatestnullRepoImpl()).insert(row, c));
@@ -440,7 +441,7 @@ public record TestInsert(Random random) {
             productId,
             RandomHelper.alphanumeric(random, 20),
             RandomHelper.alphanumeric(random, 20),
-            random.nextInt(),
+            Uint2.of(random.nextInt(65536)),
             BigDecimal.valueOf(random.nextDouble()),
             BigDecimal.valueOf(random.nextDouble()),
             new UseDefault(),
@@ -618,7 +619,7 @@ public record TestInsert(Random random) {
         new ReviewsRowUnsaved(
             productId,
             customerId,
-            (short) (random.nextInt(Short.MAX_VALUE)),
+            Uint1.of(random.nextInt(256)),
             new UseDefault(),
             new UseDefault(),
             new UseDefault(),
@@ -677,7 +678,7 @@ public record TestInsert(Random random) {
   public Inserter<WarehousesRowUnsaved, WarehousesRow> Warehouses(Point location) {
     return Inserter.of(
         new WarehousesRowUnsaved(
-            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 5),
             RandomHelper.alphanumeric(random, 20),
             RandomHelper.alphanumeric(random, 20),
             location,

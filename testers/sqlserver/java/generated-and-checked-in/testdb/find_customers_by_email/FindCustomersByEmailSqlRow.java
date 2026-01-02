@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
 import dev.typr.foundations.SqlServerTypes;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import testdb.customers.CustomersId;
@@ -22,7 +23,8 @@ public record FindCustomersByEmailSqlRow(
     /** Points to {@link testdb.customers.CustomersRow#email()} */
     @JsonProperty("customer_email") String customerEmail,
     /** Points to {@link testdb.customers.CustomersRow#createdAt()} */
-    @JsonProperty("created_at") Optional<LocalDateTime> createdAt) {
+    @JsonProperty("created_at") Optional<LocalDateTime> createdAt)
+    implements Tuple4<CustomersId, String, String, Optional<LocalDateTime>> {
   /** Points to {@link testdb.customers.CustomersRow#customerId()} */
   public FindCustomersByEmailSqlRow withCustomerId(CustomersId customerId) {
     return new FindCustomersByEmailSqlRow(customerId, customerName, customerEmail, createdAt);
@@ -58,5 +60,29 @@ public record FindCustomersByEmailSqlRow(
               new Object[] {
                 row.customerId(), row.customerName(), row.customerEmail(), row.createdAt()
               });
+  ;
+
+  @Override
+  public CustomersId _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return customerName;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return customerEmail;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _4() {
+    return createdAt;
+  }
   ;
 }

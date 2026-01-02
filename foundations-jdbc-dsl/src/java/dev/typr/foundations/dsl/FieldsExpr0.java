@@ -1,9 +1,12 @@
 package dev.typr.foundations.dsl;
 
 /**
- * Abstract class wrapper for FieldsExpr to enable Scala code to extend it as a class.
+ * Scala-friendly abstract class wrapper around FieldsExpr. Scala has issues extending Java sealed
+ * interfaces directly, but can properly extend abstract classes. This provides a cleaner extension
+ * point for generated Scala code.
  *
- * <p>This exists to work around a scala 3 compiler bug concerning inheritance of sealed java
- * interfaces
+ * <p>This is used by generated Scala code when extending Fields traits.
+ *
+ * @param <Row> The corresponding row type for this fields structure
  */
 public abstract class FieldsExpr0<Row> implements FieldsExpr<Row> {}

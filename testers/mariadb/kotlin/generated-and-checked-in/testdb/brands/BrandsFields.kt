@@ -7,58 +7,56 @@ package testdb.brands
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr7
 import kotlin.collections.List
 
-interface BrandsFields : FieldsExpr<BrandsRow> {
-  abstract fun brandId(): IdField<BrandsId, BrandsRow>
+data class BrandsFields(val _path: List<Path>) : TupleExpr7<BrandsId, String, String, ByteArray, String, String, Boolean>, RelationStructure<BrandsFields, BrandsRow>, FieldsBase<BrandsRow> {
+  override fun _1(): SqlExpr<BrandsId> = brandId()
 
-  abstract override fun columns(): List<FieldLike<*, BrandsRow>>
+  override fun _2(): SqlExpr<String> = name()
 
-  abstract fun countryOfOrigin(): OptField<String, BrandsRow>
+  override fun _3(): SqlExpr<String> = slug()
 
-  abstract fun isActive(): Field<Boolean, BrandsRow>
+  override fun _4(): SqlExpr<ByteArray> = logoBlob()
 
-  abstract fun logoBlob(): OptField<ByteArray, BrandsRow>
+  override fun _5(): SqlExpr<String> = websiteUrl()
 
-  abstract fun name(): Field<String, BrandsRow>
+  override fun _6(): SqlExpr<String> = countryOfOrigin()
+
+  override fun _7(): SqlExpr<Boolean> = isActive()
+
+  override fun _path(): List<Path> = _path
+
+  fun brandId(): IdField<BrandsId, BrandsRow> = IdField<BrandsId, BrandsRow>(_path, "brand_id", BrandsRow::brandId, null, null, { row, value -> row.copy(brandId = value) }, BrandsId.dbType)
+
+  override fun columns(): List<FieldLike<*, BrandsRow>> = listOf(this.brandId().underlying, this.name().underlying, this.slug().underlying, this.logoBlob().underlying, this.websiteUrl().underlying, this.countryOfOrigin().underlying, this.isActive().underlying)
+
+  fun countryOfOrigin(): OptField<String, BrandsRow> = OptField<String, BrandsRow>(_path, "country_of_origin", BrandsRow::countryOfOrigin, null, null, { row, value -> row.copy(countryOfOrigin = value) }, MariaTypes.char_)
+
+  fun isActive(): Field<Boolean, BrandsRow> = Field<Boolean, BrandsRow>(_path, "is_active", BrandsRow::isActive, null, null, { row, value -> row.copy(isActive = value) }, KotlinDbTypes.MariaTypes.bool)
+
+  fun logoBlob(): OptField<ByteArray, BrandsRow> = OptField<ByteArray, BrandsRow>(_path, "logo_blob", BrandsRow::logoBlob, null, null, { row, value -> row.copy(logoBlob = value) }, MariaTypes.mediumblob)
+
+  fun name(): Field<String, BrandsRow> = Field<String, BrandsRow>(_path, "name", BrandsRow::name, null, null, { row, value -> row.copy(name = value) }, MariaTypes.varchar)
 
   override fun rowParser(): RowParser<BrandsRow> = BrandsRow._rowParser.underlying
 
-  abstract fun slug(): Field<String, BrandsRow>
+  fun slug(): Field<String, BrandsRow> = Field<String, BrandsRow>(_path, "slug", BrandsRow::slug, null, null, { row, value -> row.copy(slug = value) }, MariaTypes.varchar)
 
-  abstract fun websiteUrl(): OptField<String, BrandsRow>
+  fun websiteUrl(): OptField<String, BrandsRow> = OptField<String, BrandsRow>(_path, "website_url", BrandsRow::websiteUrl, null, null, { row, value -> row.copy(websiteUrl = value) }, MariaTypes.varchar)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<BrandsFields, BrandsRow> = BrandsFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : BrandsFields, RelationStructure<BrandsFields, BrandsRow> {
-      override fun brandId(): IdField<BrandsId, BrandsRow> = IdField<BrandsId, BrandsRow>(_path, "brand_id", BrandsRow::brandId, null, null, { row, value -> row.copy(brandId = value) }, BrandsId.pgType)
-
-      override fun name(): Field<String, BrandsRow> = Field<String, BrandsRow>(_path, "name", BrandsRow::name, null, null, { row, value -> row.copy(name = value) }, MariaTypes.varchar)
-
-      override fun slug(): Field<String, BrandsRow> = Field<String, BrandsRow>(_path, "slug", BrandsRow::slug, null, null, { row, value -> row.copy(slug = value) }, MariaTypes.varchar)
-
-      override fun logoBlob(): OptField<ByteArray, BrandsRow> = OptField<ByteArray, BrandsRow>(_path, "logo_blob", BrandsRow::logoBlob, null, null, { row, value -> row.copy(logoBlob = value) }, MariaTypes.mediumblob)
-
-      override fun websiteUrl(): OptField<String, BrandsRow> = OptField<String, BrandsRow>(_path, "website_url", BrandsRow::websiteUrl, null, null, { row, value -> row.copy(websiteUrl = value) }, MariaTypes.varchar)
-
-      override fun countryOfOrigin(): OptField<String, BrandsRow> = OptField<String, BrandsRow>(_path, "country_of_origin", BrandsRow::countryOfOrigin, null, null, { row, value -> row.copy(countryOfOrigin = value) }, MariaTypes.char_)
-
-      override fun isActive(): Field<Boolean, BrandsRow> = Field<Boolean, BrandsRow>(_path, "is_active", BrandsRow::isActive, null, null, { row, value -> row.copy(isActive = value) }, KotlinDbTypes.MariaTypes.bool)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, BrandsRow>> = listOf(this.brandId().underlying, this.name().underlying, this.slug().underlying, this.logoBlob().underlying, this.websiteUrl().underlying, this.countryOfOrigin().underlying, this.isActive().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<BrandsFields, BrandsRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: BrandsFields = BrandsFields(emptyList<Path>())
   }
 }

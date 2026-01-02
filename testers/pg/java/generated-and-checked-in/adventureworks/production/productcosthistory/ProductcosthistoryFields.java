@@ -10,156 +10,153 @@ import adventureworks.production.product.ProductId;
 import adventureworks.production.product.ProductRow;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
 import dev.typr.foundations.dsl.SqlExpr;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn.Part;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface ProductcosthistoryFields extends FieldsExpr<ProductcosthistoryRow> {
-  record Impl(List<Path> _path)
-      implements ProductcosthistoryFields,
-          RelationStructure<ProductcosthistoryFields, ProductcosthistoryRow> {
-    @Override
-    public IdField<ProductId, ProductcosthistoryRow> productid() {
-      return new IdField<ProductId, ProductcosthistoryRow>(
-          _path,
-          "productid",
-          ProductcosthistoryRow::productid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withProductid(value),
-          ProductId.pgType);
-    }
-    ;
+public class ProductcosthistoryFields
+    implements TupleExpr5<ProductId, LocalDateTime, LocalDateTime, BigDecimal, LocalDateTime>,
+        RelationStructure<ProductcosthistoryFields, ProductcosthistoryRow>,
+        FieldsBase<ProductcosthistoryRow> {
+  List<Path> _path;
 
-    @Override
-    public IdField<LocalDateTime, ProductcosthistoryRow> startdate() {
-      return new IdField<LocalDateTime, ProductcosthistoryRow>(
-          _path,
-          "startdate",
-          ProductcosthistoryRow::startdate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withStartdate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, ProductcosthistoryRow> enddate() {
-      return new OptField<LocalDateTime, ProductcosthistoryRow>(
-          _path,
-          "enddate",
-          ProductcosthistoryRow::enddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withEnddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, ProductcosthistoryRow> standardcost() {
-      return new Field<BigDecimal, ProductcosthistoryRow>(
-          _path,
-          "standardcost",
-          ProductcosthistoryRow::standardcost,
-          Optional.empty(),
-          Optional.of("numeric"),
-          (row, value) -> row.withStandardcost(value),
-          PgTypes.numeric);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, ProductcosthistoryRow> modifieddate() {
-      return new Field<LocalDateTime, ProductcosthistoryRow>(
-          _path,
-          "modifieddate",
-          ProductcosthistoryRow::modifieddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withModifieddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, ProductcosthistoryRow>> columns() {
-      return java.util.List.of(
-          this.productid(),
-          this.startdate(),
-          this.enddate(),
-          this.standardcost(),
-          this.modifieddate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<ProductcosthistoryFields, ProductcosthistoryRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public ProductcosthistoryFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static ProductcosthistoryFields structure =
+      new ProductcosthistoryFields(java.util.Collections.emptyList());
+
+  public IdField<ProductId, ProductcosthistoryRow> productid() {
+    return new IdField<ProductId, ProductcosthistoryRow>(
+        _path,
+        "productid",
+        ProductcosthistoryRow::productid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withProductid(value),
+        ProductId.dbType);
   }
-  ;
 
-  IdField<ProductId, ProductcosthistoryRow> productid();
+  public IdField<LocalDateTime, ProductcosthistoryRow> startdate() {
+    return new IdField<LocalDateTime, ProductcosthistoryRow>(
+        _path,
+        "startdate",
+        ProductcosthistoryRow::startdate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withStartdate(value),
+        PgTypes.timestamp);
+  }
 
-  IdField<LocalDateTime, ProductcosthistoryRow> startdate();
+  public OptField<LocalDateTime, ProductcosthistoryRow> enddate() {
+    return new OptField<LocalDateTime, ProductcosthistoryRow>(
+        _path,
+        "enddate",
+        ProductcosthistoryRow::enddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withEnddate(value),
+        PgTypes.timestamp);
+  }
 
-  OptField<LocalDateTime, ProductcosthistoryRow> enddate();
+  public Field<BigDecimal, ProductcosthistoryRow> standardcost() {
+    return new Field<BigDecimal, ProductcosthistoryRow>(
+        _path,
+        "standardcost",
+        ProductcosthistoryRow::standardcost,
+        Optional.empty(),
+        Optional.of("numeric"),
+        (row, value) -> row.withStandardcost(value),
+        PgTypes.numeric);
+  }
 
-  Field<BigDecimal, ProductcosthistoryRow> standardcost();
+  public Field<LocalDateTime, ProductcosthistoryRow> modifieddate() {
+    return new Field<LocalDateTime, ProductcosthistoryRow>(
+        _path,
+        "modifieddate",
+        ProductcosthistoryRow::modifieddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withModifieddate(value),
+        PgTypes.timestamp);
+  }
 
-  Field<LocalDateTime, ProductcosthistoryRow> modifieddate();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<ProductFields, ProductRow> fkProduct() {
+  public ForeignKey<ProductFields, ProductRow> fkProduct() {
     return ForeignKey.<ProductFields, ProductRow>of(
             "production.FK_ProductCostHistory_Product_ProductID")
         .<ProductId>withColumnPair(productid(), ProductFields::productid);
   }
-  ;
 
-  default SqlExpr<Boolean> compositeIdIs(ProductcosthistoryId compositeId) {
+  public SqlExpr<Boolean> compositeIdIs(ProductcosthistoryId compositeId) {
     return SqlExpr.all(
         productid().isEqual(compositeId.productid()), startdate().isEqual(compositeId.startdate()));
   }
-  ;
 
-  default SqlExpr<Boolean> compositeIdIn(List<ProductcosthistoryId> compositeIds) {
-    return new CompositeIn(
-        List.of(
-            new Part<ProductId, ProductcosthistoryId, ProductcosthistoryRow>(
-                productid(), ProductcosthistoryId::productid, ProductId.pgType),
-            new Part<LocalDateTime, ProductcosthistoryId, ProductcosthistoryRow>(
-                startdate(), ProductcosthistoryId::startdate, PgTypes.timestamp)),
-        compositeIds);
+  public SqlExpr<Boolean> compositeIdIn(List<ProductcosthistoryId> compositeIds) {
+    return TupleExpr.of(productid(), startdate()).among(compositeIds);
   }
-  ;
 
   @Override
-  List<FieldLike<?, ProductcosthistoryRow>> columns();
+  public List<FieldLike<?, ProductcosthistoryRow>> columns() {
+    return java.util.List.of(
+        this.productid(),
+        this.startdate(),
+        this.enddate(),
+        this.standardcost(),
+        this.modifieddate());
+  }
 
   @Override
-  default RowParser<ProductcosthistoryRow> rowParser() {
+  public RowParser<ProductcosthistoryRow> rowParser() {
     return ProductcosthistoryRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<ProductcosthistoryFields, ProductcosthistoryRow> withPaths(
+      List<Path> _path) {
+    return new ProductcosthistoryFields(_path);
+  }
+
+  @Override
+  public SqlExpr<ProductId> _1() {
+    return productid();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _2() {
+    return startdate();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _3() {
+    return enddate();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _4() {
+    return standardcost();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _5() {
+    return modifieddate();
+  }
 }

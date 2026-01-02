@@ -6,71 +6,68 @@
 package testdb.distinct_type_test
 
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr3
 import testdb.EmailAddress
 import testdb.MoneyAmount
 
-trait DistinctTypeTestFields extends FieldsExpr0[DistinctTypeTestRow] {
-  def id: IdField[DistinctTypeTestId, DistinctTypeTestRow]
+class DistinctTypeTestFields(val `_path`: java.util.List[Path]) extends TupleExpr3[DistinctTypeTestId, EmailAddress, MoneyAmount] with RelationStructure[DistinctTypeTestFields, DistinctTypeTestRow]  with FieldsBase[DistinctTypeTestRow] {
+  def id: IdField[DistinctTypeTestId, DistinctTypeTestRow] = {
+    new IdField[DistinctTypeTestId, DistinctTypeTestRow](
+      _path,
+      "ID",
+      _.id,
+      None,
+      None,
+      (row, value) => row.copy(id = value),
+      DistinctTypeTestId.dbType
+    )
+  }
 
-  def email: Field[EmailAddress, DistinctTypeTestRow]
+  def email: Field[EmailAddress, DistinctTypeTestRow] = {
+    new Field[EmailAddress, DistinctTypeTestRow](
+      _path,
+      "EMAIL",
+      _.email,
+      None,
+      None,
+      (row, value) => row.copy(email = value),
+      EmailAddress.dbType
+    )
+  }
 
-  def balance: OptField[MoneyAmount, DistinctTypeTestRow]
+  def balance: OptField[MoneyAmount, DistinctTypeTestRow] = {
+    new OptField[MoneyAmount, DistinctTypeTestRow](
+      _path,
+      "BALANCE",
+      _.balance,
+      None,
+      None,
+      (row, value) => row.copy(balance = value),
+      MoneyAmount.dbType
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, DistinctTypeTestRow]]
+  override def columns: java.util.List[FieldLike[?, DistinctTypeTestRow]] = java.util.List.of(this.id.underlying, this.email.underlying, this.balance.underlying)
 
   override def rowParser: RowParser[DistinctTypeTestRow] = DistinctTypeTestRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[DistinctTypeTestFields, DistinctTypeTestRow] = new DistinctTypeTestFields(`_path`)
+
+  override def `_1`: SqlExpr[DistinctTypeTestId] = id
+
+  override def `_2`: SqlExpr[EmailAddress] = email
+
+  override def `_3`: SqlExpr[MoneyAmount] = balance
 }
 
 object DistinctTypeTestFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends DistinctTypeTestFields with RelationStructure[DistinctTypeTestFields, DistinctTypeTestRow] {
-
-    override def id: IdField[DistinctTypeTestId, DistinctTypeTestRow] = {
-      new IdField[DistinctTypeTestId, DistinctTypeTestRow](
-        _path,
-        "ID",
-        _.id,
-        None,
-        None,
-        (row, value) => row.copy(id = value),
-        DistinctTypeTestId.pgType
-      )
-    }
-
-    override def email: Field[EmailAddress, DistinctTypeTestRow] = {
-      new Field[EmailAddress, DistinctTypeTestRow](
-        _path,
-        "EMAIL",
-        _.email,
-        None,
-        None,
-        (row, value) => row.copy(email = value),
-        EmailAddress.pgType
-      )
-    }
-
-    override def balance: OptField[MoneyAmount, DistinctTypeTestRow] = {
-      new OptField[MoneyAmount, DistinctTypeTestRow](
-        _path,
-        "BALANCE",
-        _.balance,
-        None,
-        None,
-        (row, value) => row.copy(balance = value),
-        MoneyAmount.pgType
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, DistinctTypeTestRow]] = java.util.List.of(this.id.underlying, this.email.underlying, this.balance.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[DistinctTypeTestFields, DistinctTypeTestRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: DistinctTypeTestFields = new DistinctTypeTestFields(java.util.Collections.emptyList())
 }

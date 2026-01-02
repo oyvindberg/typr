@@ -7,97 +7,95 @@ package testdb.price_tiers
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.data.Uint4
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
+import dev.typr.foundations.scala.TupleExpr5
 
-trait PriceTiersFields extends FieldsExpr0[PriceTiersRow] {
-  def tierId: IdField[PriceTiersId, PriceTiersRow]
+class PriceTiersFields(val `_path`: java.util.List[Path]) extends TupleExpr5[PriceTiersId, String, Uint4, String, BigDecimal] with RelationStructure[PriceTiersFields, PriceTiersRow]  with FieldsBase[PriceTiersRow] {
+  def tierId: IdField[PriceTiersId, PriceTiersRow] = {
+    new IdField[PriceTiersId, PriceTiersRow](
+      _path,
+      "tier_id",
+      _.tierId,
+      None,
+      None,
+      (row, value) => row.copy(tierId = value),
+      PriceTiersId.dbType
+    )
+  }
 
-  def name: Field[String, PriceTiersRow]
+  def name: Field[String, PriceTiersRow] = {
+    new Field[String, PriceTiersRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      None,
+      (row, value) => row.copy(name = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def minQuantity: Field[Long, PriceTiersRow]
+  def minQuantity: Field[Uint4, PriceTiersRow] = {
+    new Field[Uint4, PriceTiersRow](
+      _path,
+      "min_quantity",
+      _.minQuantity,
+      None,
+      None,
+      (row, value) => row.copy(minQuantity = value),
+      MariaTypes.intUnsigned
+    )
+  }
 
-  def discountType: Field[String, PriceTiersRow]
+  def discountType: Field[String, PriceTiersRow] = {
+    new Field[String, PriceTiersRow](
+      _path,
+      "discount_type",
+      _.discountType,
+      None,
+      None,
+      (row, value) => row.copy(discountType = value),
+      MariaTypes.text
+    )
+  }
 
-  def discountValue: Field[BigDecimal, PriceTiersRow]
+  def discountValue: Field[BigDecimal, PriceTiersRow] = {
+    new Field[BigDecimal, PriceTiersRow](
+      _path,
+      "discount_value",
+      _.discountValue,
+      None,
+      None,
+      (row, value) => row.copy(discountValue = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, PriceTiersRow]]
+  override def columns: java.util.List[FieldLike[?, PriceTiersRow]] = java.util.List.of(this.tierId.underlying, this.name.underlying, this.minQuantity.underlying, this.discountType.underlying, this.discountValue.underlying)
 
   override def rowParser: RowParser[PriceTiersRow] = PriceTiersRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[PriceTiersFields, PriceTiersRow] = new PriceTiersFields(`_path`)
+
+  override def `_1`: SqlExpr[PriceTiersId] = tierId
+
+  override def `_2`: SqlExpr[String] = name
+
+  override def `_3`: SqlExpr[Uint4] = minQuantity
+
+  override def `_4`: SqlExpr[String] = discountType
+
+  override def `_5`: SqlExpr[BigDecimal] = discountValue
 }
 
 object PriceTiersFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends PriceTiersFields with RelationStructure[PriceTiersFields, PriceTiersRow] {
-
-    override def tierId: IdField[PriceTiersId, PriceTiersRow] = {
-      new IdField[PriceTiersId, PriceTiersRow](
-        _path,
-        "tier_id",
-        _.tierId,
-        None,
-        None,
-        (row, value) => row.copy(tierId = value),
-        PriceTiersId.pgType
-      )
-    }
-
-    override def name: Field[String, PriceTiersRow] = {
-      new Field[String, PriceTiersRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        None,
-        (row, value) => row.copy(name = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def minQuantity: Field[Long, PriceTiersRow] = {
-      new Field[Long, PriceTiersRow](
-        _path,
-        "min_quantity",
-        _.minQuantity,
-        None,
-        None,
-        (row, value) => row.copy(minQuantity = value),
-        ScalaDbTypes.MariaTypes.intUnsigned
-      )
-    }
-
-    override def discountType: Field[String, PriceTiersRow] = {
-      new Field[String, PriceTiersRow](
-        _path,
-        "discount_type",
-        _.discountType,
-        None,
-        None,
-        (row, value) => row.copy(discountType = value),
-        MariaTypes.text
-      )
-    }
-
-    override def discountValue: Field[BigDecimal, PriceTiersRow] = {
-      new Field[BigDecimal, PriceTiersRow](
-        _path,
-        "discount_value",
-        _.discountValue,
-        None,
-        None,
-        (row, value) => row.copy(discountValue = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, PriceTiersRow]] = java.util.List.of(this.tierId.underlying, this.name.underlying, this.minQuantity.underlying, this.discountType.underlying, this.discountValue.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[PriceTiersFields, PriceTiersRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: PriceTiersFields = new PriceTiersFields(java.util.Collections.emptyList())
 }

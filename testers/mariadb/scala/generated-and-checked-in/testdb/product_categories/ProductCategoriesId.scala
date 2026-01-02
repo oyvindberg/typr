@@ -6,6 +6,7 @@
 package testdb.product_categories
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import testdb.categories.CategoriesId
@@ -15,8 +16,12 @@ import testdb.products.ProductsId
 case class ProductCategoriesId(
   @JsonProperty("product_id") productId: ProductsId,
   @JsonProperty("category_id") categoryId: CategoriesId
-)
+) extends Tuple2[ProductsId, CategoriesId] {
+  override def `_1`: ProductsId = productId
+
+  override def `_2`: CategoriesId = categoryId
+}
 
 object ProductCategoriesId {
-  val `_rowParser`: RowParser[ProductCategoriesId] = RowParsers.of(ProductsId.pgType, CategoriesId.pgType)(ProductCategoriesId.apply)(row => Array[Any](row.productId, row.categoryId))
+  val `_rowParser`: RowParser[ProductCategoriesId] = RowParsers.of(ProductsId.dbType, CategoriesId.dbType)(ProductCategoriesId.apply)(row => Array[Any](row.productId, row.categoryId))
 }

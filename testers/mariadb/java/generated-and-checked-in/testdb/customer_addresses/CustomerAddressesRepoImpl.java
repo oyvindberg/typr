@@ -26,27 +26,25 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
   @Override
   public DeleteBuilder<CustomerAddressesFields, CustomerAddressesRow> delete() {
     return DeleteBuilder.of(
-        "`customer_addresses`", CustomerAddressesFields.structure(), Dialect.MARIADB);
+        "`customer_addresses`", CustomerAddressesFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(CustomerAddressesId addressId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `customer_addresses` where `address_id` = "),
-                Fragment.encode(CustomerAddressesId.pgType, addressId),
+                Fragment.encode(CustomerAddressesId.dbType, addressId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(CustomerAddressesId[] addressIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : addressIds) {
-      fragments.add(Fragment.encode(CustomerAddressesId.pgType, id));
+      fragments.add(Fragment.encode(CustomerAddressesId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -56,7 +54,6 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CustomerAddressesRow insert(CustomerAddressesRow unsaved, Connection c) {
@@ -67,7 +64,7 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
                     + " `postal_code`, `country_code`, `location`, `delivery_notes`,"
                     + " `created_at`)\n"
                     + "values ("),
-            Fragment.encode(CustomersId.pgType, unsaved.customerId()),
+            Fragment.encode(CustomersId.dbType, unsaved.customerId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text, unsaved.addressType()),
             Fragment.lit(", "),
@@ -101,7 +98,6 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
         .updateReturning(CustomerAddressesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CustomerAddressesRow insert(CustomerAddressesRowUnsaved unsaved, Connection c) {
@@ -111,7 +107,7 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
     ;
     columns.add(Fragment.lit("`customer_id`"));
     values.add(
-        interpolate(Fragment.encode(CustomersId.pgType, unsaved.customerId()), Fragment.lit("")));
+        interpolate(Fragment.encode(CustomersId.dbType, unsaved.customerId()), Fragment.lit("")));
     columns.add(Fragment.lit("`address_type`"));
     values.add(
         interpolate(Fragment.encode(MariaTypes.text, unsaved.addressType()), Fragment.lit("")));
@@ -204,17 +200,15 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
     ;
     return q.updateReturning(CustomerAddressesRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<CustomerAddressesFields, CustomerAddressesRow> select() {
     return SelectBuilder.of(
         "`customer_addresses`",
-        CustomerAddressesFields.structure(),
+        CustomerAddressesFields.structure,
         CustomerAddressesRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<CustomerAddressesRow> selectAll(Connection c) {
@@ -227,7 +221,6 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
         .query(CustomerAddressesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<CustomerAddressesRow> selectById(CustomerAddressesId addressId, Connection c) {
@@ -238,18 +231,17 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
                     + " `postal_code`, `country_code`, `location`, `delivery_notes`, `created_at`\n"
                     + "from `customer_addresses`\n"
                     + "where `address_id` = "),
-            Fragment.encode(CustomerAddressesId.pgType, addressId),
+            Fragment.encode(CustomerAddressesId.dbType, addressId),
             Fragment.lit(""))
         .query(CustomerAddressesRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<CustomerAddressesRow> selectByIds(CustomerAddressesId[] addressIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : addressIds) {
-      fragments.add(Fragment.encode(CustomerAddressesId.pgType, id));
+      fragments.add(Fragment.encode(CustomerAddressesId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -263,7 +255,6 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
         .query(CustomerAddressesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<CustomerAddressesId, CustomerAddressesRow> selectByIdsTracked(
@@ -273,17 +264,15 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
     selectByIds(addressIds, c).forEach(row -> ret.put(row.addressId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<CustomerAddressesFields, CustomerAddressesRow> update() {
     return UpdateBuilder.of(
         "`customer_addresses`",
-        CustomerAddressesFields.structure(),
+        CustomerAddressesFields.structure,
         CustomerAddressesRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(CustomerAddressesRow row, Connection c) {
@@ -291,7 +280,7 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
     ;
     return interpolate(
                 Fragment.lit("update `customer_addresses`\nset `customer_id` = "),
-                Fragment.encode(CustomersId.pgType, row.customerId()),
+                Fragment.encode(CustomersId.dbType, row.customerId()),
                 Fragment.lit(",\n`address_type` = "),
                 Fragment.encode(MariaTypes.text, row.addressType()),
                 Fragment.lit(",\n`is_default` = "),
@@ -317,24 +306,25 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
                 Fragment.lit(",\n`created_at` = "),
                 Fragment.encode(MariaTypes.datetime, row.createdAt()),
                 Fragment.lit("\nwhere `address_id` = "),
-                Fragment.encode(CustomerAddressesId.pgType, addressId),
+                Fragment.encode(CustomerAddressesId.dbType, addressId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public CustomerAddressesRow upsert(CustomerAddressesRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `customer_addresses`(`customer_id`, `address_type`, `is_default`,"
-                    + " `recipient_name`, `street_line1`, `street_line2`, `city`, `state_province`,"
-                    + " `postal_code`, `country_code`, `location`, `delivery_notes`,"
-                    + " `created_at`)\n"
+                "INSERT INTO `customer_addresses`(`address_id`, `customer_id`, `address_type`,"
+                    + " `is_default`, `recipient_name`, `street_line1`, `street_line2`, `city`,"
+                    + " `state_province`, `postal_code`, `country_code`, `location`,"
+                    + " `delivery_notes`, `created_at`)\n"
                     + "VALUES ("),
-            Fragment.encode(CustomersId.pgType, unsaved.customerId()),
+            Fragment.encode(CustomerAddressesId.dbType, unsaved.addressId()),
+            Fragment.lit(", "),
+            Fragment.encode(CustomersId.dbType, unsaved.customerId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text, unsaved.addressType()),
             Fragment.lit(", "),
@@ -380,7 +370,6 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
         .updateReturning(CustomerAddressesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<CustomerAddressesRow> upsertBatch(
@@ -411,5 +400,4 @@ public class CustomerAddressesRepoImpl implements CustomerAddressesRepo {
         .updateReturningEach(CustomerAddressesRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

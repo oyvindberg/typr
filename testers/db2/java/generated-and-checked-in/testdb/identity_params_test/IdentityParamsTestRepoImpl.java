@@ -25,27 +25,25 @@ public class IdentityParamsTestRepoImpl implements IdentityParamsTestRepo {
   @Override
   public DeleteBuilder<IdentityParamsTestFields, IdentityParamsTestRow> delete() {
     return DeleteBuilder.of(
-        "\"IDENTITY_PARAMS_TEST\"", IdentityParamsTestFields.structure(), Dialect.DB2);
+        "\"IDENTITY_PARAMS_TEST\"", IdentityParamsTestFields.structure, Dialect.DB2);
   }
-  ;
 
   @Override
   public Boolean deleteById(IdentityParamsTestId id, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"IDENTITY_PARAMS_TEST\" where \"ID\" = "),
-                Fragment.encode(IdentityParamsTestId.pgType, id),
+                Fragment.encode(IdentityParamsTestId.dbType, id),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(IdentityParamsTestId[] ids, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : ids) {
-      fragments.add(Fragment.encode(IdentityParamsTestId.pgType, id));
+      fragments.add(Fragment.encode(IdentityParamsTestId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -55,7 +53,6 @@ public class IdentityParamsTestRepoImpl implements IdentityParamsTestRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public IdentityParamsTestRow insert(IdentityParamsTestRow unsaved, Connection c) {
@@ -69,7 +66,6 @@ public class IdentityParamsTestRepoImpl implements IdentityParamsTestRepo {
         .updateReturning(IdentityParamsTestRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public IdentityParamsTestRow insert(IdentityParamsTestRowUnsaved unsaved, Connection c) {
@@ -90,17 +86,15 @@ public class IdentityParamsTestRepoImpl implements IdentityParamsTestRepo {
     ;
     return q.updateReturning(IdentityParamsTestRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<IdentityParamsTestFields, IdentityParamsTestRow> select() {
     return SelectBuilder.of(
         "\"IDENTITY_PARAMS_TEST\"",
-        IdentityParamsTestFields.structure(),
+        IdentityParamsTestFields.structure,
         IdentityParamsTestRow._rowParser,
         Dialect.DB2);
   }
-  ;
 
   @Override
   public List<IdentityParamsTestRow> selectAll(Connection c) {
@@ -108,24 +102,22 @@ public class IdentityParamsTestRepoImpl implements IdentityParamsTestRepo {
         .query(IdentityParamsTestRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<IdentityParamsTestRow> selectById(IdentityParamsTestId id, Connection c) {
     return interpolate(
             Fragment.lit("select \"ID\", \"NAME\"\nfrom \"IDENTITY_PARAMS_TEST\"\nwhere \"ID\" = "),
-            Fragment.encode(IdentityParamsTestId.pgType, id),
+            Fragment.encode(IdentityParamsTestId.dbType, id),
             Fragment.lit(""))
         .query(IdentityParamsTestRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<IdentityParamsTestRow> selectByIds(IdentityParamsTestId[] ids, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : ids) {
-      fragments.add(Fragment.encode(IdentityParamsTestId.pgType, id));
+      fragments.add(Fragment.encode(IdentityParamsTestId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -135,7 +127,6 @@ public class IdentityParamsTestRepoImpl implements IdentityParamsTestRepo {
         .query(IdentityParamsTestRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<IdentityParamsTestId, IdentityParamsTestRow> selectByIdsTracked(
@@ -145,17 +136,15 @@ public class IdentityParamsTestRepoImpl implements IdentityParamsTestRepo {
     selectByIds(ids, c).forEach(row -> ret.put(row.id(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<IdentityParamsTestFields, IdentityParamsTestRow> update() {
     return UpdateBuilder.of(
         "\"IDENTITY_PARAMS_TEST\"",
-        IdentityParamsTestFields.structure(),
+        IdentityParamsTestFields.structure,
         IdentityParamsTestRow._rowParser,
         Dialect.DB2);
   }
-  ;
 
   @Override
   public Boolean update(IdentityParamsTestRow row, Connection c) {
@@ -165,30 +154,32 @@ public class IdentityParamsTestRepoImpl implements IdentityParamsTestRepo {
                 Fragment.lit("update \"IDENTITY_PARAMS_TEST\"\nset \"NAME\" = "),
                 Fragment.encode(Db2Types.varchar, row.name()),
                 Fragment.lit("\nwhere \"ID\" = "),
-                Fragment.encode(IdentityParamsTestId.pgType, id),
+                Fragment.encode(IdentityParamsTestId.dbType, id),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public void upsert(IdentityParamsTestRow unsaved, Connection c) {
     interpolate(
             Fragment.lit("MERGE INTO \"IDENTITY_PARAMS_TEST\" AS t\nUSING (VALUES ("),
+            Fragment.encode(IdentityParamsTestId.dbType, unsaved.id()),
+            Fragment.lit(", "),
             Fragment.encode(Db2Types.varchar, unsaved.name()),
             Fragment.lit(
-                ")) AS s(\"NAME\")\n"
+                ")) AS s(\"ID\", \"NAME\")\n"
                     + "ON t.\"ID\" = s.\"ID\"\n"
                     + "WHEN MATCHED THEN UPDATE SET \"NAME\" = s.\"NAME\"\n"
-                    + "WHEN NOT MATCHED THEN INSERT (\"NAME\") VALUES ("),
+                    + "WHEN NOT MATCHED THEN INSERT (\"ID\", \"NAME\") VALUES ("),
+            Fragment.encode(IdentityParamsTestId.dbType, unsaved.id()),
+            Fragment.lit(", "),
             Fragment.encode(Db2Types.varchar, unsaved.name()),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public void upsertBatch(Iterator<IdentityParamsTestRow> unsaved, Connection c) {
@@ -202,5 +193,4 @@ public class IdentityParamsTestRepoImpl implements IdentityParamsTestRepo {
         .updateMany(IdentityParamsTestRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

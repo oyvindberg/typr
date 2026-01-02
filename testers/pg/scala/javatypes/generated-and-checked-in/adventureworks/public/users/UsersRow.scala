@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.data.Unknown
 import java.time.Instant
 import java.util.Optional
@@ -27,7 +28,7 @@ case class UsersRow(
   /** Default: now() */
   @JsonProperty("created_at") createdAt: Instant,
   @JsonProperty("verified_on") verifiedOn: Optional[Instant]
-) {
+) extends Tuple7[UsersId, String, Optional[String], Unknown, String, Instant, Optional[Instant]] {
   def id: UsersId = userId
 
   def toUnsavedRow(createdAt: Defaulted[Instant] = Defaulted.Provided(this.createdAt)): UsersRowUnsaved = {
@@ -41,10 +42,24 @@ case class UsersRow(
       createdAt
     )
   }
+
+  override def `_1`: UsersId = userId
+
+  override def `_2`: String = name
+
+  override def `_3`: Optional[String] = lastName
+
+  override def `_4`: Unknown = email
+
+  override def `_5`: String = password
+
+  override def `_6`: Instant = createdAt
+
+  override def `_7`: Optional[Instant] = verifiedOn
 }
 
 object UsersRow {
-  val `_rowParser`: RowParser[UsersRow] = RowParsers.of(UsersId.pgType, PgTypes.text, PgTypes.text.opt(), PgTypes.unknown, PgTypes.text, PgTypes.timestamptz, PgTypes.timestamptz.opt(), UsersRow.apply, row => Array[Any](row.userId, row.name, row.lastName, row.email, row.password, row.createdAt, row.verifiedOn))
+  val `_rowParser`: RowParser[UsersRow] = RowParsers.of(UsersId.dbType, PgTypes.text, PgTypes.text.opt(), PgTypes.unknown, PgTypes.text, PgTypes.timestamptz, PgTypes.timestamptz.opt(), UsersRow.apply, row => Array[Any](row.userId, row.name, row.lastName, row.email, row.password, row.createdAt, row.verifiedOn))
 
   given pgText: PgText[UsersRow] = PgText.from(`_rowParser`)
 }

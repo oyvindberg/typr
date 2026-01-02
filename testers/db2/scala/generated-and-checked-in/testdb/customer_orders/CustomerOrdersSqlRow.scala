@@ -7,6 +7,8 @@ package testdb.customer_orders
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple6
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -18,10 +20,22 @@ case class CustomerOrdersSqlRow(
   @JsonProperty("customer_name") customerName: String,
   @JsonProperty("order_id") orderId: Int,
   @JsonProperty("order_date") orderDate: LocalDate,
-  @JsonProperty("total_amount") totalAmount: BigDecimal,
-  status: String
-)
+  @JsonProperty("total_amount") totalAmount: Option[BigDecimal],
+  status: Option[String]
+) extends Tuple6[Int, String, Int, LocalDate, Option[BigDecimal], Option[String]] {
+  override def `_1`: Int = customerId
+
+  override def `_2`: String = customerName
+
+  override def `_3`: Int = orderId
+
+  override def `_4`: LocalDate = orderDate
+
+  override def `_5`: Option[BigDecimal] = totalAmount
+
+  override def `_6`: Option[String] = status
+}
 
 object CustomerOrdersSqlRow {
-  val `_rowParser`: RowParser[CustomerOrdersSqlRow] = RowParsers.of(ScalaDbTypes.Db2Types.integer, Db2Types.varchar, ScalaDbTypes.Db2Types.integer, Db2Types.date, ScalaDbTypes.Db2Types.decimal, Db2Types.varchar)(CustomerOrdersSqlRow.apply)(row => Array[Any](row.customerId, row.customerName, row.orderId, row.orderDate, row.totalAmount, row.status))
+  val `_rowParser`: RowParser[CustomerOrdersSqlRow] = RowParsers.of(ScalaDbTypes.Db2Types.integer, Db2Types.varchar, ScalaDbTypes.Db2Types.integer, Db2Types.date, ScalaDbTypes.Db2Types.decimal.nullable, Db2Types.varchar.nullable)(CustomerOrdersSqlRow.apply)(row => Array[Any](row.customerId, row.customerName, row.orderId, row.orderDate, row.totalAmount, row.status))
 }

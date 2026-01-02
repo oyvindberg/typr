@@ -30,34 +30,31 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
   @Override
   public DeleteBuilder<StateprovinceFields, StateprovinceRow> delete() {
     return DeleteBuilder.of(
-        "\"person\".\"stateprovince\"", StateprovinceFields.structure(), Dialect.POSTGRESQL);
+        "\"person\".\"stateprovince\"", StateprovinceFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(StateprovinceId stateprovinceid, Connection c) {
     return interpolate(
                 Fragment.lit(
                     "delete from \"person\".\"stateprovince\" where \"stateprovinceid\" = "),
-                Fragment.encode(StateprovinceId.pgType, stateprovinceid),
+                Fragment.encode(StateprovinceId.dbType, stateprovinceid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(StateprovinceId[] stateprovinceids, Connection c) {
     return interpolate(
             Fragment.lit(
                 "delete\nfrom \"person\".\"stateprovince\"\nwhere \"stateprovinceid\" = ANY("),
-            Fragment.encode(StateprovinceId.pgTypeArray, stateprovinceids),
+            Fragment.encode(StateprovinceId.dbTypeArray, stateprovinceids),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public StateprovinceRow insert(StateprovinceRow unsaved, Connection c) {
@@ -67,17 +64,17 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
                     + " \"stateprovincecode\", \"countryregioncode\", \"isonlystateprovinceflag\","
                     + " \"name\", \"territoryid\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(StateprovinceId.pgType, unsaved.stateprovinceid()),
+            Fragment.encode(StateprovinceId.dbType, unsaved.stateprovinceid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.bpchar, unsaved.stateprovincecode()),
             Fragment.lit("::bpchar, "),
-            Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode()),
+            Fragment.encode(CountryregionId.dbType, unsaved.countryregioncode()),
             Fragment.lit(", "),
-            Fragment.encode(Flag.pgType, unsaved.isonlystateprovinceflag()),
+            Fragment.encode(Flag.dbType, unsaved.isonlystateprovinceflag()),
             Fragment.lit("::bool, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
-            Fragment.encode(SalesterritoryId.pgType, unsaved.territoryid()),
+            Fragment.encode(SalesterritoryId.dbType, unsaved.territoryid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.uuid, unsaved.rowguid()),
             Fragment.lit("::uuid, "),
@@ -90,7 +87,6 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
         .updateReturning(StateprovinceRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public StateprovinceRow insert(StateprovinceRowUnsaved unsaved, Connection c) {
@@ -106,15 +102,15 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
     columns.add(Fragment.lit("\"countryregioncode\""));
     values.add(
         interpolate(
-            Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode()),
+            Fragment.encode(CountryregionId.dbType, unsaved.countryregioncode()),
             Fragment.lit("")));
     columns.add(Fragment.lit("\"name\""));
     values.add(
-        interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
+        interpolate(Fragment.encode(Name.dbType, unsaved.name()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"territoryid\""));
     values.add(
         interpolate(
-            Fragment.encode(SalesterritoryId.pgType, unsaved.territoryid()),
+            Fragment.encode(SalesterritoryId.dbType, unsaved.territoryid()),
             Fragment.lit("::int4")));
     unsaved
         .stateprovinceid()
@@ -124,7 +120,7 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
               columns.add(Fragment.lit("\"stateprovinceid\""));
               values.add(
                   interpolate(
-                      Fragment.encode(StateprovinceId.pgType, value), Fragment.lit("::int4")));
+                      Fragment.encode(StateprovinceId.dbType, value), Fragment.lit("::int4")));
             });
     ;
     unsaved
@@ -133,7 +129,7 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
             () -> {},
             value -> {
               columns.add(Fragment.lit("\"isonlystateprovinceflag\""));
-              values.add(interpolate(Fragment.encode(Flag.pgType, value), Fragment.lit("::bool")));
+              values.add(interpolate(Fragment.encode(Flag.dbType, value), Fragment.lit("::bool")));
             });
     ;
     unsaved
@@ -170,7 +166,6 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
     ;
     return q.updateReturning(StateprovinceRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<StateprovinceRow> unsaved, Integer batchSize, Connection c) {
@@ -183,7 +178,6 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
         c,
         StateprovinceRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -198,17 +192,15 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
         c,
         StateprovinceRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<StateprovinceFields, StateprovinceRow> select() {
     return SelectBuilder.of(
         "\"person\".\"stateprovince\"",
-        StateprovinceFields.structure(),
+        StateprovinceFields.structure,
         StateprovinceRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<StateprovinceRow> selectAll(Connection c) {
@@ -221,7 +213,6 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
         .query(StateprovinceRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<StateprovinceRow> selectById(StateprovinceId stateprovinceid, Connection c) {
@@ -232,12 +223,11 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
                     + " \"modifieddate\"\n"
                     + "from \"person\".\"stateprovince\"\n"
                     + "where \"stateprovinceid\" = "),
-            Fragment.encode(StateprovinceId.pgType, stateprovinceid),
+            Fragment.encode(StateprovinceId.dbType, stateprovinceid),
             Fragment.lit(""))
         .query(StateprovinceRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<StateprovinceRow> selectByIds(StateprovinceId[] stateprovinceids, Connection c) {
@@ -248,12 +238,11 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
                     + " \"modifieddate\"\n"
                     + "from \"person\".\"stateprovince\"\n"
                     + "where \"stateprovinceid\" = ANY("),
-            Fragment.encode(StateprovinceId.pgTypeArray, stateprovinceids),
+            Fragment.encode(StateprovinceId.dbTypeArray, stateprovinceids),
             Fragment.lit(")"))
         .query(StateprovinceRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<StateprovinceId, StateprovinceRow> selectByIdsTracked(
@@ -263,17 +252,15 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
     selectByIds(stateprovinceids, c).forEach(row -> ret.put(row.stateprovinceid(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<StateprovinceFields, StateprovinceRow> update() {
     return UpdateBuilder.of(
         "\"person\".\"stateprovince\"",
-        StateprovinceFields.structure(),
+        StateprovinceFields.structure,
         StateprovinceRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(StateprovinceRow row, Connection c) {
@@ -283,25 +270,24 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
                 Fragment.lit("update \"person\".\"stateprovince\"\nset \"stateprovincecode\" = "),
                 Fragment.encode(PgTypes.bpchar, row.stateprovincecode()),
                 Fragment.lit("::bpchar,\n\"countryregioncode\" = "),
-                Fragment.encode(CountryregionId.pgType, row.countryregioncode()),
+                Fragment.encode(CountryregionId.dbType, row.countryregioncode()),
                 Fragment.lit(",\n\"isonlystateprovinceflag\" = "),
-                Fragment.encode(Flag.pgType, row.isonlystateprovinceflag()),
+                Fragment.encode(Flag.dbType, row.isonlystateprovinceflag()),
                 Fragment.lit("::bool,\n\"name\" = "),
-                Fragment.encode(Name.pgType, row.name()),
+                Fragment.encode(Name.dbType, row.name()),
                 Fragment.lit("::varchar,\n\"territoryid\" = "),
-                Fragment.encode(SalesterritoryId.pgType, row.territoryid()),
+                Fragment.encode(SalesterritoryId.dbType, row.territoryid()),
                 Fragment.lit("::int4,\n\"rowguid\" = "),
                 Fragment.encode(PgTypes.uuid, row.rowguid()),
                 Fragment.lit("::uuid,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"stateprovinceid\" = "),
-                Fragment.encode(StateprovinceId.pgType, stateprovinceid),
+                Fragment.encode(StateprovinceId.dbType, stateprovinceid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public StateprovinceRow upsert(StateprovinceRow unsaved, Connection c) {
@@ -311,17 +297,17 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
                     + " \"stateprovincecode\", \"countryregioncode\", \"isonlystateprovinceflag\","
                     + " \"name\", \"territoryid\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(StateprovinceId.pgType, unsaved.stateprovinceid()),
+            Fragment.encode(StateprovinceId.dbType, unsaved.stateprovinceid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.bpchar, unsaved.stateprovincecode()),
             Fragment.lit("::bpchar, "),
-            Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode()),
+            Fragment.encode(CountryregionId.dbType, unsaved.countryregioncode()),
             Fragment.lit(", "),
-            Fragment.encode(Flag.pgType, unsaved.isonlystateprovinceflag()),
+            Fragment.encode(Flag.dbType, unsaved.isonlystateprovinceflag()),
             Fragment.lit("::bool, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
-            Fragment.encode(SalesterritoryId.pgType, unsaved.territoryid()),
+            Fragment.encode(SalesterritoryId.dbType, unsaved.territoryid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.uuid, unsaved.rowguid()),
             Fragment.lit("::uuid, "),
@@ -343,7 +329,6 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
         .updateReturning(StateprovinceRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<StateprovinceRow> upsertBatch(Iterator<StateprovinceRow> unsaved, Connection c) {
@@ -369,7 +354,6 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
         .updateManyReturning(StateprovinceRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -409,5 +393,4 @@ public class StateprovinceRepoImpl implements StateprovinceRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

@@ -38,10 +38,9 @@ public class OrderDetailsSqlRepoImpl implements OrderDetailsSqlRepo {
                     + "FROM orders o\n"
                     + "JOIN order_items oi ON o.order_id = oi.order_id\n"
                     + "WHERE o.order_id = "),
-            Fragment.encode(OrdersId.pgType, orderId),
+            Fragment.encode(OrdersId.dbType, orderId),
             Fragment.lit("\n"))
         .query(OrderDetailsSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

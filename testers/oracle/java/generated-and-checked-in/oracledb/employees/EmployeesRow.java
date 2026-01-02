@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.OracleTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple7;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -27,7 +28,8 @@ public record EmployeesRow(
     @JsonProperty("EMP_NAME") String empName,
     @JsonProperty("SALARY") Optional<MoneyT> salary,
     /** Default: SYSDATE */
-    @JsonProperty("HIRE_DATE") LocalDateTime hireDate) {
+    @JsonProperty("HIRE_DATE") LocalDateTime hireDate)
+    implements Tuple7<BigDecimal, String, String, String, String, Optional<MoneyT>, LocalDateTime> {
   public EmployeesRow withEmpNumber(BigDecimal empNumber) {
     return new EmployeesRow(empNumber, empSuffix, deptCode, deptRegion, empName, salary, hireDate);
   }
@@ -103,6 +105,48 @@ public record EmployeesRow(
         empName,
         salary,
         hireDate);
+  }
+  ;
+
+  @Override
+  public BigDecimal _1() {
+    return empNumber;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return empSuffix;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return deptCode;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return deptRegion;
+  }
+  ;
+
+  @Override
+  public String _5() {
+    return empName;
+  }
+  ;
+
+  @Override
+  public Optional<MoneyT> _6() {
+    return salary;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _7() {
+    return hireDate;
   }
   ;
 

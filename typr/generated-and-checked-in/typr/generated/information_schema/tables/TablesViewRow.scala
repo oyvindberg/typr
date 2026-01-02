@@ -27,7 +27,7 @@ case class TablesViewRow(
   tableSchema: Option[String],
   /** debug: {"name":"table_name","inferred_type":"\"information_schema\".\"sql_identifier\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_class","source_column":"relname","source_type":"name","source_primary_key":false} */
   tableName: Option[String],
-  /** debug: {"name":"table_type","inferred_type":"\"information_schema\".\"character_data\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_class","source_column":"relkind","source_type":"char","source_primary_key":false} */
+  /** debug: {"name":"table_type","inferred_type":"\"information_schema\".\"character_data\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_namespace","source_column":"oid","source_type":"oid","source_primary_key":false} */
   tableType: Option[String],
   /** debug: {"name":"self_referencing_column_name","inferred_type":"\"information_schema\".\"sql_identifier\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":false,"source_primary_key":false} */
   selfReferencingColumnName: Option[String],
@@ -39,7 +39,7 @@ case class TablesViewRow(
   userDefinedTypeSchema: Option[String],
   /** debug: {"name":"user_defined_type_name","inferred_type":"\"information_schema\".\"sql_identifier\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_type","source_column":"typname","source_type":"name","source_primary_key":false} */
   userDefinedTypeName: Option[String],
-  /** debug: {"name":"is_insertable_into","inferred_type":"\"information_schema\".\"yes_or_no\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_class","source_column":"relkind","source_type":"char","source_primary_key":false} */
+  /** debug: {"name":"is_insertable_into","inferred_type":"\"information_schema\".\"yes_or_no\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_class","source_column":"oid","source_type":"oid","source_primary_key":false} */
   isInsertableInto: Option[/* max 3 chars */ String],
   /** debug: {"name":"is_typed","inferred_type":"\"information_schema\".\"yes_or_no\"","nullable_from_join":false,"nullable_in_schema":false,"is_expression":true,"source_table":"pg_type","source_column":"typname","source_type":"name","source_primary_key":false} */
   isTyped: Option[/* max 3 chars */ String],
@@ -48,22 +48,22 @@ case class TablesViewRow(
 )
 
 object TablesViewRow {
-  implicit lazy val reads: Reads[TablesViewRow] = {
+  given reads: Reads[TablesViewRow] = {
     Reads[TablesViewRow](json => JsResult.fromTry(
         Try(
           TablesViewRow(
-            tableCatalog = json.\("table_catalog").toOption.map(_.as(Reads.StringReads)),
-            tableSchema = json.\("table_schema").toOption.map(_.as(Reads.StringReads)),
-            tableName = json.\("table_name").toOption.map(_.as(Reads.StringReads)),
-            tableType = json.\("table_type").toOption.map(_.as(Reads.StringReads)),
-            selfReferencingColumnName = json.\("self_referencing_column_name").toOption.map(_.as(Reads.StringReads)),
-            referenceGeneration = json.\("reference_generation").toOption.map(_.as(Reads.StringReads)),
-            userDefinedTypeCatalog = json.\("user_defined_type_catalog").toOption.map(_.as(Reads.StringReads)),
-            userDefinedTypeSchema = json.\("user_defined_type_schema").toOption.map(_.as(Reads.StringReads)),
-            userDefinedTypeName = json.\("user_defined_type_name").toOption.map(_.as(Reads.StringReads)),
-            isInsertableInto = json.\("is_insertable_into").toOption.map(_.as(Reads.StringReads)),
-            isTyped = json.\("is_typed").toOption.map(_.as(Reads.StringReads)),
-            commitAction = json.\("commit_action").toOption.map(_.as(Reads.StringReads))
+            tableCatalog = json.\("table_catalog").toOption.map(_.as(using Reads.StringReads)),
+            tableSchema = json.\("table_schema").toOption.map(_.as(using Reads.StringReads)),
+            tableName = json.\("table_name").toOption.map(_.as(using Reads.StringReads)),
+            tableType = json.\("table_type").toOption.map(_.as(using Reads.StringReads)),
+            selfReferencingColumnName = json.\("self_referencing_column_name").toOption.map(_.as(using Reads.StringReads)),
+            referenceGeneration = json.\("reference_generation").toOption.map(_.as(using Reads.StringReads)),
+            userDefinedTypeCatalog = json.\("user_defined_type_catalog").toOption.map(_.as(using Reads.StringReads)),
+            userDefinedTypeSchema = json.\("user_defined_type_schema").toOption.map(_.as(using Reads.StringReads)),
+            userDefinedTypeName = json.\("user_defined_type_name").toOption.map(_.as(using Reads.StringReads)),
+            isInsertableInto = json.\("is_insertable_into").toOption.map(_.as(using Reads.StringReads)),
+            isTyped = json.\("is_typed").toOption.map(_.as(using Reads.StringReads)),
+            commitAction = json.\("commit_action").toOption.map(_.as(using Reads.StringReads))
           )
         )
       ),
@@ -74,38 +74,38 @@ object TablesViewRow {
     RowParser[TablesViewRow] { row =>
       Success(
         TablesViewRow(
-          tableCatalog = row(idx + 0)(Column.columnToOption(Column.columnToString)),
-          tableSchema = row(idx + 1)(Column.columnToOption(Column.columnToString)),
-          tableName = row(idx + 2)(Column.columnToOption(Column.columnToString)),
-          tableType = row(idx + 3)(Column.columnToOption(Column.columnToString)),
-          selfReferencingColumnName = row(idx + 4)(Column.columnToOption(Column.columnToString)),
-          referenceGeneration = row(idx + 5)(Column.columnToOption(Column.columnToString)),
-          userDefinedTypeCatalog = row(idx + 6)(Column.columnToOption(Column.columnToString)),
-          userDefinedTypeSchema = row(idx + 7)(Column.columnToOption(Column.columnToString)),
-          userDefinedTypeName = row(idx + 8)(Column.columnToOption(Column.columnToString)),
-          isInsertableInto = row(idx + 9)(Column.columnToOption(Column.columnToString)),
-          isTyped = row(idx + 10)(Column.columnToOption(Column.columnToString)),
-          commitAction = row(idx + 11)(Column.columnToOption(Column.columnToString))
+          tableCatalog = row(idx + 0)(using Column.columnToOption(using Column.columnToString)),
+          tableSchema = row(idx + 1)(using Column.columnToOption(using Column.columnToString)),
+          tableName = row(idx + 2)(using Column.columnToOption(using Column.columnToString)),
+          tableType = row(idx + 3)(using Column.columnToOption(using Column.columnToString)),
+          selfReferencingColumnName = row(idx + 4)(using Column.columnToOption(using Column.columnToString)),
+          referenceGeneration = row(idx + 5)(using Column.columnToOption(using Column.columnToString)),
+          userDefinedTypeCatalog = row(idx + 6)(using Column.columnToOption(using Column.columnToString)),
+          userDefinedTypeSchema = row(idx + 7)(using Column.columnToOption(using Column.columnToString)),
+          userDefinedTypeName = row(idx + 8)(using Column.columnToOption(using Column.columnToString)),
+          isInsertableInto = row(idx + 9)(using Column.columnToOption(using Column.columnToString)),
+          isTyped = row(idx + 10)(using Column.columnToOption(using Column.columnToString)),
+          commitAction = row(idx + 11)(using Column.columnToOption(using Column.columnToString))
         )
       )
     }
   }
 
-  implicit lazy val writes: OWrites[TablesViewRow] = {
+  given writes: OWrites[TablesViewRow] = {
     OWrites[TablesViewRow](o =>
       new JsObject(ListMap[String, JsValue](
-        "table_catalog" -> Writes.OptionWrites(Writes.StringWrites).writes(o.tableCatalog),
-        "table_schema" -> Writes.OptionWrites(Writes.StringWrites).writes(o.tableSchema),
-        "table_name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.tableName),
-        "table_type" -> Writes.OptionWrites(Writes.StringWrites).writes(o.tableType),
-        "self_referencing_column_name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.selfReferencingColumnName),
-        "reference_generation" -> Writes.OptionWrites(Writes.StringWrites).writes(o.referenceGeneration),
-        "user_defined_type_catalog" -> Writes.OptionWrites(Writes.StringWrites).writes(o.userDefinedTypeCatalog),
-        "user_defined_type_schema" -> Writes.OptionWrites(Writes.StringWrites).writes(o.userDefinedTypeSchema),
-        "user_defined_type_name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.userDefinedTypeName),
-        "is_insertable_into" -> Writes.OptionWrites(Writes.StringWrites).writes(o.isInsertableInto),
-        "is_typed" -> Writes.OptionWrites(Writes.StringWrites).writes(o.isTyped),
-        "commit_action" -> Writes.OptionWrites(Writes.StringWrites).writes(o.commitAction)
+        "table_catalog" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.tableCatalog),
+        "table_schema" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.tableSchema),
+        "table_name" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.tableName),
+        "table_type" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.tableType),
+        "self_referencing_column_name" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.selfReferencingColumnName),
+        "reference_generation" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.referenceGeneration),
+        "user_defined_type_catalog" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.userDefinedTypeCatalog),
+        "user_defined_type_schema" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.userDefinedTypeSchema),
+        "user_defined_type_name" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.userDefinedTypeName),
+        "is_insertable_into" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.isInsertableInto),
+        "is_typed" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.isTyped),
+        "commit_action" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.commitAction)
       ))
     )
   }

@@ -7,75 +7,80 @@ package testdb.db2test_identity_default;
 
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr2;
 import java.util.List;
 import java.util.Optional;
 
-public interface Db2testIdentityDefaultFields extends FieldsExpr<Db2testIdentityDefaultRow> {
-  record Impl(List<Path> _path)
-      implements Db2testIdentityDefaultFields,
-          RelationStructure<Db2testIdentityDefaultFields, Db2testIdentityDefaultRow> {
-    @Override
-    public IdField<Db2testIdentityDefaultId, Db2testIdentityDefaultRow> id() {
-      return new IdField<Db2testIdentityDefaultId, Db2testIdentityDefaultRow>(
-          _path,
-          "ID",
-          Db2testIdentityDefaultRow::id,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withId(value),
-          Db2testIdentityDefaultId.pgType);
-    }
-    ;
+public class Db2testIdentityDefaultFields
+    implements TupleExpr2<Db2testIdentityDefaultId, String>,
+        RelationStructure<Db2testIdentityDefaultFields, Db2testIdentityDefaultRow>,
+        FieldsBase<Db2testIdentityDefaultRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, Db2testIdentityDefaultRow> name() {
-      return new Field<String, Db2testIdentityDefaultRow>(
-          _path,
-          "NAME",
-          Db2testIdentityDefaultRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          Db2Types.varchar);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, Db2testIdentityDefaultRow>> columns() {
-      return java.util.List.of(this.id(), this.name());
-    }
-    ;
-
-    @Override
-    public RelationStructure<Db2testIdentityDefaultFields, Db2testIdentityDefaultRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public Db2testIdentityDefaultFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static Db2testIdentityDefaultFields structure =
+      new Db2testIdentityDefaultFields(java.util.Collections.emptyList());
+
+  public IdField<Db2testIdentityDefaultId, Db2testIdentityDefaultRow> id() {
+    return new IdField<Db2testIdentityDefaultId, Db2testIdentityDefaultRow>(
+        _path,
+        "ID",
+        Db2testIdentityDefaultRow::id,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withId(value),
+        Db2testIdentityDefaultId.dbType);
   }
-  ;
 
-  IdField<Db2testIdentityDefaultId, Db2testIdentityDefaultRow> id();
-
-  Field<String, Db2testIdentityDefaultRow> name();
+  public Field<String, Db2testIdentityDefaultRow> name() {
+    return new Field<String, Db2testIdentityDefaultRow>(
+        _path,
+        "NAME",
+        Db2testIdentityDefaultRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        Db2Types.varchar);
+  }
 
   @Override
-  List<FieldLike<?, Db2testIdentityDefaultRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<Db2testIdentityDefaultRow> rowParser() {
+  public List<FieldLike<?, Db2testIdentityDefaultRow>> columns() {
+    return java.util.List.of(this.id(), this.name());
+  }
+
+  @Override
+  public RowParser<Db2testIdentityDefaultRow> rowParser() {
     return Db2testIdentityDefaultRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<Db2testIdentityDefaultFields, Db2testIdentityDefaultRow> withPaths(
+      List<Path> _path) {
+    return new Db2testIdentityDefaultFields(_path);
+  }
+
+  @Override
+  public SqlExpr<Db2testIdentityDefaultId> _1() {
+    return id();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return name();
+  }
 }

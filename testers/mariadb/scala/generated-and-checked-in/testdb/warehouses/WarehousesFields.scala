@@ -7,170 +7,167 @@ package testdb.warehouses
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr10
 import org.mariadb.jdbc.`type`.Point
 import org.mariadb.jdbc.`type`.Polygon
 
-trait WarehousesFields extends FieldsExpr0[WarehousesRow] {
-  def warehouseId: IdField[WarehousesId, WarehousesRow]
+class WarehousesFields(val `_path`: java.util.List[Path]) extends TupleExpr10[WarehousesId, String, String, String, Point, Polygon, String, Boolean, String, String] with RelationStructure[WarehousesFields, WarehousesRow]  with FieldsBase[WarehousesRow] {
+  def warehouseId: IdField[WarehousesId, WarehousesRow] = {
+    new IdField[WarehousesId, WarehousesRow](
+      _path,
+      "warehouse_id",
+      _.warehouseId,
+      None,
+      None,
+      (row, value) => row.copy(warehouseId = value),
+      WarehousesId.dbType
+    )
+  }
 
-  def code: Field[String, WarehousesRow]
+  def code: Field[String, WarehousesRow] = {
+    new Field[String, WarehousesRow](
+      _path,
+      "code",
+      _.code,
+      None,
+      None,
+      (row, value) => row.copy(code = value),
+      MariaTypes.char_
+    )
+  }
 
-  def name: Field[String, WarehousesRow]
+  def name: Field[String, WarehousesRow] = {
+    new Field[String, WarehousesRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      None,
+      (row, value) => row.copy(name = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def address: Field[String, WarehousesRow]
+  def address: Field[String, WarehousesRow] = {
+    new Field[String, WarehousesRow](
+      _path,
+      "address",
+      _.address,
+      None,
+      None,
+      (row, value) => row.copy(address = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def location: Field[Point, WarehousesRow]
+  def location: Field[Point, WarehousesRow] = {
+    new Field[Point, WarehousesRow](
+      _path,
+      "location",
+      _.location,
+      None,
+      None,
+      (row, value) => row.copy(location = value),
+      MariaTypes.point
+    )
+  }
 
-  def serviceArea: OptField[Polygon, WarehousesRow]
+  def serviceArea: OptField[Polygon, WarehousesRow] = {
+    new OptField[Polygon, WarehousesRow](
+      _path,
+      "service_area",
+      _.serviceArea,
+      None,
+      None,
+      (row, value) => row.copy(serviceArea = value),
+      MariaTypes.polygon
+    )
+  }
 
-  def timezone: Field[String, WarehousesRow]
+  def timezone: Field[String, WarehousesRow] = {
+    new Field[String, WarehousesRow](
+      _path,
+      "timezone",
+      _.timezone,
+      None,
+      None,
+      (row, value) => row.copy(timezone = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def isActive: Field[Boolean, WarehousesRow]
+  def isActive: Field[Boolean, WarehousesRow] = {
+    new Field[Boolean, WarehousesRow](
+      _path,
+      "is_active",
+      _.isActive,
+      None,
+      None,
+      (row, value) => row.copy(isActive = value),
+      ScalaDbTypes.MariaTypes.bool
+    )
+  }
 
-  def contactEmail: OptField[String, WarehousesRow]
+  def contactEmail: OptField[String, WarehousesRow] = {
+    new OptField[String, WarehousesRow](
+      _path,
+      "contact_email",
+      _.contactEmail,
+      None,
+      None,
+      (row, value) => row.copy(contactEmail = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def contactPhone: OptField[String, WarehousesRow]
+  def contactPhone: OptField[String, WarehousesRow] = {
+    new OptField[String, WarehousesRow](
+      _path,
+      "contact_phone",
+      _.contactPhone,
+      None,
+      None,
+      (row, value) => row.copy(contactPhone = value),
+      MariaTypes.varchar
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, WarehousesRow]]
+  override def columns: java.util.List[FieldLike[?, WarehousesRow]] = java.util.List.of(this.warehouseId.underlying, this.code.underlying, this.name.underlying, this.address.underlying, this.location.underlying, this.serviceArea.underlying, this.timezone.underlying, this.isActive.underlying, this.contactEmail.underlying, this.contactPhone.underlying)
 
   override def rowParser: RowParser[WarehousesRow] = WarehousesRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[WarehousesFields, WarehousesRow] = new WarehousesFields(`_path`)
+
+  override def `_1`: SqlExpr[WarehousesId] = warehouseId
+
+  override def `_2`: SqlExpr[String] = code
+
+  override def `_3`: SqlExpr[String] = name
+
+  override def `_4`: SqlExpr[String] = address
+
+  override def `_5`: SqlExpr[Point] = location
+
+  override def `_6`: SqlExpr[Polygon] = serviceArea
+
+  override def `_7`: SqlExpr[String] = timezone
+
+  override def `_8`: SqlExpr[Boolean] = isActive
+
+  override def `_9`: SqlExpr[String] = contactEmail
+
+  override def `_10`: SqlExpr[String] = contactPhone
 }
 
 object WarehousesFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends WarehousesFields with RelationStructure[WarehousesFields, WarehousesRow] {
-
-    override def warehouseId: IdField[WarehousesId, WarehousesRow] = {
-      new IdField[WarehousesId, WarehousesRow](
-        _path,
-        "warehouse_id",
-        _.warehouseId,
-        None,
-        None,
-        (row, value) => row.copy(warehouseId = value),
-        WarehousesId.pgType
-      )
-    }
-
-    override def code: Field[String, WarehousesRow] = {
-      new Field[String, WarehousesRow](
-        _path,
-        "code",
-        _.code,
-        None,
-        None,
-        (row, value) => row.copy(code = value),
-        MariaTypes.char_
-      )
-    }
-
-    override def name: Field[String, WarehousesRow] = {
-      new Field[String, WarehousesRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        None,
-        (row, value) => row.copy(name = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def address: Field[String, WarehousesRow] = {
-      new Field[String, WarehousesRow](
-        _path,
-        "address",
-        _.address,
-        None,
-        None,
-        (row, value) => row.copy(address = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def location: Field[Point, WarehousesRow] = {
-      new Field[Point, WarehousesRow](
-        _path,
-        "location",
-        _.location,
-        None,
-        None,
-        (row, value) => row.copy(location = value),
-        MariaTypes.point
-      )
-    }
-
-    override def serviceArea: OptField[Polygon, WarehousesRow] = {
-      new OptField[Polygon, WarehousesRow](
-        _path,
-        "service_area",
-        _.serviceArea,
-        None,
-        None,
-        (row, value) => row.copy(serviceArea = value),
-        MariaTypes.polygon
-      )
-    }
-
-    override def timezone: Field[String, WarehousesRow] = {
-      new Field[String, WarehousesRow](
-        _path,
-        "timezone",
-        _.timezone,
-        None,
-        None,
-        (row, value) => row.copy(timezone = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def isActive: Field[Boolean, WarehousesRow] = {
-      new Field[Boolean, WarehousesRow](
-        _path,
-        "is_active",
-        _.isActive,
-        None,
-        None,
-        (row, value) => row.copy(isActive = value),
-        ScalaDbTypes.MariaTypes.bool
-      )
-    }
-
-    override def contactEmail: OptField[String, WarehousesRow] = {
-      new OptField[String, WarehousesRow](
-        _path,
-        "contact_email",
-        _.contactEmail,
-        None,
-        None,
-        (row, value) => row.copy(contactEmail = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def contactPhone: OptField[String, WarehousesRow] = {
-      new OptField[String, WarehousesRow](
-        _path,
-        "contact_phone",
-        _.contactPhone,
-        None,
-        None,
-        (row, value) => row.copy(contactPhone = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, WarehousesRow]] = java.util.List.of(this.warehouseId.underlying, this.code.underlying, this.name.underlying, this.address.underlying, this.location.underlying, this.serviceArea.underlying, this.timezone.underlying, this.isActive.underlying, this.contactEmail.underlying, this.contactPhone.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[WarehousesFields, WarehousesRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: WarehousesFields = new WarehousesFields(java.util.Collections.emptyList())
 }

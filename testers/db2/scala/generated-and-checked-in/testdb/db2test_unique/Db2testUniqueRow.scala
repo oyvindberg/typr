@@ -7,6 +7,7 @@ package testdb.db2test_unique
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 
@@ -19,10 +20,18 @@ case class Db2testUniqueRow(
   @JsonProperty("EMAIL") email: String,
   @JsonProperty("CODE") code: String,
   @JsonProperty("CATEGORY") category: String
-) {
+) extends Tuple4[Db2testUniqueId, String, String, String] {
   def toUnsavedRow: Db2testUniqueRowUnsaved = new Db2testUniqueRowUnsaved(email, code, category)
+
+  override def `_1`: Db2testUniqueId = id
+
+  override def `_2`: String = email
+
+  override def `_3`: String = code
+
+  override def `_4`: String = category
 }
 
 object Db2testUniqueRow {
-  val `_rowParser`: RowParser[Db2testUniqueRow] = RowParsers.of(Db2testUniqueId.pgType, Db2Types.varchar, Db2Types.varchar, Db2Types.varchar)(Db2testUniqueRow.apply)(row => Array[Any](row.id, row.email, row.code, row.category))
+  val `_rowParser`: RowParser[Db2testUniqueRow] = RowParsers.of(Db2testUniqueId.dbType, Db2Types.varchar, Db2Types.varchar, Db2Types.varchar)(Db2testUniqueRow.apply)(row => Array[Any](row.id, row.email, row.code, row.category))
 }

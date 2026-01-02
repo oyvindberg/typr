@@ -16,28 +16,79 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.person.businessentity.BusinessentityRow
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.SqlExpr
-import dev.typr.foundations.scala.SqlExpr.CompositeIn
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
+import dev.typr.foundations.scala.TupleExpr
+import dev.typr.foundations.scala.TupleExpr5
 import java.time.LocalDateTime
 import java.util.UUID
 
-trait BusinessentityaddressFields extends FieldsExpr0[BusinessentityaddressRow] {
-  def businessentityid: IdField[BusinessentityId, BusinessentityaddressRow]
+class BusinessentityaddressFields(val `_path`: java.util.List[Path]) extends TupleExpr5[BusinessentityId, AddressId, AddresstypeId, UUID, LocalDateTime] with RelationStructure[BusinessentityaddressFields, BusinessentityaddressRow]  with FieldsBase[BusinessentityaddressRow] {
+  def businessentityid: IdField[BusinessentityId, BusinessentityaddressRow] = {
+    new IdField[BusinessentityId, BusinessentityaddressRow](
+      _path,
+      "businessentityid",
+      _.businessentityid,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(businessentityid = value),
+      BusinessentityId.dbType
+    )
+  }
 
-  def addressid: IdField[AddressId, BusinessentityaddressRow]
+  def addressid: IdField[AddressId, BusinessentityaddressRow] = {
+    new IdField[AddressId, BusinessentityaddressRow](
+      _path,
+      "addressid",
+      _.addressid,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(addressid = value),
+      AddressId.dbType
+    )
+  }
 
-  def addresstypeid: IdField[AddresstypeId, BusinessentityaddressRow]
+  def addresstypeid: IdField[AddresstypeId, BusinessentityaddressRow] = {
+    new IdField[AddresstypeId, BusinessentityaddressRow](
+      _path,
+      "addresstypeid",
+      _.addresstypeid,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(addresstypeid = value),
+      AddresstypeId.dbType
+    )
+  }
 
-  def rowguid: Field[UUID, BusinessentityaddressRow]
+  def rowguid: Field[UUID, BusinessentityaddressRow] = {
+    new Field[UUID, BusinessentityaddressRow](
+      _path,
+      "rowguid",
+      _.rowguid,
+      None,
+      Some("uuid"),
+      (row, value) => row.copy(rowguid = value),
+      PgTypes.uuid
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, BusinessentityaddressRow]
+  def modifieddate: Field[LocalDateTime, BusinessentityaddressRow] = {
+    new Field[LocalDateTime, BusinessentityaddressRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      None,
+      Some("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
   def fkAddresstype: ForeignKey[AddresstypeFields, AddresstypeRow] = ForeignKey.of[AddresstypeFields, AddresstypeRow]("person.FK_BusinessEntityAddress_AddressType_AddressTypeID").withColumnPair[AddresstypeId](addresstypeid, _.addresstypeid)
 
@@ -47,80 +98,25 @@ trait BusinessentityaddressFields extends FieldsExpr0[BusinessentityaddressRow] 
 
   def compositeIdIs(compositeId: BusinessentityaddressId): SqlExpr[Boolean] = SqlExpr.all(businessentityid.isEqual(compositeId.businessentityid), addressid.isEqual(compositeId.addressid), addresstypeid.isEqual(compositeId.addresstypeid))
 
-  def compositeIdIn(compositeIds: List[BusinessentityaddressId]): SqlExpr[Boolean] = CompositeIn(List(CompositeIn.Part[BusinessentityId, BusinessentityaddressId, BusinessentityaddressRow](businessentityid, _.businessentityid, BusinessentityId.pgType), CompositeIn.Part[AddressId, BusinessentityaddressId, BusinessentityaddressRow](addressid, _.addressid, AddressId.pgType), CompositeIn.Part[AddresstypeId, BusinessentityaddressId, BusinessentityaddressRow](addresstypeid, _.addresstypeid, AddresstypeId.pgType)), compositeIds)
+  def compositeIdIn(compositeIds: List[BusinessentityaddressId]): SqlExpr[Boolean] = TupleExpr.of(businessentityid, addressid, addresstypeid).among(compositeIds)
 
-  override def columns: java.util.List[FieldLike[?, BusinessentityaddressRow]]
+  override def columns: java.util.List[FieldLike[?, BusinessentityaddressRow]] = java.util.List.of(this.businessentityid.underlying, this.addressid.underlying, this.addresstypeid.underlying, this.rowguid.underlying, this.modifieddate.underlying)
 
   override def rowParser: RowParser[BusinessentityaddressRow] = BusinessentityaddressRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[BusinessentityaddressFields, BusinessentityaddressRow] = new BusinessentityaddressFields(`_path`)
+
+  override def `_1`: SqlExpr[BusinessentityId] = businessentityid
+
+  override def `_2`: SqlExpr[AddressId] = addressid
+
+  override def `_3`: SqlExpr[AddresstypeId] = addresstypeid
+
+  override def `_4`: SqlExpr[UUID] = rowguid
+
+  override def `_5`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object BusinessentityaddressFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends BusinessentityaddressFields with RelationStructure[BusinessentityaddressFields, BusinessentityaddressRow] {
-
-    override def businessentityid: IdField[BusinessentityId, BusinessentityaddressRow] = {
-      new IdField[BusinessentityId, BusinessentityaddressRow](
-        _path,
-        "businessentityid",
-        _.businessentityid,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(businessentityid = value),
-        BusinessentityId.pgType
-      )
-    }
-
-    override def addressid: IdField[AddressId, BusinessentityaddressRow] = {
-      new IdField[AddressId, BusinessentityaddressRow](
-        _path,
-        "addressid",
-        _.addressid,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(addressid = value),
-        AddressId.pgType
-      )
-    }
-
-    override def addresstypeid: IdField[AddresstypeId, BusinessentityaddressRow] = {
-      new IdField[AddresstypeId, BusinessentityaddressRow](
-        _path,
-        "addresstypeid",
-        _.addresstypeid,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(addresstypeid = value),
-        AddresstypeId.pgType
-      )
-    }
-
-    override def rowguid: Field[UUID, BusinessentityaddressRow] = {
-      new Field[UUID, BusinessentityaddressRow](
-        _path,
-        "rowguid",
-        _.rowguid,
-        None,
-        Some("uuid"),
-        (row, value) => row.copy(rowguid = value),
-        PgTypes.uuid
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, BusinessentityaddressRow] = {
-      new Field[LocalDateTime, BusinessentityaddressRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        None,
-        Some("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, BusinessentityaddressRow]] = java.util.List.of(this.businessentityid.underlying, this.addressid.underlying, this.addresstypeid.underlying, this.rowguid.underlying, this.modifieddate.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[BusinessentityaddressFields, BusinessentityaddressRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: BusinessentityaddressFields = new BusinessentityaddressFields(java.util.Collections.emptyList())
 }

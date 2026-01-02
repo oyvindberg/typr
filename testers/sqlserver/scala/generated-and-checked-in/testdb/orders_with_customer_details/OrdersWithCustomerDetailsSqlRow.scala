@@ -7,6 +7,7 @@ package testdb.orders_with_customer_details
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.Tuple.Tuple6
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -29,7 +30,19 @@ case class OrdersWithCustomerDetailsSqlRow(
   @JsonProperty("customer_name") customerName: String,
   /** Points to [[testdb.customers.CustomersRow.email]] */
   @JsonProperty("customer_email") customerEmail: String
-)
+) extends Tuple6[OrdersId, Option[LocalDateTime], BigDecimal, CustomersId, String, String] {
+  override def `_1`: OrdersId = orderId
+
+  override def `_2`: Option[LocalDateTime] = orderDate
+
+  override def `_3`: BigDecimal = totalAmount
+
+  override def `_4`: CustomersId = customerId
+
+  override def `_5`: String = customerName
+
+  override def `_6`: String = customerEmail
+}
 
 object OrdersWithCustomerDetailsSqlRow {
   val `_rowParser`: RowParser[OrdersWithCustomerDetailsSqlRow] = RowParsers.of(OrdersId.sqlServerType, SqlServerTypes.datetime2.nullable, ScalaDbTypes.SqlServerTypes.money, CustomersId.sqlServerType, SqlServerTypes.nvarchar, SqlServerTypes.nvarchar)(OrdersWithCustomerDetailsSqlRow.apply)(row => Array[Any](row.orderId, row.orderDate, row.totalAmount, row.customerId, row.customerName, row.customerEmail))

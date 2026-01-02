@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
 import dev.typr.foundations.SqlServerTypes;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -18,7 +19,8 @@ public record ProductsRow(
     @JsonProperty("product_id") ProductsId productId,
     String name,
     BigDecimal price,
-    Optional<String> description) {
+    Optional<String> description)
+    implements Tuple4<ProductsId, String, BigDecimal, Optional<String>> {
   /** IDENTITY(1, 1) */
   public ProductsRow withProductId(ProductsId productId) {
     return new ProductsRow(productId, name, price, description);
@@ -48,6 +50,30 @@ public record ProductsRow(
           SqlServerTypes.nvarchar.opt(),
           ProductsRow::new,
           row -> new Object[] {row.productId(), row.name(), row.price(), row.description()});
+  ;
+
+  @Override
+  public ProductsId _1() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public BigDecimal _3() {
+    return price;
+  }
+  ;
+
+  @Override
+  public Optional<String> _4() {
+    return description;
+  }
   ;
 
   public ProductsId id() {

@@ -10,14 +10,21 @@ import adventureworks.person.addresstype.AddresstypeId
 import adventureworks.person.businessentity.BusinessentityId
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple3
 
 /** Type for the composite primary key of table `person.businessentityaddress` */
 case class BusinessentityaddressId(
   businessentityid: BusinessentityId,
   addressid: AddressId,
   addresstypeid: AddresstypeId
-)
+) extends Tuple3[BusinessentityId, AddressId, AddresstypeId] {
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: AddressId = addressid
+
+  override def `_3`: AddresstypeId = addresstypeid
+}
 
 object BusinessentityaddressId {
-  val `_rowParser`: RowParser[BusinessentityaddressId] = RowParsers.of(BusinessentityId.pgType, AddressId.pgType, AddresstypeId.pgType, BusinessentityaddressId.apply, row => Array[Any](row.businessentityid, row.addressid, row.addresstypeid))
+  val `_rowParser`: RowParser[BusinessentityaddressId] = RowParsers.of(BusinessentityId.dbType, AddressId.dbType, AddresstypeId.dbType, BusinessentityaddressId.apply, row => Array[Any](row.businessentityid, row.addressid, row.addresstypeid))
 }

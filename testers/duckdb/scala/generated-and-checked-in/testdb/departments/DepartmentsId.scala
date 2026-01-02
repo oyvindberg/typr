@@ -7,6 +7,7 @@ package testdb.departments
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 
@@ -14,7 +15,11 @@ import dev.typr.foundations.scala.RowParsers
 case class DepartmentsId(
   @JsonProperty("dept_code") deptCode: String,
   @JsonProperty("dept_region") deptRegion: String
-)
+) extends Tuple2[String, String] {
+  override def `_1`: String = deptCode
+
+  override def `_2`: String = deptRegion
+}
 
 object DepartmentsId {
   val `_rowParser`: RowParser[DepartmentsId] = RowParsers.of(DuckDbTypes.varchar, DuckDbTypes.varchar)(DepartmentsId.apply)(row => Array[Any](row.deptCode, row.deptRegion))

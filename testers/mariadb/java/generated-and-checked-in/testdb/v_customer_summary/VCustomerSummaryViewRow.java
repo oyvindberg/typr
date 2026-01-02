@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple10;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -36,7 +37,18 @@ public record VCustomerSummaryViewRow(
     /** Default: 0.0000 */
     @JsonProperty("lifetime_value") BigDecimal lifetimeValue,
     /** Default: current_timestamp(6) */
-    @JsonProperty("last_order_date") Optional<LocalDateTime> lastOrderDate) {
+    @JsonProperty("last_order_date") Optional<LocalDateTime> lastOrderDate)
+    implements Tuple10<
+        CustomersId,
+        String,
+        Optional<String>,
+        String,
+        CustomerStatusId,
+        LocalDateTime,
+        Optional<LocalDateTime>,
+        Long,
+        BigDecimal,
+        Optional<LocalDateTime>> {
   /** Default: 0 Points to {@link testdb.customers.CustomersRow#customerId()} */
   public VCustomerSummaryViewRow withCustomerId(CustomersId customerId) {
     return new VCustomerSummaryViewRow(
@@ -199,11 +211,11 @@ public record VCustomerSummaryViewRow(
 
   public static RowParser<VCustomerSummaryViewRow> _rowParser =
       RowParsers.of(
-          CustomersId.pgType,
+          CustomersId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar.opt(),
           MariaTypes.text,
-          CustomerStatusId.pgType,
+          CustomerStatusId.dbType,
           MariaTypes.datetime,
           MariaTypes.datetime.opt(),
           MariaTypes.bigint,
@@ -223,5 +235,65 @@ public record VCustomerSummaryViewRow(
                 row.lifetimeValue(),
                 row.lastOrderDate()
               });
+  ;
+
+  @Override
+  public CustomersId _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _10() {
+    return lastOrderDate;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return email;
+  }
+  ;
+
+  @Override
+  public Optional<String> _3() {
+    return fullName;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return tier;
+  }
+  ;
+
+  @Override
+  public CustomerStatusId _5() {
+    return status;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _6() {
+    return createdAt;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _7() {
+    return lastLoginAt;
+  }
+  ;
+
+  @Override
+  public Long _8() {
+    return totalOrders;
+  }
+  ;
+
+  @Override
+  public BigDecimal _9() {
+    return lifetimeValue;
+  }
   ;
 }

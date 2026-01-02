@@ -12,6 +12,7 @@ import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple10
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -56,7 +57,7 @@ case class SalesterritoryRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple10[SalesterritoryId, Name, CountryregionId, String, java.math.BigDecimal, java.math.BigDecimal, java.math.BigDecimal, java.math.BigDecimal, UUID, LocalDateTime] {
   def id: SalesterritoryId = territoryid
 
   def toUnsavedRow(
@@ -81,10 +82,30 @@ case class SalesterritoryRow(
       modifieddate
     )
   }
+
+  override def `_1`: SalesterritoryId = territoryid
+
+  override def `_2`: Name = name
+
+  override def `_3`: CountryregionId = countryregioncode
+
+  override def `_4`: String = group
+
+  override def `_5`: java.math.BigDecimal = salesytd
+
+  override def `_6`: java.math.BigDecimal = saleslastyear
+
+  override def `_7`: java.math.BigDecimal = costytd
+
+  override def `_8`: java.math.BigDecimal = costlastyear
+
+  override def `_9`: UUID = rowguid
+
+  override def `_10`: LocalDateTime = modifieddate
 }
 
 object SalesterritoryRow {
-  val `_rowParser`: RowParser[SalesterritoryRow] = RowParsers.of(SalesterritoryId.pgType, Name.pgType, CountryregionId.pgType, PgTypes.text, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, SalesterritoryRow.apply, row => Array[Any](row.territoryid, row.name, row.countryregioncode, row.group, row.salesytd, row.saleslastyear, row.costytd, row.costlastyear, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[SalesterritoryRow] = RowParsers.of(SalesterritoryId.dbType, Name.dbType, CountryregionId.dbType, PgTypes.text, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, SalesterritoryRow.apply, row => Array[Any](row.territoryid, row.name, row.countryregioncode, row.group, row.salesytd, row.saleslastyear, row.costytd, row.costlastyear, row.rowguid, row.modifieddate))
 
   given pgText: PgText[SalesterritoryRow] = PgText.from(`_rowParser`)
 }

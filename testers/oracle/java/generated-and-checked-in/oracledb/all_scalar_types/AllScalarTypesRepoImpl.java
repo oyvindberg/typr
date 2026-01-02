@@ -24,10 +24,8 @@ import java.util.Optional;
 public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
   @Override
   public DeleteBuilder<AllScalarTypesFields, AllScalarTypesRow> delete() {
-    return DeleteBuilder.of(
-        "\"ALL_SCALAR_TYPES\"", AllScalarTypesFields.structure(), Dialect.ORACLE);
+    return DeleteBuilder.of("\"ALL_SCALAR_TYPES\"", AllScalarTypesFields.structure, Dialect.ORACLE);
   }
-  ;
 
   @Override
   public Boolean deleteById(AllScalarTypesId id, Connection c) {
@@ -39,7 +37,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(AllScalarTypesId[] ids, Connection c) {
@@ -55,7 +52,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public AllScalarTypesRow insert(AllScalarTypesRow unsaved, Connection c) {
@@ -91,7 +87,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
             AllScalarTypesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public AllScalarTypesRow insert(AllScalarTypesRowUnsaved unsaved, Connection c) {
@@ -153,17 +148,15 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
             AllScalarTypesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<AllScalarTypesFields, AllScalarTypesRow> select() {
     return SelectBuilder.of(
         "\"ALL_SCALAR_TYPES\"",
-        AllScalarTypesFields.structure(),
+        AllScalarTypesFields.structure,
         AllScalarTypesRow._rowParser,
         Dialect.ORACLE);
   }
-  ;
 
   @Override
   public List<AllScalarTypesRow> selectAll(Connection c) {
@@ -175,7 +168,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .query(AllScalarTypesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<AllScalarTypesRow> selectById(AllScalarTypesId id, Connection c) {
@@ -190,7 +182,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .query(AllScalarTypesRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<AllScalarTypesRow> selectByIds(AllScalarTypesId[] ids, Connection c) {
@@ -209,7 +200,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .query(AllScalarTypesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<AllScalarTypesId, AllScalarTypesRow> selectByIdsTracked(
@@ -219,17 +209,15 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
     selectByIds(ids, c).forEach(row -> ret.put(row.id(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<AllScalarTypesFields, AllScalarTypesRow> update() {
     return UpdateBuilder.of(
         "\"ALL_SCALAR_TYPES\"",
-        AllScalarTypesFields.structure(),
+        AllScalarTypesFields.structure,
         AllScalarTypesRow._rowParser,
         Dialect.ORACLE);
   }
-  ;
 
   @Override
   public Boolean update(AllScalarTypesRow row, Connection c) {
@@ -255,7 +243,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public void upsert(AllScalarTypesRow unsaved, Connection c) {
@@ -302,7 +289,6 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public void upsertBatch(Iterator<AllScalarTypesRow> unsaved, Connection c) {
@@ -323,5 +309,4 @@ public class AllScalarTypesRepoImpl implements AllScalarTypesRepo {
         .updateMany(AllScalarTypesRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

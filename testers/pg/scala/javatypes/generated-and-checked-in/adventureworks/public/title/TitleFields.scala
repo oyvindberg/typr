@@ -6,40 +6,37 @@
 package adventureworks.public.title
 
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
+import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr1
 import java.util.Optional
 
-trait TitleFields extends FieldsExpr0[TitleRow] {
-  def code: IdField[TitleId, TitleRow]
+class TitleFields(val `_path`: java.util.List[Path]) extends TupleExpr1[TitleId] with RelationStructure[TitleFields, TitleRow]  with FieldsBase[TitleRow] {
+  def code: IdField[TitleId, TitleRow] = {
+    new IdField[TitleId, TitleRow](
+      _path,
+      "code",
+      _.code,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(code = value),
+      TitleId.dbType
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, TitleRow]]
+  override def columns: java.util.List[FieldLike[?, TitleRow]] = java.util.List.of(this.code)
 
   override def rowParser: RowParser[TitleRow] = TitleRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[TitleFields, TitleRow] = new TitleFields(`_path`)
+
+  override def `_1`: SqlExpr[TitleId] = code
 }
 
 object TitleFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends TitleFields with RelationStructure[TitleFields, TitleRow] {
-
-    override def code: IdField[TitleId, TitleRow] = {
-      new IdField[TitleId, TitleRow](
-        _path,
-        "code",
-        _.code,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(code = value),
-        TitleId.pgType
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, TitleRow]] = java.util.List.of(this.code)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[TitleFields, TitleRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: TitleFields = new TitleFields(java.util.Collections.emptyList())
 }

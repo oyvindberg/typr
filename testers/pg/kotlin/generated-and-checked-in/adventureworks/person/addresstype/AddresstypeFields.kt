@@ -8,46 +8,44 @@ package adventureworks.person.addresstype
 import adventureworks.public.Name
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
+import dev.typr.foundations.kotlin.TupleExpr4
 import java.time.LocalDateTime
 import java.util.UUID
 import kotlin.collections.List
 
-interface AddresstypeFields : FieldsExpr<AddresstypeRow> {
-  abstract fun addresstypeid(): IdField<AddresstypeId, AddresstypeRow>
+data class AddresstypeFields(val _path: List<Path>) : TupleExpr4<AddresstypeId, Name, UUID, LocalDateTime>, RelationStructure<AddresstypeFields, AddresstypeRow>, FieldsBase<AddresstypeRow> {
+  override fun _1(): SqlExpr<AddresstypeId> = addresstypeid()
 
-  abstract override fun columns(): List<FieldLike<*, AddresstypeRow>>
+  override fun _2(): SqlExpr<Name> = name()
 
-  abstract fun modifieddate(): Field<LocalDateTime, AddresstypeRow>
+  override fun _3(): SqlExpr<UUID> = rowguid()
 
-  abstract fun name(): Field<Name, AddresstypeRow>
+  override fun _4(): SqlExpr<LocalDateTime> = modifieddate()
+
+  override fun _path(): List<Path> = _path
+
+  fun addresstypeid(): IdField<AddresstypeId, AddresstypeRow> = IdField<AddresstypeId, AddresstypeRow>(_path, "addresstypeid", AddresstypeRow::addresstypeid, null, "int4", { row, value -> row.copy(addresstypeid = value) }, AddresstypeId.dbType)
+
+  override fun columns(): List<FieldLike<*, AddresstypeRow>> = listOf(this.addresstypeid().underlying, this.name().underlying, this.rowguid().underlying, this.modifieddate().underlying)
+
+  fun modifieddate(): Field<LocalDateTime, AddresstypeRow> = Field<LocalDateTime, AddresstypeRow>(_path, "modifieddate", AddresstypeRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
+
+  fun name(): Field<Name, AddresstypeRow> = Field<Name, AddresstypeRow>(_path, "name", AddresstypeRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.dbType)
 
   override fun rowParser(): RowParser<AddresstypeRow> = AddresstypeRow._rowParser.underlying
 
-  abstract fun rowguid(): Field<UUID, AddresstypeRow>
+  fun rowguid(): Field<UUID, AddresstypeRow> = Field<UUID, AddresstypeRow>(_path, "rowguid", AddresstypeRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<AddresstypeFields, AddresstypeRow> = AddresstypeFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : AddresstypeFields, RelationStructure<AddresstypeFields, AddresstypeRow> {
-      override fun addresstypeid(): IdField<AddresstypeId, AddresstypeRow> = IdField<AddresstypeId, AddresstypeRow>(_path, "addresstypeid", AddresstypeRow::addresstypeid, null, "int4", { row, value -> row.copy(addresstypeid = value) }, AddresstypeId.pgType)
-
-      override fun name(): Field<Name, AddresstypeRow> = Field<Name, AddresstypeRow>(_path, "name", AddresstypeRow::name, null, "varchar", { row, value -> row.copy(name = value) }, Name.pgType)
-
-      override fun rowguid(): Field<UUID, AddresstypeRow> = Field<UUID, AddresstypeRow>(_path, "rowguid", AddresstypeRow::rowguid, null, "uuid", { row, value -> row.copy(rowguid = value) }, PgTypes.uuid)
-
-      override fun modifieddate(): Field<LocalDateTime, AddresstypeRow> = Field<LocalDateTime, AddresstypeRow>(_path, "modifieddate", AddresstypeRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, AddresstypeRow>> = listOf(this.addresstypeid().underlying, this.name().underlying, this.rowguid().underlying, this.modifieddate().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<AddresstypeFields, AddresstypeRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: AddresstypeFields = AddresstypeFields(emptyList<Path>())
   }
 }

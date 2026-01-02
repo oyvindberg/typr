@@ -7,6 +7,7 @@ package testdb.nullability_test
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -20,7 +21,7 @@ case class NullabilityTestRow(
   @JsonProperty("OPTIONAL_COL") optionalCol: Option[String],
   /** Default: 'default_value' */
   @JsonProperty("DEFAULTED_COL") defaultedCol: Option[String]
-) {
+) extends Tuple4[Int, String, Option[String], Option[String]] {
   def toUnsavedRow(defaultedCol: Defaulted[Option[String]] = Defaulted.Provided(this.defaultedCol)): NullabilityTestRowUnsaved = {
     new NullabilityTestRowUnsaved(
       id,
@@ -29,6 +30,14 @@ case class NullabilityTestRow(
       defaultedCol
     )
   }
+
+  override def `_1`: Int = id
+
+  override def `_2`: String = requiredCol
+
+  override def `_3`: Option[String] = optionalCol
+
+  override def `_4`: Option[String] = defaultedCol
 }
 
 object NullabilityTestRow {

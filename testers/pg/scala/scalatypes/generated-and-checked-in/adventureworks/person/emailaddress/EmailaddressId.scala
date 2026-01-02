@@ -6,6 +6,7 @@
 package adventureworks.person.emailaddress
 
 import adventureworks.person.businessentity.BusinessentityId
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -14,8 +15,12 @@ import dev.typr.foundations.scala.ScalaDbTypes
 case class EmailaddressId(
   businessentityid: BusinessentityId,
   emailaddressid: Int
-)
+) extends Tuple2[BusinessentityId, Int] {
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: Int = emailaddressid
+}
 
 object EmailaddressId {
-  val `_rowParser`: RowParser[EmailaddressId] = RowParsers.of(BusinessentityId.pgType, ScalaDbTypes.PgTypes.int4)(EmailaddressId.apply)(row => Array[Any](row.businessentityid, row.emailaddressid))
+  val `_rowParser`: RowParser[EmailaddressId] = RowParsers.of(BusinessentityId.dbType, ScalaDbTypes.PgTypes.int4)(EmailaddressId.apply)(row => Array[Any](row.businessentityid, row.emailaddressid))
 }

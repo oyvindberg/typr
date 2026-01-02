@@ -12,6 +12,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple9;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -59,7 +60,17 @@ public record SalespersonRow(
     /** Default: uuid_generate_v1() */
     UUID rowguid,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple9<
+        BusinessentityId,
+        Optional<SalesterritoryId>,
+        Optional<BigDecimal>,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        UUID,
+        LocalDateTime> {
   /**
    * Primary key for SalesPerson records. Foreign key to Employee.BusinessEntityID Points to {@link
    * adventureworks.humanresources.employee.EmployeeRow#businessentityid()}
@@ -218,8 +229,8 @@ public record SalespersonRow(
 
   public static RowParser<SalespersonRow> _rowParser =
       RowParsers.of(
-          BusinessentityId.pgType,
-          SalesterritoryId.pgType.opt(),
+          BusinessentityId.dbType,
+          SalesterritoryId.dbType.opt(),
           PgTypes.numeric.opt(),
           PgTypes.numeric,
           PgTypes.numeric,
@@ -243,6 +254,60 @@ public record SalespersonRow(
   ;
 
   public static PgText<SalespersonRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public BusinessentityId _1() {
+    return businessentityid;
+  }
+  ;
+
+  @Override
+  public Optional<SalesterritoryId> _2() {
+    return territoryid;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _3() {
+    return salesquota;
+  }
+  ;
+
+  @Override
+  public BigDecimal _4() {
+    return bonus;
+  }
+  ;
+
+  @Override
+  public BigDecimal _5() {
+    return commissionpct;
+  }
+  ;
+
+  @Override
+  public BigDecimal _6() {
+    return salesytd;
+  }
+  ;
+
+  @Override
+  public BigDecimal _7() {
+    return saleslastyear;
+  }
+  ;
+
+  @Override
+  public UUID _8() {
+    return rowguid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _9() {
+    return modifieddate;
+  }
+  ;
 
   public BusinessentityId id() {
     return businessentityid;

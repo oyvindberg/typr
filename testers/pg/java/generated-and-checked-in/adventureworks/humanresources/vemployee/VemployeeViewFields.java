@@ -12,330 +12,370 @@ import adventureworks.userdefined.FirstName;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.data.Xml;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr18;
 import java.util.List;
 import java.util.Optional;
 
-public interface VemployeeViewFields extends FieldsExpr<VemployeeViewRow> {
-  record Impl(List<Path> _path)
-      implements VemployeeViewFields, RelationStructure<VemployeeViewFields, VemployeeViewRow> {
-    @Override
-    public Field<BusinessentityId, VemployeeViewRow> businessentityid() {
-      return new Field<BusinessentityId, VemployeeViewRow>(
-          _path,
-          "businessentityid",
-          VemployeeViewRow::businessentityid,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withBusinessentityid(value),
-          BusinessentityId.pgType);
-    }
-    ;
+public class VemployeeViewFields
+    implements TupleExpr18<
+            BusinessentityId,
+            String, /* user-picked */
+            FirstName,
+            Name,
+            Name,
+            String,
+            String,
+            Phone,
+            Name,
+            String,
+            Integer,
+            String,
+            String,
+            String,
+            Name,
+            String,
+            Name,
+            Xml>,
+        RelationStructure<VemployeeViewFields, VemployeeViewRow>,
+        FieldsBase<VemployeeViewRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, VemployeeViewRow> title() {
-      return new Field<String, VemployeeViewRow>(
-          _path,
-          "title",
-          VemployeeViewRow::title,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTitle(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field</* user-picked */ FirstName, VemployeeViewRow> firstname() {
-      return new Field</* user-picked */ FirstName, VemployeeViewRow>(
-          _path,
-          "firstname",
-          VemployeeViewRow::firstname,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withFirstname(value),
-          FirstName.pgType);
-    }
-    ;
-
-    @Override
-    public Field<Name, VemployeeViewRow> middlename() {
-      return new Field<Name, VemployeeViewRow>(
-          _path,
-          "middlename",
-          VemployeeViewRow::middlename,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withMiddlename(value),
-          Name.pgType);
-    }
-    ;
-
-    @Override
-    public Field<Name, VemployeeViewRow> lastname() {
-      return new Field<Name, VemployeeViewRow>(
-          _path,
-          "lastname",
-          VemployeeViewRow::lastname,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withLastname(value),
-          Name.pgType);
-    }
-    ;
-
-    @Override
-    public Field<String, VemployeeViewRow> suffix() {
-      return new Field<String, VemployeeViewRow>(
-          _path,
-          "suffix",
-          VemployeeViewRow::suffix,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withSuffix(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<String, VemployeeViewRow> jobtitle() {
-      return new Field<String, VemployeeViewRow>(
-          _path,
-          "jobtitle",
-          VemployeeViewRow::jobtitle,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withJobtitle(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<Phone, VemployeeViewRow> phonenumber() {
-      return new Field<Phone, VemployeeViewRow>(
-          _path,
-          "phonenumber",
-          VemployeeViewRow::phonenumber,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPhonenumber(value),
-          Phone.pgType);
-    }
-    ;
-
-    @Override
-    public Field<Name, VemployeeViewRow> phonenumbertype() {
-      return new Field<Name, VemployeeViewRow>(
-          _path,
-          "phonenumbertype",
-          VemployeeViewRow::phonenumbertype,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPhonenumbertype(value),
-          Name.pgType);
-    }
-    ;
-
-    @Override
-    public Field<String, VemployeeViewRow> emailaddress() {
-      return new Field<String, VemployeeViewRow>(
-          _path,
-          "emailaddress",
-          VemployeeViewRow::emailaddress,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withEmailaddress(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<Integer, VemployeeViewRow> emailpromotion() {
-      return new Field<Integer, VemployeeViewRow>(
-          _path,
-          "emailpromotion",
-          VemployeeViewRow::emailpromotion,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withEmailpromotion(value),
-          PgTypes.int4);
-    }
-    ;
-
-    @Override
-    public Field<String, VemployeeViewRow> addressline1() {
-      return new Field<String, VemployeeViewRow>(
-          _path,
-          "addressline1",
-          VemployeeViewRow::addressline1,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withAddressline1(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<String, VemployeeViewRow> addressline2() {
-      return new Field<String, VemployeeViewRow>(
-          _path,
-          "addressline2",
-          VemployeeViewRow::addressline2,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withAddressline2(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<String, VemployeeViewRow> city() {
-      return new Field<String, VemployeeViewRow>(
-          _path,
-          "city",
-          VemployeeViewRow::city,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCity(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<Name, VemployeeViewRow> stateprovincename() {
-      return new Field<Name, VemployeeViewRow>(
-          _path,
-          "stateprovincename",
-          VemployeeViewRow::stateprovincename,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withStateprovincename(value),
-          Name.pgType);
-    }
-    ;
-
-    @Override
-    public Field<String, VemployeeViewRow> postalcode() {
-      return new Field<String, VemployeeViewRow>(
-          _path,
-          "postalcode",
-          VemployeeViewRow::postalcode,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPostalcode(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<Name, VemployeeViewRow> countryregionname() {
-      return new Field<Name, VemployeeViewRow>(
-          _path,
-          "countryregionname",
-          VemployeeViewRow::countryregionname,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCountryregionname(value),
-          Name.pgType);
-    }
-    ;
-
-    @Override
-    public Field<Xml, VemployeeViewRow> additionalcontactinfo() {
-      return new Field<Xml, VemployeeViewRow>(
-          _path,
-          "additionalcontactinfo",
-          VemployeeViewRow::additionalcontactinfo,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withAdditionalcontactinfo(value),
-          PgTypes.xml);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, VemployeeViewRow>> columns() {
-      return java.util.List.of(
-          this.businessentityid(),
-          this.title(),
-          this.firstname(),
-          this.middlename(),
-          this.lastname(),
-          this.suffix(),
-          this.jobtitle(),
-          this.phonenumber(),
-          this.phonenumbertype(),
-          this.emailaddress(),
-          this.emailpromotion(),
-          this.addressline1(),
-          this.addressline2(),
-          this.city(),
-          this.stateprovincename(),
-          this.postalcode(),
-          this.countryregionname(),
-          this.additionalcontactinfo());
-    }
-    ;
-
-    @Override
-    public RelationStructure<VemployeeViewFields, VemployeeViewRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public VemployeeViewFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static VemployeeViewFields structure =
+      new VemployeeViewFields(java.util.Collections.emptyList());
+
+  public Field<BusinessentityId, VemployeeViewRow> businessentityid() {
+    return new Field<BusinessentityId, VemployeeViewRow>(
+        _path,
+        "businessentityid",
+        VemployeeViewRow::businessentityid,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withBusinessentityid(value),
+        BusinessentityId.dbType);
   }
-  ;
 
-  Field<BusinessentityId, VemployeeViewRow> businessentityid();
+  public Field<String, VemployeeViewRow> title() {
+    return new Field<String, VemployeeViewRow>(
+        _path,
+        "title",
+        VemployeeViewRow::title,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTitle(value),
+        PgTypes.text);
+  }
 
-  Field<String, VemployeeViewRow> title();
+  public Field</* user-picked */ FirstName, VemployeeViewRow> firstname() {
+    return new Field</* user-picked */ FirstName, VemployeeViewRow>(
+        _path,
+        "firstname",
+        VemployeeViewRow::firstname,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withFirstname(value),
+        FirstName.dbType);
+  }
 
-  Field</* user-picked */ FirstName, VemployeeViewRow> firstname();
+  public Field<Name, VemployeeViewRow> middlename() {
+    return new Field<Name, VemployeeViewRow>(
+        _path,
+        "middlename",
+        VemployeeViewRow::middlename,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withMiddlename(value),
+        Name.dbType);
+  }
 
-  Field<Name, VemployeeViewRow> middlename();
+  public Field<Name, VemployeeViewRow> lastname() {
+    return new Field<Name, VemployeeViewRow>(
+        _path,
+        "lastname",
+        VemployeeViewRow::lastname,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withLastname(value),
+        Name.dbType);
+  }
 
-  Field<Name, VemployeeViewRow> lastname();
+  public Field<String, VemployeeViewRow> suffix() {
+    return new Field<String, VemployeeViewRow>(
+        _path,
+        "suffix",
+        VemployeeViewRow::suffix,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withSuffix(value),
+        PgTypes.text);
+  }
 
-  Field<String, VemployeeViewRow> suffix();
+  public Field<String, VemployeeViewRow> jobtitle() {
+    return new Field<String, VemployeeViewRow>(
+        _path,
+        "jobtitle",
+        VemployeeViewRow::jobtitle,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withJobtitle(value),
+        PgTypes.text);
+  }
 
-  Field<String, VemployeeViewRow> jobtitle();
+  public Field<Phone, VemployeeViewRow> phonenumber() {
+    return new Field<Phone, VemployeeViewRow>(
+        _path,
+        "phonenumber",
+        VemployeeViewRow::phonenumber,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPhonenumber(value),
+        Phone.dbType);
+  }
 
-  Field<Phone, VemployeeViewRow> phonenumber();
+  public Field<Name, VemployeeViewRow> phonenumbertype() {
+    return new Field<Name, VemployeeViewRow>(
+        _path,
+        "phonenumbertype",
+        VemployeeViewRow::phonenumbertype,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPhonenumbertype(value),
+        Name.dbType);
+  }
 
-  Field<Name, VemployeeViewRow> phonenumbertype();
+  public Field<String, VemployeeViewRow> emailaddress() {
+    return new Field<String, VemployeeViewRow>(
+        _path,
+        "emailaddress",
+        VemployeeViewRow::emailaddress,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withEmailaddress(value),
+        PgTypes.text);
+  }
 
-  Field<String, VemployeeViewRow> emailaddress();
+  public Field<Integer, VemployeeViewRow> emailpromotion() {
+    return new Field<Integer, VemployeeViewRow>(
+        _path,
+        "emailpromotion",
+        VemployeeViewRow::emailpromotion,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withEmailpromotion(value),
+        PgTypes.int4);
+  }
 
-  Field<Integer, VemployeeViewRow> emailpromotion();
+  public Field<String, VemployeeViewRow> addressline1() {
+    return new Field<String, VemployeeViewRow>(
+        _path,
+        "addressline1",
+        VemployeeViewRow::addressline1,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withAddressline1(value),
+        PgTypes.text);
+  }
 
-  Field<String, VemployeeViewRow> addressline1();
+  public Field<String, VemployeeViewRow> addressline2() {
+    return new Field<String, VemployeeViewRow>(
+        _path,
+        "addressline2",
+        VemployeeViewRow::addressline2,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withAddressline2(value),
+        PgTypes.text);
+  }
 
-  Field<String, VemployeeViewRow> addressline2();
+  public Field<String, VemployeeViewRow> city() {
+    return new Field<String, VemployeeViewRow>(
+        _path,
+        "city",
+        VemployeeViewRow::city,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCity(value),
+        PgTypes.text);
+  }
 
-  Field<String, VemployeeViewRow> city();
+  public Field<Name, VemployeeViewRow> stateprovincename() {
+    return new Field<Name, VemployeeViewRow>(
+        _path,
+        "stateprovincename",
+        VemployeeViewRow::stateprovincename,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withStateprovincename(value),
+        Name.dbType);
+  }
 
-  Field<Name, VemployeeViewRow> stateprovincename();
+  public Field<String, VemployeeViewRow> postalcode() {
+    return new Field<String, VemployeeViewRow>(
+        _path,
+        "postalcode",
+        VemployeeViewRow::postalcode,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPostalcode(value),
+        PgTypes.text);
+  }
 
-  Field<String, VemployeeViewRow> postalcode();
+  public Field<Name, VemployeeViewRow> countryregionname() {
+    return new Field<Name, VemployeeViewRow>(
+        _path,
+        "countryregionname",
+        VemployeeViewRow::countryregionname,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCountryregionname(value),
+        Name.dbType);
+  }
 
-  Field<Name, VemployeeViewRow> countryregionname();
-
-  Field<Xml, VemployeeViewRow> additionalcontactinfo();
+  public Field<Xml, VemployeeViewRow> additionalcontactinfo() {
+    return new Field<Xml, VemployeeViewRow>(
+        _path,
+        "additionalcontactinfo",
+        VemployeeViewRow::additionalcontactinfo,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withAdditionalcontactinfo(value),
+        PgTypes.xml);
+  }
 
   @Override
-  List<FieldLike<?, VemployeeViewRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<VemployeeViewRow> rowParser() {
+  public List<FieldLike<?, VemployeeViewRow>> columns() {
+    return java.util.List.of(
+        this.businessentityid(),
+        this.title(),
+        this.firstname(),
+        this.middlename(),
+        this.lastname(),
+        this.suffix(),
+        this.jobtitle(),
+        this.phonenumber(),
+        this.phonenumbertype(),
+        this.emailaddress(),
+        this.emailpromotion(),
+        this.addressline1(),
+        this.addressline2(),
+        this.city(),
+        this.stateprovincename(),
+        this.postalcode(),
+        this.countryregionname(),
+        this.additionalcontactinfo());
+  }
+
+  @Override
+  public RowParser<VemployeeViewRow> rowParser() {
     return VemployeeViewRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<VemployeeViewFields, VemployeeViewRow> withPaths(List<Path> _path) {
+    return new VemployeeViewFields(_path);
+  }
+
+  @Override
+  public SqlExpr<BusinessentityId> _1() {
+    return businessentityid();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return title();
+  }
+
+  @Override
+  public SqlExpr</* user-picked */ FirstName> _3() {
+    return firstname();
+  }
+
+  @Override
+  public SqlExpr<Name> _4() {
+    return middlename();
+  }
+
+  @Override
+  public SqlExpr<Name> _5() {
+    return lastname();
+  }
+
+  @Override
+  public SqlExpr<String> _6() {
+    return suffix();
+  }
+
+  @Override
+  public SqlExpr<String> _7() {
+    return jobtitle();
+  }
+
+  @Override
+  public SqlExpr<Phone> _8() {
+    return phonenumber();
+  }
+
+  @Override
+  public SqlExpr<Name> _9() {
+    return phonenumbertype();
+  }
+
+  @Override
+  public SqlExpr<String> _10() {
+    return emailaddress();
+  }
+
+  @Override
+  public SqlExpr<Integer> _11() {
+    return emailpromotion();
+  }
+
+  @Override
+  public SqlExpr<String> _12() {
+    return addressline1();
+  }
+
+  @Override
+  public SqlExpr<String> _13() {
+    return addressline2();
+  }
+
+  @Override
+  public SqlExpr<String> _14() {
+    return city();
+  }
+
+  @Override
+  public SqlExpr<Name> _15() {
+    return stateprovincename();
+  }
+
+  @Override
+  public SqlExpr<String> _16() {
+    return postalcode();
+  }
+
+  @Override
+  public SqlExpr<Name> _17() {
+    return countryregionname();
+  }
+
+  @Override
+  public SqlExpr<Xml> _18() {
+    return additionalcontactinfo();
+  }
 }

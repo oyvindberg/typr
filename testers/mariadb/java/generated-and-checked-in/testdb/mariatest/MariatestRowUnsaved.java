@@ -6,11 +6,15 @@
 package testdb.mariatest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.typr.foundations.data.Json;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint2;
+import dev.typr.foundations.data.Uint4;
+import dev.typr.foundations.data.Uint8;
 import dev.typr.foundations.data.maria.Inet4;
 import dev.typr.foundations.data.maria.Inet6;
 import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -31,15 +35,15 @@ public record MariatestRowUnsaved(
     /** */
     @JsonProperty("bigint_col") Long bigintCol,
     /** */
-    @JsonProperty("tinyint_u_col") Short tinyintUCol,
+    @JsonProperty("tinyint_u_col") Uint1 tinyintUCol,
     /** */
-    @JsonProperty("smallint_u_col") Integer smallintUCol,
+    @JsonProperty("smallint_u_col") Uint2 smallintUCol,
     /** */
-    @JsonProperty("mediumint_u_col") Integer mediumintUCol,
+    @JsonProperty("mediumint_u_col") Uint4 mediumintUCol,
     /** */
-    @JsonProperty("int_u_col") Long intUCol,
+    @JsonProperty("int_u_col") Uint4 intUCol,
     /** */
-    @JsonProperty("bigint_u_col") BigInteger bigintUCol,
+    @JsonProperty("bigint_u_col") Uint8 bigintUCol,
     /** */
     @JsonProperty("decimal_col") BigDecimal decimalCol,
     /** */
@@ -91,11 +95,9 @@ public record MariatestRowUnsaved(
     /** */
     @JsonProperty("year_col") Year yearCol,
     /** */
-    @JsonProperty("enum_col") String enumCol,
-    /** */
     @JsonProperty("set_col") MariaSet setCol,
     /** */
-    @JsonProperty("json_col") String jsonCol,
+    @JsonProperty("json_col") Json jsonCol,
     /** */
     @JsonProperty("inet4_col") Inet4 inet4Col,
     /** */
@@ -116,15 +118,15 @@ public record MariatestRowUnsaved(
       /** */
       @JsonProperty("bigint_col") Long bigintCol,
       /** */
-      @JsonProperty("tinyint_u_col") Short tinyintUCol,
+      @JsonProperty("tinyint_u_col") Uint1 tinyintUCol,
       /** */
-      @JsonProperty("smallint_u_col") Integer smallintUCol,
+      @JsonProperty("smallint_u_col") Uint2 smallintUCol,
       /** */
-      @JsonProperty("mediumint_u_col") Integer mediumintUCol,
+      @JsonProperty("mediumint_u_col") Uint4 mediumintUCol,
       /** */
-      @JsonProperty("int_u_col") Long intUCol,
+      @JsonProperty("int_u_col") Uint4 intUCol,
       /** */
-      @JsonProperty("bigint_u_col") BigInteger bigintUCol,
+      @JsonProperty("bigint_u_col") Uint8 bigintUCol,
       /** */
       @JsonProperty("decimal_col") BigDecimal decimalCol,
       /** */
@@ -176,11 +178,9 @@ public record MariatestRowUnsaved(
       /** */
       @JsonProperty("year_col") Year yearCol,
       /** */
-      @JsonProperty("enum_col") String enumCol,
-      /** */
       @JsonProperty("set_col") MariaSet setCol,
       /** */
-      @JsonProperty("json_col") String jsonCol,
+      @JsonProperty("json_col") Json jsonCol,
       /** */
       @JsonProperty("inet4_col") Inet4 inet4Col,
       /** */
@@ -221,7 +221,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -269,7 +268,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -317,7 +315,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -365,7 +362,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -413,7 +409,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -461,7 +456,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -472,7 +466,7 @@ public record MariatestRowUnsaved(
   ;
 
   /** */
-  public MariatestRowUnsaved withTinyintUCol(Short tinyintUCol) {
+  public MariatestRowUnsaved withTinyintUCol(Uint1 tinyintUCol) {
     return new MariatestRowUnsaved(
         tinyintCol,
         smallintCol,
@@ -509,7 +503,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -520,7 +513,7 @@ public record MariatestRowUnsaved(
   ;
 
   /** */
-  public MariatestRowUnsaved withSmallintUCol(Integer smallintUCol) {
+  public MariatestRowUnsaved withSmallintUCol(Uint2 smallintUCol) {
     return new MariatestRowUnsaved(
         tinyintCol,
         smallintCol,
@@ -557,7 +550,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -568,7 +560,7 @@ public record MariatestRowUnsaved(
   ;
 
   /** */
-  public MariatestRowUnsaved withMediumintUCol(Integer mediumintUCol) {
+  public MariatestRowUnsaved withMediumintUCol(Uint4 mediumintUCol) {
     return new MariatestRowUnsaved(
         tinyintCol,
         smallintCol,
@@ -605,7 +597,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -616,7 +607,7 @@ public record MariatestRowUnsaved(
   ;
 
   /** */
-  public MariatestRowUnsaved withIntUCol(Long intUCol) {
+  public MariatestRowUnsaved withIntUCol(Uint4 intUCol) {
     return new MariatestRowUnsaved(
         tinyintCol,
         smallintCol,
@@ -653,7 +644,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -664,7 +654,7 @@ public record MariatestRowUnsaved(
   ;
 
   /** */
-  public MariatestRowUnsaved withBigintUCol(BigInteger bigintUCol) {
+  public MariatestRowUnsaved withBigintUCol(Uint8 bigintUCol) {
     return new MariatestRowUnsaved(
         tinyintCol,
         smallintCol,
@@ -701,7 +691,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -749,7 +738,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -797,7 +785,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -845,7 +832,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -893,7 +879,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -941,7 +926,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -989,7 +973,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1037,7 +1020,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1085,7 +1067,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1133,7 +1114,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1181,7 +1161,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1229,7 +1208,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1277,7 +1255,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1325,7 +1302,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1373,7 +1349,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1421,7 +1396,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1469,7 +1443,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1517,7 +1490,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1565,7 +1537,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1613,7 +1584,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1661,7 +1631,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1709,7 +1678,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1757,7 +1725,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1805,7 +1772,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1853,7 +1819,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1901,55 +1866,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
-        setCol,
-        jsonCol,
-        inet4Col,
-        inet6Col,
-        timestampCol,
-        timestampFspCol);
-  }
-  ;
-
-  /** */
-  public MariatestRowUnsaved withEnumCol(String enumCol) {
-    return new MariatestRowUnsaved(
-        tinyintCol,
-        smallintCol,
-        mediumintCol,
-        intCol,
-        bigintCol,
-        tinyintUCol,
-        smallintUCol,
-        mediumintUCol,
-        intUCol,
-        bigintUCol,
-        decimalCol,
-        numericCol,
-        floatCol,
-        doubleCol,
-        boolCol,
-        bitCol,
-        bit1Col,
-        charCol,
-        varcharCol,
-        tinytextCol,
-        textCol,
-        mediumtextCol,
-        longtextCol,
-        binaryCol,
-        varbinaryCol,
-        tinyblobCol,
-        blobCol,
-        mediumblobCol,
-        longblobCol,
-        dateCol,
-        timeCol,
-        timeFspCol,
-        datetimeCol,
-        datetimeFspCol,
-        yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1997,7 +1913,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -2008,7 +1923,7 @@ public record MariatestRowUnsaved(
   ;
 
   /** */
-  public MariatestRowUnsaved withJsonCol(String jsonCol) {
+  public MariatestRowUnsaved withJsonCol(Json jsonCol) {
     return new MariatestRowUnsaved(
         tinyintCol,
         smallintCol,
@@ -2045,7 +1960,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -2093,7 +2007,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -2141,7 +2054,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -2189,7 +2101,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -2237,7 +2148,6 @@ public record MariatestRowUnsaved(
         datetimeCol,
         datetimeFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -2288,7 +2198,6 @@ public record MariatestRowUnsaved(
         timestampCol.getOrElse(timestampColDefault),
         timestampFspCol.getOrElse(timestampFspColDefault),
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,

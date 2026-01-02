@@ -64,5 +64,4 @@ public class DepartmentEmployeeDetailsSqlRepoImpl implements DepartmentEmployeeD
         .query(DepartmentEmployeeDetailsSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

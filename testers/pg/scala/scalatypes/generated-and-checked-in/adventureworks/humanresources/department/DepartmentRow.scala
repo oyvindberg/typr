@@ -9,6 +9,7 @@ import adventureworks.customtypes.Defaulted
 import adventureworks.public.Name
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import java.time.LocalDateTime
@@ -28,7 +29,7 @@ case class DepartmentRow(
   groupname: Name,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple4[DepartmentId, Name, Name, LocalDateTime] {
   def id: DepartmentId = departmentid
 
   def toUnsavedRow(
@@ -42,10 +43,18 @@ case class DepartmentRow(
       modifieddate
     )
   }
+
+  override def `_1`: DepartmentId = departmentid
+
+  override def `_2`: Name = name
+
+  override def `_3`: Name = groupname
+
+  override def `_4`: LocalDateTime = modifieddate
 }
 
 object DepartmentRow {
-  val `_rowParser`: RowParser[DepartmentRow] = RowParsers.of(DepartmentId.pgType, Name.pgType, Name.pgType, PgTypes.timestamp)(DepartmentRow.apply)(row => Array[Any](row.departmentid, row.name, row.groupname, row.modifieddate))
+  val `_rowParser`: RowParser[DepartmentRow] = RowParsers.of(DepartmentId.dbType, Name.dbType, Name.dbType, PgTypes.timestamp)(DepartmentRow.apply)(row => Array[Any](row.departmentid, row.name, row.groupname, row.modifieddate))
 
   given pgText: PgText[DepartmentRow] = PgText.from(`_rowParser`.underlying)
 }

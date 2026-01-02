@@ -8,6 +8,7 @@ package adventureworks.public.identity_test
 import adventureworks.customtypes.Defaulted
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.PgText
+import dev.typr.foundations.Tuple.Tuple3
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -21,13 +22,19 @@ data class IdentityTestRow(
   /** Identity BY DEFAULT, identityStart: 1, identityIncrement: 1, identityMaximum: 2147483647, identityMinimum: 1 */
   @JsonProperty("default_generated") val defaultGenerated: Int,
   val name: IdentityTestId
-) {
+) : Tuple3<Int, Int, IdentityTestId> {
+  override fun _1(): Int = alwaysGenerated
+
+  override fun _2(): Int = defaultGenerated
+
+  override fun _3(): IdentityTestId = name
+
   fun id(): IdentityTestId = name
 
   fun toUnsavedRow(defaultGenerated: Defaulted<Int> = Defaulted.Provided(this.defaultGenerated)): IdentityTestRowUnsaved = IdentityTestRowUnsaved(name, defaultGenerated)
 
   companion object {
-    val _rowParser: RowParser<IdentityTestRow> = RowParsers.of(KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int4, IdentityTestId.pgType, { t0, t1, t2 -> IdentityTestRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.alwaysGenerated, row.defaultGenerated, row.name) })
+    val _rowParser: RowParser<IdentityTestRow> = RowParsers.of(KotlinDbTypes.PgTypes.int4, KotlinDbTypes.PgTypes.int4, IdentityTestId.dbType, { t0, t1, t2 -> IdentityTestRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.alwaysGenerated, row.defaultGenerated, row.name) })
 
     val pgText: PgText<IdentityTestRow> =
       PgText.from(_rowParser.underlying)

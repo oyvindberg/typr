@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple14;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.mariadb.jdbc.type.Point;
@@ -44,7 +45,22 @@ public record CustomerAddressesRow(
     /** Default: NULL */
     @JsonProperty("delivery_notes") Optional<String> deliveryNotes,
     /** Default: current_timestamp() */
-    @JsonProperty("created_at") LocalDateTime createdAt) {
+    @JsonProperty("created_at") LocalDateTime createdAt)
+    implements Tuple14<
+        CustomerAddressesId,
+        CustomersId,
+        String,
+        Boolean,
+        String,
+        String,
+        Optional<String>,
+        String,
+        Optional<String>,
+        String,
+        String,
+        Optional<Point>,
+        Optional<String>,
+        LocalDateTime> {
   /** AUTO_INCREMENT */
   public CustomerAddressesRow withAddressId(CustomerAddressesId addressId) {
     return new CustomerAddressesRow(
@@ -327,8 +343,8 @@ public record CustomerAddressesRow(
 
   public static RowParser<CustomerAddressesRow> _rowParser =
       RowParsers.of(
-          CustomerAddressesId.pgType,
-          CustomersId.pgType,
+          CustomerAddressesId.dbType,
+          CustomersId.dbType,
           MariaTypes.text,
           MariaTypes.bool,
           MariaTypes.varchar,
@@ -359,6 +375,90 @@ public record CustomerAddressesRow(
                 row.deliveryNotes(),
                 row.createdAt()
               });
+  ;
+
+  @Override
+  public CustomerAddressesId _1() {
+    return addressId;
+  }
+  ;
+
+  @Override
+  public String _10() {
+    return postalCode;
+  }
+  ;
+
+  @Override
+  public String _11() {
+    return countryCode;
+  }
+  ;
+
+  @Override
+  public Optional<Point> _12() {
+    return location;
+  }
+  ;
+
+  @Override
+  public Optional<String> _13() {
+    return deliveryNotes;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _14() {
+    return createdAt;
+  }
+  ;
+
+  @Override
+  public CustomersId _2() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return addressType;
+  }
+  ;
+
+  @Override
+  public Boolean _4() {
+    return isDefault;
+  }
+  ;
+
+  @Override
+  public String _5() {
+    return recipientName;
+  }
+  ;
+
+  @Override
+  public String _6() {
+    return streetLine1;
+  }
+  ;
+
+  @Override
+  public Optional<String> _7() {
+    return streetLine2;
+  }
+  ;
+
+  @Override
+  public String _8() {
+    return city;
+  }
+  ;
+
+  @Override
+  public Optional<String> _9() {
+    return stateProvince;
+  }
   ;
 
   public CustomerAddressesId id() {

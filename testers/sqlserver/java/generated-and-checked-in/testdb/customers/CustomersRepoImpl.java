@@ -24,9 +24,8 @@ import java.util.Optional;
 public class CustomersRepoImpl implements CustomersRepo {
   @Override
   public DeleteBuilder<CustomersFields, CustomersRow> delete() {
-    return DeleteBuilder.of("[customers]", CustomersFields.structure(), Dialect.SQLSERVER);
+    return DeleteBuilder.of("[customers]", CustomersFields.structure, Dialect.SQLSERVER);
   }
-  ;
 
   @Override
   public Boolean deleteById(CustomersId customerId, Connection c) {
@@ -38,7 +37,6 @@ public class CustomersRepoImpl implements CustomersRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(CustomersId[] customerIds, Connection c) {
@@ -54,7 +52,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CustomersRow insert(CustomersRow unsaved, Connection c) {
@@ -73,7 +70,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .updateReturning(CustomersRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CustomersRow insert(CustomersRowUnsaved unsaved, Connection c) {
@@ -112,14 +108,12 @@ public class CustomersRepoImpl implements CustomersRepo {
     ;
     return q.updateReturning(CustomersRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<CustomersFields, CustomersRow> select() {
     return SelectBuilder.of(
-        "[customers]", CustomersFields.structure(), CustomersRow._rowParser, Dialect.SQLSERVER);
+        "[customers]", CustomersFields.structure, CustomersRow._rowParser, Dialect.SQLSERVER);
   }
-  ;
 
   @Override
   public List<CustomersRow> selectAll(Connection c) {
@@ -128,7 +122,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .query(CustomersRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<CustomersRow> selectById(CustomersId customerId, Connection c) {
@@ -142,7 +135,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .query(CustomersRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<CustomersRow> selectByIds(CustomersId[] customerIds, Connection c) {
@@ -160,7 +152,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .query(CustomersRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<CustomersId, CustomersRow> selectByIdsTracked(
@@ -169,7 +160,6 @@ public class CustomersRepoImpl implements CustomersRepo {
     selectByIds(customerIds, c).forEach(row -> ret.put(row.customerId(), row));
     return ret;
   }
-  ;
 
   @Override
   public Optional<CustomersRow> selectByUniqueEmail(String email, Connection c) {
@@ -183,14 +173,12 @@ public class CustomersRepoImpl implements CustomersRepo {
         .query(CustomersRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<CustomersFields, CustomersRow> update() {
     return UpdateBuilder.of(
-        "[customers]", CustomersFields.structure(), CustomersRow._rowParser, Dialect.SQLSERVER);
+        "[customers]", CustomersFields.structure, CustomersRow._rowParser, Dialect.SQLSERVER);
   }
-  ;
 
   @Override
   public Boolean update(CustomersRow row, Connection c) {
@@ -210,24 +198,28 @@ public class CustomersRepoImpl implements CustomersRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public CustomersRow upsert(CustomersRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit("MERGE INTO [customers] AS target\nUSING (VALUES ("),
+            Fragment.encode(CustomersId.sqlServerType, unsaved.customerId()),
+            Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.nvarchar, unsaved.name()),
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.nvarchar, unsaved.email()),
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.datetime2.opt(), unsaved.createdAt()),
             Fragment.lit(
-                ")) AS source([name], [email], [created_at])\n"
+                ")) AS source([customer_id], [name], [email], [created_at])\n"
                     + "ON target.[customer_id] = source.[customer_id]\n"
                     + "WHEN MATCHED THEN UPDATE SET [name] = source.[name],\n"
                     + "[email] = source.[email],\n"
                     + "[created_at] = source.[created_at]\n"
-                    + "WHEN NOT MATCHED THEN INSERT ([name], [email], [created_at]) VALUES ("),
+                    + "WHEN NOT MATCHED THEN INSERT ([customer_id], [name], [email], [created_at])"
+                    + " VALUES ("),
+            Fragment.encode(CustomersId.sqlServerType, unsaved.customerId()),
+            Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.nvarchar, unsaved.name()),
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.nvarchar, unsaved.email()),
@@ -240,7 +232,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .updateReturning(CustomersRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<CustomersRow> upsertBatch(Iterator<CustomersRow> unsaved, Connection c) {
@@ -260,5 +251,4 @@ public class CustomersRepoImpl implements CustomersRepo {
         .updateReturningEach(CustomersRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

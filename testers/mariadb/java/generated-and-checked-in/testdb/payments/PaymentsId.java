@@ -8,12 +8,12 @@ package testdb.payments;
 import com.fasterxml.jackson.annotation.JsonValue;
 import dev.typr.foundations.MariaType;
 import dev.typr.foundations.MariaTypes;
+import dev.typr.foundations.data.Uint8;
 import dev.typr.foundations.dsl.Bijection;
-import java.math.BigInteger;
 
 /** Type for the primary key of table `payments` */
-public record PaymentsId(@JsonValue BigInteger value) {
-  public PaymentsId withValue(BigInteger value) {
+public record PaymentsId(@JsonValue Uint8 value) {
+  public PaymentsId withValue(Uint8 value) {
     return new PaymentsId(value);
   }
   ;
@@ -24,9 +24,9 @@ public record PaymentsId(@JsonValue BigInteger value) {
   }
   ;
 
-  public static Bijection<PaymentsId, BigInteger> bijection =
+  public static Bijection<PaymentsId, Uint8> bijection =
       Bijection.of(PaymentsId::value, PaymentsId::new);
 
-  public static MariaType<PaymentsId> pgType =
+  public static MariaType<PaymentsId> dbType =
       MariaTypes.bigintUnsigned.bimap(PaymentsId::new, PaymentsId::value);
 }

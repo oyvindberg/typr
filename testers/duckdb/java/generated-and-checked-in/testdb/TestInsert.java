@@ -5,18 +5,23 @@
  */
 package testdb;
 
+import dev.typr.foundations.Inserter;
 import dev.typr.foundations.data.Json;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint2;
+import dev.typr.foundations.data.Uint4;
+import dev.typr.foundations.data.Uint8;
+import dev.typr.foundations.internal.RandomHelper;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Connection;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 import testdb.all_scalar_types.AllScalarTypesId;
 import testdb.all_scalar_types.AllScalarTypesRepoImpl;
 import testdb.all_scalar_types.AllScalarTypesRow;
@@ -24,7 +29,7 @@ import testdb.customers.CustomersId;
 import testdb.customers.CustomersRepoImpl;
 import testdb.customers.CustomersRow;
 import testdb.customers.CustomersRowUnsaved;
-import testdb.customtypes.Defaulted;
+import testdb.customtypes.Defaulted.UseDefault;
 import testdb.departments.DepartmentsRepoImpl;
 import testdb.departments.DepartmentsRow;
 import testdb.employees.EmployeesRepoImpl;
@@ -48,139 +53,154 @@ public record TestInsert(Random random) {
   }
   ;
 
-  public AllScalarTypesRow AllScalarTypes(
-      AllScalarTypesId id,
-      Optional<Byte> colTinyint,
-      Optional<Short> colSmallint,
-      Optional<Integer> colInteger,
-      Optional<Long> colBigint,
-      Optional<BigInteger> colHugeint,
-      Optional<Short> colUtinyint,
-      Optional<Integer> colUsmallint,
-      Optional<Long> colUinteger,
-      Optional<BigInteger> colUbigint,
-      Optional<Float> colFloat,
-      Optional<Double> colDouble,
-      Optional<BigDecimal> colDecimal,
-      Optional<Boolean> colBoolean,
-      Optional<String> colVarchar,
-      Optional<String> colText,
-      Optional<byte[]> colBlob,
-      Optional<LocalDate> colDate,
-      Optional<LocalTime> colTime,
-      Optional<LocalDateTime> colTimestamp,
-      Optional<OffsetDateTime> colTimestamptz,
-      Optional<Duration> colInterval,
-      Optional<UUID> colUuid,
-      Optional<Json> colJson,
-      Optional<Mood> colMood,
-      String colNotNull,
-      Connection c) {
-    return (new AllScalarTypesRepoImpl())
-        .insert(
-            new AllScalarTypesRow(
-                id,
-                colTinyint,
-                colSmallint,
-                colInteger,
-                colBigint,
-                colHugeint,
-                colUtinyint,
-                colUsmallint,
-                colUinteger,
-                colUbigint,
-                colFloat,
-                colDouble,
-                colDecimal,
-                colBoolean,
-                colVarchar,
-                colText,
-                colBlob,
-                colDate,
-                colTime,
-                colTimestamp,
-                colTimestamptz,
-                colInterval,
-                colUuid,
-                colJson,
-                colMood,
-                colNotNull),
-            c);
+  public Inserter<AllScalarTypesRow, AllScalarTypesRow> AllScalarTypes() {
+    return Inserter.of(
+        new AllScalarTypesRow(
+            new AllScalarTypesId(random.nextInt()),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of((byte) (random.nextInt(Byte.MAX_VALUE)))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of((short) (random.nextInt(Short.MAX_VALUE)))),
+            (random.nextBoolean() ? Optional.empty() : Optional.of(random.nextInt())),
+            (random.nextBoolean() ? Optional.empty() : Optional.of(random.nextLong())),
+            Optional.empty(),
+            (random.nextBoolean() ? Optional.empty() : Optional.of(Uint1.of(random.nextInt(256)))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(Uint2.of(random.nextInt(65536)))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(Uint4.of((long) (Math.abs(random.nextInt()))))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(Uint8.of(Math.abs(random.nextLong())))),
+            (random.nextBoolean() ? Optional.empty() : Optional.of(random.nextFloat())),
+            (random.nextBoolean() ? Optional.empty() : Optional.of(random.nextDouble())),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(BigDecimal.valueOf(random.nextDouble()))),
+            (random.nextBoolean() ? Optional.empty() : Optional.of(random.nextBoolean())),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(RandomHelper.alphanumeric(random, 20))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(RandomHelper.alphanumeric(random, 20))),
+            Optional.empty(),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(LocalDate.ofEpochDay((long) (random.nextInt(30000))))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(LocalTime.ofSecondOfDay((long) (random.nextInt(24 * 60 * 60))))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(
+                    LocalDateTime.of(
+                        LocalDate.ofEpochDay((long) (random.nextInt(30000))),
+                        LocalTime.ofSecondOfDay((long) (random.nextInt(24 * 60 * 60)))))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(
+                    OffsetDateTime.of(
+                        LocalDateTime.of(
+                            LocalDate.ofEpochDay((long) (random.nextInt(30000))),
+                            LocalTime.ofSecondOfDay((long) (random.nextInt(24 * 60 * 60)))),
+                        ZoneOffset.ofHours(random.nextInt(24) - 12)))),
+            Optional.empty(),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(RandomHelper.randomUUID(random))),
+            (random.nextBoolean() ? Optional.empty() : Optional.of(new Json("{}"))),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(
+                    Arrays.asList(Mood.values())
+                        .get(random.nextInt(Arrays.asList(Mood.values()).size())))),
+            RandomHelper.alphanumeric(random, 20)),
+        (AllScalarTypesRow row, Connection c) -> (new AllScalarTypesRepoImpl()).insert(row, c));
   }
   ;
 
-  public CustomersRow Customers(
-      CustomersId customerId,
-      String name,
-      Optional<String> email,
-      Defaulted<LocalDateTime> createdAt,
-      Defaulted<Optional<Priority>> priority,
-      Connection c) {
-    return (new CustomersRepoImpl())
-        .insert(new CustomersRowUnsaved(customerId, name, email, createdAt, priority), c);
+  public Inserter<CustomersRowUnsaved, CustomersRow> Customers() {
+    return Inserter.of(
+        new CustomersRowUnsaved(
+            new CustomersId(random.nextInt()),
+            RandomHelper.alphanumeric(random, 20),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(RandomHelper.alphanumeric(random, 20))),
+            new UseDefault(),
+            new UseDefault()),
+        (CustomersRowUnsaved row, Connection c) -> (new CustomersRepoImpl()).insert(row, c));
   }
   ;
 
-  public DepartmentsRow Departments(
-      String deptCode,
-      String deptRegion,
-      String deptName,
-      Optional<BigDecimal> budget,
-      Connection c) {
-    return (new DepartmentsRepoImpl())
-        .insert(new DepartmentsRow(deptCode, deptRegion, deptName, budget), c);
+  public Inserter<DepartmentsRow, DepartmentsRow> Departments() {
+    return Inserter.of(
+        new DepartmentsRow(
+            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 20),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(BigDecimal.valueOf(random.nextDouble())))),
+        (DepartmentsRow row, Connection c) -> (new DepartmentsRepoImpl()).insert(row, c));
   }
   ;
 
-  public EmployeesRow Employees(
-      Integer empNumber,
-      String empSuffix,
-      String deptCode,
-      String deptRegion,
-      String empName,
-      Optional<BigDecimal> salary,
-      Defaulted<LocalDate> hireDate,
-      Connection c) {
-    return (new EmployeesRepoImpl())
-        .insert(
-            new EmployeesRowUnsaved(
-                empNumber, empSuffix, deptCode, deptRegion, empName, salary, hireDate),
-            c);
+  public Inserter<EmployeesRowUnsaved, EmployeesRow> Employees() {
+    return Inserter.of(
+        new EmployeesRowUnsaved(
+            random.nextInt(),
+            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 20),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(BigDecimal.valueOf(random.nextDouble()))),
+            new UseDefault()),
+        (EmployeesRowUnsaved row, Connection c) -> (new EmployeesRepoImpl()).insert(row, c));
   }
   ;
 
-  public OrderItemsRow OrderItems(
-      Integer orderId,
-      Integer productId,
-      BigDecimal unitPrice,
-      Defaulted<Integer> quantity,
-      Connection c) {
-    return (new OrderItemsRepoImpl())
-        .insert(new OrderItemsRowUnsaved(orderId, productId, unitPrice, quantity), c);
+  public Inserter<OrderItemsRowUnsaved, OrderItemsRow> OrderItems() {
+    return Inserter.of(
+        new OrderItemsRowUnsaved(
+            random.nextInt(),
+            random.nextInt(),
+            BigDecimal.valueOf(random.nextDouble()),
+            new UseDefault()),
+        (OrderItemsRowUnsaved row, Connection c) -> (new OrderItemsRepoImpl()).insert(row, c));
   }
   ;
 
-  public OrdersRow Orders(
-      OrdersId orderId,
-      Integer customerId,
-      Optional<BigDecimal> totalAmount,
-      Defaulted<LocalDate> orderDate,
-      Defaulted<Optional<String>> status,
-      Connection c) {
-    return (new OrdersRepoImpl())
-        .insert(new OrdersRowUnsaved(orderId, customerId, totalAmount, orderDate, status), c);
+  public Inserter<OrdersRowUnsaved, OrdersRow> Orders() {
+    return Inserter.of(
+        new OrdersRowUnsaved(
+            new OrdersId(random.nextInt()),
+            random.nextInt(),
+            (random.nextBoolean()
+                ? Optional.empty()
+                : Optional.of(BigDecimal.valueOf(random.nextDouble()))),
+            new UseDefault(),
+            new UseDefault()),
+        (OrdersRowUnsaved row, Connection c) -> (new OrdersRepoImpl()).insert(row, c));
   }
   ;
 
-  public ProductsRow Products(
-      ProductsId productId,
-      String sku,
-      String name,
-      BigDecimal price,
-      Optional<Json> metadata,
-      Connection c) {
-    return (new ProductsRepoImpl())
-        .insert(new ProductsRow(productId, sku, name, price, metadata), c);
+  public Inserter<ProductsRow, ProductsRow> Products() {
+    return Inserter.of(
+        new ProductsRow(
+            new ProductsId(random.nextInt()),
+            RandomHelper.alphanumeric(random, 20),
+            RandomHelper.alphanumeric(random, 20),
+            BigDecimal.valueOf(random.nextDouble()),
+            (random.nextBoolean() ? Optional.empty() : Optional.of(new Json("{}")))),
+        (ProductsRow row, Connection c) -> (new ProductsRepoImpl()).insert(row, c));
   }
   ;
 }

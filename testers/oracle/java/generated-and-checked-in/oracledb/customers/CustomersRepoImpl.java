@@ -26,9 +26,8 @@ import oracledb.MoneyT;
 public class CustomersRepoImpl implements CustomersRepo {
   @Override
   public DeleteBuilder<CustomersFields, CustomersRow> delete() {
-    return DeleteBuilder.of("\"CUSTOMERS\"", CustomersFields.structure(), Dialect.ORACLE);
+    return DeleteBuilder.of("\"CUSTOMERS\"", CustomersFields.structure, Dialect.ORACLE);
   }
-  ;
 
   @Override
   public Boolean deleteById(CustomersId customerId, Connection c) {
@@ -40,7 +39,6 @@ public class CustomersRepoImpl implements CustomersRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(CustomersId[] customerIds, Connection c) {
@@ -56,7 +54,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CustomersId insert(CustomersRow unsaved, Connection c) {
@@ -79,7 +76,6 @@ public class CustomersRepoImpl implements CustomersRepo {
             new String[] {"CUSTOMER_ID"}, CustomersId._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CustomersId insert(CustomersRowUnsaved unsaved, Connection c) {
@@ -130,14 +126,12 @@ public class CustomersRepoImpl implements CustomersRepo {
             new String[] {"CUSTOMER_ID"}, CustomersId._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<CustomersFields, CustomersRow> select() {
     return SelectBuilder.of(
-        "\"CUSTOMERS\"", CustomersFields.structure(), CustomersRow._rowParser, Dialect.ORACLE);
+        "\"CUSTOMERS\"", CustomersFields.structure, CustomersRow._rowParser, Dialect.ORACLE);
   }
-  ;
 
   @Override
   public List<CustomersRow> selectAll(Connection c) {
@@ -149,7 +143,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .query(CustomersRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<CustomersRow> selectById(CustomersId customerId, Connection c) {
@@ -164,7 +157,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .query(CustomersRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<CustomersRow> selectByIds(CustomersId[] customerIds, Connection c) {
@@ -182,7 +174,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .query(CustomersRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<CustomersId, CustomersRow> selectByIdsTracked(
@@ -191,14 +182,12 @@ public class CustomersRepoImpl implements CustomersRepo {
     selectByIds(customerIds, c).forEach(row -> ret.put(row.customerId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<CustomersFields, CustomersRow> update() {
     return UpdateBuilder.of(
-        "\"CUSTOMERS\"", CustomersFields.structure(), CustomersRow._rowParser, Dialect.ORACLE);
+        "\"CUSTOMERS\"", CustomersFields.structure, CustomersRow._rowParser, Dialect.ORACLE);
   }
-  ;
 
   @Override
   public Boolean update(CustomersRow row, Connection c) {
@@ -220,7 +209,6 @@ public class CustomersRepoImpl implements CustomersRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public void upsert(CustomersRow unsaved, Connection c) {
@@ -257,7 +245,6 @@ public class CustomersRepoImpl implements CustomersRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public void upsertBatch(Iterator<CustomersRow> unsaved, Connection c) {
@@ -276,5 +263,4 @@ public class CustomersRepoImpl implements CustomersRepo {
         .updateMany(CustomersRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

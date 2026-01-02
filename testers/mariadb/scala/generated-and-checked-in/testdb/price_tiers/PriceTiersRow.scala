@@ -7,6 +7,8 @@ package testdb.price_tiers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple5
+import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -25,15 +27,15 @@ case class PriceTiersRow(
   /** 
    * Default: 1
    */
-  @JsonProperty("min_quantity") minQuantity: Long,
+  @JsonProperty("min_quantity") minQuantity: Uint4,
   /**  */
   @JsonProperty("discount_type") discountType: String,
   /**  */
   @JsonProperty("discount_value") discountValue: BigDecimal
-) {
+) extends Tuple5[PriceTiersId, String, Uint4, String, BigDecimal] {
   def id: PriceTiersId = tierId
 
-  def toUnsavedRow(minQuantity: Defaulted[Long] = Defaulted.Provided(this.minQuantity)): PriceTiersRowUnsaved = {
+  def toUnsavedRow(minQuantity: Defaulted[Uint4] = Defaulted.Provided(this.minQuantity)): PriceTiersRowUnsaved = {
     new PriceTiersRowUnsaved(
       name,
       discountType,
@@ -41,8 +43,18 @@ case class PriceTiersRow(
       minQuantity
     )
   }
+
+  override def `_1`: PriceTiersId = tierId
+
+  override def `_2`: String = name
+
+  override def `_3`: Uint4 = minQuantity
+
+  override def `_4`: String = discountType
+
+  override def `_5`: BigDecimal = discountValue
 }
 
 object PriceTiersRow {
-  val `_rowParser`: RowParser[PriceTiersRow] = RowParsers.of(PriceTiersId.pgType, MariaTypes.varchar, ScalaDbTypes.MariaTypes.intUnsigned, MariaTypes.text, ScalaDbTypes.MariaTypes.numeric)(PriceTiersRow.apply)(row => Array[Any](row.tierId, row.name, row.minQuantity, row.discountType, row.discountValue))
+  val `_rowParser`: RowParser[PriceTiersRow] = RowParsers.of(PriceTiersId.dbType, MariaTypes.varchar, MariaTypes.intUnsigned, MariaTypes.text, ScalaDbTypes.MariaTypes.numeric)(PriceTiersRow.apply)(row => Array[Any](row.tierId, row.name, row.minQuantity, row.discountType, row.discountValue))
 }

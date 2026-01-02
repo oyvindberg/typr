@@ -40,7 +40,7 @@ public record CheckConstraintTestRepoMock(
   @Override
   public DeleteBuilder<CheckConstraintTestFields, CheckConstraintTestRow> delete() {
     return new DeleteBuilderMock<>(
-        CheckConstraintTestFields.structure(),
+        CheckConstraintTestFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.id(),
@@ -83,7 +83,7 @@ public record CheckConstraintTestRepoMock(
   @Override
   public SelectBuilder<CheckConstraintTestFields, CheckConstraintTestRow> select() {
     return new SelectBuilderMock<>(
-        CheckConstraintTestFields.structure(),
+        CheckConstraintTestFields.structure,
         () -> new ArrayList<>(map.values()),
         SelectParams.empty());
   }
@@ -127,7 +127,7 @@ public record CheckConstraintTestRepoMock(
   @Override
   public UpdateBuilder<CheckConstraintTestFields, CheckConstraintTestRow> update() {
     return new UpdateBuilderMock<>(
-        CheckConstraintTestFields.structure(),
+        CheckConstraintTestFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

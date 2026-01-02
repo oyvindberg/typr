@@ -48,7 +48,7 @@ public record CustomerAddressesRepoMock(
   @Override
   public DeleteBuilder<CustomerAddressesFields, CustomerAddressesRow> delete() {
     return new DeleteBuilderMock<>(
-        CustomerAddressesFields.structure(),
+        CustomerAddressesFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.addressId(),
@@ -97,7 +97,7 @@ public record CustomerAddressesRepoMock(
   @Override
   public SelectBuilder<CustomerAddressesFields, CustomerAddressesRow> select() {
     return new SelectBuilderMock<>(
-        CustomerAddressesFields.structure(),
+        CustomerAddressesFields.structure,
         () -> new ArrayList<>(map.values()),
         SelectParams.empty());
   }
@@ -142,7 +142,7 @@ public record CustomerAddressesRepoMock(
   @Override
   public UpdateBuilder<CustomerAddressesFields, CustomerAddressesRow> update() {
     return new UpdateBuilderMock<>(
-        CustomerAddressesFields.structure(),
+        CustomerAddressesFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

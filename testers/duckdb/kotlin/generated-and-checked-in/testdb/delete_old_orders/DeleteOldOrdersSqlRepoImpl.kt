@@ -10,11 +10,12 @@ import dev.typr.foundations.kotlin.Fragment
 import dev.typr.foundations.kotlin.nullable
 import java.sql.Connection
 import java.time.LocalDate
+import kotlin.collections.List
 
 class DeleteOldOrdersSqlRepoImpl() : DeleteOldOrdersSqlRepo {
   override fun apply(
     cutoffDate: LocalDate,
     status: String?,
     c: Connection
-  ): Int = Fragment.interpolate(Fragment.lit("-- Delete old orders and return what was deleted\n-- Tests: DELETE with RETURNING, date comparisons, status filtering\n\nDELETE FROM orders\nWHERE\n    order_date < CAST("), Fragment.encode(DuckDbTypes.date, cutoffDate), Fragment.lit(" AS DATE)\n    AND ("), Fragment.encode(DuckDbTypes.text.nullable(), status), Fragment.lit(" IS NULL OR status = CAST("), Fragment.encode(DuckDbTypes.text.nullable(), status), Fragment.lit(" AS VARCHAR))\nRETURNING\n    order_id,\n    customer_id,\n    order_date,\n    total_amount,\n    status")).update().runUnchecked(c)
+  ): List<DeleteOldOrdersSqlRow> = Fragment.interpolate(Fragment.lit("-- Delete old orders and return what was deleted\n-- Tests: DELETE with RETURNING, date comparisons, status filtering\n\nDELETE FROM orders\nWHERE\n    order_date < CAST("), Fragment.encode(DuckDbTypes.date, cutoffDate), Fragment.lit(" AS DATE)\n    AND ("), Fragment.encode(DuckDbTypes.text.nullable(), status), Fragment.lit(" IS NULL OR status = CAST("), Fragment.encode(DuckDbTypes.text.nullable(), status), Fragment.lit(" AS VARCHAR))\nRETURNING\n    order_id,\n    customer_id,\n    order_date,\n    total_amount,\n    status")).query(DeleteOldOrdersSqlRow._rowParser.all()).runUnchecked(c)
 }

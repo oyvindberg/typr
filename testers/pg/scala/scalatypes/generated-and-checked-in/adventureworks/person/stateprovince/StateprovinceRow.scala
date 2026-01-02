@@ -12,6 +12,7 @@ import adventureworks.public.Name
 import adventureworks.sales.salesterritory.SalesterritoryId
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple8
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import java.time.LocalDateTime
@@ -46,7 +47,7 @@ case class StateprovinceRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple8[StateprovinceId, String, CountryregionId, Flag, Name, SalesterritoryId, UUID, LocalDateTime] {
   def id: StateprovinceId = stateprovinceid
 
   def toUnsavedRow(
@@ -66,10 +67,26 @@ case class StateprovinceRow(
       modifieddate
     )
   }
+
+  override def `_1`: StateprovinceId = stateprovinceid
+
+  override def `_2`: String = stateprovincecode
+
+  override def `_3`: CountryregionId = countryregioncode
+
+  override def `_4`: Flag = isonlystateprovinceflag
+
+  override def `_5`: Name = name
+
+  override def `_6`: SalesterritoryId = territoryid
+
+  override def `_7`: UUID = rowguid
+
+  override def `_8`: LocalDateTime = modifieddate
 }
 
 object StateprovinceRow {
-  val `_rowParser`: RowParser[StateprovinceRow] = RowParsers.of(StateprovinceId.pgType, PgTypes.bpchar, CountryregionId.pgType, Flag.pgType, Name.pgType, SalesterritoryId.pgType, PgTypes.uuid, PgTypes.timestamp)(StateprovinceRow.apply)(row => Array[Any](row.stateprovinceid, row.stateprovincecode, row.countryregioncode, row.isonlystateprovinceflag, row.name, row.territoryid, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[StateprovinceRow] = RowParsers.of(StateprovinceId.dbType, PgTypes.bpchar, CountryregionId.dbType, Flag.dbType, Name.dbType, SalesterritoryId.dbType, PgTypes.uuid, PgTypes.timestamp)(StateprovinceRow.apply)(row => Array[Any](row.stateprovinceid, row.stateprovincecode, row.countryregioncode, row.isonlystateprovinceflag, row.name, row.territoryid, row.rowguid, row.modifieddate))
 
   given pgText: PgText[StateprovinceRow] = PgText.from(`_rowParser`.underlying)
 }

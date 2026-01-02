@@ -7,60 +7,56 @@ package adventureworks.public.only_pk_columns
 
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
 import dev.typr.foundations.scala.SqlExpr
-import dev.typr.foundations.scala.SqlExpr.CompositeIn
 import dev.typr.foundations.scala.SqlExpr.IdField
+import dev.typr.foundations.scala.TupleExpr
+import dev.typr.foundations.scala.TupleExpr2
 
-trait OnlyPkColumnsFields extends FieldsExpr0[OnlyPkColumnsRow] {
-  def keyColumn1: IdField[String, OnlyPkColumnsRow]
+class OnlyPkColumnsFields(val `_path`: java.util.List[Path]) extends TupleExpr2[String, Int] with RelationStructure[OnlyPkColumnsFields, OnlyPkColumnsRow]  with FieldsBase[OnlyPkColumnsRow] {
+  def keyColumn1: IdField[String, OnlyPkColumnsRow] = {
+    new IdField[String, OnlyPkColumnsRow](
+      _path,
+      "key_column_1",
+      _.keyColumn1,
+      None,
+      None,
+      (row, value) => row.copy(keyColumn1 = value),
+      PgTypes.text
+    )
+  }
 
-  def keyColumn2: IdField[Int, OnlyPkColumnsRow]
+  def keyColumn2: IdField[Int, OnlyPkColumnsRow] = {
+    new IdField[Int, OnlyPkColumnsRow](
+      _path,
+      "key_column_2",
+      _.keyColumn2,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(keyColumn2 = value),
+      ScalaDbTypes.PgTypes.int4
+    )
+  }
 
   def compositeIdIs(compositeId: OnlyPkColumnsId): SqlExpr[Boolean] = SqlExpr.all(keyColumn1.isEqual(compositeId.keyColumn1), keyColumn2.isEqual(compositeId.keyColumn2))
 
-  def compositeIdIn(compositeIds: List[OnlyPkColumnsId]): SqlExpr[Boolean] = CompositeIn(List(CompositeIn.Part[String, OnlyPkColumnsId, OnlyPkColumnsRow](keyColumn1, _.keyColumn1, PgTypes.text), CompositeIn.Part[Int, OnlyPkColumnsId, OnlyPkColumnsRow](keyColumn2, _.keyColumn2, ScalaDbTypes.PgTypes.int4)), compositeIds)
+  def compositeIdIn(compositeIds: List[OnlyPkColumnsId]): SqlExpr[Boolean] = TupleExpr.of(keyColumn1, keyColumn2).among(compositeIds)
 
-  override def columns: java.util.List[FieldLike[?, OnlyPkColumnsRow]]
+  override def columns: java.util.List[FieldLike[?, OnlyPkColumnsRow]] = java.util.List.of(this.keyColumn1.underlying, this.keyColumn2.underlying)
 
   override def rowParser: RowParser[OnlyPkColumnsRow] = OnlyPkColumnsRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OnlyPkColumnsFields, OnlyPkColumnsRow] = new OnlyPkColumnsFields(`_path`)
+
+  override def `_1`: SqlExpr[String] = keyColumn1
+
+  override def `_2`: SqlExpr[Int] = keyColumn2
 }
 
 object OnlyPkColumnsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends OnlyPkColumnsFields with RelationStructure[OnlyPkColumnsFields, OnlyPkColumnsRow] {
-
-    override def keyColumn1: IdField[String, OnlyPkColumnsRow] = {
-      new IdField[String, OnlyPkColumnsRow](
-        _path,
-        "key_column_1",
-        _.keyColumn1,
-        None,
-        None,
-        (row, value) => row.copy(keyColumn1 = value),
-        PgTypes.text
-      )
-    }
-
-    override def keyColumn2: IdField[Int, OnlyPkColumnsRow] = {
-      new IdField[Int, OnlyPkColumnsRow](
-        _path,
-        "key_column_2",
-        _.keyColumn2,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(keyColumn2 = value),
-        ScalaDbTypes.PgTypes.int4
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, OnlyPkColumnsRow]] = java.util.List.of(this.keyColumn1.underlying, this.keyColumn2.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OnlyPkColumnsFields, OnlyPkColumnsRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: OnlyPkColumnsFields = new OnlyPkColumnsFields(java.util.Collections.emptyList())
 }

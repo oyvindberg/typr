@@ -5,13 +5,14 @@
  */
 package testdb.product_search
 
+import dev.typr.foundations.data.Uint2
 import java.math.BigDecimal
 import java.sql.Connection
 import kotlin.collections.List
 
 interface ProductSearchSqlRepo {
   abstract fun apply(
-    brandId: Int?,
+    brandId: Uint2?,
     minPrice: BigDecimal?,
     maxPrice: BigDecimal?,
     status: String?,

@@ -6,11 +6,15 @@
 package testdb.mariatestnull
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint2
+import dev.typr.foundations.data.Uint4
+import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.data.maria.Inet4
 import dev.typr.foundations.data.maria.Inet6
 import dev.typr.foundations.data.maria.MariaSet
 import java.math.BigDecimal
-import java.math.BigInteger
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -43,23 +47,23 @@ data class MariatestnullRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("tinyint_u_col") val tinyintUCol: Defaulted<Short?> = UseDefault(),
+  @JsonProperty("tinyint_u_col") val tinyintUCol: Defaulted<Uint1?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("smallint_u_col") val smallintUCol: Defaulted<Int?> = UseDefault(),
+  @JsonProperty("smallint_u_col") val smallintUCol: Defaulted<Uint2?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("mediumint_u_col") val mediumintUCol: Defaulted<Int?> = UseDefault(),
+  @JsonProperty("mediumint_u_col") val mediumintUCol: Defaulted<Uint4?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("int_u_col") val intUCol: Defaulted<Long?> = UseDefault(),
+  @JsonProperty("int_u_col") val intUCol: Defaulted<Uint4?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("bigint_u_col") val bigintUCol: Defaulted<BigInteger?> = UseDefault(),
+  @JsonProperty("bigint_u_col") val bigintUCol: Defaulted<Uint8?> = UseDefault(),
   /** Default: NULL
 
     */
@@ -171,15 +175,11 @@ data class MariatestnullRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("enum_col") val enumCol: Defaulted<String?> = UseDefault(),
-  /** Default: NULL
-
-    */
   @JsonProperty("set_col") val setCol: Defaulted<MariaSet?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("json_col") val jsonCol: Defaulted<String?> = UseDefault(),
+  @JsonProperty("json_col") val jsonCol: Defaulted<Json?> = UseDefault(),
   /** Default: NULL
 
     */
@@ -195,11 +195,11 @@ data class MariatestnullRowUnsaved(
     mediumintColDefault: () -> Int?,
     intColDefault: () -> Int?,
     bigintColDefault: () -> Long?,
-    tinyintUColDefault: () -> Short?,
-    smallintUColDefault: () -> Int?,
-    mediumintUColDefault: () -> Int?,
-    intUColDefault: () -> Long?,
-    bigintUColDefault: () -> BigInteger?,
+    tinyintUColDefault: () -> Uint1?,
+    smallintUColDefault: () -> Uint2?,
+    mediumintUColDefault: () -> Uint4?,
+    intUColDefault: () -> Uint4?,
+    bigintUColDefault: () -> Uint8?,
     decimalColDefault: () -> BigDecimal?,
     numericColDefault: () -> BigDecimal?,
     floatColDefault: () -> Float?,
@@ -227,10 +227,9 @@ data class MariatestnullRowUnsaved(
     timestampColDefault: () -> LocalDateTime?,
     timestampFspColDefault: () -> LocalDateTime?,
     yearColDefault: () -> Year?,
-    enumColDefault: () -> String?,
     setColDefault: () -> MariaSet?,
-    jsonColDefault: () -> String?,
+    jsonColDefault: () -> Json?,
     inet4ColDefault: () -> Inet4?,
     inet6ColDefault: () -> Inet6?
-  ): MariatestnullRow = MariatestnullRow(tinyintCol = tinyintCol.getOrElse(tinyintColDefault), smallintCol = smallintCol.getOrElse(smallintColDefault), mediumintCol = mediumintCol.getOrElse(mediumintColDefault), intCol = intCol.getOrElse(intColDefault), bigintCol = bigintCol.getOrElse(bigintColDefault), tinyintUCol = tinyintUCol.getOrElse(tinyintUColDefault), smallintUCol = smallintUCol.getOrElse(smallintUColDefault), mediumintUCol = mediumintUCol.getOrElse(mediumintUColDefault), intUCol = intUCol.getOrElse(intUColDefault), bigintUCol = bigintUCol.getOrElse(bigintUColDefault), decimalCol = decimalCol.getOrElse(decimalColDefault), numericCol = numericCol.getOrElse(numericColDefault), floatCol = floatCol.getOrElse(floatColDefault), doubleCol = doubleCol.getOrElse(doubleColDefault), boolCol = boolCol.getOrElse(boolColDefault), bitCol = bitCol.getOrElse(bitColDefault), bit1Col = bit1Col.getOrElse(bit1ColDefault), charCol = charCol.getOrElse(charColDefault), varcharCol = varcharCol.getOrElse(varcharColDefault), tinytextCol = tinytextCol.getOrElse(tinytextColDefault), textCol = textCol.getOrElse(textColDefault), mediumtextCol = mediumtextCol.getOrElse(mediumtextColDefault), longtextCol = longtextCol.getOrElse(longtextColDefault), binaryCol = binaryCol.getOrElse(binaryColDefault), varbinaryCol = varbinaryCol.getOrElse(varbinaryColDefault), tinyblobCol = tinyblobCol.getOrElse(tinyblobColDefault), blobCol = blobCol.getOrElse(blobColDefault), mediumblobCol = mediumblobCol.getOrElse(mediumblobColDefault), longblobCol = longblobCol.getOrElse(longblobColDefault), dateCol = dateCol.getOrElse(dateColDefault), timeCol = timeCol.getOrElse(timeColDefault), timeFspCol = timeFspCol.getOrElse(timeFspColDefault), datetimeCol = datetimeCol.getOrElse(datetimeColDefault), datetimeFspCol = datetimeFspCol.getOrElse(datetimeFspColDefault), timestampCol = timestampCol.getOrElse(timestampColDefault), timestampFspCol = timestampFspCol.getOrElse(timestampFspColDefault), yearCol = yearCol.getOrElse(yearColDefault), enumCol = enumCol.getOrElse(enumColDefault), setCol = setCol.getOrElse(setColDefault), jsonCol = jsonCol.getOrElse(jsonColDefault), inet4Col = inet4Col.getOrElse(inet4ColDefault), inet6Col = inet6Col.getOrElse(inet6ColDefault))
+  ): MariatestnullRow = MariatestnullRow(tinyintCol = tinyintCol.getOrElse(tinyintColDefault), smallintCol = smallintCol.getOrElse(smallintColDefault), mediumintCol = mediumintCol.getOrElse(mediumintColDefault), intCol = intCol.getOrElse(intColDefault), bigintCol = bigintCol.getOrElse(bigintColDefault), tinyintUCol = tinyintUCol.getOrElse(tinyintUColDefault), smallintUCol = smallintUCol.getOrElse(smallintUColDefault), mediumintUCol = mediumintUCol.getOrElse(mediumintUColDefault), intUCol = intUCol.getOrElse(intUColDefault), bigintUCol = bigintUCol.getOrElse(bigintUColDefault), decimalCol = decimalCol.getOrElse(decimalColDefault), numericCol = numericCol.getOrElse(numericColDefault), floatCol = floatCol.getOrElse(floatColDefault), doubleCol = doubleCol.getOrElse(doubleColDefault), boolCol = boolCol.getOrElse(boolColDefault), bitCol = bitCol.getOrElse(bitColDefault), bit1Col = bit1Col.getOrElse(bit1ColDefault), charCol = charCol.getOrElse(charColDefault), varcharCol = varcharCol.getOrElse(varcharColDefault), tinytextCol = tinytextCol.getOrElse(tinytextColDefault), textCol = textCol.getOrElse(textColDefault), mediumtextCol = mediumtextCol.getOrElse(mediumtextColDefault), longtextCol = longtextCol.getOrElse(longtextColDefault), binaryCol = binaryCol.getOrElse(binaryColDefault), varbinaryCol = varbinaryCol.getOrElse(varbinaryColDefault), tinyblobCol = tinyblobCol.getOrElse(tinyblobColDefault), blobCol = blobCol.getOrElse(blobColDefault), mediumblobCol = mediumblobCol.getOrElse(mediumblobColDefault), longblobCol = longblobCol.getOrElse(longblobColDefault), dateCol = dateCol.getOrElse(dateColDefault), timeCol = timeCol.getOrElse(timeColDefault), timeFspCol = timeFspCol.getOrElse(timeFspColDefault), datetimeCol = datetimeCol.getOrElse(datetimeColDefault), datetimeFspCol = datetimeFspCol.getOrElse(datetimeFspColDefault), timestampCol = timestampCol.getOrElse(timestampColDefault), timestampFspCol = timestampFspCol.getOrElse(timestampFspColDefault), yearCol = yearCol.getOrElse(yearColDefault), setCol = setCol.getOrElse(setColDefault), jsonCol = jsonCol.getOrElse(jsonColDefault), inet4Col = inet4Col.getOrElse(inet4ColDefault), inet6Col = inet6Col.getOrElse(inet6ColDefault))
 }

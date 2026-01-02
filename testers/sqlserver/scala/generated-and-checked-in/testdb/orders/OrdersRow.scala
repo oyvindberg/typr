@@ -7,6 +7,7 @@ package testdb.orders
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -26,10 +27,18 @@ case class OrdersRow(
   /** Default: (getdate()) */
   @JsonProperty("order_date") orderDate: Option[LocalDateTime],
   @JsonProperty("total_amount") totalAmount: BigDecimal
-) {
+) extends Tuple4[OrdersId, CustomersId, Option[LocalDateTime], BigDecimal] {
   def id: OrdersId = orderId
 
   def toUnsavedRow(orderDate: Defaulted[Option[LocalDateTime]] = Defaulted.Provided(this.orderDate)): OrdersRowUnsaved = new OrdersRowUnsaved(customerId, totalAmount, orderDate)
+
+  override def `_1`: OrdersId = orderId
+
+  override def `_2`: CustomersId = customerId
+
+  override def `_3`: Option[LocalDateTime] = orderDate
+
+  override def `_4`: BigDecimal = totalAmount
 }
 
 object OrdersRow {

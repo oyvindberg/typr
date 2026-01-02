@@ -7,207 +7,229 @@ package testdb.v_daily_sales;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr10;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface VDailySalesViewFields extends FieldsExpr<VDailySalesViewRow> {
-  record Impl(List<Path> _path)
-      implements VDailySalesViewFields,
-          RelationStructure<VDailySalesViewFields, VDailySalesViewRow> {
-    @Override
-    public OptField<LocalDate, VDailySalesViewRow> orderDate() {
-      return new OptField<LocalDate, VDailySalesViewRow>(
-          _path,
-          "order_date",
-          VDailySalesViewRow::orderDate,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderDate(value),
-          MariaTypes.date);
-    }
-    ;
+public class VDailySalesViewFields
+    implements TupleExpr10<
+            LocalDate,
+            Long,
+            Long,
+            BigDecimal,
+            BigDecimal,
+            BigDecimal,
+            BigDecimal,
+            BigDecimal,
+            BigDecimal,
+            BigDecimal>,
+        RelationStructure<VDailySalesViewFields, VDailySalesViewRow>,
+        FieldsBase<VDailySalesViewRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<Long, VDailySalesViewRow> orderCount() {
-      return new Field<Long, VDailySalesViewRow>(
-          _path,
-          "order_count",
-          VDailySalesViewRow::orderCount,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderCount(value),
-          MariaTypes.bigint);
-    }
-    ;
-
-    @Override
-    public Field<Long, VDailySalesViewRow> uniqueCustomers() {
-      return new Field<Long, VDailySalesViewRow>(
-          _path,
-          "unique_customers",
-          VDailySalesViewRow::uniqueCustomers,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withUniqueCustomers(value),
-          MariaTypes.bigint);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, VDailySalesViewRow> itemsSold() {
-      return new OptField<BigDecimal, VDailySalesViewRow>(
-          _path,
-          "items_sold",
-          VDailySalesViewRow::itemsSold,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withItemsSold(value),
-          MariaTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, VDailySalesViewRow> grossSales() {
-      return new OptField<BigDecimal, VDailySalesViewRow>(
-          _path,
-          "gross_sales",
-          VDailySalesViewRow::grossSales,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withGrossSales(value),
-          MariaTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, VDailySalesViewRow> totalDiscounts() {
-      return new OptField<BigDecimal, VDailySalesViewRow>(
-          _path,
-          "total_discounts",
-          VDailySalesViewRow::totalDiscounts,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTotalDiscounts(value),
-          MariaTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, VDailySalesViewRow> totalShipping() {
-      return new OptField<BigDecimal, VDailySalesViewRow>(
-          _path,
-          "total_shipping",
-          VDailySalesViewRow::totalShipping,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTotalShipping(value),
-          MariaTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, VDailySalesViewRow> totalTax() {
-      return new OptField<BigDecimal, VDailySalesViewRow>(
-          _path,
-          "total_tax",
-          VDailySalesViewRow::totalTax,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTotalTax(value),
-          MariaTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, VDailySalesViewRow> netSales() {
-      return new OptField<BigDecimal, VDailySalesViewRow>(
-          _path,
-          "net_sales",
-          VDailySalesViewRow::netSales,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withNetSales(value),
-          MariaTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, VDailySalesViewRow> avgOrderValue() {
-      return new OptField<BigDecimal, VDailySalesViewRow>(
-          _path,
-          "avg_order_value",
-          VDailySalesViewRow::avgOrderValue,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withAvgOrderValue(value),
-          MariaTypes.numeric);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, VDailySalesViewRow>> columns() {
-      return java.util.List.of(
-          this.orderDate(),
-          this.orderCount(),
-          this.uniqueCustomers(),
-          this.itemsSold(),
-          this.grossSales(),
-          this.totalDiscounts(),
-          this.totalShipping(),
-          this.totalTax(),
-          this.netSales(),
-          this.avgOrderValue());
-    }
-    ;
-
-    @Override
-    public RelationStructure<VDailySalesViewFields, VDailySalesViewRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public VDailySalesViewFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static VDailySalesViewFields structure =
+      new VDailySalesViewFields(java.util.Collections.emptyList());
+
+  public OptField<LocalDate, VDailySalesViewRow> orderDate() {
+    return new OptField<LocalDate, VDailySalesViewRow>(
+        _path,
+        "order_date",
+        VDailySalesViewRow::orderDate,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderDate(value),
+        MariaTypes.date);
   }
-  ;
 
-  OptField<LocalDate, VDailySalesViewRow> orderDate();
+  public Field<Long, VDailySalesViewRow> orderCount() {
+    return new Field<Long, VDailySalesViewRow>(
+        _path,
+        "order_count",
+        VDailySalesViewRow::orderCount,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderCount(value),
+        MariaTypes.bigint);
+  }
 
-  Field<Long, VDailySalesViewRow> orderCount();
+  public Field<Long, VDailySalesViewRow> uniqueCustomers() {
+    return new Field<Long, VDailySalesViewRow>(
+        _path,
+        "unique_customers",
+        VDailySalesViewRow::uniqueCustomers,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withUniqueCustomers(value),
+        MariaTypes.bigint);
+  }
 
-  Field<Long, VDailySalesViewRow> uniqueCustomers();
+  public OptField<BigDecimal, VDailySalesViewRow> itemsSold() {
+    return new OptField<BigDecimal, VDailySalesViewRow>(
+        _path,
+        "items_sold",
+        VDailySalesViewRow::itemsSold,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withItemsSold(value),
+        MariaTypes.numeric);
+  }
 
-  OptField<BigDecimal, VDailySalesViewRow> itemsSold();
+  public OptField<BigDecimal, VDailySalesViewRow> grossSales() {
+    return new OptField<BigDecimal, VDailySalesViewRow>(
+        _path,
+        "gross_sales",
+        VDailySalesViewRow::grossSales,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withGrossSales(value),
+        MariaTypes.numeric);
+  }
 
-  OptField<BigDecimal, VDailySalesViewRow> grossSales();
+  public OptField<BigDecimal, VDailySalesViewRow> totalDiscounts() {
+    return new OptField<BigDecimal, VDailySalesViewRow>(
+        _path,
+        "total_discounts",
+        VDailySalesViewRow::totalDiscounts,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTotalDiscounts(value),
+        MariaTypes.numeric);
+  }
 
-  OptField<BigDecimal, VDailySalesViewRow> totalDiscounts();
+  public OptField<BigDecimal, VDailySalesViewRow> totalShipping() {
+    return new OptField<BigDecimal, VDailySalesViewRow>(
+        _path,
+        "total_shipping",
+        VDailySalesViewRow::totalShipping,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTotalShipping(value),
+        MariaTypes.numeric);
+  }
 
-  OptField<BigDecimal, VDailySalesViewRow> totalShipping();
+  public OptField<BigDecimal, VDailySalesViewRow> totalTax() {
+    return new OptField<BigDecimal, VDailySalesViewRow>(
+        _path,
+        "total_tax",
+        VDailySalesViewRow::totalTax,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTotalTax(value),
+        MariaTypes.numeric);
+  }
 
-  OptField<BigDecimal, VDailySalesViewRow> totalTax();
+  public OptField<BigDecimal, VDailySalesViewRow> netSales() {
+    return new OptField<BigDecimal, VDailySalesViewRow>(
+        _path,
+        "net_sales",
+        VDailySalesViewRow::netSales,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withNetSales(value),
+        MariaTypes.numeric);
+  }
 
-  OptField<BigDecimal, VDailySalesViewRow> netSales();
-
-  OptField<BigDecimal, VDailySalesViewRow> avgOrderValue();
+  public OptField<BigDecimal, VDailySalesViewRow> avgOrderValue() {
+    return new OptField<BigDecimal, VDailySalesViewRow>(
+        _path,
+        "avg_order_value",
+        VDailySalesViewRow::avgOrderValue,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withAvgOrderValue(value),
+        MariaTypes.numeric);
+  }
 
   @Override
-  List<FieldLike<?, VDailySalesViewRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<VDailySalesViewRow> rowParser() {
+  public List<FieldLike<?, VDailySalesViewRow>> columns() {
+    return java.util.List.of(
+        this.orderDate(),
+        this.orderCount(),
+        this.uniqueCustomers(),
+        this.itemsSold(),
+        this.grossSales(),
+        this.totalDiscounts(),
+        this.totalShipping(),
+        this.totalTax(),
+        this.netSales(),
+        this.avgOrderValue());
+  }
+
+  @Override
+  public RowParser<VDailySalesViewRow> rowParser() {
     return VDailySalesViewRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<VDailySalesViewFields, VDailySalesViewRow> withPaths(List<Path> _path) {
+    return new VDailySalesViewFields(_path);
+  }
+
+  @Override
+  public SqlExpr<LocalDate> _1() {
+    return orderDate();
+  }
+
+  @Override
+  public SqlExpr<Long> _2() {
+    return orderCount();
+  }
+
+  @Override
+  public SqlExpr<Long> _3() {
+    return uniqueCustomers();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _4() {
+    return itemsSold();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _5() {
+    return grossSales();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _6() {
+    return totalDiscounts();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _7() {
+    return totalShipping();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _8() {
+    return totalTax();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _9() {
+    return netSales();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _10() {
+    return avgOrderValue();
+  }
 }

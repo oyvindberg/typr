@@ -8,6 +8,7 @@ package adventureworks.person_dynamic
 import adventureworks.public.Name
 import adventureworks.userdefined.FirstName
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -22,8 +23,16 @@ data class PersonDynamicSqlRow(
   val middlename: Name?,
   /** Points to [adventureworks.person.person.PersonRow.lastname] */
   val lastname: Name
-) {
+) : Tuple4</* max 8 chars */ String?, /* user-picked */ FirstName, Name?, Name> {
+  override fun _1(): /* max 8 chars */ String? = title
+
+  override fun _2(): /* user-picked */ FirstName = firstname
+
+  override fun _3(): Name? = middlename
+
+  override fun _4(): Name = lastname
+
   companion object {
-    val _rowParser: RowParser<PersonDynamicSqlRow> = RowParsers.of(PgTypes.text.nullable(), FirstName.pgType, Name.pgType.nullable(), Name.pgType, { t0, t1, t2, t3 -> PersonDynamicSqlRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.title, row.firstname, row.middlename, row.lastname) })
+    val _rowParser: RowParser<PersonDynamicSqlRow> = RowParsers.of(PgTypes.text.nullable(), FirstName.dbType, Name.dbType.nullable(), Name.dbType, { t0, t1, t2, t3 -> PersonDynamicSqlRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.title, row.firstname, row.middlename, row.lastname) })
   }
 }

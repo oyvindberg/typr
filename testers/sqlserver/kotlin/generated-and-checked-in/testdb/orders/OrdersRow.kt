@@ -7,6 +7,7 @@ package testdb.orders
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -27,10 +28,18 @@ data class OrdersRow(
   /** Default: (getdate()) */
   @JsonProperty("order_date") val orderDate: LocalDateTime?,
   @JsonProperty("total_amount") val totalAmount: BigDecimal
-) {
+) : Tuple4<OrdersId, CustomersId, LocalDateTime?, BigDecimal> {
+  override fun _1(): OrdersId = orderId
+
+  override fun _2(): CustomersId = customerId
+
+  override fun _3(): LocalDateTime? = orderDate
+
+  override fun _4(): BigDecimal = totalAmount
+
   fun id(): OrdersId = orderId
 
-  fun toUnsavedRow(orderDate: Defaulted<LocalDateTime?>): OrdersRowUnsaved = OrdersRowUnsaved(customerId, totalAmount, orderDate)
+  fun toUnsavedRow(orderDate: Defaulted<LocalDateTime?> = Defaulted.Provided(this.orderDate)): OrdersRowUnsaved = OrdersRowUnsaved(customerId, totalAmount, orderDate)
 
   companion object {
     val _rowParser: RowParser<OrdersRow> = RowParsers.of(OrdersId.sqlServerType, CustomersId.sqlServerType, SqlServerTypes.datetime2.nullable(), KotlinDbTypes.SqlServerTypes.money, { t0, t1, t2, t3 -> OrdersRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.orderId, row.customerId, row.orderDate, row.totalAmount) })

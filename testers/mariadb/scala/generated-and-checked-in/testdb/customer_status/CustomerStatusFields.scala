@@ -7,69 +7,66 @@ package testdb.customer_status
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
+import dev.typr.foundations.scala.TupleExpr3
 
-trait CustomerStatusFields extends FieldsExpr0[CustomerStatusRow] {
-  def statusCode: IdField[CustomerStatusId, CustomerStatusRow]
+class CustomerStatusFields(val `_path`: java.util.List[Path]) extends TupleExpr3[CustomerStatusId, String, Boolean] with RelationStructure[CustomerStatusFields, CustomerStatusRow]  with FieldsBase[CustomerStatusRow] {
+  def statusCode: IdField[CustomerStatusId, CustomerStatusRow] = {
+    new IdField[CustomerStatusId, CustomerStatusRow](
+      _path,
+      "status_code",
+      _.statusCode,
+      None,
+      None,
+      (row, value) => row.copy(statusCode = value),
+      CustomerStatusId.dbType
+    )
+  }
 
-  def description: Field[String, CustomerStatusRow]
+  def description: Field[String, CustomerStatusRow] = {
+    new Field[String, CustomerStatusRow](
+      _path,
+      "description",
+      _.description,
+      None,
+      None,
+      (row, value) => row.copy(description = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def isActive: Field[Boolean, CustomerStatusRow]
+  def isActive: Field[Boolean, CustomerStatusRow] = {
+    new Field[Boolean, CustomerStatusRow](
+      _path,
+      "is_active",
+      _.isActive,
+      None,
+      None,
+      (row, value) => row.copy(isActive = value),
+      ScalaDbTypes.MariaTypes.bool
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, CustomerStatusRow]]
+  override def columns: java.util.List[FieldLike[?, CustomerStatusRow]] = java.util.List.of(this.statusCode.underlying, this.description.underlying, this.isActive.underlying)
 
   override def rowParser: RowParser[CustomerStatusRow] = CustomerStatusRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomerStatusFields, CustomerStatusRow] = new CustomerStatusFields(`_path`)
+
+  override def `_1`: SqlExpr[CustomerStatusId] = statusCode
+
+  override def `_2`: SqlExpr[String] = description
+
+  override def `_3`: SqlExpr[Boolean] = isActive
 }
 
 object CustomerStatusFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends CustomerStatusFields with RelationStructure[CustomerStatusFields, CustomerStatusRow] {
-
-    override def statusCode: IdField[CustomerStatusId, CustomerStatusRow] = {
-      new IdField[CustomerStatusId, CustomerStatusRow](
-        _path,
-        "status_code",
-        _.statusCode,
-        None,
-        None,
-        (row, value) => row.copy(statusCode = value),
-        CustomerStatusId.pgType
-      )
-    }
-
-    override def description: Field[String, CustomerStatusRow] = {
-      new Field[String, CustomerStatusRow](
-        _path,
-        "description",
-        _.description,
-        None,
-        None,
-        (row, value) => row.copy(description = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def isActive: Field[Boolean, CustomerStatusRow] = {
-      new Field[Boolean, CustomerStatusRow](
-        _path,
-        "is_active",
-        _.isActive,
-        None,
-        None,
-        (row, value) => row.copy(isActive = value),
-        ScalaDbTypes.MariaTypes.bool
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, CustomerStatusRow]] = java.util.List.of(this.statusCode.underlying, this.description.underlying, this.isActive.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomerStatusFields, CustomerStatusRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: CustomerStatusFields = new CustomerStatusFields(java.util.Collections.emptyList())
 }

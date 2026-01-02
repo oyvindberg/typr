@@ -22,29 +22,29 @@ import typr.generated.customtypes.TypoInstant
 case class TimeStamp(value: TypoInstant)
 
 object TimeStamp {
-  implicit lazy val arrayColumn: Column[Array[TimeStamp]] = Column.columnToArray(column, implicitly)
+  given arrayColumn: Column[Array[TimeStamp]] = Column.columnToArray(using column, summon)
 
-  implicit lazy val arrayToStatement: ToStatement[Array[TimeStamp]] = TypoInstant.arrayToStatement.contramap(_.map(_.value))
+  given arrayToStatement: ToStatement[Array[TimeStamp]] = TypoInstant.arrayToStatement.contramap(_.map(_.value))
 
-  implicit lazy val column: Column[TimeStamp] = TypoInstant.column.map(TimeStamp.apply)
+  given column: Column[TimeStamp] = TypoInstant.column.map(TimeStamp.apply)
 
-  implicit lazy val parameterMetadata: ParameterMetaData[TimeStamp] = {
+  given parameterMetadata: ParameterMetaData[TimeStamp] = {
     new ParameterMetaData[TimeStamp] {
       override def sqlType: String = """"information_schema"."time_stamp""""
       override def jdbcType: Int = Types.OTHER
     }
   }
 
-  implicit lazy val pgText: Text[TimeStamp] = {
+  given pgText: Text[TimeStamp] = {
     new Text[TimeStamp] {
       override def unsafeEncode(v: TimeStamp, sb: StringBuilder): Unit = TypoInstant.pgText.unsafeEncode(v.value, sb)
       override def unsafeArrayEncode(v: TimeStamp, sb: StringBuilder): Unit = TypoInstant.pgText.unsafeArrayEncode(v.value, sb)
     }
   }
 
-  implicit lazy val reads: Reads[TimeStamp] = TypoInstant.reads.map(TimeStamp.apply)
+  given reads: Reads[TimeStamp] = TypoInstant.reads.map(TimeStamp.apply)
 
-  implicit lazy val toStatement: ToStatement[TimeStamp] = TypoInstant.toStatement.contramap(_.value)
+  given toStatement: ToStatement[TimeStamp] = TypoInstant.toStatement.contramap(_.value)
 
-  implicit lazy val writes: Writes[TimeStamp] = TypoInstant.writes.contramap(_.value)
+  given writes: Writes[TimeStamp] = TypoInstant.writes.contramap(_.value)
 }

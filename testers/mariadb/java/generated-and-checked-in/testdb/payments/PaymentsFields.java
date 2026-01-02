@@ -7,15 +7,18 @@ package testdb.payments;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
+import dev.typr.foundations.data.Json;
 import dev.typr.foundations.data.maria.Inet6;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr12;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,238 +30,261 @@ import testdb.payment_methods.PaymentMethodsFields;
 import testdb.payment_methods.PaymentMethodsId;
 import testdb.payment_methods.PaymentMethodsRow;
 
-public interface PaymentsFields extends FieldsExpr<PaymentsRow> {
-  record Impl(List<Path> _path)
-      implements PaymentsFields, RelationStructure<PaymentsFields, PaymentsRow> {
-    @Override
-    public IdField<PaymentsId, PaymentsRow> paymentId() {
-      return new IdField<PaymentsId, PaymentsRow>(
-          _path,
-          "payment_id",
-          PaymentsRow::paymentId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPaymentId(value),
-          PaymentsId.pgType);
-    }
-    ;
+public class PaymentsFields
+    implements TupleExpr12<
+            PaymentsId,
+            OrdersId,
+            PaymentMethodsId,
+            String,
+            BigDecimal,
+            String,
+            String,
+            Json,
+            String,
+            Inet6,
+            LocalDateTime,
+            LocalDateTime>,
+        RelationStructure<PaymentsFields, PaymentsRow>,
+        FieldsBase<PaymentsRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<OrdersId, PaymentsRow> orderId() {
-      return new Field<OrdersId, PaymentsRow>(
-          _path,
-          "order_id",
-          PaymentsRow::orderId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderId(value),
-          OrdersId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<PaymentMethodsId, PaymentsRow> methodId() {
-      return new Field<PaymentMethodsId, PaymentsRow>(
-          _path,
-          "method_id",
-          PaymentsRow::methodId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withMethodId(value),
-          PaymentMethodsId.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<String, PaymentsRow> transactionId() {
-      return new OptField<String, PaymentsRow>(
-          _path,
-          "transaction_id",
-          PaymentsRow::transactionId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTransactionId(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, PaymentsRow> amount() {
-      return new Field<BigDecimal, PaymentsRow>(
-          _path,
-          "amount",
-          PaymentsRow::amount,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withAmount(value),
-          MariaTypes.numeric);
-    }
-    ;
-
-    @Override
-    public Field<String, PaymentsRow> currencyCode() {
-      return new Field<String, PaymentsRow>(
-          _path,
-          "currency_code",
-          PaymentsRow::currencyCode,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCurrencyCode(value),
-          MariaTypes.char_);
-    }
-    ;
-
-    @Override
-    public Field<String, PaymentsRow> status() {
-      return new Field<String, PaymentsRow>(
-          _path,
-          "status",
-          PaymentsRow::status,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withStatus(value),
-          MariaTypes.text);
-    }
-    ;
-
-    @Override
-    public OptField<String, PaymentsRow> processorResponse() {
-      return new OptField<String, PaymentsRow>(
-          _path,
-          "processor_response",
-          PaymentsRow::processorResponse,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withProcessorResponse(value),
-          MariaTypes.longtext);
-    }
-    ;
-
-    @Override
-    public OptField<String, PaymentsRow> errorMessage() {
-      return new OptField<String, PaymentsRow>(
-          _path,
-          "error_message",
-          PaymentsRow::errorMessage,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withErrorMessage(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<Inet6, PaymentsRow> ipAddress() {
-      return new OptField<Inet6, PaymentsRow>(
-          _path,
-          "ip_address",
-          PaymentsRow::ipAddress,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withIpAddress(value),
-          MariaTypes.inet6);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, PaymentsRow> createdAt() {
-      return new Field<LocalDateTime, PaymentsRow>(
-          _path,
-          "created_at",
-          PaymentsRow::createdAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCreatedAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, PaymentsRow> processedAt() {
-      return new OptField<LocalDateTime, PaymentsRow>(
-          _path,
-          "processed_at",
-          PaymentsRow::processedAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withProcessedAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, PaymentsRow>> columns() {
-      return java.util.List.of(
-          this.paymentId(),
-          this.orderId(),
-          this.methodId(),
-          this.transactionId(),
-          this.amount(),
-          this.currencyCode(),
-          this.status(),
-          this.processorResponse(),
-          this.errorMessage(),
-          this.ipAddress(),
-          this.createdAt(),
-          this.processedAt());
-    }
-    ;
-
-    @Override
-    public RelationStructure<PaymentsFields, PaymentsRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public PaymentsFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static PaymentsFields structure = new PaymentsFields(java.util.Collections.emptyList());
+
+  public IdField<PaymentsId, PaymentsRow> paymentId() {
+    return new IdField<PaymentsId, PaymentsRow>(
+        _path,
+        "payment_id",
+        PaymentsRow::paymentId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPaymentId(value),
+        PaymentsId.dbType);
   }
-  ;
 
-  IdField<PaymentsId, PaymentsRow> paymentId();
+  public Field<OrdersId, PaymentsRow> orderId() {
+    return new Field<OrdersId, PaymentsRow>(
+        _path,
+        "order_id",
+        PaymentsRow::orderId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderId(value),
+        OrdersId.dbType);
+  }
 
-  Field<OrdersId, PaymentsRow> orderId();
+  public Field<PaymentMethodsId, PaymentsRow> methodId() {
+    return new Field<PaymentMethodsId, PaymentsRow>(
+        _path,
+        "method_id",
+        PaymentsRow::methodId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withMethodId(value),
+        PaymentMethodsId.dbType);
+  }
 
-  Field<PaymentMethodsId, PaymentsRow> methodId();
+  public OptField<String, PaymentsRow> transactionId() {
+    return new OptField<String, PaymentsRow>(
+        _path,
+        "transaction_id",
+        PaymentsRow::transactionId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTransactionId(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, PaymentsRow> transactionId();
+  public Field<BigDecimal, PaymentsRow> amount() {
+    return new Field<BigDecimal, PaymentsRow>(
+        _path,
+        "amount",
+        PaymentsRow::amount,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withAmount(value),
+        MariaTypes.numeric);
+  }
 
-  Field<BigDecimal, PaymentsRow> amount();
+  public Field<String, PaymentsRow> currencyCode() {
+    return new Field<String, PaymentsRow>(
+        _path,
+        "currency_code",
+        PaymentsRow::currencyCode,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCurrencyCode(value),
+        MariaTypes.char_);
+  }
 
-  Field<String, PaymentsRow> currencyCode();
+  public Field<String, PaymentsRow> status() {
+    return new Field<String, PaymentsRow>(
+        _path,
+        "status",
+        PaymentsRow::status,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withStatus(value),
+        MariaTypes.text);
+  }
 
-  Field<String, PaymentsRow> status();
+  public OptField<Json, PaymentsRow> processorResponse() {
+    return new OptField<Json, PaymentsRow>(
+        _path,
+        "processor_response",
+        PaymentsRow::processorResponse,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withProcessorResponse(value),
+        MariaTypes.json);
+  }
 
-  OptField<String, PaymentsRow> processorResponse();
+  public OptField<String, PaymentsRow> errorMessage() {
+    return new OptField<String, PaymentsRow>(
+        _path,
+        "error_message",
+        PaymentsRow::errorMessage,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withErrorMessage(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, PaymentsRow> errorMessage();
+  public OptField<Inet6, PaymentsRow> ipAddress() {
+    return new OptField<Inet6, PaymentsRow>(
+        _path,
+        "ip_address",
+        PaymentsRow::ipAddress,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withIpAddress(value),
+        MariaTypes.inet6);
+  }
 
-  OptField<Inet6, PaymentsRow> ipAddress();
+  public Field<LocalDateTime, PaymentsRow> createdAt() {
+    return new Field<LocalDateTime, PaymentsRow>(
+        _path,
+        "created_at",
+        PaymentsRow::createdAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCreatedAt(value),
+        MariaTypes.datetime);
+  }
 
-  Field<LocalDateTime, PaymentsRow> createdAt();
+  public OptField<LocalDateTime, PaymentsRow> processedAt() {
+    return new OptField<LocalDateTime, PaymentsRow>(
+        _path,
+        "processed_at",
+        PaymentsRow::processedAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withProcessedAt(value),
+        MariaTypes.datetime);
+  }
 
-  OptField<LocalDateTime, PaymentsRow> processedAt();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<PaymentMethodsFields, PaymentMethodsRow> fkPaymentMethods() {
+  public ForeignKey<PaymentMethodsFields, PaymentMethodsRow> fkPaymentMethods() {
     return ForeignKey.<PaymentMethodsFields, PaymentMethodsRow>of("fk_pay_method")
         .<PaymentMethodsId>withColumnPair(methodId(), PaymentMethodsFields::methodId);
   }
-  ;
 
-  default ForeignKey<OrdersFields, OrdersRow> fkOrders() {
+  public ForeignKey<OrdersFields, OrdersRow> fkOrders() {
     return ForeignKey.<OrdersFields, OrdersRow>of("fk_pay_order")
         .<OrdersId>withColumnPair(orderId(), OrdersFields::orderId);
   }
-  ;
 
   @Override
-  List<FieldLike<?, PaymentsRow>> columns();
+  public List<FieldLike<?, PaymentsRow>> columns() {
+    return java.util.List.of(
+        this.paymentId(),
+        this.orderId(),
+        this.methodId(),
+        this.transactionId(),
+        this.amount(),
+        this.currencyCode(),
+        this.status(),
+        this.processorResponse(),
+        this.errorMessage(),
+        this.ipAddress(),
+        this.createdAt(),
+        this.processedAt());
+  }
 
   @Override
-  default RowParser<PaymentsRow> rowParser() {
+  public RowParser<PaymentsRow> rowParser() {
     return PaymentsRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<PaymentsFields, PaymentsRow> withPaths(List<Path> _path) {
+    return new PaymentsFields(_path);
+  }
+
+  @Override
+  public SqlExpr<PaymentsId> _1() {
+    return paymentId();
+  }
+
+  @Override
+  public SqlExpr<OrdersId> _2() {
+    return orderId();
+  }
+
+  @Override
+  public SqlExpr<PaymentMethodsId> _3() {
+    return methodId();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return transactionId();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _5() {
+    return amount();
+  }
+
+  @Override
+  public SqlExpr<String> _6() {
+    return currencyCode();
+  }
+
+  @Override
+  public SqlExpr<String> _7() {
+    return status();
+  }
+
+  @Override
+  public SqlExpr<Json> _8() {
+    return processorResponse();
+  }
+
+  @Override
+  public SqlExpr<String> _9() {
+    return errorMessage();
+  }
+
+  @Override
+  public SqlExpr<Inet6> _10() {
+    return ipAddress();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _11() {
+    return createdAt();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _12() {
+    return processedAt();
+  }
 }

@@ -7,6 +7,8 @@ package testdb.customers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple14
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
@@ -47,7 +49,7 @@ case class CustomersRow(
   /** 
    * Default: NULL
    */
-  preferences: Option[String],
+  preferences: Option[Json],
   /** 
    * Default: NULL
    */
@@ -68,14 +70,14 @@ case class CustomersRow(
    * Default: NULL
    */
   @JsonProperty("last_login_at") lastLoginAt: Option[LocalDateTime]
-) {
+) extends Tuple14[CustomersId, String, Array[Byte], String, String, Option[String], CustomerStatusId, String, Option[Json], Option[MariaSet], Option[String], LocalDateTime, LocalDateTime, Option[LocalDateTime]] {
   def id: CustomersId = customerId
 
   def toUnsavedRow(
     phone: Defaulted[Option[String]] = Defaulted.Provided(this.phone),
     status: Defaulted[CustomerStatusId] = Defaulted.Provided(this.status),
     tier: Defaulted[String] = Defaulted.Provided(this.tier),
-    preferences: Defaulted[Option[String]] = Defaulted.Provided(this.preferences),
+    preferences: Defaulted[Option[Json]] = Defaulted.Provided(this.preferences),
     marketingFlags: Defaulted[Option[MariaSet]] = Defaulted.Provided(this.marketingFlags),
     notes: Defaulted[Option[String]] = Defaulted.Provided(this.notes),
     createdAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.createdAt),
@@ -98,8 +100,36 @@ case class CustomersRow(
       lastLoginAt
     )
   }
+
+  override def `_1`: CustomersId = customerId
+
+  override def `_2`: String = email
+
+  override def `_3`: Array[Byte] = passwordHash
+
+  override def `_4`: String = firstName
+
+  override def `_5`: String = lastName
+
+  override def `_6`: Option[String] = phone
+
+  override def `_7`: CustomerStatusId = status
+
+  override def `_8`: String = tier
+
+  override def `_9`: Option[Json] = preferences
+
+  override def `_10`: Option[MariaSet] = marketingFlags
+
+  override def `_11`: Option[String] = notes
+
+  override def `_12`: LocalDateTime = createdAt
+
+  override def `_13`: LocalDateTime = updatedAt
+
+  override def `_14`: Option[LocalDateTime] = lastLoginAt
 }
 
 object CustomersRow {
-  val `_rowParser`: RowParser[CustomersRow] = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.binary, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, CustomerStatusId.pgType, MariaTypes.text, MariaTypes.longtext.nullable, MariaTypes.set.nullable, MariaTypes.text.nullable, MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable)(CustomersRow.apply)(row => Array[Any](row.customerId, row.email, row.passwordHash, row.firstName, row.lastName, row.phone, row.status, row.tier, row.preferences, row.marketingFlags, row.notes, row.createdAt, row.updatedAt, row.lastLoginAt))
+  val `_rowParser`: RowParser[CustomersRow] = RowParsers.of(CustomersId.dbType, MariaTypes.varchar, MariaTypes.binary, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, CustomerStatusId.dbType, MariaTypes.text, MariaTypes.json.nullable, MariaTypes.set.nullable, MariaTypes.text.nullable, MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable)(CustomersRow.apply)(row => Array[Any](row.customerId, row.email, row.passwordHash, row.firstName, row.lastName, row.phone, row.status, row.tier, row.preferences, row.marketingFlags, row.notes, row.createdAt, row.updatedAt, row.lastLoginAt))
 }

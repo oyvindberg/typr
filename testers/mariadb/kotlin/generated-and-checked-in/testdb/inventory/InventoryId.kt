@@ -8,20 +8,20 @@ package testdb.inventory
 import com.fasterxml.jackson.annotation.JsonValue
 import dev.typr.foundations.MariaType
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.kotlin.Bijection
-import java.math.BigInteger
 
 /** Type for the primary key of table `inventory` */
-data class InventoryId(@JsonValue val value: BigInteger) {
+data class InventoryId(@JsonValue val value: Uint8) {
   override fun toString(): kotlin.String {
     return value.toString()
   }
 
   companion object {
-    val bijection: Bijection<InventoryId, BigInteger> =
+    val bijection: Bijection<InventoryId, Uint8> =
       Bijection.of(InventoryId::value, ::InventoryId)
 
-    val pgType: MariaType<InventoryId> =
+    val dbType: MariaType<InventoryId> =
       MariaTypes.bigintUnsigned.bimap(::InventoryId, InventoryId::value)
   }
 }

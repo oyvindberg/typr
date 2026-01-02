@@ -7,6 +7,7 @@ package adventureworks.update_person_returning
 
 import adventureworks.userdefined.FirstName
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import java.time.LocalDateTime
@@ -17,8 +18,12 @@ data class UpdatePersonReturningSqlRow(
   val firstname: /* user-picked */ FirstName,
   /** Points to [adventureworks.person.person.PersonRow.modifieddate] */
   val modifieddate: LocalDateTime
-) {
+) : Tuple2</* user-picked */ FirstName, LocalDateTime> {
+  override fun _1(): /* user-picked */ FirstName = firstname
+
+  override fun _2(): LocalDateTime = modifieddate
+
   companion object {
-    val _rowParser: RowParser<UpdatePersonReturningSqlRow> = RowParsers.of(FirstName.pgType, PgTypes.timestamp, { t0, t1 -> UpdatePersonReturningSqlRow(t0, t1) }, { row -> arrayOf<Any?>(row.firstname, row.modifieddate) })
+    val _rowParser: RowParser<UpdatePersonReturningSqlRow> = RowParsers.of(FirstName.dbType, PgTypes.timestamp, { t0, t1 -> UpdatePersonReturningSqlRow(t0, t1) }, { row -> arrayOf<Any?>(row.firstname, row.modifieddate) })
   }
 }

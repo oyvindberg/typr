@@ -7,6 +7,7 @@ package testdb.brands
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -41,7 +42,7 @@ case class BrandsRow(
    * Default: 1
    */
   @JsonProperty("is_active") isActive: Boolean
-) {
+) extends Tuple7[BrandsId, String, String, Option[Array[Byte]], Option[String], Option[String], Boolean] {
   def id: BrandsId = brandId
 
   def toUnsavedRow(
@@ -59,8 +60,22 @@ case class BrandsRow(
       isActive
     )
   }
+
+  override def `_1`: BrandsId = brandId
+
+  override def `_2`: String = name
+
+  override def `_3`: String = slug
+
+  override def `_4`: Option[Array[Byte]] = logoBlob
+
+  override def `_5`: Option[String] = websiteUrl
+
+  override def `_6`: Option[String] = countryOfOrigin
+
+  override def `_7`: Boolean = isActive
 }
 
 object BrandsRow {
-  val `_rowParser`: RowParser[BrandsRow] = RowParsers.of(BrandsId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.mediumblob.nullable, MariaTypes.varchar.nullable, MariaTypes.char_.nullable, ScalaDbTypes.MariaTypes.bool)(BrandsRow.apply)(row => Array[Any](row.brandId, row.name, row.slug, row.logoBlob, row.websiteUrl, row.countryOfOrigin, row.isActive))
+  val `_rowParser`: RowParser[BrandsRow] = RowParsers.of(BrandsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.mediumblob.nullable, MariaTypes.varchar.nullable, MariaTypes.char_.nullable, ScalaDbTypes.MariaTypes.bool)(BrandsRow.apply)(row => Array[Any](row.brandId, row.name, row.slug, row.logoBlob, row.websiteUrl, row.countryOfOrigin, row.isActive))
 }

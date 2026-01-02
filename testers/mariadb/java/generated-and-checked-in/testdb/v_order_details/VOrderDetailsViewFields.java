@@ -7,272 +7,303 @@ package testdb.v_order_details;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr14;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import testdb.orders.OrdersId;
 
-public interface VOrderDetailsViewFields extends FieldsExpr<VOrderDetailsViewRow> {
-  record Impl(List<Path> _path)
-      implements VOrderDetailsViewFields,
-          RelationStructure<VOrderDetailsViewFields, VOrderDetailsViewRow> {
-    @Override
-    public Field<OrdersId, VOrderDetailsViewRow> orderId() {
-      return new Field<OrdersId, VOrderDetailsViewRow>(
-          _path,
-          "order_id",
-          VOrderDetailsViewRow::orderId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderId(value),
-          OrdersId.pgType);
-    }
-    ;
+public class VOrderDetailsViewFields
+    implements TupleExpr14<
+            OrdersId,
+            String,
+            String,
+            String,
+            BigDecimal,
+            String,
+            LocalDateTime,
+            String,
+            String,
+            Long,
+            BigDecimal,
+            String,
+            String,
+            String>,
+        RelationStructure<VOrderDetailsViewFields, VOrderDetailsViewRow>,
+        FieldsBase<VOrderDetailsViewRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, VOrderDetailsViewRow> orderNumber() {
-      return new Field<String, VOrderDetailsViewRow>(
-          _path,
-          "order_number",
-          VOrderDetailsViewRow::orderNumber,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderNumber(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, VOrderDetailsViewRow> orderStatus() {
-      return new Field<String, VOrderDetailsViewRow>(
-          _path,
-          "order_status",
-          VOrderDetailsViewRow::orderStatus,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderStatus(value),
-          MariaTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<String, VOrderDetailsViewRow> paymentStatus() {
-      return new Field<String, VOrderDetailsViewRow>(
-          _path,
-          "payment_status",
-          VOrderDetailsViewRow::paymentStatus,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPaymentStatus(value),
-          MariaTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, VOrderDetailsViewRow> totalAmount() {
-      return new Field<BigDecimal, VOrderDetailsViewRow>(
-          _path,
-          "total_amount",
-          VOrderDetailsViewRow::totalAmount,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTotalAmount(value),
-          MariaTypes.numeric);
-    }
-    ;
-
-    @Override
-    public Field<String, VOrderDetailsViewRow> currencyCode() {
-      return new Field<String, VOrderDetailsViewRow>(
-          _path,
-          "currency_code",
-          VOrderDetailsViewRow::currencyCode,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCurrencyCode(value),
-          MariaTypes.char_);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, VOrderDetailsViewRow> orderedAt() {
-      return new Field<LocalDateTime, VOrderDetailsViewRow>(
-          _path,
-          "ordered_at",
-          VOrderDetailsViewRow::orderedAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderedAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public Field<String, VOrderDetailsViewRow> customerEmail() {
-      return new Field<String, VOrderDetailsViewRow>(
-          _path,
-          "customer_email",
-          VOrderDetailsViewRow::customerEmail,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerEmail(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, VOrderDetailsViewRow> customerName() {
-      return new OptField<String, VOrderDetailsViewRow>(
-          _path,
-          "customer_name",
-          VOrderDetailsViewRow::customerName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerName(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<Long, VOrderDetailsViewRow> itemCount() {
-      return new Field<Long, VOrderDetailsViewRow>(
-          _path,
-          "item_count",
-          VOrderDetailsViewRow::itemCount,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withItemCount(value),
-          MariaTypes.bigint);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, VOrderDetailsViewRow> totalQuantity() {
-      return new OptField<BigDecimal, VOrderDetailsViewRow>(
-          _path,
-          "total_quantity",
-          VOrderDetailsViewRow::totalQuantity,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTotalQuantity(value),
-          MariaTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<String, VOrderDetailsViewRow> trackingNumber() {
-      return new OptField<String, VOrderDetailsViewRow>(
-          _path,
-          "tracking_number",
-          VOrderDetailsViewRow::trackingNumber,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTrackingNumber(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, VOrderDetailsViewRow> shippingStatus() {
-      return new OptField<String, VOrderDetailsViewRow>(
-          _path,
-          "shipping_status",
-          VOrderDetailsViewRow::shippingStatus,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withShippingStatus(value),
-          MariaTypes.text);
-    }
-    ;
-
-    @Override
-    public OptField<String, VOrderDetailsViewRow> carrierName() {
-      return new OptField<String, VOrderDetailsViewRow>(
-          _path,
-          "carrier_name",
-          VOrderDetailsViewRow::carrierName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCarrierName(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, VOrderDetailsViewRow>> columns() {
-      return java.util.List.of(
-          this.orderId(),
-          this.orderNumber(),
-          this.orderStatus(),
-          this.paymentStatus(),
-          this.totalAmount(),
-          this.currencyCode(),
-          this.orderedAt(),
-          this.customerEmail(),
-          this.customerName(),
-          this.itemCount(),
-          this.totalQuantity(),
-          this.trackingNumber(),
-          this.shippingStatus(),
-          this.carrierName());
-    }
-    ;
-
-    @Override
-    public RelationStructure<VOrderDetailsViewFields, VOrderDetailsViewRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public VOrderDetailsViewFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static VOrderDetailsViewFields structure =
+      new VOrderDetailsViewFields(java.util.Collections.emptyList());
+
+  public Field<OrdersId, VOrderDetailsViewRow> orderId() {
+    return new Field<OrdersId, VOrderDetailsViewRow>(
+        _path,
+        "order_id",
+        VOrderDetailsViewRow::orderId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderId(value),
+        OrdersId.dbType);
   }
-  ;
 
-  Field<OrdersId, VOrderDetailsViewRow> orderId();
+  public Field<String, VOrderDetailsViewRow> orderNumber() {
+    return new Field<String, VOrderDetailsViewRow>(
+        _path,
+        "order_number",
+        VOrderDetailsViewRow::orderNumber,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderNumber(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, VOrderDetailsViewRow> orderNumber();
+  public Field<String, VOrderDetailsViewRow> orderStatus() {
+    return new Field<String, VOrderDetailsViewRow>(
+        _path,
+        "order_status",
+        VOrderDetailsViewRow::orderStatus,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderStatus(value),
+        MariaTypes.text);
+  }
 
-  Field<String, VOrderDetailsViewRow> orderStatus();
+  public Field<String, VOrderDetailsViewRow> paymentStatus() {
+    return new Field<String, VOrderDetailsViewRow>(
+        _path,
+        "payment_status",
+        VOrderDetailsViewRow::paymentStatus,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPaymentStatus(value),
+        MariaTypes.text);
+  }
 
-  Field<String, VOrderDetailsViewRow> paymentStatus();
+  public Field<BigDecimal, VOrderDetailsViewRow> totalAmount() {
+    return new Field<BigDecimal, VOrderDetailsViewRow>(
+        _path,
+        "total_amount",
+        VOrderDetailsViewRow::totalAmount,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTotalAmount(value),
+        MariaTypes.numeric);
+  }
 
-  Field<BigDecimal, VOrderDetailsViewRow> totalAmount();
+  public Field<String, VOrderDetailsViewRow> currencyCode() {
+    return new Field<String, VOrderDetailsViewRow>(
+        _path,
+        "currency_code",
+        VOrderDetailsViewRow::currencyCode,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCurrencyCode(value),
+        MariaTypes.char_);
+  }
 
-  Field<String, VOrderDetailsViewRow> currencyCode();
+  public Field<LocalDateTime, VOrderDetailsViewRow> orderedAt() {
+    return new Field<LocalDateTime, VOrderDetailsViewRow>(
+        _path,
+        "ordered_at",
+        VOrderDetailsViewRow::orderedAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderedAt(value),
+        MariaTypes.datetime);
+  }
 
-  Field<LocalDateTime, VOrderDetailsViewRow> orderedAt();
+  public Field<String, VOrderDetailsViewRow> customerEmail() {
+    return new Field<String, VOrderDetailsViewRow>(
+        _path,
+        "customer_email",
+        VOrderDetailsViewRow::customerEmail,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerEmail(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, VOrderDetailsViewRow> customerEmail();
+  public OptField<String, VOrderDetailsViewRow> customerName() {
+    return new OptField<String, VOrderDetailsViewRow>(
+        _path,
+        "customer_name",
+        VOrderDetailsViewRow::customerName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerName(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, VOrderDetailsViewRow> customerName();
+  public Field<Long, VOrderDetailsViewRow> itemCount() {
+    return new Field<Long, VOrderDetailsViewRow>(
+        _path,
+        "item_count",
+        VOrderDetailsViewRow::itemCount,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withItemCount(value),
+        MariaTypes.bigint);
+  }
 
-  Field<Long, VOrderDetailsViewRow> itemCount();
+  public OptField<BigDecimal, VOrderDetailsViewRow> totalQuantity() {
+    return new OptField<BigDecimal, VOrderDetailsViewRow>(
+        _path,
+        "total_quantity",
+        VOrderDetailsViewRow::totalQuantity,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTotalQuantity(value),
+        MariaTypes.numeric);
+  }
 
-  OptField<BigDecimal, VOrderDetailsViewRow> totalQuantity();
+  public OptField<String, VOrderDetailsViewRow> trackingNumber() {
+    return new OptField<String, VOrderDetailsViewRow>(
+        _path,
+        "tracking_number",
+        VOrderDetailsViewRow::trackingNumber,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTrackingNumber(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, VOrderDetailsViewRow> trackingNumber();
+  public OptField<String, VOrderDetailsViewRow> shippingStatus() {
+    return new OptField<String, VOrderDetailsViewRow>(
+        _path,
+        "shipping_status",
+        VOrderDetailsViewRow::shippingStatus,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withShippingStatus(value),
+        MariaTypes.text);
+  }
 
-  OptField<String, VOrderDetailsViewRow> shippingStatus();
-
-  OptField<String, VOrderDetailsViewRow> carrierName();
+  public OptField<String, VOrderDetailsViewRow> carrierName() {
+    return new OptField<String, VOrderDetailsViewRow>(
+        _path,
+        "carrier_name",
+        VOrderDetailsViewRow::carrierName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCarrierName(value),
+        MariaTypes.varchar);
+  }
 
   @Override
-  List<FieldLike<?, VOrderDetailsViewRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<VOrderDetailsViewRow> rowParser() {
+  public List<FieldLike<?, VOrderDetailsViewRow>> columns() {
+    return java.util.List.of(
+        this.orderId(),
+        this.orderNumber(),
+        this.orderStatus(),
+        this.paymentStatus(),
+        this.totalAmount(),
+        this.currencyCode(),
+        this.orderedAt(),
+        this.customerEmail(),
+        this.customerName(),
+        this.itemCount(),
+        this.totalQuantity(),
+        this.trackingNumber(),
+        this.shippingStatus(),
+        this.carrierName());
+  }
+
+  @Override
+  public RowParser<VOrderDetailsViewRow> rowParser() {
     return VOrderDetailsViewRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<VOrderDetailsViewFields, VOrderDetailsViewRow> withPaths(
+      List<Path> _path) {
+    return new VOrderDetailsViewFields(_path);
+  }
+
+  @Override
+  public SqlExpr<OrdersId> _1() {
+    return orderId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return orderNumber();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return orderStatus();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return paymentStatus();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _5() {
+    return totalAmount();
+  }
+
+  @Override
+  public SqlExpr<String> _6() {
+    return currencyCode();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _7() {
+    return orderedAt();
+  }
+
+  @Override
+  public SqlExpr<String> _8() {
+    return customerEmail();
+  }
+
+  @Override
+  public SqlExpr<String> _9() {
+    return customerName();
+  }
+
+  @Override
+  public SqlExpr<Long> _10() {
+    return itemCount();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _11() {
+    return totalQuantity();
+  }
+
+  @Override
+  public SqlExpr<String> _12() {
+    return trackingNumber();
+  }
+
+  @Override
+  public SqlExpr<String> _13() {
+    return shippingStatus();
+  }
+
+  @Override
+  public SqlExpr<String> _14() {
+    return carrierName();
+  }
 }

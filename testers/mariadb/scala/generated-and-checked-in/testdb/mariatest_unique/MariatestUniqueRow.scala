@@ -6,6 +6,7 @@
 package testdb.mariatest_unique
 
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 
@@ -23,10 +24,18 @@ case class MariatestUniqueRow(
   code: String,
   /**  */
   category: String
-) {
+) extends Tuple4[MariatestUniqueId, String, String, String] {
   def toUnsavedRow: MariatestUniqueRowUnsaved = new MariatestUniqueRowUnsaved(email, code, category)
+
+  override def `_1`: MariatestUniqueId = id
+
+  override def `_2`: String = email
+
+  override def `_3`: String = code
+
+  override def `_4`: String = category
 }
 
 object MariatestUniqueRow {
-  val `_rowParser`: RowParser[MariatestUniqueRow] = RowParsers.of(MariatestUniqueId.pgType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar)(MariatestUniqueRow.apply)(row => Array[Any](row.id, row.email, row.code, row.category))
+  val `_rowParser`: RowParser[MariatestUniqueRow] = RowParsers.of(MariatestUniqueId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar)(MariatestUniqueRow.apply)(row => Array[Any](row.id, row.email, row.code, row.category))
 }

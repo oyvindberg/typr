@@ -6,6 +6,7 @@
 package testdb.order_items
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -24,7 +25,7 @@ case class OrderItemsRow(
   @JsonProperty("product_id") productId: ProductsId,
   quantity: Int,
   price: BigDecimal
-) {
+) extends Tuple5[OrderItemsId, OrdersId, ProductsId, Int, BigDecimal] {
   def id: OrderItemsId = orderItemId
 
   def toUnsavedRow: OrderItemsRowUnsaved = {
@@ -35,6 +36,16 @@ case class OrderItemsRow(
       price
     )
   }
+
+  override def `_1`: OrderItemsId = orderItemId
+
+  override def `_2`: OrdersId = orderId
+
+  override def `_3`: ProductsId = productId
+
+  override def `_4`: Int = quantity
+
+  override def `_5`: BigDecimal = price
 }
 
 object OrderItemsRow {

@@ -7,45 +7,43 @@ package testdb.nullability_test
 
 import dev.typr.foundations.Db2Types
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr4
 import kotlin.collections.List
 
-interface NullabilityTestFields : FieldsExpr<NullabilityTestRow> {
-  abstract override fun columns(): List<FieldLike<*, NullabilityTestRow>>
+data class NullabilityTestFields(val _path: List<Path>) : TupleExpr4<Int, String, String, String>, RelationStructure<NullabilityTestFields, NullabilityTestRow>, FieldsBase<NullabilityTestRow> {
+  override fun _1(): SqlExpr<Int> = id()
 
-  abstract fun defaultedCol(): OptField<String, NullabilityTestRow>
+  override fun _2(): SqlExpr<String> = requiredCol()
 
-  abstract fun id(): Field<Int, NullabilityTestRow>
+  override fun _3(): SqlExpr<String> = optionalCol()
 
-  abstract fun optionalCol(): OptField<String, NullabilityTestRow>
+  override fun _4(): SqlExpr<String> = defaultedCol()
 
-  abstract fun requiredCol(): Field<String, NullabilityTestRow>
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, NullabilityTestRow>> = listOf(this.id().underlying, this.requiredCol().underlying, this.optionalCol().underlying, this.defaultedCol().underlying)
+
+  fun defaultedCol(): OptField<String, NullabilityTestRow> = OptField<String, NullabilityTestRow>(_path, "DEFAULTED_COL", NullabilityTestRow::defaultedCol, null, null, { row, value -> row.copy(defaultedCol = value) }, Db2Types.varchar)
+
+  fun id(): Field<Int, NullabilityTestRow> = Field<Int, NullabilityTestRow>(_path, "ID", NullabilityTestRow::id, null, null, { row, value -> row.copy(id = value) }, KotlinDbTypes.Db2Types.integer)
+
+  fun optionalCol(): OptField<String, NullabilityTestRow> = OptField<String, NullabilityTestRow>(_path, "OPTIONAL_COL", NullabilityTestRow::optionalCol, null, null, { row, value -> row.copy(optionalCol = value) }, Db2Types.varchar)
+
+  fun requiredCol(): Field<String, NullabilityTestRow> = Field<String, NullabilityTestRow>(_path, "REQUIRED_COL", NullabilityTestRow::requiredCol, null, null, { row, value -> row.copy(requiredCol = value) }, Db2Types.varchar)
 
   override fun rowParser(): RowParser<NullabilityTestRow> = NullabilityTestRow._rowParser.underlying
 
+  override fun withPaths(_path: List<Path>): RelationStructure<NullabilityTestFields, NullabilityTestRow> = NullabilityTestFields(_path)
+
   companion object {
-    data class Impl(val _path: List<Path>) : NullabilityTestFields, RelationStructure<NullabilityTestFields, NullabilityTestRow> {
-      override fun id(): Field<Int, NullabilityTestRow> = Field<Int, NullabilityTestRow>(_path, "ID", NullabilityTestRow::id, null, null, { row, value -> row.copy(id = value) }, KotlinDbTypes.Db2Types.integer)
-
-      override fun requiredCol(): Field<String, NullabilityTestRow> = Field<String, NullabilityTestRow>(_path, "REQUIRED_COL", NullabilityTestRow::requiredCol, null, null, { row, value -> row.copy(requiredCol = value) }, Db2Types.varchar)
-
-      override fun optionalCol(): OptField<String, NullabilityTestRow> = OptField<String, NullabilityTestRow>(_path, "OPTIONAL_COL", NullabilityTestRow::optionalCol, null, null, { row, value -> row.copy(optionalCol = value) }, Db2Types.varchar)
-
-      override fun defaultedCol(): OptField<String, NullabilityTestRow> = OptField<String, NullabilityTestRow>(_path, "DEFAULTED_COL", NullabilityTestRow::defaultedCol, null, null, { row, value -> row.copy(defaultedCol = value) }, Db2Types.varchar)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, NullabilityTestRow>> = listOf(this.id().underlying, this.requiredCol().underlying, this.optionalCol().underlying, this.defaultedCol().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<NullabilityTestFields, NullabilityTestRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: NullabilityTestFields = NullabilityTestFields(emptyList<Path>())
   }
 }

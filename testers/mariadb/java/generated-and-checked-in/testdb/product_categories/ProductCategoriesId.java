@@ -8,13 +8,15 @@ package testdb.product_categories;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple2;
 import testdb.categories.CategoriesId;
 import testdb.products.ProductsId;
 
 /** Type for the composite primary key of table `product_categories` */
 public record ProductCategoriesId(
     @JsonProperty("product_id") ProductsId productId,
-    @JsonProperty("category_id") CategoriesId categoryId) {
+    @JsonProperty("category_id") CategoriesId categoryId)
+    implements Tuple2<ProductsId, CategoriesId> {
   public ProductCategoriesId withProductId(ProductsId productId) {
     return new ProductCategoriesId(productId, categoryId);
   }
@@ -27,9 +29,21 @@ public record ProductCategoriesId(
 
   public static RowParser<ProductCategoriesId> _rowParser =
       RowParsers.of(
-          ProductsId.pgType,
-          CategoriesId.pgType,
+          ProductsId.dbType,
+          CategoriesId.dbType,
           ProductCategoriesId::new,
           row -> new Object[] {row.productId(), row.categoryId()});
+  ;
+
+  @Override
+  public ProductsId _1() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public CategoriesId _2() {
+    return categoryId;
+  }
   ;
 }

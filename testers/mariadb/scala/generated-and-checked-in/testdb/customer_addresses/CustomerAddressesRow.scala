@@ -7,6 +7,7 @@ package testdb.customer_addresses
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple14
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -64,7 +65,7 @@ case class CustomerAddressesRow(
    * Default: current_timestamp()
    */
   @JsonProperty("created_at") createdAt: LocalDateTime
-) {
+) extends Tuple14[CustomerAddressesId, CustomersId, String, Boolean, String, String, Option[String], String, Option[String], String, String, Option[Point], Option[String], LocalDateTime] {
   def id: CustomerAddressesId = addressId
 
   def toUnsavedRow(
@@ -91,8 +92,36 @@ case class CustomerAddressesRow(
       createdAt
     )
   }
+
+  override def `_1`: CustomerAddressesId = addressId
+
+  override def `_2`: CustomersId = customerId
+
+  override def `_3`: String = addressType
+
+  override def `_4`: Boolean = isDefault
+
+  override def `_5`: String = recipientName
+
+  override def `_6`: String = streetLine1
+
+  override def `_7`: Option[String] = streetLine2
+
+  override def `_8`: String = city
+
+  override def `_9`: Option[String] = stateProvince
+
+  override def `_10`: String = postalCode
+
+  override def `_11`: String = countryCode
+
+  override def `_12`: Option[Point] = location
+
+  override def `_13`: Option[String] = deliveryNotes
+
+  override def `_14`: LocalDateTime = createdAt
 }
 
 object CustomerAddressesRow {
-  val `_rowParser`: RowParser[CustomerAddressesRow] = RowParsers.of(CustomerAddressesId.pgType, CustomersId.pgType, MariaTypes.text, ScalaDbTypes.MariaTypes.bool, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.varchar, MariaTypes.char_, MariaTypes.point.nullable, MariaTypes.tinytext.nullable, MariaTypes.datetime)(CustomerAddressesRow.apply)(row => Array[Any](row.addressId, row.customerId, row.addressType, row.isDefault, row.recipientName, row.streetLine1, row.streetLine2, row.city, row.stateProvince, row.postalCode, row.countryCode, row.location, row.deliveryNotes, row.createdAt))
+  val `_rowParser`: RowParser[CustomerAddressesRow] = RowParsers.of(CustomerAddressesId.dbType, CustomersId.dbType, MariaTypes.text, ScalaDbTypes.MariaTypes.bool, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.varchar, MariaTypes.char_, MariaTypes.point.nullable, MariaTypes.tinytext.nullable, MariaTypes.datetime)(CustomerAddressesRow.apply)(row => Array[Any](row.addressId, row.customerId, row.addressType, row.isDefault, row.recipientName, row.streetLine1, row.streetLine2, row.city, row.stateProvince, row.postalCode, row.countryCode, row.location, row.deliveryNotes, row.createdAt))
 }

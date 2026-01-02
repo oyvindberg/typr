@@ -7,157 +7,155 @@ package testdb.categories
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr9
 
-trait CategoriesFields extends FieldsExpr0[CategoriesRow] {
-  def categoryId: IdField[CategoriesId, CategoriesRow]
+class CategoriesFields(val `_path`: java.util.List[Path]) extends TupleExpr9[CategoriesId, CategoriesId, String, String, String, String, Short, Boolean, Json] with RelationStructure[CategoriesFields, CategoriesRow]  with FieldsBase[CategoriesRow] {
+  def categoryId: IdField[CategoriesId, CategoriesRow] = {
+    new IdField[CategoriesId, CategoriesRow](
+      _path,
+      "category_id",
+      _.categoryId,
+      None,
+      None,
+      (row, value) => row.copy(categoryId = value),
+      CategoriesId.dbType
+    )
+  }
 
-  def parentId: OptField[CategoriesId, CategoriesRow]
+  def parentId: OptField[CategoriesId, CategoriesRow] = {
+    new OptField[CategoriesId, CategoriesRow](
+      _path,
+      "parent_id",
+      _.parentId,
+      None,
+      None,
+      (row, value) => row.copy(parentId = value),
+      CategoriesId.dbType
+    )
+  }
 
-  def name: Field[String, CategoriesRow]
+  def name: Field[String, CategoriesRow] = {
+    new Field[String, CategoriesRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      None,
+      (row, value) => row.copy(name = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def slug: Field[String, CategoriesRow]
+  def slug: Field[String, CategoriesRow] = {
+    new Field[String, CategoriesRow](
+      _path,
+      "slug",
+      _.slug,
+      None,
+      None,
+      (row, value) => row.copy(slug = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def description: OptField[String, CategoriesRow]
+  def description: OptField[String, CategoriesRow] = {
+    new OptField[String, CategoriesRow](
+      _path,
+      "description",
+      _.description,
+      None,
+      None,
+      (row, value) => row.copy(description = value),
+      MariaTypes.mediumtext
+    )
+  }
 
-  def imageUrl: OptField[String, CategoriesRow]
+  def imageUrl: OptField[String, CategoriesRow] = {
+    new OptField[String, CategoriesRow](
+      _path,
+      "image_url",
+      _.imageUrl,
+      None,
+      None,
+      (row, value) => row.copy(imageUrl = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def sortOrder: Field[Short, CategoriesRow]
+  def sortOrder: Field[Short, CategoriesRow] = {
+    new Field[Short, CategoriesRow](
+      _path,
+      "sort_order",
+      _.sortOrder,
+      None,
+      None,
+      (row, value) => row.copy(sortOrder = value),
+      ScalaDbTypes.MariaTypes.smallint
+    )
+  }
 
-  def isVisible: Field[Boolean, CategoriesRow]
+  def isVisible: Field[Boolean, CategoriesRow] = {
+    new Field[Boolean, CategoriesRow](
+      _path,
+      "is_visible",
+      _.isVisible,
+      None,
+      None,
+      (row, value) => row.copy(isVisible = value),
+      ScalaDbTypes.MariaTypes.bool
+    )
+  }
 
-  def metadata: OptField[String, CategoriesRow]
+  def metadata: OptField[Json, CategoriesRow] = {
+    new OptField[Json, CategoriesRow](
+      _path,
+      "metadata",
+      _.metadata,
+      None,
+      None,
+      (row, value) => row.copy(metadata = value),
+      MariaTypes.json
+    )
+  }
 
   def fkCategories: ForeignKey[CategoriesFields, CategoriesRow] = ForeignKey.of[CategoriesFields, CategoriesRow]("fk_category_parent").withColumnPair[CategoriesId](parentId, _.categoryId)
 
-  override def columns: java.util.List[FieldLike[?, CategoriesRow]]
+  override def columns: java.util.List[FieldLike[?, CategoriesRow]] = java.util.List.of(this.categoryId.underlying, this.parentId.underlying, this.name.underlying, this.slug.underlying, this.description.underlying, this.imageUrl.underlying, this.sortOrder.underlying, this.isVisible.underlying, this.metadata.underlying)
 
   override def rowParser: RowParser[CategoriesRow] = CategoriesRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CategoriesFields, CategoriesRow] = new CategoriesFields(`_path`)
+
+  override def `_1`: SqlExpr[CategoriesId] = categoryId
+
+  override def `_2`: SqlExpr[CategoriesId] = parentId
+
+  override def `_3`: SqlExpr[String] = name
+
+  override def `_4`: SqlExpr[String] = slug
+
+  override def `_5`: SqlExpr[String] = description
+
+  override def `_6`: SqlExpr[String] = imageUrl
+
+  override def `_7`: SqlExpr[Short] = sortOrder
+
+  override def `_8`: SqlExpr[Boolean] = isVisible
+
+  override def `_9`: SqlExpr[Json] = metadata
 }
 
 object CategoriesFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends CategoriesFields with RelationStructure[CategoriesFields, CategoriesRow] {
-
-    override def categoryId: IdField[CategoriesId, CategoriesRow] = {
-      new IdField[CategoriesId, CategoriesRow](
-        _path,
-        "category_id",
-        _.categoryId,
-        None,
-        None,
-        (row, value) => row.copy(categoryId = value),
-        CategoriesId.pgType
-      )
-    }
-
-    override def parentId: OptField[CategoriesId, CategoriesRow] = {
-      new OptField[CategoriesId, CategoriesRow](
-        _path,
-        "parent_id",
-        _.parentId,
-        None,
-        None,
-        (row, value) => row.copy(parentId = value),
-        CategoriesId.pgType
-      )
-    }
-
-    override def name: Field[String, CategoriesRow] = {
-      new Field[String, CategoriesRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        None,
-        (row, value) => row.copy(name = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def slug: Field[String, CategoriesRow] = {
-      new Field[String, CategoriesRow](
-        _path,
-        "slug",
-        _.slug,
-        None,
-        None,
-        (row, value) => row.copy(slug = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def description: OptField[String, CategoriesRow] = {
-      new OptField[String, CategoriesRow](
-        _path,
-        "description",
-        _.description,
-        None,
-        None,
-        (row, value) => row.copy(description = value),
-        MariaTypes.mediumtext
-      )
-    }
-
-    override def imageUrl: OptField[String, CategoriesRow] = {
-      new OptField[String, CategoriesRow](
-        _path,
-        "image_url",
-        _.imageUrl,
-        None,
-        None,
-        (row, value) => row.copy(imageUrl = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def sortOrder: Field[Short, CategoriesRow] = {
-      new Field[Short, CategoriesRow](
-        _path,
-        "sort_order",
-        _.sortOrder,
-        None,
-        None,
-        (row, value) => row.copy(sortOrder = value),
-        ScalaDbTypes.MariaTypes.smallint
-      )
-    }
-
-    override def isVisible: Field[Boolean, CategoriesRow] = {
-      new Field[Boolean, CategoriesRow](
-        _path,
-        "is_visible",
-        _.isVisible,
-        None,
-        None,
-        (row, value) => row.copy(isVisible = value),
-        ScalaDbTypes.MariaTypes.bool
-      )
-    }
-
-    override def metadata: OptField[String, CategoriesRow] = {
-      new OptField[String, CategoriesRow](
-        _path,
-        "metadata",
-        _.metadata,
-        None,
-        None,
-        (row, value) => row.copy(metadata = value),
-        MariaTypes.longtext
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, CategoriesRow]] = java.util.List.of(this.categoryId.underlying, this.parentId.underlying, this.name.underlying, this.slug.underlying, this.description.underlying, this.imageUrl.underlying, this.sortOrder.underlying, this.isVisible.underlying, this.metadata.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CategoriesFields, CategoriesRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: CategoriesFields = new CategoriesFields(java.util.Collections.emptyList())
 }

@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple12;
+import dev.typr.foundations.data.Json;
 import dev.typr.foundations.data.maria.Inet6;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -34,7 +36,7 @@ public record PaymentsRow(
     /** Default: 'pending' */
     String status,
     /** Default: NULL */
-    @JsonProperty("processor_response") Optional<String> processorResponse,
+    @JsonProperty("processor_response") Optional<Json> processorResponse,
     /** Default: NULL */
     @JsonProperty("error_message") Optional<String> errorMessage,
     /** Default: NULL */
@@ -42,7 +44,20 @@ public record PaymentsRow(
     /** Default: current_timestamp(6) */
     @JsonProperty("created_at") LocalDateTime createdAt,
     /** Default: NULL */
-    @JsonProperty("processed_at") Optional<LocalDateTime> processedAt) {
+    @JsonProperty("processed_at") Optional<LocalDateTime> processedAt)
+    implements Tuple12<
+        PaymentsId,
+        OrdersId,
+        PaymentMethodsId,
+        Optional<String>,
+        BigDecimal,
+        String,
+        String,
+        Optional<Json>,
+        Optional<String>,
+        Optional<Inet6>,
+        LocalDateTime,
+        Optional<LocalDateTime>> {
   /** AUTO_INCREMENT */
   public PaymentsRow withPaymentId(PaymentsId paymentId) {
     return new PaymentsRow(
@@ -170,7 +185,7 @@ public record PaymentsRow(
   ;
 
   /** Default: NULL */
-  public PaymentsRow withProcessorResponse(Optional<String> processorResponse) {
+  public PaymentsRow withProcessorResponse(Optional<Json> processorResponse) {
     return new PaymentsRow(
         paymentId,
         orderId,
@@ -261,14 +276,14 @@ public record PaymentsRow(
 
   public static RowParser<PaymentsRow> _rowParser =
       RowParsers.of(
-          PaymentsId.pgType,
-          OrdersId.pgType,
-          PaymentMethodsId.pgType,
+          PaymentsId.dbType,
+          OrdersId.dbType,
+          PaymentMethodsId.dbType,
           MariaTypes.varchar.opt(),
           MariaTypes.numeric,
           MariaTypes.char_,
           MariaTypes.text,
-          MariaTypes.longtext.opt(),
+          MariaTypes.json.opt(),
           MariaTypes.varchar.opt(),
           MariaTypes.inet6.opt(),
           MariaTypes.datetime,
@@ -291,6 +306,78 @@ public record PaymentsRow(
               });
   ;
 
+  @Override
+  public PaymentsId _1() {
+    return paymentId;
+  }
+  ;
+
+  @Override
+  public Optional<Inet6> _10() {
+    return ipAddress;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _11() {
+    return createdAt;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _12() {
+    return processedAt;
+  }
+  ;
+
+  @Override
+  public OrdersId _2() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public PaymentMethodsId _3() {
+    return methodId;
+  }
+  ;
+
+  @Override
+  public Optional<String> _4() {
+    return transactionId;
+  }
+  ;
+
+  @Override
+  public BigDecimal _5() {
+    return amount;
+  }
+  ;
+
+  @Override
+  public String _6() {
+    return currencyCode;
+  }
+  ;
+
+  @Override
+  public String _7() {
+    return status;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _8() {
+    return processorResponse;
+  }
+  ;
+
+  @Override
+  public Optional<String> _9() {
+    return errorMessage;
+  }
+  ;
+
   public PaymentsId id() {
     return paymentId;
   }
@@ -300,7 +387,7 @@ public record PaymentsRow(
       Defaulted<Optional<String>> transactionId,
       Defaulted<String> currencyCode,
       Defaulted<String> status,
-      Defaulted<Optional<String>> processorResponse,
+      Defaulted<Optional<Json>> processorResponse,
       Defaulted<Optional<String>> errorMessage,
       Defaulted<Optional<Inet6>> ipAddress,
       Defaulted<LocalDateTime> createdAt,

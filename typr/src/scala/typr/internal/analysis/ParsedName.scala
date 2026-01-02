@@ -8,7 +8,7 @@ import play.api.libs.json.{Json, Writes}
   *
   * Contract:
   *   - Unqualified names (no `.`) must be well-known primitives (case-insensitive): String, Int, Boolean, etc.
-  *   - Qualified names (contains `.`) must be types that provide their own `pgType`/`mariaType` field
+  *   - Qualified names (contains `.`) must be types that provide their own `dbType` field
   */
 sealed trait OverriddenType {
 
@@ -27,14 +27,14 @@ object OverriddenType {
     def toEither: Either[jvm.Type.Qualified, WellKnownPrimitive] = Right(wellKnown)
   }
 
-  /** A qualified type that must provide its own pgType/mariaType field */
+  /** A qualified type that must provide its own dbType field */
   case class Qualified(tpe: jvm.Type.Qualified) extends OverriddenType {
     def jvmType(lang: Lang): jvm.Type = jvm.Type.UserDefined(tpe)
     def toEither: Either[jvm.Type.Qualified, WellKnownPrimitive] = Left(tpe)
   }
 
   /** Parse a type string from SQL annotation.
-    *   - If contains `.`, treat as qualified (user must provide pgType)
+    *   - If contains `.`, treat as qualified (user must provide dbType)
     *   - Otherwise, must be a well-known primitive name (case-insensitive)
     */
   def parse(typeStr: String): Either[String, OverriddenType] = {

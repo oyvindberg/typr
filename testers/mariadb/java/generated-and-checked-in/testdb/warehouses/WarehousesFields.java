@@ -7,206 +7,221 @@ package testdb.warehouses;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr10;
 import java.util.List;
 import java.util.Optional;
 import org.mariadb.jdbc.type.Point;
 import org.mariadb.jdbc.type.Polygon;
 
-public interface WarehousesFields extends FieldsExpr<WarehousesRow> {
-  record Impl(List<Path> _path)
-      implements WarehousesFields, RelationStructure<WarehousesFields, WarehousesRow> {
-    @Override
-    public IdField<WarehousesId, WarehousesRow> warehouseId() {
-      return new IdField<WarehousesId, WarehousesRow>(
-          _path,
-          "warehouse_id",
-          WarehousesRow::warehouseId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withWarehouseId(value),
-          WarehousesId.pgType);
-    }
-    ;
+public class WarehousesFields
+    implements TupleExpr10<
+            WarehousesId, String, String, String, Point, Polygon, String, Boolean, String, String>,
+        RelationStructure<WarehousesFields, WarehousesRow>,
+        FieldsBase<WarehousesRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, WarehousesRow> code() {
-      return new Field<String, WarehousesRow>(
-          _path,
-          "code",
-          WarehousesRow::code,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCode(value),
-          MariaTypes.char_);
-    }
-    ;
-
-    @Override
-    public Field<String, WarehousesRow> name() {
-      return new Field<String, WarehousesRow>(
-          _path,
-          "name",
-          WarehousesRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, WarehousesRow> address() {
-      return new Field<String, WarehousesRow>(
-          _path,
-          "address",
-          WarehousesRow::address,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withAddress(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<Point, WarehousesRow> location() {
-      return new Field<Point, WarehousesRow>(
-          _path,
-          "location",
-          WarehousesRow::location,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withLocation(value),
-          MariaTypes.point);
-    }
-    ;
-
-    @Override
-    public OptField<Polygon, WarehousesRow> serviceArea() {
-      return new OptField<Polygon, WarehousesRow>(
-          _path,
-          "service_area",
-          WarehousesRow::serviceArea,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withServiceArea(value),
-          MariaTypes.polygon);
-    }
-    ;
-
-    @Override
-    public Field<String, WarehousesRow> timezone() {
-      return new Field<String, WarehousesRow>(
-          _path,
-          "timezone",
-          WarehousesRow::timezone,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTimezone(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<Boolean, WarehousesRow> isActive() {
-      return new Field<Boolean, WarehousesRow>(
-          _path,
-          "is_active",
-          WarehousesRow::isActive,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withIsActive(value),
-          MariaTypes.bool);
-    }
-    ;
-
-    @Override
-    public OptField<String, WarehousesRow> contactEmail() {
-      return new OptField<String, WarehousesRow>(
-          _path,
-          "contact_email",
-          WarehousesRow::contactEmail,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withContactEmail(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, WarehousesRow> contactPhone() {
-      return new OptField<String, WarehousesRow>(
-          _path,
-          "contact_phone",
-          WarehousesRow::contactPhone,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withContactPhone(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, WarehousesRow>> columns() {
-      return java.util.List.of(
-          this.warehouseId(),
-          this.code(),
-          this.name(),
-          this.address(),
-          this.location(),
-          this.serviceArea(),
-          this.timezone(),
-          this.isActive(),
-          this.contactEmail(),
-          this.contactPhone());
-    }
-    ;
-
-    @Override
-    public RelationStructure<WarehousesFields, WarehousesRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public WarehousesFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static WarehousesFields structure =
+      new WarehousesFields(java.util.Collections.emptyList());
+
+  public IdField<WarehousesId, WarehousesRow> warehouseId() {
+    return new IdField<WarehousesId, WarehousesRow>(
+        _path,
+        "warehouse_id",
+        WarehousesRow::warehouseId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withWarehouseId(value),
+        WarehousesId.dbType);
   }
-  ;
 
-  IdField<WarehousesId, WarehousesRow> warehouseId();
+  public Field<String, WarehousesRow> code() {
+    return new Field<String, WarehousesRow>(
+        _path,
+        "code",
+        WarehousesRow::code,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCode(value),
+        MariaTypes.char_);
+  }
 
-  Field<String, WarehousesRow> code();
+  public Field<String, WarehousesRow> name() {
+    return new Field<String, WarehousesRow>(
+        _path,
+        "name",
+        WarehousesRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, WarehousesRow> name();
+  public Field<String, WarehousesRow> address() {
+    return new Field<String, WarehousesRow>(
+        _path,
+        "address",
+        WarehousesRow::address,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withAddress(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, WarehousesRow> address();
+  public Field<Point, WarehousesRow> location() {
+    return new Field<Point, WarehousesRow>(
+        _path,
+        "location",
+        WarehousesRow::location,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withLocation(value),
+        MariaTypes.point);
+  }
 
-  Field<Point, WarehousesRow> location();
+  public OptField<Polygon, WarehousesRow> serviceArea() {
+    return new OptField<Polygon, WarehousesRow>(
+        _path,
+        "service_area",
+        WarehousesRow::serviceArea,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withServiceArea(value),
+        MariaTypes.polygon);
+  }
 
-  OptField<Polygon, WarehousesRow> serviceArea();
+  public Field<String, WarehousesRow> timezone() {
+    return new Field<String, WarehousesRow>(
+        _path,
+        "timezone",
+        WarehousesRow::timezone,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTimezone(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, WarehousesRow> timezone();
+  public Field<Boolean, WarehousesRow> isActive() {
+    return new Field<Boolean, WarehousesRow>(
+        _path,
+        "is_active",
+        WarehousesRow::isActive,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withIsActive(value),
+        MariaTypes.bool);
+  }
 
-  Field<Boolean, WarehousesRow> isActive();
+  public OptField<String, WarehousesRow> contactEmail() {
+    return new OptField<String, WarehousesRow>(
+        _path,
+        "contact_email",
+        WarehousesRow::contactEmail,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withContactEmail(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, WarehousesRow> contactEmail();
-
-  OptField<String, WarehousesRow> contactPhone();
+  public OptField<String, WarehousesRow> contactPhone() {
+    return new OptField<String, WarehousesRow>(
+        _path,
+        "contact_phone",
+        WarehousesRow::contactPhone,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withContactPhone(value),
+        MariaTypes.varchar);
+  }
 
   @Override
-  List<FieldLike<?, WarehousesRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<WarehousesRow> rowParser() {
+  public List<FieldLike<?, WarehousesRow>> columns() {
+    return java.util.List.of(
+        this.warehouseId(),
+        this.code(),
+        this.name(),
+        this.address(),
+        this.location(),
+        this.serviceArea(),
+        this.timezone(),
+        this.isActive(),
+        this.contactEmail(),
+        this.contactPhone());
+  }
+
+  @Override
+  public RowParser<WarehousesRow> rowParser() {
     return WarehousesRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<WarehousesFields, WarehousesRow> withPaths(List<Path> _path) {
+    return new WarehousesFields(_path);
+  }
+
+  @Override
+  public SqlExpr<WarehousesId> _1() {
+    return warehouseId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return code();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return address();
+  }
+
+  @Override
+  public SqlExpr<Point> _5() {
+    return location();
+  }
+
+  @Override
+  public SqlExpr<Polygon> _6() {
+    return serviceArea();
+  }
+
+  @Override
+  public SqlExpr<String> _7() {
+    return timezone();
+  }
+
+  @Override
+  public SqlExpr<Boolean> _8() {
+    return isActive();
+  }
+
+  @Override
+  public SqlExpr<String> _9() {
+    return contactEmail();
+  }
+
+  @Override
+  public SqlExpr<String> _10() {
+    return contactPhone();
+  }
 }

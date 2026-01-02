@@ -47,7 +47,7 @@ public record AuditLogRepoMock(
   @Override
   public DeleteBuilder<AuditLogFields, AuditLogRow> delete() {
     return new DeleteBuilderMock<>(
-        AuditLogFields.structure(),
+        AuditLogFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.logId(),
@@ -96,7 +96,7 @@ public record AuditLogRepoMock(
   @Override
   public SelectBuilder<AuditLogFields, AuditLogRow> select() {
     return new SelectBuilderMock<>(
-        AuditLogFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        AuditLogFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -137,7 +137,7 @@ public record AuditLogRepoMock(
   @Override
   public UpdateBuilder<AuditLogFields, AuditLogRow> update() {
     return new UpdateBuilderMock<>(
-        AuditLogFields.structure(),
+        AuditLogFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

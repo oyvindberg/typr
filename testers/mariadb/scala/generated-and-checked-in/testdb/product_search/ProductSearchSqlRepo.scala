@@ -5,11 +5,12 @@
  */
 package testdb.product_search
 
+import dev.typr.foundations.data.Uint2
 import java.sql.Connection
 
 trait ProductSearchSqlRepo {
   def apply(
-    brandId: Option[Int],
+    brandId: Option[Uint2],
     minPrice: Option[BigDecimal],
     maxPrice: Option[BigDecimal],
     status: Option[String],

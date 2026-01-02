@@ -29,5 +29,4 @@ public class UpdatePersonReturningSqlRepoImpl implements UpdatePersonReturningSq
         .query(UpdatePersonReturningSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

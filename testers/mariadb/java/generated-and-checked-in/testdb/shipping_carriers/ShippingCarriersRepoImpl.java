@@ -25,27 +25,25 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
   @Override
   public DeleteBuilder<ShippingCarriersFields, ShippingCarriersRow> delete() {
     return DeleteBuilder.of(
-        "`shipping_carriers`", ShippingCarriersFields.structure(), Dialect.MARIADB);
+        "`shipping_carriers`", ShippingCarriersFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(ShippingCarriersId carrierId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `shipping_carriers` where `carrier_id` = "),
-                Fragment.encode(ShippingCarriersId.pgType, carrierId),
+                Fragment.encode(ShippingCarriersId.dbType, carrierId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(ShippingCarriersId[] carrierIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : carrierIds) {
-      fragments.add(Fragment.encode(ShippingCarriersId.pgType, id));
+      fragments.add(Fragment.encode(ShippingCarriersId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -55,7 +53,6 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ShippingCarriersRow insert(ShippingCarriersRow unsaved, Connection c) {
@@ -70,7 +67,7 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar.opt(), unsaved.trackingUrlTemplate()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.apiConfig()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.apiConfig()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.bool, unsaved.isActive()),
             Fragment.lit(
@@ -80,7 +77,6 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
         .updateReturning(ShippingCarriersRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ShippingCarriersRow insert(ShippingCarriersRowUnsaved unsaved, Connection c) {
@@ -109,7 +105,7 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
             value -> {
               columns.add(Fragment.lit("`api_config`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(MariaTypes.json.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -134,17 +130,15 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
     ;
     return q.updateReturning(ShippingCarriersRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<ShippingCarriersFields, ShippingCarriersRow> select() {
     return SelectBuilder.of(
         "`shipping_carriers`",
-        ShippingCarriersFields.structure(),
+        ShippingCarriersFields.structure,
         ShippingCarriersRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<ShippingCarriersRow> selectAll(Connection c) {
@@ -156,7 +150,6 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
         .query(ShippingCarriersRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<ShippingCarriersRow> selectById(ShippingCarriersId carrierId, Connection c) {
@@ -166,18 +159,17 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
                     + " `is_active`\n"
                     + "from `shipping_carriers`\n"
                     + "where `carrier_id` = "),
-            Fragment.encode(ShippingCarriersId.pgType, carrierId),
+            Fragment.encode(ShippingCarriersId.dbType, carrierId),
             Fragment.lit(""))
         .query(ShippingCarriersRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ShippingCarriersRow> selectByIds(ShippingCarriersId[] carrierIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : carrierIds) {
-      fragments.add(Fragment.encode(ShippingCarriersId.pgType, id));
+      fragments.add(Fragment.encode(ShippingCarriersId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -189,7 +181,6 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
         .query(ShippingCarriersRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<ShippingCarriersId, ShippingCarriersRow> selectByIdsTracked(
@@ -199,7 +190,6 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
     selectByIds(carrierIds, c).forEach(row -> ret.put(row.carrierId(), row));
     return ret;
   }
-  ;
 
   @Override
   public Optional<ShippingCarriersRow> selectByUniqueCode(String code, Connection c) {
@@ -214,17 +204,15 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
         .query(ShippingCarriersRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<ShippingCarriersFields, ShippingCarriersRow> update() {
     return UpdateBuilder.of(
         "`shipping_carriers`",
-        ShippingCarriersFields.structure(),
+        ShippingCarriersFields.structure,
         ShippingCarriersRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(ShippingCarriersRow row, Connection c) {
@@ -238,32 +226,33 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
                 Fragment.lit(",\n`tracking_url_template` = "),
                 Fragment.encode(MariaTypes.varchar.opt(), row.trackingUrlTemplate()),
                 Fragment.lit(",\n`api_config` = "),
-                Fragment.encode(MariaTypes.longtext.opt(), row.apiConfig()),
+                Fragment.encode(MariaTypes.json.opt(), row.apiConfig()),
                 Fragment.lit(",\n`is_active` = "),
                 Fragment.encode(MariaTypes.bool, row.isActive()),
                 Fragment.lit("\nwhere `carrier_id` = "),
-                Fragment.encode(ShippingCarriersId.pgType, carrierId),
+                Fragment.encode(ShippingCarriersId.dbType, carrierId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public ShippingCarriersRow upsert(ShippingCarriersRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `shipping_carriers`(`code`, `name`, `tracking_url_template`,"
-                    + " `api_config`, `is_active`)\n"
+                "INSERT INTO `shipping_carriers`(`carrier_id`, `code`, `name`,"
+                    + " `tracking_url_template`, `api_config`, `is_active`)\n"
                     + "VALUES ("),
+            Fragment.encode(ShippingCarriersId.dbType, unsaved.carrierId()),
+            Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.code()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.name()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar.opt(), unsaved.trackingUrlTemplate()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.apiConfig()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.apiConfig()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.bool, unsaved.isActive()),
             Fragment.lit(
@@ -278,7 +267,6 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
         .updateReturning(ShippingCarriersRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ShippingCarriersRow> upsertBatch(
@@ -298,5 +286,4 @@ public class ShippingCarriersRepoImpl implements ShippingCarriersRepo {
         .updateReturningEach(ShippingCarriersRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

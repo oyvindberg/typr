@@ -7,6 +7,7 @@ package testdb.v_inventory_status
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple14
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -83,8 +84,36 @@ data class VInventoryStatusViewRow(
     * Points to [testdb.inventory.InventoryRow.lastCountedAt]
     */
   @JsonProperty("last_counted_at") val lastCountedAt: LocalDateTime?
-) {
+) : Tuple14<ProductsId, String, String, WarehousesId, String, String, Int, Int, Int, Long, Int, String, String?, LocalDateTime?> {
+  override fun _1(): ProductsId = productId
+
+  override fun _10(): Long = available
+
+  override fun _11(): Int = reorderPoint
+
+  override fun _12(): String = stockStatus
+
+  override fun _13(): String? = binLocation
+
+  override fun _14(): LocalDateTime? = lastCountedAt
+
+  override fun _2(): String = sku
+
+  override fun _3(): String = productName
+
+  override fun _4(): WarehousesId = warehouseId
+
+  override fun _5(): String = warehouseCode
+
+  override fun _6(): String = warehouseName
+
+  override fun _7(): Int = quantityOnHand
+
+  override fun _8(): Int = quantityReserved
+
+  override fun _9(): Int = quantityOnOrder
+
   companion object {
-    val _rowParser: RowParser<VInventoryStatusViewRow> = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, MariaTypes.varchar, WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.bigint, KotlinDbTypes.MariaTypes.int_, MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13 -> VInventoryStatusViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.productName, row.warehouseId, row.warehouseCode, row.warehouseName, row.quantityOnHand, row.quantityReserved, row.quantityOnOrder, row.available, row.reorderPoint, row.stockStatus, row.binLocation, row.lastCountedAt) })
+    val _rowParser: RowParser<VInventoryStatusViewRow> = RowParsers.of(ProductsId.dbType, MariaTypes.varchar, MariaTypes.varchar, WarehousesId.dbType, MariaTypes.char_, MariaTypes.varchar, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.int_, KotlinDbTypes.MariaTypes.bigint, KotlinDbTypes.MariaTypes.int_, MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13 -> VInventoryStatusViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.productName, row.warehouseId, row.warehouseCode, row.warehouseName, row.quantityOnHand, row.quantityReserved, row.quantityOnOrder, row.available, row.reorderPoint, row.stockStatus, row.binLocation, row.lastCountedAt) })
   }
 }

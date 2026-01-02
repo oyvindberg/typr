@@ -9,6 +9,7 @@ import adventureworks.customtypes.Defaulted
 import adventureworks.public.Name
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import java.time.LocalDateTime
@@ -28,7 +29,15 @@ data class DepartmentRow(
   val groupname: Name,
   /** Default: now() */
   val modifieddate: LocalDateTime
-) {
+) : Tuple4<DepartmentId, Name, Name, LocalDateTime> {
+  override fun _1(): DepartmentId = departmentid
+
+  override fun _2(): Name = name
+
+  override fun _3(): Name = groupname
+
+  override fun _4(): LocalDateTime = modifieddate
+
   fun id(): DepartmentId = departmentid
 
   fun toUnsavedRow(
@@ -37,7 +46,7 @@ data class DepartmentRow(
   ): DepartmentRowUnsaved = DepartmentRowUnsaved(name, groupname, departmentid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<DepartmentRow> = RowParsers.of(DepartmentId.pgType, Name.pgType, Name.pgType, PgTypes.timestamp, { t0, t1, t2, t3 -> DepartmentRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.departmentid, row.name, row.groupname, row.modifieddate) })
+    val _rowParser: RowParser<DepartmentRow> = RowParsers.of(DepartmentId.dbType, Name.dbType, Name.dbType, PgTypes.timestamp, { t0, t1, t2, t3 -> DepartmentRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.departmentid, row.name, row.groupname, row.modifieddate) })
 
     val pgText: PgText<DepartmentRow> =
       PgText.from(_rowParser.underlying)

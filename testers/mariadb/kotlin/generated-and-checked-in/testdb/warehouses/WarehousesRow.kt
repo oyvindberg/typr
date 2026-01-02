@@ -7,6 +7,7 @@ package testdb.warehouses
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple10
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -51,7 +52,27 @@ data class WarehousesRow(
     * Default: NULL
     */
   @JsonProperty("contact_phone") val contactPhone: String?
-) {
+) : Tuple10<WarehousesId, String, String, String, Point, Polygon?, String, Boolean, String?, String?> {
+  override fun _1(): WarehousesId = warehouseId
+
+  override fun _10(): String? = contactPhone
+
+  override fun _2(): String = code
+
+  override fun _3(): String = name
+
+  override fun _4(): String = address
+
+  override fun _5(): Point = location
+
+  override fun _6(): Polygon? = serviceArea
+
+  override fun _7(): String = timezone
+
+  override fun _8(): Boolean = isActive
+
+  override fun _9(): String? = contactEmail
+
   fun id(): WarehousesId = warehouseId
 
   fun toUnsavedRow(
@@ -63,6 +84,6 @@ data class WarehousesRow(
   ): WarehousesRowUnsaved = WarehousesRowUnsaved(code, name, address, location, serviceArea, timezone, isActive, contactEmail, contactPhone)
 
   companion object {
-    val _rowParser: RowParser<WarehousesRow> = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.point, MariaTypes.polygon.nullable(), MariaTypes.varchar, KotlinDbTypes.MariaTypes.bool, MariaTypes.varchar.nullable(), MariaTypes.varchar.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> WarehousesRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.warehouseId, row.code, row.name, row.address, row.location, row.serviceArea, row.timezone, row.isActive, row.contactEmail, row.contactPhone) })
+    val _rowParser: RowParser<WarehousesRow> = RowParsers.of(WarehousesId.dbType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.point, MariaTypes.polygon.nullable(), MariaTypes.varchar, KotlinDbTypes.MariaTypes.bool, MariaTypes.varchar.nullable(), MariaTypes.varchar.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> WarehousesRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.warehouseId, row.code, row.name, row.address, row.location, row.serviceArea, row.timezone, row.isActive, row.contactEmail, row.contactPhone) })
   }
 }

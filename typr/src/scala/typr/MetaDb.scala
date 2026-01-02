@@ -11,13 +11,23 @@ import typr.internal.{Lazy, TypeMapperDb}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+/** Named DuckDB STRUCT type extracted from columns.
+  *
+  * @param name
+  *   Generated name for the struct (e.g., "employee_contact_info" from table.column)
+  * @param structType
+  *   The underlying StructType with field definitions
+  */
+case class DuckDbNamedStruct(name: String, structType: db.DuckDbType.StructType)
+
 case class MetaDb(
     dbType: DbType,
     relations: Map[db.RelationName, Lazy[db.Relation]],
     enums: List[db.StringEnum],
     domains: List[db.Domain],
     oracleObjectTypes: Map[String, db.OracleType.ObjectType] = Map.empty,
-    oracleCollectionTypes: Map[String, db.OracleType] = Map.empty
+    oracleCollectionTypes: Map[String, db.OracleType] = Map.empty,
+    duckDbStructTypes: List[DuckDbNamedStruct] = Nil
 ) {
   val typeMapperDb: TypeMapperDb = dbType match {
     case DbType.PostgreSQL => PgTypeMapperDb(enums, domains)
@@ -36,6 +46,50 @@ object MetaDb {
 
   type AnalyzedView = PgMetaDb.AnalyzedView
   val AnalyzedView = PgMetaDb.AnalyzedView
+
+  /** Extract named STRUCT types from all columns in relations.
+    *
+    * STRUCT types are anonymous in column definitions, so we generate names based on table+column. Names use Naming.titleCase for consistency with other generated types.
+    *
+    * The extracted structs are stored separately and used during type mapping - column types remain unchanged (no rewriting).
+    */
+  def extractDuckDbStructTypes(relations: Map[db.RelationName, Lazy[db.Relation]]): List[DuckDbNamedStruct] = {
+    val structs = for {
+      (relName, lazyRel) <- relations.toList
+      rel <- lazyRel.get.toList
+      table <- (rel match {
+        case t: db.Table => Some(t)
+        case _           => None
+      }).toList
+      col <- table.cols.toList
+      structType <- extractStructType(col.tpe).toList
+    } yield {
+      // Generate name from table + column using Naming.titleCase for consistency
+      val name = Naming.titleCase(Array(relName.name, col.parsedName.originalName.value))
+      DuckDbNamedStruct(name, structType)
+    }
+    // Deduplicate by struct signature (fields) - compatible with Scala 2.12
+    structs
+      .groupBy(s => s.structType.fields.map { case (n, t) => (n, t.toString) })
+      .values
+      .flatMap(_.headOption)
+      .toList
+  }
+
+  /** Recursively extract StructType from a db.Type (handles nested structs in lists/maps) */
+  private def extractStructType(tpe: db.Type): Option[db.DuckDbType.StructType] = tpe match {
+    case s: db.DuckDbType.StructType   => Some(s)
+    case db.DuckDbType.ListType(inner) => extractStructType(inner)
+    case db.DuckDbType.MapType(_, v)   => extractStructType(v)
+    case _                             => None
+  }
+
+  /** Build a lookup map from StructType to its generated name.
+    *
+    * Used during type mapping to resolve anonymous StructTypes to their generated type names.
+    */
+  def buildStructLookup(structs: List[DuckDbNamedStruct]): Map[db.DuckDbType.StructType, String] =
+    structs.map(ns => ns.structType -> ns.name).toMap
 
   /** Load metadata from database, dispatching to the appropriate implementation based on database type */
   def fromDb(logger: TypoLogger, ds: TypoDataSource, viewSelector: Selector, schemaMode: SchemaMode, externalTools: ExternalTools)(implicit ec: ExecutionContext): Future[MetaDb] =

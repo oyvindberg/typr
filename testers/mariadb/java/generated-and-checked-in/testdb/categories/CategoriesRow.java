@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple9;
+import dev.typr.foundations.data.Json;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
 
@@ -31,7 +33,17 @@ public record CategoriesRow(
     /** Default: 1 */
     @JsonProperty("is_visible") Boolean isVisible,
     /** Default: NULL */
-    Optional<String> metadata) {
+    Optional<Json> metadata)
+    implements Tuple9<
+        CategoriesId,
+        Optional<CategoriesId>,
+        String,
+        String,
+        Optional<String>,
+        Optional<String>,
+        Short,
+        Boolean,
+        Optional<Json>> {
   /** AUTO_INCREMENT */
   public CategoriesRow withCategoryId(CategoriesId categoryId) {
     return new CategoriesRow(
@@ -89,7 +101,7 @@ public record CategoriesRow(
   ;
 
   /** Default: NULL */
-  public CategoriesRow withMetadata(Optional<String> metadata) {
+  public CategoriesRow withMetadata(Optional<Json> metadata) {
     return new CategoriesRow(
         categoryId, parentId, name, slug, description, imageUrl, sortOrder, isVisible, metadata);
   }
@@ -97,15 +109,15 @@ public record CategoriesRow(
 
   public static RowParser<CategoriesRow> _rowParser =
       RowParsers.of(
-          CategoriesId.pgType,
-          CategoriesId.pgType.opt(),
+          CategoriesId.dbType,
+          CategoriesId.dbType.opt(),
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.mediumtext.opt(),
           MariaTypes.varchar.opt(),
           MariaTypes.smallint,
           MariaTypes.bool,
-          MariaTypes.longtext.opt(),
+          MariaTypes.json.opt(),
           CategoriesRow::new,
           row ->
               new Object[] {
@@ -121,6 +133,60 @@ public record CategoriesRow(
               });
   ;
 
+  @Override
+  public CategoriesId _1() {
+    return categoryId;
+  }
+  ;
+
+  @Override
+  public Optional<CategoriesId> _2() {
+    return parentId;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return name;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return slug;
+  }
+  ;
+
+  @Override
+  public Optional<String> _5() {
+    return description;
+  }
+  ;
+
+  @Override
+  public Optional<String> _6() {
+    return imageUrl;
+  }
+  ;
+
+  @Override
+  public Short _7() {
+    return sortOrder;
+  }
+  ;
+
+  @Override
+  public Boolean _8() {
+    return isVisible;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _9() {
+    return metadata;
+  }
+  ;
+
   public CategoriesId id() {
     return categoryId;
   }
@@ -132,7 +198,7 @@ public record CategoriesRow(
       Defaulted<Optional<String>> imageUrl,
       Defaulted<Short> sortOrder,
       Defaulted<Boolean> isVisible,
-      Defaulted<Optional<String>> metadata) {
+      Defaulted<Optional<Json>> metadata) {
     return new CategoriesRowUnsaved(
         name, slug, parentId, description, imageUrl, sortOrder, isVisible, metadata);
   }

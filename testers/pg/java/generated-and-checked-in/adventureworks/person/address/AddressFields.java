@@ -10,198 +10,218 @@ import adventureworks.person.stateprovince.StateprovinceId;
 import adventureworks.person.stateprovince.StateprovinceRow;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr9;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface AddressFields extends FieldsExpr<AddressRow> {
-  record Impl(List<Path> _path)
-      implements AddressFields, RelationStructure<AddressFields, AddressRow> {
-    @Override
-    public IdField<AddressId, AddressRow> addressid() {
-      return new IdField<AddressId, AddressRow>(
-          _path,
-          "addressid",
-          AddressRow::addressid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withAddressid(value),
-          AddressId.pgType);
-    }
-    ;
+public class AddressFields
+    implements TupleExpr9<
+            AddressId,
+            String, /* max 60 chars */
+            String,
+            String,
+            StateprovinceId,
+            String,
+            byte[],
+            UUID,
+            LocalDateTime>,
+        RelationStructure<AddressFields, AddressRow>,
+        FieldsBase<AddressRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, AddressRow> addressline1() {
-      return new Field<String, AddressRow>(
-          _path,
-          "addressline1",
-          AddressRow::addressline1,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withAddressline1(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public OptField<String, AddressRow> addressline2() {
-      return new OptField<String, AddressRow>(
-          _path,
-          "addressline2",
-          AddressRow::addressline2,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withAddressline2(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<String, AddressRow> city() {
-      return new Field<String, AddressRow>(
-          _path,
-          "city",
-          AddressRow::city,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCity(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<StateprovinceId, AddressRow> stateprovinceid() {
-      return new Field<StateprovinceId, AddressRow>(
-          _path,
-          "stateprovinceid",
-          AddressRow::stateprovinceid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withStateprovinceid(value),
-          StateprovinceId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<String, AddressRow> postalcode() {
-      return new Field<String, AddressRow>(
-          _path,
-          "postalcode",
-          AddressRow::postalcode,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPostalcode(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public OptField<byte[], AddressRow> spatiallocation() {
-      return new OptField<byte[], AddressRow>(
-          _path,
-          "spatiallocation",
-          AddressRow::spatiallocation,
-          Optional.empty(),
-          Optional.of("bytea"),
-          (row, value) -> row.withSpatiallocation(value),
-          PgTypes.bytea);
-    }
-    ;
-
-    @Override
-    public Field<UUID, AddressRow> rowguid() {
-      return new Field<UUID, AddressRow>(
-          _path,
-          "rowguid",
-          AddressRow::rowguid,
-          Optional.empty(),
-          Optional.of("uuid"),
-          (row, value) -> row.withRowguid(value),
-          PgTypes.uuid);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, AddressRow> modifieddate() {
-      return new Field<LocalDateTime, AddressRow>(
-          _path,
-          "modifieddate",
-          AddressRow::modifieddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withModifieddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, AddressRow>> columns() {
-      return java.util.List.of(
-          this.addressid(),
-          this.addressline1(),
-          this.addressline2(),
-          this.city(),
-          this.stateprovinceid(),
-          this.postalcode(),
-          this.spatiallocation(),
-          this.rowguid(),
-          this.modifieddate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<AddressFields, AddressRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public AddressFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static AddressFields structure = new AddressFields(java.util.Collections.emptyList());
+
+  public IdField<AddressId, AddressRow> addressid() {
+    return new IdField<AddressId, AddressRow>(
+        _path,
+        "addressid",
+        AddressRow::addressid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withAddressid(value),
+        AddressId.dbType);
   }
-  ;
 
-  IdField<AddressId, AddressRow> addressid();
+  public Field<String, AddressRow> addressline1() {
+    return new Field<String, AddressRow>(
+        _path,
+        "addressline1",
+        AddressRow::addressline1,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withAddressline1(value),
+        PgTypes.text);
+  }
 
-  Field<String, AddressRow> addressline1();
+  public OptField<String, AddressRow> addressline2() {
+    return new OptField<String, AddressRow>(
+        _path,
+        "addressline2",
+        AddressRow::addressline2,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withAddressline2(value),
+        PgTypes.text);
+  }
 
-  OptField</* max 60 chars */ String, AddressRow> addressline2();
+  public Field<String, AddressRow> city() {
+    return new Field<String, AddressRow>(
+        _path,
+        "city",
+        AddressRow::city,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCity(value),
+        PgTypes.text);
+  }
 
-  Field<String, AddressRow> city();
+  public Field<StateprovinceId, AddressRow> stateprovinceid() {
+    return new Field<StateprovinceId, AddressRow>(
+        _path,
+        "stateprovinceid",
+        AddressRow::stateprovinceid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withStateprovinceid(value),
+        StateprovinceId.dbType);
+  }
 
-  Field<StateprovinceId, AddressRow> stateprovinceid();
+  public Field<String, AddressRow> postalcode() {
+    return new Field<String, AddressRow>(
+        _path,
+        "postalcode",
+        AddressRow::postalcode,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPostalcode(value),
+        PgTypes.text);
+  }
 
-  Field<String, AddressRow> postalcode();
+  public OptField<byte[], AddressRow> spatiallocation() {
+    return new OptField<byte[], AddressRow>(
+        _path,
+        "spatiallocation",
+        AddressRow::spatiallocation,
+        Optional.empty(),
+        Optional.of("bytea"),
+        (row, value) -> row.withSpatiallocation(value),
+        PgTypes.bytea);
+  }
 
-  OptField<byte[], AddressRow> spatiallocation();
+  public Field<UUID, AddressRow> rowguid() {
+    return new Field<UUID, AddressRow>(
+        _path,
+        "rowguid",
+        AddressRow::rowguid,
+        Optional.empty(),
+        Optional.of("uuid"),
+        (row, value) -> row.withRowguid(value),
+        PgTypes.uuid);
+  }
 
-  Field<UUID, AddressRow> rowguid();
+  public Field<LocalDateTime, AddressRow> modifieddate() {
+    return new Field<LocalDateTime, AddressRow>(
+        _path,
+        "modifieddate",
+        AddressRow::modifieddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withModifieddate(value),
+        PgTypes.timestamp);
+  }
 
-  Field<LocalDateTime, AddressRow> modifieddate();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<StateprovinceFields, StateprovinceRow> fkStateprovince() {
+  public ForeignKey<StateprovinceFields, StateprovinceRow> fkStateprovince() {
     return ForeignKey.<StateprovinceFields, StateprovinceRow>of(
             "person.FK_Address_StateProvince_StateProvinceID")
         .<StateprovinceId>withColumnPair(stateprovinceid(), StateprovinceFields::stateprovinceid);
   }
-  ;
 
   @Override
-  List<FieldLike<?, AddressRow>> columns();
+  public List<FieldLike<?, AddressRow>> columns() {
+    return java.util.List.of(
+        this.addressid(),
+        this.addressline1(),
+        this.addressline2(),
+        this.city(),
+        this.stateprovinceid(),
+        this.postalcode(),
+        this.spatiallocation(),
+        this.rowguid(),
+        this.modifieddate());
+  }
 
   @Override
-  default RowParser<AddressRow> rowParser() {
+  public RowParser<AddressRow> rowParser() {
     return AddressRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<AddressFields, AddressRow> withPaths(List<Path> _path) {
+    return new AddressFields(_path);
+  }
+
+  @Override
+  public SqlExpr<AddressId> _1() {
+    return addressid();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return addressline1();
+  }
+
+  @Override
+  public SqlExpr</* max 60 chars */ String> _3() {
+    return addressline2();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return city();
+  }
+
+  @Override
+  public SqlExpr<StateprovinceId> _5() {
+    return stateprovinceid();
+  }
+
+  @Override
+  public SqlExpr<String> _6() {
+    return postalcode();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _7() {
+    return spatiallocation();
+  }
+
+  @Override
+  public SqlExpr<UUID> _8() {
+    return rowguid();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _9() {
+    return modifieddate();
+  }
 }

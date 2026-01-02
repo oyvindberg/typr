@@ -7,51 +7,49 @@ package oracledb.products
 
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr5
 import kotlin.collections.List
 import oracledb.MoneyT
 import oracledb.TagVarrayT
 
-interface ProductsFields : FieldsExpr<ProductsRow> {
-  abstract override fun columns(): List<FieldLike<*, ProductsRow>>
+data class ProductsFields(val _path: List<Path>) : TupleExpr5<ProductsId, String, String, MoneyT, TagVarrayT>, RelationStructure<ProductsFields, ProductsRow>, FieldsBase<ProductsRow> {
+  override fun _1(): SqlExpr<ProductsId> = productId()
 
-  abstract fun name(): Field<String, ProductsRow>
+  override fun _2(): SqlExpr<String> = sku()
 
-  abstract fun price(): Field<MoneyT, ProductsRow>
+  override fun _3(): SqlExpr<String> = name()
 
-  abstract fun productId(): IdField<ProductsId, ProductsRow>
+  override fun _4(): SqlExpr<MoneyT> = price()
+
+  override fun _5(): SqlExpr<TagVarrayT> = tags()
+
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, ProductsRow>> = listOf(this.productId().underlying, this.sku().underlying, this.name().underlying, this.price().underlying, this.tags().underlying)
+
+  fun name(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "NAME", ProductsRow::name, null, null, { row, value -> row.copy(name = value) }, OracleTypes.varchar2)
+
+  fun price(): Field<MoneyT, ProductsRow> = Field<MoneyT, ProductsRow>(_path, "PRICE", ProductsRow::price, null, null, { row, value -> row.copy(price = value) }, MoneyT.oracleType)
+
+  fun productId(): IdField<ProductsId, ProductsRow> = IdField<ProductsId, ProductsRow>(_path, "PRODUCT_ID", ProductsRow::productId, null, null, { row, value -> row.copy(productId = value) }, ProductsId.oracleType)
 
   override fun rowParser(): RowParser<ProductsRow> = ProductsRow._rowParser.underlying
 
-  abstract fun sku(): Field<String, ProductsRow>
+  fun sku(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "SKU", ProductsRow::sku, null, null, { row, value -> row.copy(sku = value) }, OracleTypes.varchar2)
 
-  abstract fun tags(): OptField<TagVarrayT, ProductsRow>
+  fun tags(): OptField<TagVarrayT, ProductsRow> = OptField<TagVarrayT, ProductsRow>(_path, "TAGS", ProductsRow::tags, null, null, { row, value -> row.copy(tags = value) }, TagVarrayT.oracleType)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<ProductsFields, ProductsRow> = ProductsFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : ProductsFields, RelationStructure<ProductsFields, ProductsRow> {
-      override fun productId(): IdField<ProductsId, ProductsRow> = IdField<ProductsId, ProductsRow>(_path, "PRODUCT_ID", ProductsRow::productId, null, null, { row, value -> row.copy(productId = value) }, ProductsId.oracleType)
-
-      override fun sku(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "SKU", ProductsRow::sku, null, null, { row, value -> row.copy(sku = value) }, OracleTypes.varchar2)
-
-      override fun name(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "NAME", ProductsRow::name, null, null, { row, value -> row.copy(name = value) }, OracleTypes.varchar2)
-
-      override fun price(): Field<MoneyT, ProductsRow> = Field<MoneyT, ProductsRow>(_path, "PRICE", ProductsRow::price, null, null, { row, value -> row.copy(price = value) }, MoneyT.oracleType)
-
-      override fun tags(): OptField<TagVarrayT, ProductsRow> = OptField<TagVarrayT, ProductsRow>(_path, "TAGS", ProductsRow::tags, null, null, { row, value -> row.copy(tags = value) }, TagVarrayT.oracleType)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, ProductsRow>> = listOf(this.productId().underlying, this.sku().underlying, this.name().underlying, this.price().underlying, this.tags().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<ProductsFields, ProductsRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: ProductsFields = ProductsFields(emptyList<Path>())
   }
 }

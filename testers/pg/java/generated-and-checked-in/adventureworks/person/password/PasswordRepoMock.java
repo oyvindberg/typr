@@ -48,7 +48,7 @@ public record PasswordRepoMock(
   @Override
   public DeleteBuilder<PasswordFields, PasswordRow> delete() {
     return new DeleteBuilderMock<>(
-        PasswordFields.structure(),
+        PasswordFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.businessentityid(),
@@ -126,7 +126,7 @@ public record PasswordRepoMock(
   @Override
   public SelectBuilder<PasswordFields, PasswordRow> select() {
     return new SelectBuilderMock<>(
-        PasswordFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        PasswordFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -169,7 +169,7 @@ public record PasswordRepoMock(
   @Override
   public UpdateBuilder<PasswordFields, PasswordRow> update() {
     return new UpdateBuilderMock<>(
-        PasswordFields.structure(),
+        PasswordFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

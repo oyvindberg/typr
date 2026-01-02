@@ -7,70 +7,67 @@ package adventureworks.person.businessentity
 
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
+import dev.typr.foundations.scala.TupleExpr3
 import java.time.LocalDateTime
 import java.util.UUID
 
-trait BusinessentityFields extends FieldsExpr0[BusinessentityRow] {
-  def businessentityid: IdField[BusinessentityId, BusinessentityRow]
+class BusinessentityFields(val `_path`: java.util.List[Path]) extends TupleExpr3[BusinessentityId, UUID, LocalDateTime] with RelationStructure[BusinessentityFields, BusinessentityRow]  with FieldsBase[BusinessentityRow] {
+  def businessentityid: IdField[BusinessentityId, BusinessentityRow] = {
+    new IdField[BusinessentityId, BusinessentityRow](
+      _path,
+      "businessentityid",
+      _.businessentityid,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(businessentityid = value),
+      BusinessentityId.dbType
+    )
+  }
 
-  def rowguid: Field[UUID, BusinessentityRow]
+  def rowguid: Field[UUID, BusinessentityRow] = {
+    new Field[UUID, BusinessentityRow](
+      _path,
+      "rowguid",
+      _.rowguid,
+      None,
+      Some("uuid"),
+      (row, value) => row.copy(rowguid = value),
+      PgTypes.uuid
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, BusinessentityRow]
+  def modifieddate: Field[LocalDateTime, BusinessentityRow] = {
+    new Field[LocalDateTime, BusinessentityRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      None,
+      Some("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, BusinessentityRow]]
+  override def columns: java.util.List[FieldLike[?, BusinessentityRow]] = java.util.List.of(this.businessentityid.underlying, this.rowguid.underlying, this.modifieddate.underlying)
 
   override def rowParser: RowParser[BusinessentityRow] = BusinessentityRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[BusinessentityFields, BusinessentityRow] = new BusinessentityFields(`_path`)
+
+  override def `_1`: SqlExpr[BusinessentityId] = businessentityid
+
+  override def `_2`: SqlExpr[UUID] = rowguid
+
+  override def `_3`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object BusinessentityFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends BusinessentityFields with RelationStructure[BusinessentityFields, BusinessentityRow] {
-
-    override def businessentityid: IdField[BusinessentityId, BusinessentityRow] = {
-      new IdField[BusinessentityId, BusinessentityRow](
-        _path,
-        "businessentityid",
-        _.businessentityid,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(businessentityid = value),
-        BusinessentityId.pgType
-      )
-    }
-
-    override def rowguid: Field[UUID, BusinessentityRow] = {
-      new Field[UUID, BusinessentityRow](
-        _path,
-        "rowguid",
-        _.rowguid,
-        None,
-        Some("uuid"),
-        (row, value) => row.copy(rowguid = value),
-        PgTypes.uuid
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, BusinessentityRow] = {
-      new Field[LocalDateTime, BusinessentityRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        None,
-        Some("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, BusinessentityRow]] = java.util.List.of(this.businessentityid.underlying, this.rowguid.underlying, this.modifieddate.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[BusinessentityFields, BusinessentityRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: BusinessentityFields = new BusinessentityFields(java.util.Collections.emptyList())
 }

@@ -21,12 +21,12 @@ public record OrderNumber(@JsonValue String value) {
   public static Bijection<OrderNumber, String> bijection =
       Bijection.of(OrderNumber::value, OrderNumber::new);
 
-  public static PgType<OrderNumber> pgType =
+  public static PgType<OrderNumber> dbType =
       PgTypes.text
           .bimap(OrderNumber::new, OrderNumber::value)
           .renamed("\"public\".\"OrderNumber\"");
 
-  public static PgType<OrderNumber[]> pgTypeArray =
+  public static PgType<OrderNumber[]> dbTypeArray =
       PgTypes.textArray
           .bimap(
               xs -> arrayMap.map(xs, OrderNumber::new, OrderNumber.class),

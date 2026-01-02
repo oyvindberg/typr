@@ -7,146 +7,144 @@ package testdb.product_images
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr8
 import testdb.products.ProductsFields
 import testdb.products.ProductsId
 import testdb.products.ProductsRow
 
-trait ProductImagesFields extends FieldsExpr0[ProductImagesRow] {
-  def imageId: IdField[ProductImagesId, ProductImagesRow]
+class ProductImagesFields(val `_path`: java.util.List[Path]) extends TupleExpr8[ProductImagesId, ProductsId, String, String, String, Uint1, Boolean, Array[Byte]] with RelationStructure[ProductImagesFields, ProductImagesRow]  with FieldsBase[ProductImagesRow] {
+  def imageId: IdField[ProductImagesId, ProductImagesRow] = {
+    new IdField[ProductImagesId, ProductImagesRow](
+      _path,
+      "image_id",
+      _.imageId,
+      None,
+      None,
+      (row, value) => row.copy(imageId = value),
+      ProductImagesId.dbType
+    )
+  }
 
-  def productId: Field[ProductsId, ProductImagesRow]
+  def productId: Field[ProductsId, ProductImagesRow] = {
+    new Field[ProductsId, ProductImagesRow](
+      _path,
+      "product_id",
+      _.productId,
+      None,
+      None,
+      (row, value) => row.copy(productId = value),
+      ProductsId.dbType
+    )
+  }
 
-  def imageUrl: Field[String, ProductImagesRow]
+  def imageUrl: Field[String, ProductImagesRow] = {
+    new Field[String, ProductImagesRow](
+      _path,
+      "image_url",
+      _.imageUrl,
+      None,
+      None,
+      (row, value) => row.copy(imageUrl = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def thumbnailUrl: OptField[String, ProductImagesRow]
+  def thumbnailUrl: OptField[String, ProductImagesRow] = {
+    new OptField[String, ProductImagesRow](
+      _path,
+      "thumbnail_url",
+      _.thumbnailUrl,
+      None,
+      None,
+      (row, value) => row.copy(thumbnailUrl = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def altText: OptField[String, ProductImagesRow]
+  def altText: OptField[String, ProductImagesRow] = {
+    new OptField[String, ProductImagesRow](
+      _path,
+      "alt_text",
+      _.altText,
+      None,
+      None,
+      (row, value) => row.copy(altText = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def sortOrder: Field[Short, ProductImagesRow]
+  def sortOrder: Field[Uint1, ProductImagesRow] = {
+    new Field[Uint1, ProductImagesRow](
+      _path,
+      "sort_order",
+      _.sortOrder,
+      None,
+      None,
+      (row, value) => row.copy(sortOrder = value),
+      MariaTypes.tinyintUnsigned
+    )
+  }
 
-  def isPrimary: Field[Boolean, ProductImagesRow]
+  def isPrimary: Field[Boolean, ProductImagesRow] = {
+    new Field[Boolean, ProductImagesRow](
+      _path,
+      "is_primary",
+      _.isPrimary,
+      None,
+      None,
+      (row, value) => row.copy(isPrimary = value),
+      ScalaDbTypes.MariaTypes.bool
+    )
+  }
 
-  def imageData: OptField[Array[Byte], ProductImagesRow]
+  def imageData: OptField[Array[Byte], ProductImagesRow] = {
+    new OptField[Array[Byte], ProductImagesRow](
+      _path,
+      "image_data",
+      _.imageData,
+      None,
+      None,
+      (row, value) => row.copy(imageData = value),
+      MariaTypes.longblob
+    )
+  }
 
   def fkProducts: ForeignKey[ProductsFields, ProductsRow] = ForeignKey.of[ProductsFields, ProductsRow]("fk_pi_product").withColumnPair[ProductsId](productId, _.productId)
 
-  override def columns: java.util.List[FieldLike[?, ProductImagesRow]]
+  override def columns: java.util.List[FieldLike[?, ProductImagesRow]] = java.util.List.of(this.imageId.underlying, this.productId.underlying, this.imageUrl.underlying, this.thumbnailUrl.underlying, this.altText.underlying, this.sortOrder.underlying, this.isPrimary.underlying, this.imageData.underlying)
 
   override def rowParser: RowParser[ProductImagesRow] = ProductImagesRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductImagesFields, ProductImagesRow] = new ProductImagesFields(`_path`)
+
+  override def `_1`: SqlExpr[ProductImagesId] = imageId
+
+  override def `_2`: SqlExpr[ProductsId] = productId
+
+  override def `_3`: SqlExpr[String] = imageUrl
+
+  override def `_4`: SqlExpr[String] = thumbnailUrl
+
+  override def `_5`: SqlExpr[String] = altText
+
+  override def `_6`: SqlExpr[Uint1] = sortOrder
+
+  override def `_7`: SqlExpr[Boolean] = isPrimary
+
+  override def `_8`: SqlExpr[Array[Byte]] = imageData
 }
 
 object ProductImagesFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ProductImagesFields with RelationStructure[ProductImagesFields, ProductImagesRow] {
-
-    override def imageId: IdField[ProductImagesId, ProductImagesRow] = {
-      new IdField[ProductImagesId, ProductImagesRow](
-        _path,
-        "image_id",
-        _.imageId,
-        None,
-        None,
-        (row, value) => row.copy(imageId = value),
-        ProductImagesId.pgType
-      )
-    }
-
-    override def productId: Field[ProductsId, ProductImagesRow] = {
-      new Field[ProductsId, ProductImagesRow](
-        _path,
-        "product_id",
-        _.productId,
-        None,
-        None,
-        (row, value) => row.copy(productId = value),
-        ProductsId.pgType
-      )
-    }
-
-    override def imageUrl: Field[String, ProductImagesRow] = {
-      new Field[String, ProductImagesRow](
-        _path,
-        "image_url",
-        _.imageUrl,
-        None,
-        None,
-        (row, value) => row.copy(imageUrl = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def thumbnailUrl: OptField[String, ProductImagesRow] = {
-      new OptField[String, ProductImagesRow](
-        _path,
-        "thumbnail_url",
-        _.thumbnailUrl,
-        None,
-        None,
-        (row, value) => row.copy(thumbnailUrl = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def altText: OptField[String, ProductImagesRow] = {
-      new OptField[String, ProductImagesRow](
-        _path,
-        "alt_text",
-        _.altText,
-        None,
-        None,
-        (row, value) => row.copy(altText = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def sortOrder: Field[Short, ProductImagesRow] = {
-      new Field[Short, ProductImagesRow](
-        _path,
-        "sort_order",
-        _.sortOrder,
-        None,
-        None,
-        (row, value) => row.copy(sortOrder = value),
-        ScalaDbTypes.MariaTypes.tinyintUnsigned
-      )
-    }
-
-    override def isPrimary: Field[Boolean, ProductImagesRow] = {
-      new Field[Boolean, ProductImagesRow](
-        _path,
-        "is_primary",
-        _.isPrimary,
-        None,
-        None,
-        (row, value) => row.copy(isPrimary = value),
-        ScalaDbTypes.MariaTypes.bool
-      )
-    }
-
-    override def imageData: OptField[Array[Byte], ProductImagesRow] = {
-      new OptField[Array[Byte], ProductImagesRow](
-        _path,
-        "image_data",
-        _.imageData,
-        None,
-        None,
-        (row, value) => row.copy(imageData = value),
-        MariaTypes.longblob
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, ProductImagesRow]] = java.util.List.of(this.imageId.underlying, this.productId.underlying, this.imageUrl.underlying, this.thumbnailUrl.underlying, this.altText.underlying, this.sortOrder.underlying, this.isPrimary.underlying, this.imageData.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductImagesFields, ProductImagesRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: ProductImagesFields = new ProductImagesFields(java.util.Collections.emptyList())
 }

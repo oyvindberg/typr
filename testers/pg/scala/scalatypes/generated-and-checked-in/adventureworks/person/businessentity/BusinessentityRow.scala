@@ -8,6 +8,7 @@ package adventureworks.person.businessentity
 import adventureworks.customtypes.Defaulted
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple3
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import java.time.LocalDateTime
@@ -26,7 +27,7 @@ case class BusinessentityRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple3[BusinessentityId, UUID, LocalDateTime] {
   def id: BusinessentityId = businessentityid
 
   def toUnsavedRow(
@@ -34,10 +35,16 @@ case class BusinessentityRow(
     rowguid: Defaulted[UUID] = Defaulted.Provided(this.rowguid),
     modifieddate: Defaulted[LocalDateTime] = Defaulted.Provided(this.modifieddate)
   ): BusinessentityRowUnsaved = new BusinessentityRowUnsaved(businessentityid, rowguid, modifieddate)
+
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: UUID = rowguid
+
+  override def `_3`: LocalDateTime = modifieddate
 }
 
 object BusinessentityRow {
-  val `_rowParser`: RowParser[BusinessentityRow] = RowParsers.of(BusinessentityId.pgType, PgTypes.uuid, PgTypes.timestamp)(BusinessentityRow.apply)(row => Array[Any](row.businessentityid, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[BusinessentityRow] = RowParsers.of(BusinessentityId.dbType, PgTypes.uuid, PgTypes.timestamp)(BusinessentityRow.apply)(row => Array[Any](row.businessentityid, row.rowguid, row.modifieddate))
 
   given pgText: PgText[BusinessentityRow] = PgText.from(`_rowParser`.underlying)
 }

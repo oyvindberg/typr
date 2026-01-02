@@ -147,9 +147,7 @@ object OracleAdapter extends DbAdapter {
           case db.OracleType.SdoGeometry => code"$Types.varchar2" // Spatial types as strings for now
           case db.OracleType.SdoPoint    => code"$Types.varchar2"
           case db.OracleType.AnyData     => code"$Types.varchar2" // ANYDATA as string for now
-
-          case db.Unknown(sqlType) =>
-            sys.error(s"OracleAdapter.lookupByDbType: Cannot lookup for unknown type: $sqlType")
+          case db.Unknown(sqlType)       => code"$Types.unknown"
         }
       case _ =>
         sys.error(s"OracleAdapter.lookupByDbType: Cannot lookup MariaDB type in PostgreSQL adapter")
@@ -237,4 +235,14 @@ object OracleAdapter extends DbAdapter {
 
   def returningClause(columns: Code): Code =
     code"RETURNING $columns INTO ?"
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LAYER 5: Schema DDL
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  def dropSchemaDdl(schemaName: String, cascade: Boolean): String =
+    throw new UnsupportedOperationException("Oracle schemas are users - use database administration tools")
+
+  def createSchemaDdl(schemaName: String): String =
+    throw new UnsupportedOperationException("Oracle schemas are users - use database administration tools")
 }

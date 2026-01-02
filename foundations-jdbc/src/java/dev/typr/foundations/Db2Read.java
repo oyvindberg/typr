@@ -176,12 +176,12 @@ public sealed interface Db2Read<A> extends DbRead<A>
   // ==================== Special Types ====================
 
   // XML - DB2 supports XML natively
-  Db2Read<String> readXml =
+  Db2Read<dev.typr.foundations.data.Xml> readXml =
       of(
           (rs, idx) -> {
             java.sql.SQLXML sqlxml = rs.getSQLXML(idx);
             if (sqlxml == null) return null;
-            return sqlxml.getString();
+            return new dev.typr.foundations.data.Xml(sqlxml.getString());
           });
 
   // CLOB - Character Large Object

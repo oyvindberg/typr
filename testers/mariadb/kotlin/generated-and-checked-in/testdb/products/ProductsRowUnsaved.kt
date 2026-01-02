@@ -6,6 +6,7 @@
 package testdb.products
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.MariaSet
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -44,7 +45,7 @@ data class ProductsRowUnsaved(
   /** Default: NULL
     * length, width, height in cm
     */
-  @JsonProperty("dimensions_json") val dimensionsJson: Defaulted<String?> = UseDefault(),
+  @JsonProperty("dimensions_json") val dimensionsJson: Defaulted<Json?> = UseDefault(),
   /** Default: 'draft'
 
     */
@@ -60,11 +61,11 @@ data class ProductsRowUnsaved(
   /** Default: NULL
 
     */
-  val attributes: Defaulted<String?> = UseDefault(),
+  val attributes: Defaulted<Json?> = UseDefault(),
   /** Default: NULL
 
     */
-  @JsonProperty("seo_metadata") val seoMetadata: Defaulted<String?> = UseDefault(),
+  @JsonProperty("seo_metadata") val seoMetadata: Defaulted<Json?> = UseDefault(),
   /** Default: current_timestamp(6)
 
     */
@@ -84,12 +85,12 @@ data class ProductsRowUnsaved(
     fullDescriptionDefault: () -> String?,
     costPriceDefault: () -> BigDecimal?,
     weightKgDefault: () -> BigDecimal?,
-    dimensionsJsonDefault: () -> String?,
+    dimensionsJsonDefault: () -> Json?,
     statusDefault: () -> String,
     taxClassDefault: () -> String,
     tagsDefault: () -> MariaSet?,
-    attributesDefault: () -> String?,
-    seoMetadataDefault: () -> String?,
+    attributesDefault: () -> Json?,
+    seoMetadataDefault: () -> Json?,
     createdAtDefault: () -> LocalDateTime,
     updatedAtDefault: () -> LocalDateTime,
     publishedAtDefault: () -> LocalDateTime?,

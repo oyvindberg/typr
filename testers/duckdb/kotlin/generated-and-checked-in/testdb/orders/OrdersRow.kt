@@ -7,6 +7,7 @@ package testdb.orders
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -26,12 +27,22 @@ data class OrdersRow(
   @JsonProperty("total_amount") val totalAmount: BigDecimal?,
   /** Default: 'pending' */
   val status: String?
-) {
+) : Tuple5<OrdersId, Int, LocalDate, BigDecimal?, String?> {
+  override fun _1(): OrdersId = orderId
+
+  override fun _2(): Int = customerId
+
+  override fun _3(): LocalDate = orderDate
+
+  override fun _4(): BigDecimal? = totalAmount
+
+  override fun _5(): String? = status
+
   fun id(): OrdersId = orderId
 
   fun toUnsavedRow(
-    orderDate: Defaulted<LocalDate>,
-    status: Defaulted<String?>
+    orderDate: Defaulted<LocalDate> = Defaulted.Provided(this.orderDate),
+    status: Defaulted<String?> = Defaulted.Provided(this.status)
   ): OrdersRowUnsaved = OrdersRowUnsaved(orderId, customerId, totalAmount, orderDate, status)
 
   companion object {

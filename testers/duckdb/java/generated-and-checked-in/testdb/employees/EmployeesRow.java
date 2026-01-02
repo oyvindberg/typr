@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple7;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -23,7 +24,8 @@ public record EmployeesRow(
     @JsonProperty("emp_name") String empName,
     Optional<BigDecimal> salary,
     /** Default: current_date */
-    @JsonProperty("hire_date") LocalDate hireDate) {
+    @JsonProperty("hire_date") LocalDate hireDate)
+    implements Tuple7<Integer, String, String, String, String, Optional<BigDecimal>, LocalDate> {
   public EmployeesRow withEmpNumber(Integer empNumber) {
     return new EmployeesRow(empNumber, empSuffix, deptCode, deptRegion, empName, salary, hireDate);
   }
@@ -97,6 +99,48 @@ public record EmployeesRow(
         empName,
         salary,
         hireDate);
+  }
+  ;
+
+  @Override
+  public Integer _1() {
+    return empNumber;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return empSuffix;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return deptCode;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return deptRegion;
+  }
+  ;
+
+  @Override
+  public String _5() {
+    return empName;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _6() {
+    return salary;
+  }
+  ;
+
+  @Override
+  public LocalDate _7() {
+    return hireDate;
   }
   ;
 

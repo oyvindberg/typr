@@ -7,6 +7,7 @@ package oracledb.all_scalar_types
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -27,7 +28,21 @@ data class AllScalarTypesRow(
   @JsonProperty("COL_TIMESTAMP") val colTimestamp: LocalDateTime?,
   @JsonProperty("COL_CLOB") val colClob: String?,
   @JsonProperty("COL_NOT_NULL") val colNotNull: String
-) {
+) : Tuple7<AllScalarTypesId, String?, BigDecimal?, LocalDateTime?, LocalDateTime?, String?, String> {
+  override fun _1(): AllScalarTypesId = id
+
+  override fun _2(): String? = colVarchar2
+
+  override fun _3(): BigDecimal? = colNumber
+
+  override fun _4(): LocalDateTime? = colDate
+
+  override fun _5(): LocalDateTime? = colTimestamp
+
+  override fun _6(): String? = colClob
+
+  override fun _7(): String = colNotNull
+
   fun toUnsavedRow(id: Defaulted<AllScalarTypesId>): AllScalarTypesRowUnsaved = AllScalarTypesRowUnsaved(colVarchar2, colNumber, colDate, colTimestamp, colClob, colNotNull, id)
 
   companion object {

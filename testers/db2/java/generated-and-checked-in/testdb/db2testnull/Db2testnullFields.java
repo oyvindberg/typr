@@ -7,11 +7,14 @@ package testdb.db2testnull;
 
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.data.Xml;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr24;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,418 +22,468 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface Db2testnullFields extends FieldsExpr<Db2testnullRow> {
-  record Impl(List<Path> _path)
-      implements Db2testnullFields, RelationStructure<Db2testnullFields, Db2testnullRow> {
-    @Override
-    public OptField<Short, Db2testnullRow> smallintCol() {
-      return new OptField<Short, Db2testnullRow>(
-          _path,
-          "SMALLINT_COL",
-          Db2testnullRow::smallintCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withSmallintCol(value),
-          Db2Types.smallint);
-    }
-    ;
+public class Db2testnullFields
+    implements TupleExpr24<
+            Short,
+            Integer,
+            Long,
+            BigDecimal,
+            BigDecimal,
+            BigDecimal,
+            BigDecimal,
+            Float,
+            Double,
+            Boolean,
+            String,
+            String,
+            String,
+            String,
+            String,
+            byte[],
+            byte[],
+            byte[],
+            LocalDate,
+            LocalTime,
+            LocalDateTime,
+            LocalDateTime,
+            LocalDateTime,
+            Xml>,
+        RelationStructure<Db2testnullFields, Db2testnullRow>,
+        FieldsBase<Db2testnullRow> {
+  List<Path> _path;
 
-    @Override
-    public OptField<Integer, Db2testnullRow> intCol() {
-      return new OptField<Integer, Db2testnullRow>(
-          _path,
-          "INT_COL",
-          Db2testnullRow::intCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withIntCol(value),
-          Db2Types.integer);
-    }
-    ;
-
-    @Override
-    public OptField<Long, Db2testnullRow> bigintCol() {
-      return new OptField<Long, Db2testnullRow>(
-          _path,
-          "BIGINT_COL",
-          Db2testnullRow::bigintCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withBigintCol(value),
-          Db2Types.bigint);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, Db2testnullRow> decimalCol() {
-      return new OptField<BigDecimal, Db2testnullRow>(
-          _path,
-          "DECIMAL_COL",
-          Db2testnullRow::decimalCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDecimalCol(value),
-          Db2Types.decimal);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, Db2testnullRow> numericCol() {
-      return new OptField<BigDecimal, Db2testnullRow>(
-          _path,
-          "NUMERIC_COL",
-          Db2testnullRow::numericCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withNumericCol(value),
-          Db2Types.decimal);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, Db2testnullRow> decfloat16Col() {
-      return new OptField<BigDecimal, Db2testnullRow>(
-          _path,
-          "DECFLOAT16_COL",
-          Db2testnullRow::decfloat16Col,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDecfloat16Col(value),
-          Db2Types.decfloat);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, Db2testnullRow> decfloat34Col() {
-      return new OptField<BigDecimal, Db2testnullRow>(
-          _path,
-          "DECFLOAT34_COL",
-          Db2testnullRow::decfloat34Col,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDecfloat34Col(value),
-          Db2Types.decfloat);
-    }
-    ;
-
-    @Override
-    public OptField<Float, Db2testnullRow> realCol() {
-      return new OptField<Float, Db2testnullRow>(
-          _path,
-          "REAL_COL",
-          Db2testnullRow::realCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withRealCol(value),
-          Db2Types.real);
-    }
-    ;
-
-    @Override
-    public OptField<Double, Db2testnullRow> doubleCol() {
-      return new OptField<Double, Db2testnullRow>(
-          _path,
-          "DOUBLE_COL",
-          Db2testnullRow::doubleCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDoubleCol(value),
-          Db2Types.double_);
-    }
-    ;
-
-    @Override
-    public OptField<Boolean, Db2testnullRow> boolCol() {
-      return new OptField<Boolean, Db2testnullRow>(
-          _path,
-          "BOOL_COL",
-          Db2testnullRow::boolCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withBoolCol(value),
-          Db2Types.boolean_);
-    }
-    ;
-
-    @Override
-    public OptField<String, Db2testnullRow> charCol() {
-      return new OptField<String, Db2testnullRow>(
-          _path,
-          "CHAR_COL",
-          Db2testnullRow::charCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCharCol(value),
-          Db2Types.char_);
-    }
-    ;
-
-    @Override
-    public OptField<String, Db2testnullRow> varcharCol() {
-      return new OptField<String, Db2testnullRow>(
-          _path,
-          "VARCHAR_COL",
-          Db2testnullRow::varcharCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withVarcharCol(value),
-          Db2Types.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, Db2testnullRow> clobCol() {
-      return new OptField<String, Db2testnullRow>(
-          _path,
-          "CLOB_COL",
-          Db2testnullRow::clobCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withClobCol(value),
-          Db2Types.clob);
-    }
-    ;
-
-    @Override
-    public OptField<String, Db2testnullRow> graphicCol() {
-      return new OptField<String, Db2testnullRow>(
-          _path,
-          "GRAPHIC_COL",
-          Db2testnullRow::graphicCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withGraphicCol(value),
-          Db2Types.graphic);
-    }
-    ;
-
-    @Override
-    public OptField<String, Db2testnullRow> vargraphicCol() {
-      return new OptField<String, Db2testnullRow>(
-          _path,
-          "VARGRAPHIC_COL",
-          Db2testnullRow::vargraphicCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withVargraphicCol(value),
-          Db2Types.vargraphic);
-    }
-    ;
-
-    @Override
-    public OptField<byte[], Db2testnullRow> binaryCol() {
-      return new OptField<byte[], Db2testnullRow>(
-          _path,
-          "BINARY_COL",
-          Db2testnullRow::binaryCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withBinaryCol(value),
-          Db2Types.binary);
-    }
-    ;
-
-    @Override
-    public OptField<byte[], Db2testnullRow> varbinaryCol() {
-      return new OptField<byte[], Db2testnullRow>(
-          _path,
-          "VARBINARY_COL",
-          Db2testnullRow::varbinaryCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withVarbinaryCol(value),
-          Db2Types.varbinary);
-    }
-    ;
-
-    @Override
-    public OptField<byte[], Db2testnullRow> blobCol() {
-      return new OptField<byte[], Db2testnullRow>(
-          _path,
-          "BLOB_COL",
-          Db2testnullRow::blobCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withBlobCol(value),
-          Db2Types.blob);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDate, Db2testnullRow> dateCol() {
-      return new OptField<LocalDate, Db2testnullRow>(
-          _path,
-          "DATE_COL",
-          Db2testnullRow::dateCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDateCol(value),
-          Db2Types.date);
-    }
-    ;
-
-    @Override
-    public OptField<LocalTime, Db2testnullRow> timeCol() {
-      return new OptField<LocalTime, Db2testnullRow>(
-          _path,
-          "TIME_COL",
-          Db2testnullRow::timeCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTimeCol(value),
-          Db2Types.time);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, Db2testnullRow> timestampCol() {
-      return new OptField<LocalDateTime, Db2testnullRow>(
-          _path,
-          "TIMESTAMP_COL",
-          Db2testnullRow::timestampCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTimestampCol(value),
-          Db2Types.timestamp);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, Db2testnullRow> timestamp6Col() {
-      return new OptField<LocalDateTime, Db2testnullRow>(
-          _path,
-          "TIMESTAMP6_COL",
-          Db2testnullRow::timestamp6Col,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTimestamp6Col(value),
-          Db2Types.timestamp);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, Db2testnullRow> timestamp12Col() {
-      return new OptField<LocalDateTime, Db2testnullRow>(
-          _path,
-          "TIMESTAMP12_COL",
-          Db2testnullRow::timestamp12Col,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTimestamp12Col(value),
-          Db2Types.timestamp);
-    }
-    ;
-
-    @Override
-    public OptField<String, Db2testnullRow> xmlCol() {
-      return new OptField<String, Db2testnullRow>(
-          _path,
-          "XML_COL",
-          Db2testnullRow::xmlCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withXmlCol(value),
-          Db2Types.xml);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, Db2testnullRow>> columns() {
-      return java.util.List.of(
-          this.smallintCol(),
-          this.intCol(),
-          this.bigintCol(),
-          this.decimalCol(),
-          this.numericCol(),
-          this.decfloat16Col(),
-          this.decfloat34Col(),
-          this.realCol(),
-          this.doubleCol(),
-          this.boolCol(),
-          this.charCol(),
-          this.varcharCol(),
-          this.clobCol(),
-          this.graphicCol(),
-          this.vargraphicCol(),
-          this.binaryCol(),
-          this.varbinaryCol(),
-          this.blobCol(),
-          this.dateCol(),
-          this.timeCol(),
-          this.timestampCol(),
-          this.timestamp6Col(),
-          this.timestamp12Col(),
-          this.xmlCol());
-    }
-    ;
-
-    @Override
-    public RelationStructure<Db2testnullFields, Db2testnullRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public Db2testnullFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static Db2testnullFields structure =
+      new Db2testnullFields(java.util.Collections.emptyList());
+
+  public OptField<Short, Db2testnullRow> smallintCol() {
+    return new OptField<Short, Db2testnullRow>(
+        _path,
+        "SMALLINT_COL",
+        Db2testnullRow::smallintCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withSmallintCol(value),
+        Db2Types.smallint);
   }
-  ;
 
-  OptField<Short, Db2testnullRow> smallintCol();
+  public OptField<Integer, Db2testnullRow> intCol() {
+    return new OptField<Integer, Db2testnullRow>(
+        _path,
+        "INT_COL",
+        Db2testnullRow::intCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withIntCol(value),
+        Db2Types.integer);
+  }
 
-  OptField<Integer, Db2testnullRow> intCol();
+  public OptField<Long, Db2testnullRow> bigintCol() {
+    return new OptField<Long, Db2testnullRow>(
+        _path,
+        "BIGINT_COL",
+        Db2testnullRow::bigintCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withBigintCol(value),
+        Db2Types.bigint);
+  }
 
-  OptField<Long, Db2testnullRow> bigintCol();
+  public OptField<BigDecimal, Db2testnullRow> decimalCol() {
+    return new OptField<BigDecimal, Db2testnullRow>(
+        _path,
+        "DECIMAL_COL",
+        Db2testnullRow::decimalCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDecimalCol(value),
+        Db2Types.decimal);
+  }
 
-  OptField<BigDecimal, Db2testnullRow> decimalCol();
+  public OptField<BigDecimal, Db2testnullRow> numericCol() {
+    return new OptField<BigDecimal, Db2testnullRow>(
+        _path,
+        "NUMERIC_COL",
+        Db2testnullRow::numericCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withNumericCol(value),
+        Db2Types.decimal);
+  }
 
-  OptField<BigDecimal, Db2testnullRow> numericCol();
+  public OptField<BigDecimal, Db2testnullRow> decfloat16Col() {
+    return new OptField<BigDecimal, Db2testnullRow>(
+        _path,
+        "DECFLOAT16_COL",
+        Db2testnullRow::decfloat16Col,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDecfloat16Col(value),
+        Db2Types.decfloat);
+  }
 
-  OptField<BigDecimal, Db2testnullRow> decfloat16Col();
+  public OptField<BigDecimal, Db2testnullRow> decfloat34Col() {
+    return new OptField<BigDecimal, Db2testnullRow>(
+        _path,
+        "DECFLOAT34_COL",
+        Db2testnullRow::decfloat34Col,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDecfloat34Col(value),
+        Db2Types.decfloat);
+  }
 
-  OptField<BigDecimal, Db2testnullRow> decfloat34Col();
+  public OptField<Float, Db2testnullRow> realCol() {
+    return new OptField<Float, Db2testnullRow>(
+        _path,
+        "REAL_COL",
+        Db2testnullRow::realCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withRealCol(value),
+        Db2Types.real);
+  }
 
-  OptField<Float, Db2testnullRow> realCol();
+  public OptField<Double, Db2testnullRow> doubleCol() {
+    return new OptField<Double, Db2testnullRow>(
+        _path,
+        "DOUBLE_COL",
+        Db2testnullRow::doubleCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDoubleCol(value),
+        Db2Types.double_);
+  }
 
-  OptField<Double, Db2testnullRow> doubleCol();
+  public OptField<Boolean, Db2testnullRow> boolCol() {
+    return new OptField<Boolean, Db2testnullRow>(
+        _path,
+        "BOOL_COL",
+        Db2testnullRow::boolCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withBoolCol(value),
+        Db2Types.boolean_);
+  }
 
-  OptField<Boolean, Db2testnullRow> boolCol();
+  public OptField<String, Db2testnullRow> charCol() {
+    return new OptField<String, Db2testnullRow>(
+        _path,
+        "CHAR_COL",
+        Db2testnullRow::charCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCharCol(value),
+        Db2Types.char_);
+  }
 
-  OptField<String, Db2testnullRow> charCol();
+  public OptField<String, Db2testnullRow> varcharCol() {
+    return new OptField<String, Db2testnullRow>(
+        _path,
+        "VARCHAR_COL",
+        Db2testnullRow::varcharCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withVarcharCol(value),
+        Db2Types.varchar);
+  }
 
-  OptField<String, Db2testnullRow> varcharCol();
+  public OptField<String, Db2testnullRow> clobCol() {
+    return new OptField<String, Db2testnullRow>(
+        _path,
+        "CLOB_COL",
+        Db2testnullRow::clobCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withClobCol(value),
+        Db2Types.clob);
+  }
 
-  OptField<String, Db2testnullRow> clobCol();
+  public OptField<String, Db2testnullRow> graphicCol() {
+    return new OptField<String, Db2testnullRow>(
+        _path,
+        "GRAPHIC_COL",
+        Db2testnullRow::graphicCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withGraphicCol(value),
+        Db2Types.graphic);
+  }
 
-  OptField<String, Db2testnullRow> graphicCol();
+  public OptField<String, Db2testnullRow> vargraphicCol() {
+    return new OptField<String, Db2testnullRow>(
+        _path,
+        "VARGRAPHIC_COL",
+        Db2testnullRow::vargraphicCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withVargraphicCol(value),
+        Db2Types.vargraphic);
+  }
 
-  OptField<String, Db2testnullRow> vargraphicCol();
+  public OptField<byte[], Db2testnullRow> binaryCol() {
+    return new OptField<byte[], Db2testnullRow>(
+        _path,
+        "BINARY_COL",
+        Db2testnullRow::binaryCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withBinaryCol(value),
+        Db2Types.binary);
+  }
 
-  OptField<byte[], Db2testnullRow> binaryCol();
+  public OptField<byte[], Db2testnullRow> varbinaryCol() {
+    return new OptField<byte[], Db2testnullRow>(
+        _path,
+        "VARBINARY_COL",
+        Db2testnullRow::varbinaryCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withVarbinaryCol(value),
+        Db2Types.varbinary);
+  }
 
-  OptField<byte[], Db2testnullRow> varbinaryCol();
+  public OptField<byte[], Db2testnullRow> blobCol() {
+    return new OptField<byte[], Db2testnullRow>(
+        _path,
+        "BLOB_COL",
+        Db2testnullRow::blobCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withBlobCol(value),
+        Db2Types.blob);
+  }
 
-  OptField<byte[], Db2testnullRow> blobCol();
+  public OptField<LocalDate, Db2testnullRow> dateCol() {
+    return new OptField<LocalDate, Db2testnullRow>(
+        _path,
+        "DATE_COL",
+        Db2testnullRow::dateCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDateCol(value),
+        Db2Types.date);
+  }
 
-  OptField<LocalDate, Db2testnullRow> dateCol();
+  public OptField<LocalTime, Db2testnullRow> timeCol() {
+    return new OptField<LocalTime, Db2testnullRow>(
+        _path,
+        "TIME_COL",
+        Db2testnullRow::timeCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTimeCol(value),
+        Db2Types.time);
+  }
 
-  OptField<LocalTime, Db2testnullRow> timeCol();
+  public OptField<LocalDateTime, Db2testnullRow> timestampCol() {
+    return new OptField<LocalDateTime, Db2testnullRow>(
+        _path,
+        "TIMESTAMP_COL",
+        Db2testnullRow::timestampCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTimestampCol(value),
+        Db2Types.timestamp);
+  }
 
-  OptField<LocalDateTime, Db2testnullRow> timestampCol();
+  public OptField<LocalDateTime, Db2testnullRow> timestamp6Col() {
+    return new OptField<LocalDateTime, Db2testnullRow>(
+        _path,
+        "TIMESTAMP6_COL",
+        Db2testnullRow::timestamp6Col,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTimestamp6Col(value),
+        Db2Types.timestamp);
+  }
 
-  OptField<LocalDateTime, Db2testnullRow> timestamp6Col();
+  public OptField<LocalDateTime, Db2testnullRow> timestamp12Col() {
+    return new OptField<LocalDateTime, Db2testnullRow>(
+        _path,
+        "TIMESTAMP12_COL",
+        Db2testnullRow::timestamp12Col,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTimestamp12Col(value),
+        Db2Types.timestamp);
+  }
 
-  OptField<LocalDateTime, Db2testnullRow> timestamp12Col();
-
-  OptField</* XML */ String, Db2testnullRow> xmlCol();
+  public OptField<Xml, Db2testnullRow> xmlCol() {
+    return new OptField<Xml, Db2testnullRow>(
+        _path,
+        "XML_COL",
+        Db2testnullRow::xmlCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withXmlCol(value),
+        Db2Types.xml);
+  }
 
   @Override
-  List<FieldLike<?, Db2testnullRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<Db2testnullRow> rowParser() {
+  public List<FieldLike<?, Db2testnullRow>> columns() {
+    return java.util.List.of(
+        this.smallintCol(),
+        this.intCol(),
+        this.bigintCol(),
+        this.decimalCol(),
+        this.numericCol(),
+        this.decfloat16Col(),
+        this.decfloat34Col(),
+        this.realCol(),
+        this.doubleCol(),
+        this.boolCol(),
+        this.charCol(),
+        this.varcharCol(),
+        this.clobCol(),
+        this.graphicCol(),
+        this.vargraphicCol(),
+        this.binaryCol(),
+        this.varbinaryCol(),
+        this.blobCol(),
+        this.dateCol(),
+        this.timeCol(),
+        this.timestampCol(),
+        this.timestamp6Col(),
+        this.timestamp12Col(),
+        this.xmlCol());
+  }
+
+  @Override
+  public RowParser<Db2testnullRow> rowParser() {
     return Db2testnullRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<Db2testnullFields, Db2testnullRow> withPaths(List<Path> _path) {
+    return new Db2testnullFields(_path);
+  }
+
+  @Override
+  public SqlExpr<Short> _1() {
+    return smallintCol();
+  }
+
+  @Override
+  public SqlExpr<Integer> _2() {
+    return intCol();
+  }
+
+  @Override
+  public SqlExpr<Long> _3() {
+    return bigintCol();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _4() {
+    return decimalCol();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _5() {
+    return numericCol();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _6() {
+    return decfloat16Col();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _7() {
+    return decfloat34Col();
+  }
+
+  @Override
+  public SqlExpr<Float> _8() {
+    return realCol();
+  }
+
+  @Override
+  public SqlExpr<Double> _9() {
+    return doubleCol();
+  }
+
+  @Override
+  public SqlExpr<Boolean> _10() {
+    return boolCol();
+  }
+
+  @Override
+  public SqlExpr<String> _11() {
+    return charCol();
+  }
+
+  @Override
+  public SqlExpr<String> _12() {
+    return varcharCol();
+  }
+
+  @Override
+  public SqlExpr<String> _13() {
+    return clobCol();
+  }
+
+  @Override
+  public SqlExpr<String> _14() {
+    return graphicCol();
+  }
+
+  @Override
+  public SqlExpr<String> _15() {
+    return vargraphicCol();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _16() {
+    return binaryCol();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _17() {
+    return varbinaryCol();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _18() {
+    return blobCol();
+  }
+
+  @Override
+  public SqlExpr<LocalDate> _19() {
+    return dateCol();
+  }
+
+  @Override
+  public SqlExpr<LocalTime> _20() {
+    return timeCol();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _21() {
+    return timestampCol();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _22() {
+    return timestamp6Col();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _23() {
+    return timestamp12Col();
+  }
+
+  @Override
+  public SqlExpr<Xml> _24() {
+    return xmlCol();
+  }
 }

@@ -7,6 +7,7 @@ package testdb.products
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -21,10 +22,18 @@ case class ProductsRow(
   name: String,
   price: BigDecimal,
   description: Option[String]
-) {
+) extends Tuple4[ProductsId, String, BigDecimal, Option[String]] {
   def id: ProductsId = productId
 
   def toUnsavedRow: ProductsRowUnsaved = new ProductsRowUnsaved(name, price, description)
+
+  override def `_1`: ProductsId = productId
+
+  override def `_2`: String = name
+
+  override def `_3`: BigDecimal = price
+
+  override def `_4`: Option[String] = description
 }
 
 object ProductsRow {

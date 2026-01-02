@@ -6,6 +6,11 @@
 package testdb
 
 import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint2
+import dev.typr.foundations.data.Uint4
+import dev.typr.foundations.data.Uint8
+import java.lang.Math
 import java.math.BigInteger
 import java.sql.Connection
 import java.time.Duration
@@ -13,6 +18,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.UUID
 import scala.util.Random
 import testdb.all_scalar_types.AllScalarTypesId
@@ -23,6 +29,7 @@ import testdb.customers.CustomersRepoImpl
 import testdb.customers.CustomersRow
 import testdb.customers.CustomersRowUnsaved
 import testdb.customtypes.Defaulted
+import testdb.customtypes.Defaulted.UseDefault
 import testdb.departments.DepartmentsRepoImpl
 import testdb.departments.DepartmentsRow
 import testdb.employees.EmployeesRepoImpl
@@ -42,31 +49,31 @@ import testdb.products.ProductsRow
 /** Methods to generate random data for `Ident(TestInsert)` */
 case class TestInsert(random: Random) {
   def AllScalarTypes(
-    id: AllScalarTypesId = AllScalarTypesId(random.nextInt()),
-    colTinyint: Option[Byte] = if (random.nextBoolean()) None else Some(random.nextInt(Byte.MaxValue).toByte),
-    colSmallint: Option[Short] = if (random.nextBoolean()) None else Some(random.nextInt(Short.MaxValue).toShort),
-    colInteger: Option[Int] = if (random.nextBoolean()) None else Some(random.nextInt()),
-    colBigint: Option[Long] = if (random.nextBoolean()) None else Some(random.nextLong()),
+    id: AllScalarTypesId = new AllScalarTypesId(random.nextInt()),
+    colTinyint: Option[Byte] = (if (random.nextBoolean()) None else Some(random.nextInt(Byte.MaxValue).toByte)),
+    colSmallint: Option[Short] = (if (random.nextBoolean()) None else Some(random.nextInt(Short.MaxValue).toShort)),
+    colInteger: Option[Int] = (if (random.nextBoolean()) None else Some(random.nextInt())),
+    colBigint: Option[Long] = (if (random.nextBoolean()) None else Some(random.nextLong())),
     colHugeint: Option[BigInteger] = None,
-    colUtinyint: Option[Short] = if (random.nextBoolean()) None else Some(random.nextInt(Short.MaxValue).toShort),
-    colUsmallint: Option[Int] = if (random.nextBoolean()) None else Some(random.nextInt()),
-    colUinteger: Option[Long] = if (random.nextBoolean()) None else Some(random.nextLong()),
-    colUbigint: Option[BigInteger] = None,
-    colFloat: Option[Float] = if (random.nextBoolean()) None else Some(random.nextFloat()),
-    colDouble: Option[Double] = if (random.nextBoolean()) None else Some(random.nextDouble()),
-    colDecimal: Option[BigDecimal] = if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble())),
-    colBoolean: Option[Boolean] = if (random.nextBoolean()) None else Some(random.nextBoolean()),
-    colVarchar: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    colText: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
+    colUtinyint: Option[Uint1] = (if (random.nextBoolean()) None else Some(Uint1.of(random.nextInt(256)))),
+    colUsmallint: Option[Uint2] = (if (random.nextBoolean()) None else Some(Uint2.of(random.nextInt(65536)))),
+    colUinteger: Option[Uint4] = (if (random.nextBoolean()) None else Some(Uint4.of(Math.abs(random.nextInt()).toLong))),
+    colUbigint: Option[Uint8] = (if (random.nextBoolean()) None else Some(Uint8.of(Math.abs(random.nextLong())))),
+    colFloat: Option[Float] = (if (random.nextBoolean()) None else Some(random.nextFloat())),
+    colDouble: Option[Double] = (if (random.nextBoolean()) None else Some(random.nextDouble())),
+    colDecimal: Option[BigDecimal] = (if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble()))),
+    colBoolean: Option[Boolean] = (if (random.nextBoolean()) None else Some(random.nextBoolean())),
+    colVarchar: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString)),
+    colText: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString)),
     colBlob: Option[Array[Byte]] = None,
-    colDate: Option[LocalDate] = None,
-    colTime: Option[LocalTime] = None,
-    colTimestamp: Option[LocalDateTime] = None,
-    colTimestamptz: Option[OffsetDateTime] = None,
+    colDate: Option[LocalDate] = (if (random.nextBoolean()) None else Some(LocalDate.ofEpochDay(random.nextInt(30000).toLong))),
+    colTime: Option[LocalTime] = (if (random.nextBoolean()) None else Some(LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong))),
+    colTimestamp: Option[LocalDateTime] = (if (random.nextBoolean()) None else Some(LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)))),
+    colTimestamptz: Option[OffsetDateTime] = (if (random.nextBoolean()) None else Some(OffsetDateTime.of(LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)), ZoneOffset.ofHours(random.nextInt(24) - 12)))),
     colInterval: Option[Duration] = None,
-    colUuid: Option[UUID] = if (random.nextBoolean()) None else Some(UUID.nameUUIDFromBytes{val bs = Array.ofDim[Byte](16); random.nextBytes(bs); bs}),
-    colJson: Option[Json] = None,
-    colMood: Option[Mood] = if (random.nextBoolean()) None else Some(Mood.All(random.nextInt(Mood.All.length))),
+    colUuid: Option[UUID] = (if (random.nextBoolean()) None else Some(UUID.nameUUIDFromBytes{val bs = Array.ofDim[Byte](16); random.nextBytes(bs); bs})),
+    colJson: Option[Json] = (if (random.nextBoolean()) None else Some(new Json("{}"))),
+    colMood: Option[Mood] = (if (random.nextBoolean()) None else Some(Mood.All(random.nextInt(Mood.All.length)))),
     colNotNull: String = random.alphanumeric.take(20).mkString
   )(using c: Connection): AllScalarTypesRow = {
     (new AllScalarTypesRepoImpl()).insert(new AllScalarTypesRow(
@@ -100,11 +107,11 @@ case class TestInsert(random: Random) {
   }
 
   def Customers(
-    customerId: CustomersId = CustomersId(random.nextInt()),
+    customerId: CustomersId = new CustomersId(random.nextInt()),
     name: String = random.alphanumeric.take(20).mkString,
-    email: Option[String] = if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString),
-    createdAt: Defaulted[LocalDateTime] = Defaulted.UseDefault(),
-    priority: Defaulted[Option[Priority]] = Defaulted.UseDefault()
+    email: Option[String] = (if (random.nextBoolean()) None else Some(random.alphanumeric.take(20).mkString)),
+    createdAt: Defaulted[LocalDateTime] = new UseDefault(),
+    priority: Defaulted[Option[Priority]] = new UseDefault()
   )(using c: Connection): CustomersRow = {
     (new CustomersRepoImpl()).insert(new CustomersRowUnsaved(
       customerId = customerId,
@@ -119,7 +126,7 @@ case class TestInsert(random: Random) {
     deptCode: String = random.alphanumeric.take(20).mkString,
     deptRegion: String = random.alphanumeric.take(20).mkString,
     deptName: String = random.alphanumeric.take(20).mkString,
-    budget: Option[BigDecimal] = if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble()))
+    budget: Option[BigDecimal] = (if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble())))
   )(using c: Connection): DepartmentsRow = {
     (new DepartmentsRepoImpl()).insert(new DepartmentsRow(
       deptCode = deptCode,
@@ -135,8 +142,8 @@ case class TestInsert(random: Random) {
     deptCode: String = random.alphanumeric.take(20).mkString,
     deptRegion: String = random.alphanumeric.take(20).mkString,
     empName: String = random.alphanumeric.take(20).mkString,
-    salary: Option[BigDecimal] = if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble())),
-    hireDate: Defaulted[LocalDate] = Defaulted.UseDefault()
+    salary: Option[BigDecimal] = (if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble()))),
+    hireDate: Defaulted[LocalDate] = new UseDefault()
   )(using c: Connection): EmployeesRow = {
     (new EmployeesRepoImpl()).insert(new EmployeesRowUnsaved(
       empNumber = empNumber,
@@ -153,7 +160,7 @@ case class TestInsert(random: Random) {
     orderId: Int = random.nextInt(),
     productId: Int = random.nextInt(),
     unitPrice: BigDecimal = BigDecimal.decimal(random.nextDouble()),
-    quantity: Defaulted[Int] = Defaulted.UseDefault()
+    quantity: Defaulted[Int] = new UseDefault()
   )(using c: Connection): OrderItemsRow = {
     (new OrderItemsRepoImpl()).insert(new OrderItemsRowUnsaved(
       orderId = orderId,
@@ -164,11 +171,11 @@ case class TestInsert(random: Random) {
   }
 
   def Orders(
-    orderId: OrdersId = OrdersId(random.nextInt()),
+    orderId: OrdersId = new OrdersId(random.nextInt()),
     customerId: Int = random.nextInt(),
-    totalAmount: Option[BigDecimal] = if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble())),
-    orderDate: Defaulted[LocalDate] = Defaulted.UseDefault(),
-    status: Defaulted[Option[String]] = Defaulted.UseDefault()
+    totalAmount: Option[BigDecimal] = (if (random.nextBoolean()) None else Some(BigDecimal.decimal(random.nextDouble()))),
+    orderDate: Defaulted[LocalDate] = new UseDefault(),
+    status: Defaulted[Option[String]] = new UseDefault()
   )(using c: Connection): OrdersRow = {
     (new OrdersRepoImpl()).insert(new OrdersRowUnsaved(
       orderId = orderId,
@@ -180,11 +187,11 @@ case class TestInsert(random: Random) {
   }
 
   def Products(
-    productId: ProductsId = ProductsId(random.nextInt()),
+    productId: ProductsId = new ProductsId(random.nextInt()),
     sku: String = random.alphanumeric.take(20).mkString,
     name: String = random.alphanumeric.take(20).mkString,
     price: BigDecimal = BigDecimal.decimal(random.nextDouble()),
-    metadata: Option[Json] = None
+    metadata: Option[Json] = (if (random.nextBoolean()) None else Some(new Json("{}")))
   )(using c: Connection): ProductsRow = {
     (new ProductsRepoImpl()).insert(new ProductsRow(
       productId = productId,

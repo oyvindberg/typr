@@ -16,11 +16,13 @@ import dev.typr.foundations.data.Jsonb;
 import dev.typr.foundations.data.Money;
 import dev.typr.foundations.data.Vector;
 import dev.typr.foundations.data.Xml;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr70;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -40,1154 +42,1296 @@ import org.postgresql.geometric.PGpoint;
 import org.postgresql.geometric.PGpolygon;
 import org.postgresql.util.PGInterval;
 
-public interface PgtestnullFields extends FieldsExpr<PgtestnullRow> {
-  record Impl(List<Path> _path)
-      implements PgtestnullFields, RelationStructure<PgtestnullFields, PgtestnullRow> {
-    @Override
-    public OptField<Boolean, PgtestnullRow> bool() {
-      return new OptField<Boolean, PgtestnullRow>(
-          _path,
-          "bool",
-          PgtestnullRow::bool,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withBool(value),
-          PgTypes.bool);
-    }
-    ;
-
-    @Override
-    public OptField<PGbox, PgtestnullRow> box() {
-      return new OptField<PGbox, PgtestnullRow>(
-          _path,
-          "box",
-          PgtestnullRow::box,
-          Optional.empty(),
-          Optional.of("box"),
-          (row, value) -> row.withBox(value),
-          PgTypes.box);
-    }
-    ;
-
-    @Override
-    public OptField<String, PgtestnullRow> bpchar() {
-      return new OptField<String, PgtestnullRow>(
-          _path,
-          "bpchar",
-          PgtestnullRow::bpchar,
-          Optional.empty(),
-          Optional.of("bpchar"),
-          (row, value) -> row.withBpchar(value),
-          PgTypes.bpchar);
-    }
-    ;
-
-    @Override
-    public OptField<byte[], PgtestnullRow> bytea() {
-      return new OptField<byte[], PgtestnullRow>(
-          _path,
-          "bytea",
-          PgtestnullRow::bytea,
-          Optional.empty(),
-          Optional.of("bytea"),
-          (row, value) -> row.withBytea(value),
-          PgTypes.bytea);
-    }
-    ;
-
-    @Override
-    public OptField<String, PgtestnullRow> char_() {
-      return new OptField<String, PgtestnullRow>(
-          _path,
-          "char",
-          PgtestnullRow::char_,
-          Optional.empty(),
-          Optional.of("bpchar"),
-          (row, value) -> row.withChar(value),
-          PgTypes.bpchar);
-    }
-    ;
-
-    @Override
-    public OptField<PGcircle, PgtestnullRow> circle() {
-      return new OptField<PGcircle, PgtestnullRow>(
-          _path,
-          "circle",
-          PgtestnullRow::circle,
-          Optional.empty(),
-          Optional.of("circle"),
-          (row, value) -> row.withCircle(value),
-          PgTypes.circle);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDate, PgtestnullRow> date() {
-      return new OptField<LocalDate, PgtestnullRow>(
-          _path,
-          "date",
-          PgtestnullRow::date,
-          Optional.empty(),
-          Optional.of("date"),
-          (row, value) -> row.withDate(value),
-          PgTypes.date);
-    }
-    ;
-
-    @Override
-    public OptField<Float, PgtestnullRow> float4() {
-      return new OptField<Float, PgtestnullRow>(
-          _path,
-          "float4",
-          PgtestnullRow::float4,
-          Optional.empty(),
-          Optional.of("float4"),
-          (row, value) -> row.withFloat4(value),
-          PgTypes.float4);
-    }
-    ;
-
-    @Override
-    public OptField<Double, PgtestnullRow> float8() {
-      return new OptField<Double, PgtestnullRow>(
-          _path,
-          "float8",
-          PgtestnullRow::float8,
-          Optional.empty(),
-          Optional.of("float8"),
-          (row, value) -> row.withFloat8(value),
-          PgTypes.float8);
-    }
-    ;
-
-    @Override
-    public OptField<Map<String, String>, PgtestnullRow> hstore() {
-      return new OptField<Map<String, String>, PgtestnullRow>(
-          _path,
-          "hstore",
-          PgtestnullRow::hstore,
-          Optional.empty(),
-          Optional.of("hstore"),
-          (row, value) -> row.withHstore(value),
-          PgTypes.hstore);
-    }
-    ;
-
-    @Override
-    public OptField<Inet, PgtestnullRow> inet() {
-      return new OptField<Inet, PgtestnullRow>(
-          _path,
-          "inet",
-          PgtestnullRow::inet,
-          Optional.empty(),
-          Optional.of("inet"),
-          (row, value) -> row.withInet(value),
-          PgTypes.inet);
-    }
-    ;
-
-    @Override
-    public OptField<Short, PgtestnullRow> int2() {
-      return new OptField<Short, PgtestnullRow>(
-          _path,
-          "int2",
-          PgtestnullRow::int2,
-          Optional.empty(),
-          Optional.of("int2"),
-          (row, value) -> row.withInt2(value),
-          PgTypes.int2);
-    }
-    ;
-
-    @Override
-    public OptField<Int2Vector, PgtestnullRow> int2vector() {
-      return new OptField<Int2Vector, PgtestnullRow>(
-          _path,
-          "int2vector",
-          PgtestnullRow::int2vector,
-          Optional.empty(),
-          Optional.of("int2vector"),
-          (row, value) -> row.withInt2vector(value),
-          PgTypes.int2vector);
-    }
-    ;
-
-    @Override
-    public OptField<Integer, PgtestnullRow> int4() {
-      return new OptField<Integer, PgtestnullRow>(
-          _path,
-          "int4",
-          PgtestnullRow::int4,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withInt4(value),
-          PgTypes.int4);
-    }
-    ;
-
-    @Override
-    public OptField<Long, PgtestnullRow> int8() {
-      return new OptField<Long, PgtestnullRow>(
-          _path,
-          "int8",
-          PgtestnullRow::int8,
-          Optional.empty(),
-          Optional.of("int8"),
-          (row, value) -> row.withInt8(value),
-          PgTypes.int8);
-    }
-    ;
-
-    @Override
-    public OptField<PGInterval, PgtestnullRow> interval() {
-      return new OptField<PGInterval, PgtestnullRow>(
-          _path,
-          "interval",
-          PgtestnullRow::interval,
-          Optional.empty(),
-          Optional.of("interval"),
-          (row, value) -> row.withInterval(value),
-          PgTypes.interval);
-    }
-    ;
-
-    @Override
-    public OptField<Json, PgtestnullRow> json() {
-      return new OptField<Json, PgtestnullRow>(
-          _path,
-          "json",
-          PgtestnullRow::json,
-          Optional.empty(),
-          Optional.of("json"),
-          (row, value) -> row.withJson(value),
-          PgTypes.json);
-    }
-    ;
-
-    @Override
-    public OptField<Jsonb, PgtestnullRow> jsonb() {
-      return new OptField<Jsonb, PgtestnullRow>(
-          _path,
-          "jsonb",
-          PgtestnullRow::jsonb,
-          Optional.empty(),
-          Optional.of("jsonb"),
-          (row, value) -> row.withJsonb(value),
-          PgTypes.jsonb);
-    }
-    ;
-
-    @Override
-    public OptField<PGline, PgtestnullRow> line() {
-      return new OptField<PGline, PgtestnullRow>(
-          _path,
-          "line",
-          PgtestnullRow::line,
-          Optional.empty(),
-          Optional.of("line"),
-          (row, value) -> row.withLine(value),
-          PgTypes.line);
-    }
-    ;
-
-    @Override
-    public OptField<PGlseg, PgtestnullRow> lseg() {
-      return new OptField<PGlseg, PgtestnullRow>(
-          _path,
-          "lseg",
-          PgtestnullRow::lseg,
-          Optional.empty(),
-          Optional.of("lseg"),
-          (row, value) -> row.withLseg(value),
-          PgTypes.lseg);
-    }
-    ;
-
-    @Override
-    public OptField<Money, PgtestnullRow> money() {
-      return new OptField<Money, PgtestnullRow>(
-          _path,
-          "money",
-          PgtestnullRow::money,
-          Optional.of("numeric"),
-          Optional.of("money"),
-          (row, value) -> row.withMoney(value),
-          PgTypes.money);
-    }
-    ;
-
-    @Override
-    public OptField<Mydomain, PgtestnullRow> mydomain() {
-      return new OptField<Mydomain, PgtestnullRow>(
-          _path,
-          "mydomain",
-          PgtestnullRow::mydomain,
-          Optional.empty(),
-          Optional.of("text"),
-          (row, value) -> row.withMydomain(value),
-          Mydomain.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<Myenum, PgtestnullRow> myenum() {
-      return new OptField<Myenum, PgtestnullRow>(
-          _path,
-          "myenum",
-          PgtestnullRow::myenum,
-          Optional.empty(),
-          Optional.of("public.myenum"),
-          (row, value) -> row.withMyenum(value),
-          Myenum.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<String, PgtestnullRow> name() {
-      return new OptField<String, PgtestnullRow>(
-          _path,
-          "name",
-          PgtestnullRow::name,
-          Optional.empty(),
-          Optional.of("name"),
-          (row, value) -> row.withName(value),
-          PgTypes.name);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, PgtestnullRow> numeric() {
-      return new OptField<BigDecimal, PgtestnullRow>(
-          _path,
-          "numeric",
-          PgtestnullRow::numeric,
-          Optional.empty(),
-          Optional.of("numeric"),
-          (row, value) -> row.withNumeric(value),
-          PgTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<PGpath, PgtestnullRow> path() {
-      return new OptField<PGpath, PgtestnullRow>(
-          _path,
-          "path",
-          PgtestnullRow::path,
-          Optional.empty(),
-          Optional.of("path"),
-          (row, value) -> row.withPath(value),
-          PgTypes.path);
-    }
-    ;
-
-    @Override
-    public OptField<PGpoint, PgtestnullRow> point() {
-      return new OptField<PGpoint, PgtestnullRow>(
-          _path,
-          "point",
-          PgtestnullRow::point,
-          Optional.empty(),
-          Optional.of("point"),
-          (row, value) -> row.withPoint(value),
-          PgTypes.point);
-    }
-    ;
-
-    @Override
-    public OptField<PGpolygon, PgtestnullRow> polygon() {
-      return new OptField<PGpolygon, PgtestnullRow>(
-          _path,
-          "polygon",
-          PgtestnullRow::polygon,
-          Optional.empty(),
-          Optional.of("polygon"),
-          (row, value) -> row.withPolygon(value),
-          PgTypes.polygon);
-    }
-    ;
-
-    @Override
-    public OptField<String, PgtestnullRow> text() {
-      return new OptField<String, PgtestnullRow>(
-          _path,
-          "text",
-          PgtestnullRow::text,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withText(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public OptField<LocalTime, PgtestnullRow> time() {
-      return new OptField<LocalTime, PgtestnullRow>(
-          _path,
-          "time",
-          PgtestnullRow::time,
-          Optional.empty(),
-          Optional.of("time"),
-          (row, value) -> row.withTime(value),
-          PgTypes.time);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, PgtestnullRow> timestamp() {
-      return new OptField<LocalDateTime, PgtestnullRow>(
-          _path,
-          "timestamp",
-          PgtestnullRow::timestamp,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withTimestamp(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public OptField<Instant, PgtestnullRow> timestampz() {
-      return new OptField<Instant, PgtestnullRow>(
-          _path,
-          "timestampz",
-          PgtestnullRow::timestampz,
-          Optional.empty(),
-          Optional.of("timestamptz"),
-          (row, value) -> row.withTimestampz(value),
-          PgTypes.timestamptz);
-    }
-    ;
-
-    @Override
-    public OptField<OffsetTime, PgtestnullRow> timez() {
-      return new OptField<OffsetTime, PgtestnullRow>(
-          _path,
-          "timez",
-          PgtestnullRow::timez,
-          Optional.empty(),
-          Optional.of("timetz"),
-          (row, value) -> row.withTimez(value),
-          PgTypes.timetz);
-    }
-    ;
-
-    @Override
-    public OptField<UUID, PgtestnullRow> uuid() {
-      return new OptField<UUID, PgtestnullRow>(
-          _path,
-          "uuid",
-          PgtestnullRow::uuid,
-          Optional.empty(),
-          Optional.of("uuid"),
-          (row, value) -> row.withUuid(value),
-          PgTypes.uuid);
-    }
-    ;
-
-    @Override
-    public OptField<String, PgtestnullRow> varchar() {
-      return new OptField<String, PgtestnullRow>(
-          _path,
-          "varchar",
-          PgtestnullRow::varchar,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withVarchar(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public OptField<Vector, PgtestnullRow> vector() {
-      return new OptField<Vector, PgtestnullRow>(
-          _path,
-          "vector",
-          PgtestnullRow::vector,
-          Optional.empty(),
-          Optional.of("vector"),
-          (row, value) -> row.withVector(value),
-          PgTypes.vector);
-    }
-    ;
-
-    @Override
-    public OptField<Xml, PgtestnullRow> xml() {
-      return new OptField<Xml, PgtestnullRow>(
-          _path,
-          "xml",
-          PgtestnullRow::xml,
-          Optional.empty(),
-          Optional.of("xml"),
-          (row, value) -> row.withXml(value),
-          PgTypes.xml);
-    }
-    ;
-
-    @Override
-    public OptField<PGbox[], PgtestnullRow> boxes() {
-      return new OptField<PGbox[], PgtestnullRow>(
-          _path,
-          "boxes",
-          PgtestnullRow::boxes,
-          Optional.empty(),
-          Optional.of("box[]"),
-          (row, value) -> row.withBoxes(value),
-          PgTypes.boxArray);
-    }
-    ;
-
-    @Override
-    public OptField</* bpchar */ String[], PgtestnullRow> bpchares() {
-      return new OptField</* bpchar */ String[], PgtestnullRow>(
-          _path,
-          "bpchares",
-          PgtestnullRow::bpchares,
-          Optional.empty(),
-          Optional.of("bpchar[]"),
-          (row, value) -> row.withBpchares(value),
-          PgTypes.bpcharArray);
-    }
-    ;
-
-    @Override
-    public OptField</* bpchar */ String[], PgtestnullRow> chares() {
-      return new OptField</* bpchar */ String[], PgtestnullRow>(
-          _path,
-          "chares",
-          PgtestnullRow::chares,
-          Optional.empty(),
-          Optional.of("bpchar[]"),
-          (row, value) -> row.withChares(value),
-          PgTypes.bpcharArray);
-    }
-    ;
-
-    @Override
-    public OptField<PGcircle[], PgtestnullRow> circlees() {
-      return new OptField<PGcircle[], PgtestnullRow>(
-          _path,
-          "circlees",
-          PgtestnullRow::circlees,
-          Optional.empty(),
-          Optional.of("circle[]"),
-          (row, value) -> row.withCirclees(value),
-          PgTypes.circleArray);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDate[], PgtestnullRow> datees() {
-      return new OptField<LocalDate[], PgtestnullRow>(
-          _path,
-          "datees",
-          PgtestnullRow::datees,
-          Optional.empty(),
-          Optional.of("date[]"),
-          (row, value) -> row.withDatees(value),
-          PgTypes.dateArray);
-    }
-    ;
-
-    @Override
-    public OptField<Float[], PgtestnullRow> float4es() {
-      return new OptField<Float[], PgtestnullRow>(
-          _path,
-          "float4es",
-          PgtestnullRow::float4es,
-          Optional.empty(),
-          Optional.of("float4[]"),
-          (row, value) -> row.withFloat4es(value),
-          PgTypes.float4Array);
-    }
-    ;
-
-    @Override
-    public OptField<Double[], PgtestnullRow> float8es() {
-      return new OptField<Double[], PgtestnullRow>(
-          _path,
-          "float8es",
-          PgtestnullRow::float8es,
-          Optional.empty(),
-          Optional.of("float8[]"),
-          (row, value) -> row.withFloat8es(value),
-          PgTypes.float8Array);
-    }
-    ;
-
-    @Override
-    public OptField<Inet[], PgtestnullRow> inetes() {
-      return new OptField<Inet[], PgtestnullRow>(
-          _path,
-          "inetes",
-          PgtestnullRow::inetes,
-          Optional.empty(),
-          Optional.of("inet[]"),
-          (row, value) -> row.withInetes(value),
-          PgTypes.inetArray);
-    }
-    ;
-
-    @Override
-    public OptField<Short[], PgtestnullRow> int2es() {
-      return new OptField<Short[], PgtestnullRow>(
-          _path,
-          "int2es",
-          PgtestnullRow::int2es,
-          Optional.empty(),
-          Optional.of("int2[]"),
-          (row, value) -> row.withInt2es(value),
-          PgTypes.int2Array);
-    }
-    ;
-
-    @Override
-    public OptField<Int2Vector[], PgtestnullRow> int2vectores() {
-      return new OptField<Int2Vector[], PgtestnullRow>(
-          _path,
-          "int2vectores",
-          PgtestnullRow::int2vectores,
-          Optional.empty(),
-          Optional.of("int2vector[]"),
-          (row, value) -> row.withInt2vectores(value),
-          PgTypes.int2vectorArray);
-    }
-    ;
-
-    @Override
-    public OptField<Integer[], PgtestnullRow> int4es() {
-      return new OptField<Integer[], PgtestnullRow>(
-          _path,
-          "int4es",
-          PgtestnullRow::int4es,
-          Optional.empty(),
-          Optional.of("int4[]"),
-          (row, value) -> row.withInt4es(value),
-          PgTypes.int4Array);
-    }
-    ;
-
-    @Override
-    public OptField<Long[], PgtestnullRow> int8es() {
-      return new OptField<Long[], PgtestnullRow>(
-          _path,
-          "int8es",
-          PgtestnullRow::int8es,
-          Optional.empty(),
-          Optional.of("int8[]"),
-          (row, value) -> row.withInt8es(value),
-          PgTypes.int8Array);
-    }
-    ;
-
-    @Override
-    public OptField<PGInterval[], PgtestnullRow> intervales() {
-      return new OptField<PGInterval[], PgtestnullRow>(
-          _path,
-          "intervales",
-          PgtestnullRow::intervales,
-          Optional.empty(),
-          Optional.of("interval[]"),
-          (row, value) -> row.withIntervales(value),
-          PgTypes.intervalArray);
-    }
-    ;
-
-    @Override
-    public OptField<Json[], PgtestnullRow> jsones() {
-      return new OptField<Json[], PgtestnullRow>(
-          _path,
-          "jsones",
-          PgtestnullRow::jsones,
-          Optional.empty(),
-          Optional.of("json[]"),
-          (row, value) -> row.withJsones(value),
-          PgTypes.jsonArray);
-    }
-    ;
-
-    @Override
-    public OptField<Jsonb[], PgtestnullRow> jsonbes() {
-      return new OptField<Jsonb[], PgtestnullRow>(
-          _path,
-          "jsonbes",
-          PgtestnullRow::jsonbes,
-          Optional.empty(),
-          Optional.of("jsonb[]"),
-          (row, value) -> row.withJsonbes(value),
-          PgTypes.jsonbArray);
-    }
-    ;
-
-    @Override
-    public OptField<PGline[], PgtestnullRow> linees() {
-      return new OptField<PGline[], PgtestnullRow>(
-          _path,
-          "linees",
-          PgtestnullRow::linees,
-          Optional.empty(),
-          Optional.of("line[]"),
-          (row, value) -> row.withLinees(value),
-          PgTypes.lineArray);
-    }
-    ;
-
-    @Override
-    public OptField<PGlseg[], PgtestnullRow> lseges() {
-      return new OptField<PGlseg[], PgtestnullRow>(
-          _path,
-          "lseges",
-          PgtestnullRow::lseges,
-          Optional.empty(),
-          Optional.of("lseg[]"),
-          (row, value) -> row.withLseges(value),
-          PgTypes.lsegArray);
-    }
-    ;
-
-    @Override
-    public OptField<Money[], PgtestnullRow> moneyes() {
-      return new OptField<Money[], PgtestnullRow>(
-          _path,
-          "moneyes",
-          PgtestnullRow::moneyes,
-          Optional.of("numeric[]"),
-          Optional.of("money[]"),
-          (row, value) -> row.withMoneyes(value),
-          PgTypes.moneyArray);
-    }
-    ;
-
-    @Override
-    public OptField<Mydomain[], PgtestnullRow> mydomaines() {
-      return new OptField<Mydomain[], PgtestnullRow>(
-          _path,
-          "mydomaines",
-          PgtestnullRow::mydomaines,
-          Optional.of("text[]"),
-          Optional.of("mydomain[]"),
-          (row, value) -> row.withMydomaines(value),
-          Mydomain.pgTypeArray);
-    }
-    ;
-
-    @Override
-    public OptField<Myenum[], PgtestnullRow> myenumes() {
-      return new OptField<Myenum[], PgtestnullRow>(
-          _path,
-          "myenumes",
-          PgtestnullRow::myenumes,
-          Optional.empty(),
-          Optional.of("myenum[]"),
-          (row, value) -> row.withMyenumes(value),
-          Myenum.pgTypeArray);
-    }
-    ;
-
-    @Override
-    public OptField<String[], PgtestnullRow> namees() {
-      return new OptField<String[], PgtestnullRow>(
-          _path,
-          "namees",
-          PgtestnullRow::namees,
-          Optional.empty(),
-          Optional.of("name[]"),
-          (row, value) -> row.withNamees(value),
-          PgTypes.nameArray);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal[], PgtestnullRow> numerices() {
-      return new OptField<BigDecimal[], PgtestnullRow>(
-          _path,
-          "numerices",
-          PgtestnullRow::numerices,
-          Optional.empty(),
-          Optional.of("numeric[]"),
-          (row, value) -> row.withNumerices(value),
-          PgTypes.numericArray);
-    }
-    ;
-
-    @Override
-    public OptField<PGpath[], PgtestnullRow> pathes() {
-      return new OptField<PGpath[], PgtestnullRow>(
-          _path,
-          "pathes",
-          PgtestnullRow::pathes,
-          Optional.empty(),
-          Optional.of("path[]"),
-          (row, value) -> row.withPathes(value),
-          PgTypes.pathArray);
-    }
-    ;
-
-    @Override
-    public OptField<PGpoint[], PgtestnullRow> pointes() {
-      return new OptField<PGpoint[], PgtestnullRow>(
-          _path,
-          "pointes",
-          PgtestnullRow::pointes,
-          Optional.empty(),
-          Optional.of("point[]"),
-          (row, value) -> row.withPointes(value),
-          PgTypes.pointArray);
-    }
-    ;
-
-    @Override
-    public OptField<PGpolygon[], PgtestnullRow> polygones() {
-      return new OptField<PGpolygon[], PgtestnullRow>(
-          _path,
-          "polygones",
-          PgtestnullRow::polygones,
-          Optional.empty(),
-          Optional.of("polygon[]"),
-          (row, value) -> row.withPolygones(value),
-          PgTypes.polygonArray);
-    }
-    ;
-
-    @Override
-    public OptField<String[], PgtestnullRow> textes() {
-      return new OptField<String[], PgtestnullRow>(
-          _path,
-          "textes",
-          PgtestnullRow::textes,
-          Optional.empty(),
-          Optional.of("text[]"),
-          (row, value) -> row.withTextes(value),
-          PgTypes.textArray);
-    }
-    ;
-
-    @Override
-    public OptField<LocalTime[], PgtestnullRow> timees() {
-      return new OptField<LocalTime[], PgtestnullRow>(
-          _path,
-          "timees",
-          PgtestnullRow::timees,
-          Optional.empty(),
-          Optional.of("time[]"),
-          (row, value) -> row.withTimees(value),
-          PgTypes.timeArray);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime[], PgtestnullRow> timestampes() {
-      return new OptField<LocalDateTime[], PgtestnullRow>(
-          _path,
-          "timestampes",
-          PgtestnullRow::timestampes,
-          Optional.empty(),
-          Optional.of("timestamp[]"),
-          (row, value) -> row.withTimestampes(value),
-          PgTypes.timestampArray);
-    }
-    ;
-
-    @Override
-    public OptField<Instant[], PgtestnullRow> timestampzes() {
-      return new OptField<Instant[], PgtestnullRow>(
-          _path,
-          "timestampzes",
-          PgtestnullRow::timestampzes,
-          Optional.empty(),
-          Optional.of("timestamptz[]"),
-          (row, value) -> row.withTimestampzes(value),
-          PgTypes.timestamptzArray);
-    }
-    ;
-
-    @Override
-    public OptField<OffsetTime[], PgtestnullRow> timezes() {
-      return new OptField<OffsetTime[], PgtestnullRow>(
-          _path,
-          "timezes",
-          PgtestnullRow::timezes,
-          Optional.empty(),
-          Optional.of("timetz[]"),
-          (row, value) -> row.withTimezes(value),
-          PgTypes.timetzArray);
-    }
-    ;
-
-    @Override
-    public OptField<UUID[], PgtestnullRow> uuides() {
-      return new OptField<UUID[], PgtestnullRow>(
-          _path,
-          "uuides",
-          PgtestnullRow::uuides,
-          Optional.empty(),
-          Optional.of("uuid[]"),
-          (row, value) -> row.withUuides(value),
-          PgTypes.uuidArray);
-    }
-    ;
-
-    @Override
-    public OptField<String[], PgtestnullRow> varchares() {
-      return new OptField<String[], PgtestnullRow>(
-          _path,
-          "varchares",
-          PgtestnullRow::varchares,
-          Optional.empty(),
-          Optional.of("varchar[]"),
-          (row, value) -> row.withVarchares(value),
-          PgTypes.textArray);
-    }
-    ;
-
-    @Override
-    public OptField<Xml[], PgtestnullRow> xmles() {
-      return new OptField<Xml[], PgtestnullRow>(
-          _path,
-          "xmles",
-          PgtestnullRow::xmles,
-          Optional.empty(),
-          Optional.of("xml[]"),
-          (row, value) -> row.withXmles(value),
-          PgTypes.xmlArray);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, PgtestnullRow>> columns() {
-      return java.util.List.of(
-          this.bool(),
-          this.box(),
-          this.bpchar(),
-          this.bytea(),
-          this.char_(),
-          this.circle(),
-          this.date(),
-          this.float4(),
-          this.float8(),
-          this.hstore(),
-          this.inet(),
-          this.int2(),
-          this.int2vector(),
-          this.int4(),
-          this.int8(),
-          this.interval(),
-          this.json(),
-          this.jsonb(),
-          this.line(),
-          this.lseg(),
-          this.money(),
-          this.mydomain(),
-          this.myenum(),
-          this.name(),
-          this.numeric(),
-          this.path(),
-          this.point(),
-          this.polygon(),
-          this.text(),
-          this.time(),
-          this.timestamp(),
-          this.timestampz(),
-          this.timez(),
-          this.uuid(),
-          this.varchar(),
-          this.vector(),
-          this.xml(),
-          this.boxes(),
-          this.bpchares(),
-          this.chares(),
-          this.circlees(),
-          this.datees(),
-          this.float4es(),
-          this.float8es(),
-          this.inetes(),
-          this.int2es(),
-          this.int2vectores(),
-          this.int4es(),
-          this.int8es(),
-          this.intervales(),
-          this.jsones(),
-          this.jsonbes(),
-          this.linees(),
-          this.lseges(),
-          this.moneyes(),
-          this.mydomaines(),
-          this.myenumes(),
-          this.namees(),
-          this.numerices(),
-          this.pathes(),
-          this.pointes(),
-          this.polygones(),
-          this.textes(),
-          this.timees(),
-          this.timestampes(),
-          this.timestampzes(),
-          this.timezes(),
-          this.uuides(),
-          this.varchares(),
-          this.xmles());
-    }
-    ;
-
-    @Override
-    public RelationStructure<PgtestnullFields, PgtestnullRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+public class PgtestnullFields
+    implements TupleExpr70<
+            Boolean,
+            PGbox, /* bpchar, max 3 chars */
+            String,
+            byte[], /* bpchar, max 1 chars */
+            String,
+            PGcircle,
+            LocalDate,
+            Float,
+            Double,
+            Map<String, String>,
+            Inet,
+            Short,
+            Int2Vector,
+            Integer,
+            Long,
+            PGInterval,
+            Json,
+            Jsonb,
+            PGline,
+            PGlseg,
+            Money,
+            Mydomain,
+            Myenum,
+            String,
+            BigDecimal,
+            PGpath,
+            PGpoint,
+            PGpolygon,
+            String,
+            LocalTime,
+            LocalDateTime,
+            Instant,
+            OffsetTime,
+            UUID,
+            String,
+            Vector,
+            Xml,
+            PGbox[], /* bpchar */
+            String[], /* bpchar */
+            String[],
+            PGcircle[],
+            LocalDate[],
+            Float[],
+            Double[],
+            Inet[],
+            Short[],
+            Int2Vector[],
+            Integer[],
+            Long[],
+            PGInterval[],
+            Json[],
+            Jsonb[],
+            PGline[],
+            PGlseg[],
+            Money[],
+            Mydomain[],
+            Myenum[],
+            String[],
+            BigDecimal[],
+            PGpath[],
+            PGpoint[],
+            PGpolygon[],
+            String[],
+            LocalTime[],
+            LocalDateTime[],
+            Instant[],
+            OffsetTime[],
+            UUID[],
+            String[],
+            Xml[]>,
+        RelationStructure<PgtestnullFields, PgtestnullRow>,
+        FieldsBase<PgtestnullRow> {
+  List<Path> _path;
+
+  public PgtestnullFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static PgtestnullFields structure =
+      new PgtestnullFields(java.util.Collections.emptyList());
+
+  public OptField<Boolean, PgtestnullRow> bool() {
+    return new OptField<Boolean, PgtestnullRow>(
+        _path,
+        "bool",
+        PgtestnullRow::bool,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withBool(value),
+        PgTypes.bool);
   }
-  ;
 
-  OptField<Boolean, PgtestnullRow> bool();
-
-  OptField<PGbox, PgtestnullRow> box();
-
-  OptField</* bpchar, max 3 chars */ String, PgtestnullRow> bpchar();
-
-  OptField<byte[], PgtestnullRow> bytea();
-
-  OptField</* bpchar, max 1 chars */ String, PgtestnullRow> char_();
-
-  OptField<PGcircle, PgtestnullRow> circle();
-
-  OptField<LocalDate, PgtestnullRow> date();
-
-  OptField<Float, PgtestnullRow> float4();
-
-  OptField<Double, PgtestnullRow> float8();
-
-  OptField<Map<String, String>, PgtestnullRow> hstore();
-
-  OptField<Inet, PgtestnullRow> inet();
-
-  OptField<Short, PgtestnullRow> int2();
-
-  OptField<Int2Vector, PgtestnullRow> int2vector();
-
-  OptField<Integer, PgtestnullRow> int4();
-
-  OptField<Long, PgtestnullRow> int8();
-
-  OptField<PGInterval, PgtestnullRow> interval();
-
-  OptField<Json, PgtestnullRow> json();
-
-  OptField<Jsonb, PgtestnullRow> jsonb();
-
-  OptField<PGline, PgtestnullRow> line();
-
-  OptField<PGlseg, PgtestnullRow> lseg();
-
-  OptField<Money, PgtestnullRow> money();
-
-  OptField<Mydomain, PgtestnullRow> mydomain();
-
-  OptField<Myenum, PgtestnullRow> myenum();
-
-  OptField<String, PgtestnullRow> name();
-
-  OptField<BigDecimal, PgtestnullRow> numeric();
-
-  OptField<PGpath, PgtestnullRow> path();
-
-  OptField<PGpoint, PgtestnullRow> point();
-
-  OptField<PGpolygon, PgtestnullRow> polygon();
-
-  OptField<String, PgtestnullRow> text();
-
-  OptField<LocalTime, PgtestnullRow> time();
-
-  OptField<LocalDateTime, PgtestnullRow> timestamp();
-
-  OptField<Instant, PgtestnullRow> timestampz();
-
-  OptField<OffsetTime, PgtestnullRow> timez();
-
-  OptField<UUID, PgtestnullRow> uuid();
-
-  OptField<String, PgtestnullRow> varchar();
-
-  OptField<Vector, PgtestnullRow> vector();
-
-  OptField<Xml, PgtestnullRow> xml();
-
-  OptField<PGbox[], PgtestnullRow> boxes();
-
-  OptField</* bpchar */ String[], PgtestnullRow> bpchares();
-
-  OptField</* bpchar */ String[], PgtestnullRow> chares();
-
-  OptField<PGcircle[], PgtestnullRow> circlees();
-
-  OptField<LocalDate[], PgtestnullRow> datees();
-
-  OptField<Float[], PgtestnullRow> float4es();
-
-  OptField<Double[], PgtestnullRow> float8es();
-
-  OptField<Inet[], PgtestnullRow> inetes();
-
-  OptField<Short[], PgtestnullRow> int2es();
-
-  OptField<Int2Vector[], PgtestnullRow> int2vectores();
-
-  OptField<Integer[], PgtestnullRow> int4es();
-
-  OptField<Long[], PgtestnullRow> int8es();
-
-  OptField<PGInterval[], PgtestnullRow> intervales();
-
-  OptField<Json[], PgtestnullRow> jsones();
-
-  OptField<Jsonb[], PgtestnullRow> jsonbes();
-
-  OptField<PGline[], PgtestnullRow> linees();
-
-  OptField<PGlseg[], PgtestnullRow> lseges();
-
-  OptField<Money[], PgtestnullRow> moneyes();
-
-  OptField<Mydomain[], PgtestnullRow> mydomaines();
-
-  OptField<Myenum[], PgtestnullRow> myenumes();
-
-  OptField<String[], PgtestnullRow> namees();
-
-  OptField<BigDecimal[], PgtestnullRow> numerices();
-
-  OptField<PGpath[], PgtestnullRow> pathes();
-
-  OptField<PGpoint[], PgtestnullRow> pointes();
-
-  OptField<PGpolygon[], PgtestnullRow> polygones();
-
-  OptField<String[], PgtestnullRow> textes();
-
-  OptField<LocalTime[], PgtestnullRow> timees();
-
-  OptField<LocalDateTime[], PgtestnullRow> timestampes();
-
-  OptField<Instant[], PgtestnullRow> timestampzes();
-
-  OptField<OffsetTime[], PgtestnullRow> timezes();
-
-  OptField<UUID[], PgtestnullRow> uuides();
-
-  OptField<String[], PgtestnullRow> varchares();
-
-  OptField<Xml[], PgtestnullRow> xmles();
+  public OptField<PGbox, PgtestnullRow> box() {
+    return new OptField<PGbox, PgtestnullRow>(
+        _path,
+        "box",
+        PgtestnullRow::box,
+        Optional.empty(),
+        Optional.of("box"),
+        (row, value) -> row.withBox(value),
+        PgTypes.box);
+  }
+
+  public OptField<String, PgtestnullRow> bpchar() {
+    return new OptField<String, PgtestnullRow>(
+        _path,
+        "bpchar",
+        PgtestnullRow::bpchar,
+        Optional.empty(),
+        Optional.of("bpchar"),
+        (row, value) -> row.withBpchar(value),
+        PgTypes.bpchar);
+  }
+
+  public OptField<byte[], PgtestnullRow> bytea() {
+    return new OptField<byte[], PgtestnullRow>(
+        _path,
+        "bytea",
+        PgtestnullRow::bytea,
+        Optional.empty(),
+        Optional.of("bytea"),
+        (row, value) -> row.withBytea(value),
+        PgTypes.bytea);
+  }
+
+  public OptField<String, PgtestnullRow> char_() {
+    return new OptField<String, PgtestnullRow>(
+        _path,
+        "char",
+        PgtestnullRow::char_,
+        Optional.empty(),
+        Optional.of("bpchar"),
+        (row, value) -> row.withChar(value),
+        PgTypes.bpchar);
+  }
+
+  public OptField<PGcircle, PgtestnullRow> circle() {
+    return new OptField<PGcircle, PgtestnullRow>(
+        _path,
+        "circle",
+        PgtestnullRow::circle,
+        Optional.empty(),
+        Optional.of("circle"),
+        (row, value) -> row.withCircle(value),
+        PgTypes.circle);
+  }
+
+  public OptField<LocalDate, PgtestnullRow> date() {
+    return new OptField<LocalDate, PgtestnullRow>(
+        _path,
+        "date",
+        PgtestnullRow::date,
+        Optional.empty(),
+        Optional.of("date"),
+        (row, value) -> row.withDate(value),
+        PgTypes.date);
+  }
+
+  public OptField<Float, PgtestnullRow> float4() {
+    return new OptField<Float, PgtestnullRow>(
+        _path,
+        "float4",
+        PgtestnullRow::float4,
+        Optional.empty(),
+        Optional.of("float4"),
+        (row, value) -> row.withFloat4(value),
+        PgTypes.float4);
+  }
+
+  public OptField<Double, PgtestnullRow> float8() {
+    return new OptField<Double, PgtestnullRow>(
+        _path,
+        "float8",
+        PgtestnullRow::float8,
+        Optional.empty(),
+        Optional.of("float8"),
+        (row, value) -> row.withFloat8(value),
+        PgTypes.float8);
+  }
+
+  public OptField<Map<String, String>, PgtestnullRow> hstore() {
+    return new OptField<Map<String, String>, PgtestnullRow>(
+        _path,
+        "hstore",
+        PgtestnullRow::hstore,
+        Optional.empty(),
+        Optional.of("hstore"),
+        (row, value) -> row.withHstore(value),
+        PgTypes.hstore);
+  }
+
+  public OptField<Inet, PgtestnullRow> inet() {
+    return new OptField<Inet, PgtestnullRow>(
+        _path,
+        "inet",
+        PgtestnullRow::inet,
+        Optional.empty(),
+        Optional.of("inet"),
+        (row, value) -> row.withInet(value),
+        PgTypes.inet);
+  }
+
+  public OptField<Short, PgtestnullRow> int2() {
+    return new OptField<Short, PgtestnullRow>(
+        _path,
+        "int2",
+        PgtestnullRow::int2,
+        Optional.empty(),
+        Optional.of("int2"),
+        (row, value) -> row.withInt2(value),
+        PgTypes.int2);
+  }
+
+  public OptField<Int2Vector, PgtestnullRow> int2vector() {
+    return new OptField<Int2Vector, PgtestnullRow>(
+        _path,
+        "int2vector",
+        PgtestnullRow::int2vector,
+        Optional.empty(),
+        Optional.of("int2vector"),
+        (row, value) -> row.withInt2vector(value),
+        PgTypes.int2vector);
+  }
+
+  public OptField<Integer, PgtestnullRow> int4() {
+    return new OptField<Integer, PgtestnullRow>(
+        _path,
+        "int4",
+        PgtestnullRow::int4,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withInt4(value),
+        PgTypes.int4);
+  }
+
+  public OptField<Long, PgtestnullRow> int8() {
+    return new OptField<Long, PgtestnullRow>(
+        _path,
+        "int8",
+        PgtestnullRow::int8,
+        Optional.empty(),
+        Optional.of("int8"),
+        (row, value) -> row.withInt8(value),
+        PgTypes.int8);
+  }
+
+  public OptField<PGInterval, PgtestnullRow> interval() {
+    return new OptField<PGInterval, PgtestnullRow>(
+        _path,
+        "interval",
+        PgtestnullRow::interval,
+        Optional.empty(),
+        Optional.of("interval"),
+        (row, value) -> row.withInterval(value),
+        PgTypes.interval);
+  }
+
+  public OptField<Json, PgtestnullRow> json() {
+    return new OptField<Json, PgtestnullRow>(
+        _path,
+        "json",
+        PgtestnullRow::json,
+        Optional.empty(),
+        Optional.of("json"),
+        (row, value) -> row.withJson(value),
+        PgTypes.json);
+  }
+
+  public OptField<Jsonb, PgtestnullRow> jsonb() {
+    return new OptField<Jsonb, PgtestnullRow>(
+        _path,
+        "jsonb",
+        PgtestnullRow::jsonb,
+        Optional.empty(),
+        Optional.of("jsonb"),
+        (row, value) -> row.withJsonb(value),
+        PgTypes.jsonb);
+  }
+
+  public OptField<PGline, PgtestnullRow> line() {
+    return new OptField<PGline, PgtestnullRow>(
+        _path,
+        "line",
+        PgtestnullRow::line,
+        Optional.empty(),
+        Optional.of("line"),
+        (row, value) -> row.withLine(value),
+        PgTypes.line);
+  }
+
+  public OptField<PGlseg, PgtestnullRow> lseg() {
+    return new OptField<PGlseg, PgtestnullRow>(
+        _path,
+        "lseg",
+        PgtestnullRow::lseg,
+        Optional.empty(),
+        Optional.of("lseg"),
+        (row, value) -> row.withLseg(value),
+        PgTypes.lseg);
+  }
+
+  public OptField<Money, PgtestnullRow> money() {
+    return new OptField<Money, PgtestnullRow>(
+        _path,
+        "money",
+        PgtestnullRow::money,
+        Optional.of("numeric"),
+        Optional.of("money"),
+        (row, value) -> row.withMoney(value),
+        PgTypes.money);
+  }
+
+  public OptField<Mydomain, PgtestnullRow> mydomain() {
+    return new OptField<Mydomain, PgtestnullRow>(
+        _path,
+        "mydomain",
+        PgtestnullRow::mydomain,
+        Optional.empty(),
+        Optional.of("text"),
+        (row, value) -> row.withMydomain(value),
+        Mydomain.dbType);
+  }
+
+  public OptField<Myenum, PgtestnullRow> myenum() {
+    return new OptField<Myenum, PgtestnullRow>(
+        _path,
+        "myenum",
+        PgtestnullRow::myenum,
+        Optional.empty(),
+        Optional.of("public.myenum"),
+        (row, value) -> row.withMyenum(value),
+        Myenum.dbType);
+  }
+
+  public OptField<String, PgtestnullRow> name() {
+    return new OptField<String, PgtestnullRow>(
+        _path,
+        "name",
+        PgtestnullRow::name,
+        Optional.empty(),
+        Optional.of("name"),
+        (row, value) -> row.withName(value),
+        PgTypes.name);
+  }
+
+  public OptField<BigDecimal, PgtestnullRow> numeric() {
+    return new OptField<BigDecimal, PgtestnullRow>(
+        _path,
+        "numeric",
+        PgtestnullRow::numeric,
+        Optional.empty(),
+        Optional.of("numeric"),
+        (row, value) -> row.withNumeric(value),
+        PgTypes.numeric);
+  }
+
+  public OptField<PGpath, PgtestnullRow> path() {
+    return new OptField<PGpath, PgtestnullRow>(
+        _path,
+        "path",
+        PgtestnullRow::path,
+        Optional.empty(),
+        Optional.of("path"),
+        (row, value) -> row.withPath(value),
+        PgTypes.path);
+  }
+
+  public OptField<PGpoint, PgtestnullRow> point() {
+    return new OptField<PGpoint, PgtestnullRow>(
+        _path,
+        "point",
+        PgtestnullRow::point,
+        Optional.empty(),
+        Optional.of("point"),
+        (row, value) -> row.withPoint(value),
+        PgTypes.point);
+  }
+
+  public OptField<PGpolygon, PgtestnullRow> polygon() {
+    return new OptField<PGpolygon, PgtestnullRow>(
+        _path,
+        "polygon",
+        PgtestnullRow::polygon,
+        Optional.empty(),
+        Optional.of("polygon"),
+        (row, value) -> row.withPolygon(value),
+        PgTypes.polygon);
+  }
+
+  public OptField<String, PgtestnullRow> text() {
+    return new OptField<String, PgtestnullRow>(
+        _path,
+        "text",
+        PgtestnullRow::text,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withText(value),
+        PgTypes.text);
+  }
+
+  public OptField<LocalTime, PgtestnullRow> time() {
+    return new OptField<LocalTime, PgtestnullRow>(
+        _path,
+        "time",
+        PgtestnullRow::time,
+        Optional.empty(),
+        Optional.of("time"),
+        (row, value) -> row.withTime(value),
+        PgTypes.time);
+  }
+
+  public OptField<LocalDateTime, PgtestnullRow> timestamp() {
+    return new OptField<LocalDateTime, PgtestnullRow>(
+        _path,
+        "timestamp",
+        PgtestnullRow::timestamp,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withTimestamp(value),
+        PgTypes.timestamp);
+  }
+
+  public OptField<Instant, PgtestnullRow> timestampz() {
+    return new OptField<Instant, PgtestnullRow>(
+        _path,
+        "timestampz",
+        PgtestnullRow::timestampz,
+        Optional.empty(),
+        Optional.of("timestamptz"),
+        (row, value) -> row.withTimestampz(value),
+        PgTypes.timestamptz);
+  }
+
+  public OptField<OffsetTime, PgtestnullRow> timez() {
+    return new OptField<OffsetTime, PgtestnullRow>(
+        _path,
+        "timez",
+        PgtestnullRow::timez,
+        Optional.empty(),
+        Optional.of("timetz"),
+        (row, value) -> row.withTimez(value),
+        PgTypes.timetz);
+  }
+
+  public OptField<UUID, PgtestnullRow> uuid() {
+    return new OptField<UUID, PgtestnullRow>(
+        _path,
+        "uuid",
+        PgtestnullRow::uuid,
+        Optional.empty(),
+        Optional.of("uuid"),
+        (row, value) -> row.withUuid(value),
+        PgTypes.uuid);
+  }
+
+  public OptField<String, PgtestnullRow> varchar() {
+    return new OptField<String, PgtestnullRow>(
+        _path,
+        "varchar",
+        PgtestnullRow::varchar,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withVarchar(value),
+        PgTypes.text);
+  }
+
+  public OptField<Vector, PgtestnullRow> vector() {
+    return new OptField<Vector, PgtestnullRow>(
+        _path,
+        "vector",
+        PgtestnullRow::vector,
+        Optional.empty(),
+        Optional.of("vector"),
+        (row, value) -> row.withVector(value),
+        PgTypes.vector);
+  }
+
+  public OptField<Xml, PgtestnullRow> xml() {
+    return new OptField<Xml, PgtestnullRow>(
+        _path,
+        "xml",
+        PgtestnullRow::xml,
+        Optional.empty(),
+        Optional.of("xml"),
+        (row, value) -> row.withXml(value),
+        PgTypes.xml);
+  }
+
+  public OptField<PGbox[], PgtestnullRow> boxes() {
+    return new OptField<PGbox[], PgtestnullRow>(
+        _path,
+        "boxes",
+        PgtestnullRow::boxes,
+        Optional.empty(),
+        Optional.of("box[]"),
+        (row, value) -> row.withBoxes(value),
+        PgTypes.boxArray);
+  }
+
+  public OptField</* bpchar */ String[], PgtestnullRow> bpchares() {
+    return new OptField</* bpchar */ String[], PgtestnullRow>(
+        _path,
+        "bpchares",
+        PgtestnullRow::bpchares,
+        Optional.empty(),
+        Optional.of("bpchar[]"),
+        (row, value) -> row.withBpchares(value),
+        PgTypes.bpcharArray);
+  }
+
+  public OptField</* bpchar */ String[], PgtestnullRow> chares() {
+    return new OptField</* bpchar */ String[], PgtestnullRow>(
+        _path,
+        "chares",
+        PgtestnullRow::chares,
+        Optional.empty(),
+        Optional.of("bpchar[]"),
+        (row, value) -> row.withChares(value),
+        PgTypes.bpcharArray);
+  }
+
+  public OptField<PGcircle[], PgtestnullRow> circlees() {
+    return new OptField<PGcircle[], PgtestnullRow>(
+        _path,
+        "circlees",
+        PgtestnullRow::circlees,
+        Optional.empty(),
+        Optional.of("circle[]"),
+        (row, value) -> row.withCirclees(value),
+        PgTypes.circleArray);
+  }
+
+  public OptField<LocalDate[], PgtestnullRow> datees() {
+    return new OptField<LocalDate[], PgtestnullRow>(
+        _path,
+        "datees",
+        PgtestnullRow::datees,
+        Optional.empty(),
+        Optional.of("date[]"),
+        (row, value) -> row.withDatees(value),
+        PgTypes.dateArray);
+  }
+
+  public OptField<Float[], PgtestnullRow> float4es() {
+    return new OptField<Float[], PgtestnullRow>(
+        _path,
+        "float4es",
+        PgtestnullRow::float4es,
+        Optional.empty(),
+        Optional.of("float4[]"),
+        (row, value) -> row.withFloat4es(value),
+        PgTypes.float4Array);
+  }
+
+  public OptField<Double[], PgtestnullRow> float8es() {
+    return new OptField<Double[], PgtestnullRow>(
+        _path,
+        "float8es",
+        PgtestnullRow::float8es,
+        Optional.empty(),
+        Optional.of("float8[]"),
+        (row, value) -> row.withFloat8es(value),
+        PgTypes.float8Array);
+  }
+
+  public OptField<Inet[], PgtestnullRow> inetes() {
+    return new OptField<Inet[], PgtestnullRow>(
+        _path,
+        "inetes",
+        PgtestnullRow::inetes,
+        Optional.empty(),
+        Optional.of("inet[]"),
+        (row, value) -> row.withInetes(value),
+        PgTypes.inetArray);
+  }
+
+  public OptField<Short[], PgtestnullRow> int2es() {
+    return new OptField<Short[], PgtestnullRow>(
+        _path,
+        "int2es",
+        PgtestnullRow::int2es,
+        Optional.empty(),
+        Optional.of("int2[]"),
+        (row, value) -> row.withInt2es(value),
+        PgTypes.int2Array);
+  }
+
+  public OptField<Int2Vector[], PgtestnullRow> int2vectores() {
+    return new OptField<Int2Vector[], PgtestnullRow>(
+        _path,
+        "int2vectores",
+        PgtestnullRow::int2vectores,
+        Optional.empty(),
+        Optional.of("int2vector[]"),
+        (row, value) -> row.withInt2vectores(value),
+        PgTypes.int2vectorArray);
+  }
+
+  public OptField<Integer[], PgtestnullRow> int4es() {
+    return new OptField<Integer[], PgtestnullRow>(
+        _path,
+        "int4es",
+        PgtestnullRow::int4es,
+        Optional.empty(),
+        Optional.of("int4[]"),
+        (row, value) -> row.withInt4es(value),
+        PgTypes.int4Array);
+  }
+
+  public OptField<Long[], PgtestnullRow> int8es() {
+    return new OptField<Long[], PgtestnullRow>(
+        _path,
+        "int8es",
+        PgtestnullRow::int8es,
+        Optional.empty(),
+        Optional.of("int8[]"),
+        (row, value) -> row.withInt8es(value),
+        PgTypes.int8Array);
+  }
+
+  public OptField<PGInterval[], PgtestnullRow> intervales() {
+    return new OptField<PGInterval[], PgtestnullRow>(
+        _path,
+        "intervales",
+        PgtestnullRow::intervales,
+        Optional.empty(),
+        Optional.of("interval[]"),
+        (row, value) -> row.withIntervales(value),
+        PgTypes.intervalArray);
+  }
+
+  public OptField<Json[], PgtestnullRow> jsones() {
+    return new OptField<Json[], PgtestnullRow>(
+        _path,
+        "jsones",
+        PgtestnullRow::jsones,
+        Optional.empty(),
+        Optional.of("json[]"),
+        (row, value) -> row.withJsones(value),
+        PgTypes.jsonArray);
+  }
+
+  public OptField<Jsonb[], PgtestnullRow> jsonbes() {
+    return new OptField<Jsonb[], PgtestnullRow>(
+        _path,
+        "jsonbes",
+        PgtestnullRow::jsonbes,
+        Optional.empty(),
+        Optional.of("jsonb[]"),
+        (row, value) -> row.withJsonbes(value),
+        PgTypes.jsonbArray);
+  }
+
+  public OptField<PGline[], PgtestnullRow> linees() {
+    return new OptField<PGline[], PgtestnullRow>(
+        _path,
+        "linees",
+        PgtestnullRow::linees,
+        Optional.empty(),
+        Optional.of("line[]"),
+        (row, value) -> row.withLinees(value),
+        PgTypes.lineArray);
+  }
+
+  public OptField<PGlseg[], PgtestnullRow> lseges() {
+    return new OptField<PGlseg[], PgtestnullRow>(
+        _path,
+        "lseges",
+        PgtestnullRow::lseges,
+        Optional.empty(),
+        Optional.of("lseg[]"),
+        (row, value) -> row.withLseges(value),
+        PgTypes.lsegArray);
+  }
+
+  public OptField<Money[], PgtestnullRow> moneyes() {
+    return new OptField<Money[], PgtestnullRow>(
+        _path,
+        "moneyes",
+        PgtestnullRow::moneyes,
+        Optional.of("numeric[]"),
+        Optional.of("money[]"),
+        (row, value) -> row.withMoneyes(value),
+        PgTypes.moneyArray);
+  }
+
+  public OptField<Mydomain[], PgtestnullRow> mydomaines() {
+    return new OptField<Mydomain[], PgtestnullRow>(
+        _path,
+        "mydomaines",
+        PgtestnullRow::mydomaines,
+        Optional.of("text[]"),
+        Optional.of("mydomain[]"),
+        (row, value) -> row.withMydomaines(value),
+        Mydomain.dbTypeArray);
+  }
+
+  public OptField<Myenum[], PgtestnullRow> myenumes() {
+    return new OptField<Myenum[], PgtestnullRow>(
+        _path,
+        "myenumes",
+        PgtestnullRow::myenumes,
+        Optional.empty(),
+        Optional.of("myenum[]"),
+        (row, value) -> row.withMyenumes(value),
+        Myenum.dbTypeArray);
+  }
+
+  public OptField<String[], PgtestnullRow> namees() {
+    return new OptField<String[], PgtestnullRow>(
+        _path,
+        "namees",
+        PgtestnullRow::namees,
+        Optional.empty(),
+        Optional.of("name[]"),
+        (row, value) -> row.withNamees(value),
+        PgTypes.nameArray);
+  }
+
+  public OptField<BigDecimal[], PgtestnullRow> numerices() {
+    return new OptField<BigDecimal[], PgtestnullRow>(
+        _path,
+        "numerices",
+        PgtestnullRow::numerices,
+        Optional.empty(),
+        Optional.of("numeric[]"),
+        (row, value) -> row.withNumerices(value),
+        PgTypes.numericArray);
+  }
+
+  public OptField<PGpath[], PgtestnullRow> pathes() {
+    return new OptField<PGpath[], PgtestnullRow>(
+        _path,
+        "pathes",
+        PgtestnullRow::pathes,
+        Optional.empty(),
+        Optional.of("path[]"),
+        (row, value) -> row.withPathes(value),
+        PgTypes.pathArray);
+  }
+
+  public OptField<PGpoint[], PgtestnullRow> pointes() {
+    return new OptField<PGpoint[], PgtestnullRow>(
+        _path,
+        "pointes",
+        PgtestnullRow::pointes,
+        Optional.empty(),
+        Optional.of("point[]"),
+        (row, value) -> row.withPointes(value),
+        PgTypes.pointArray);
+  }
+
+  public OptField<PGpolygon[], PgtestnullRow> polygones() {
+    return new OptField<PGpolygon[], PgtestnullRow>(
+        _path,
+        "polygones",
+        PgtestnullRow::polygones,
+        Optional.empty(),
+        Optional.of("polygon[]"),
+        (row, value) -> row.withPolygones(value),
+        PgTypes.polygonArray);
+  }
+
+  public OptField<String[], PgtestnullRow> textes() {
+    return new OptField<String[], PgtestnullRow>(
+        _path,
+        "textes",
+        PgtestnullRow::textes,
+        Optional.empty(),
+        Optional.of("text[]"),
+        (row, value) -> row.withTextes(value),
+        PgTypes.textArray);
+  }
+
+  public OptField<LocalTime[], PgtestnullRow> timees() {
+    return new OptField<LocalTime[], PgtestnullRow>(
+        _path,
+        "timees",
+        PgtestnullRow::timees,
+        Optional.empty(),
+        Optional.of("time[]"),
+        (row, value) -> row.withTimees(value),
+        PgTypes.timeArray);
+  }
+
+  public OptField<LocalDateTime[], PgtestnullRow> timestampes() {
+    return new OptField<LocalDateTime[], PgtestnullRow>(
+        _path,
+        "timestampes",
+        PgtestnullRow::timestampes,
+        Optional.empty(),
+        Optional.of("timestamp[]"),
+        (row, value) -> row.withTimestampes(value),
+        PgTypes.timestampArray);
+  }
+
+  public OptField<Instant[], PgtestnullRow> timestampzes() {
+    return new OptField<Instant[], PgtestnullRow>(
+        _path,
+        "timestampzes",
+        PgtestnullRow::timestampzes,
+        Optional.empty(),
+        Optional.of("timestamptz[]"),
+        (row, value) -> row.withTimestampzes(value),
+        PgTypes.timestamptzArray);
+  }
+
+  public OptField<OffsetTime[], PgtestnullRow> timezes() {
+    return new OptField<OffsetTime[], PgtestnullRow>(
+        _path,
+        "timezes",
+        PgtestnullRow::timezes,
+        Optional.empty(),
+        Optional.of("timetz[]"),
+        (row, value) -> row.withTimezes(value),
+        PgTypes.timetzArray);
+  }
+
+  public OptField<UUID[], PgtestnullRow> uuides() {
+    return new OptField<UUID[], PgtestnullRow>(
+        _path,
+        "uuides",
+        PgtestnullRow::uuides,
+        Optional.empty(),
+        Optional.of("uuid[]"),
+        (row, value) -> row.withUuides(value),
+        PgTypes.uuidArray);
+  }
+
+  public OptField<String[], PgtestnullRow> varchares() {
+    return new OptField<String[], PgtestnullRow>(
+        _path,
+        "varchares",
+        PgtestnullRow::varchares,
+        Optional.empty(),
+        Optional.of("varchar[]"),
+        (row, value) -> row.withVarchares(value),
+        PgTypes.textArray);
+  }
+
+  public OptField<Xml[], PgtestnullRow> xmles() {
+    return new OptField<Xml[], PgtestnullRow>(
+        _path,
+        "xmles",
+        PgtestnullRow::xmles,
+        Optional.empty(),
+        Optional.of("xml[]"),
+        (row, value) -> row.withXmles(value),
+        PgTypes.xmlArray);
+  }
 
   @Override
-  List<FieldLike<?, PgtestnullRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<PgtestnullRow> rowParser() {
+  public List<FieldLike<?, PgtestnullRow>> columns() {
+    return java.util.List.of(
+        this.bool(),
+        this.box(),
+        this.bpchar(),
+        this.bytea(),
+        this.char_(),
+        this.circle(),
+        this.date(),
+        this.float4(),
+        this.float8(),
+        this.hstore(),
+        this.inet(),
+        this.int2(),
+        this.int2vector(),
+        this.int4(),
+        this.int8(),
+        this.interval(),
+        this.json(),
+        this.jsonb(),
+        this.line(),
+        this.lseg(),
+        this.money(),
+        this.mydomain(),
+        this.myenum(),
+        this.name(),
+        this.numeric(),
+        this.path(),
+        this.point(),
+        this.polygon(),
+        this.text(),
+        this.time(),
+        this.timestamp(),
+        this.timestampz(),
+        this.timez(),
+        this.uuid(),
+        this.varchar(),
+        this.vector(),
+        this.xml(),
+        this.boxes(),
+        this.bpchares(),
+        this.chares(),
+        this.circlees(),
+        this.datees(),
+        this.float4es(),
+        this.float8es(),
+        this.inetes(),
+        this.int2es(),
+        this.int2vectores(),
+        this.int4es(),
+        this.int8es(),
+        this.intervales(),
+        this.jsones(),
+        this.jsonbes(),
+        this.linees(),
+        this.lseges(),
+        this.moneyes(),
+        this.mydomaines(),
+        this.myenumes(),
+        this.namees(),
+        this.numerices(),
+        this.pathes(),
+        this.pointes(),
+        this.polygones(),
+        this.textes(),
+        this.timees(),
+        this.timestampes(),
+        this.timestampzes(),
+        this.timezes(),
+        this.uuides(),
+        this.varchares(),
+        this.xmles());
+  }
+
+  @Override
+  public RowParser<PgtestnullRow> rowParser() {
     return PgtestnullRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<PgtestnullFields, PgtestnullRow> withPaths(List<Path> _path) {
+    return new PgtestnullFields(_path);
+  }
+
+  @Override
+  public SqlExpr<Boolean> _1() {
+    return bool();
+  }
+
+  @Override
+  public SqlExpr<PGbox> _2() {
+    return box();
+  }
+
+  @Override
+  public SqlExpr</* bpchar, max 3 chars */ String> _3() {
+    return bpchar();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _4() {
+    return bytea();
+  }
+
+  @Override
+  public SqlExpr</* bpchar, max 1 chars */ String> _5() {
+    return char_();
+  }
+
+  @Override
+  public SqlExpr<PGcircle> _6() {
+    return circle();
+  }
+
+  @Override
+  public SqlExpr<LocalDate> _7() {
+    return date();
+  }
+
+  @Override
+  public SqlExpr<Float> _8() {
+    return float4();
+  }
+
+  @Override
+  public SqlExpr<Double> _9() {
+    return float8();
+  }
+
+  @Override
+  public SqlExpr<Map<String, String>> _10() {
+    return hstore();
+  }
+
+  @Override
+  public SqlExpr<Inet> _11() {
+    return inet();
+  }
+
+  @Override
+  public SqlExpr<Short> _12() {
+    return int2();
+  }
+
+  @Override
+  public SqlExpr<Int2Vector> _13() {
+    return int2vector();
+  }
+
+  @Override
+  public SqlExpr<Integer> _14() {
+    return int4();
+  }
+
+  @Override
+  public SqlExpr<Long> _15() {
+    return int8();
+  }
+
+  @Override
+  public SqlExpr<PGInterval> _16() {
+    return interval();
+  }
+
+  @Override
+  public SqlExpr<Json> _17() {
+    return json();
+  }
+
+  @Override
+  public SqlExpr<Jsonb> _18() {
+    return jsonb();
+  }
+
+  @Override
+  public SqlExpr<PGline> _19() {
+    return line();
+  }
+
+  @Override
+  public SqlExpr<PGlseg> _20() {
+    return lseg();
+  }
+
+  @Override
+  public SqlExpr<Money> _21() {
+    return money();
+  }
+
+  @Override
+  public SqlExpr<Mydomain> _22() {
+    return mydomain();
+  }
+
+  @Override
+  public SqlExpr<Myenum> _23() {
+    return myenum();
+  }
+
+  @Override
+  public SqlExpr<String> _24() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _25() {
+    return numeric();
+  }
+
+  @Override
+  public SqlExpr<PGpath> _26() {
+    return path();
+  }
+
+  @Override
+  public SqlExpr<PGpoint> _27() {
+    return point();
+  }
+
+  @Override
+  public SqlExpr<PGpolygon> _28() {
+    return polygon();
+  }
+
+  @Override
+  public SqlExpr<String> _29() {
+    return text();
+  }
+
+  @Override
+  public SqlExpr<LocalTime> _30() {
+    return time();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _31() {
+    return timestamp();
+  }
+
+  @Override
+  public SqlExpr<Instant> _32() {
+    return timestampz();
+  }
+
+  @Override
+  public SqlExpr<OffsetTime> _33() {
+    return timez();
+  }
+
+  @Override
+  public SqlExpr<UUID> _34() {
+    return uuid();
+  }
+
+  @Override
+  public SqlExpr<String> _35() {
+    return varchar();
+  }
+
+  @Override
+  public SqlExpr<Vector> _36() {
+    return vector();
+  }
+
+  @Override
+  public SqlExpr<Xml> _37() {
+    return xml();
+  }
+
+  @Override
+  public SqlExpr<PGbox[]> _38() {
+    return boxes();
+  }
+
+  @Override
+  public SqlExpr</* bpchar */ String[]> _39() {
+    return bpchares();
+  }
+
+  @Override
+  public SqlExpr</* bpchar */ String[]> _40() {
+    return chares();
+  }
+
+  @Override
+  public SqlExpr<PGcircle[]> _41() {
+    return circlees();
+  }
+
+  @Override
+  public SqlExpr<LocalDate[]> _42() {
+    return datees();
+  }
+
+  @Override
+  public SqlExpr<Float[]> _43() {
+    return float4es();
+  }
+
+  @Override
+  public SqlExpr<Double[]> _44() {
+    return float8es();
+  }
+
+  @Override
+  public SqlExpr<Inet[]> _45() {
+    return inetes();
+  }
+
+  @Override
+  public SqlExpr<Short[]> _46() {
+    return int2es();
+  }
+
+  @Override
+  public SqlExpr<Int2Vector[]> _47() {
+    return int2vectores();
+  }
+
+  @Override
+  public SqlExpr<Integer[]> _48() {
+    return int4es();
+  }
+
+  @Override
+  public SqlExpr<Long[]> _49() {
+    return int8es();
+  }
+
+  @Override
+  public SqlExpr<PGInterval[]> _50() {
+    return intervales();
+  }
+
+  @Override
+  public SqlExpr<Json[]> _51() {
+    return jsones();
+  }
+
+  @Override
+  public SqlExpr<Jsonb[]> _52() {
+    return jsonbes();
+  }
+
+  @Override
+  public SqlExpr<PGline[]> _53() {
+    return linees();
+  }
+
+  @Override
+  public SqlExpr<PGlseg[]> _54() {
+    return lseges();
+  }
+
+  @Override
+  public SqlExpr<Money[]> _55() {
+    return moneyes();
+  }
+
+  @Override
+  public SqlExpr<Mydomain[]> _56() {
+    return mydomaines();
+  }
+
+  @Override
+  public SqlExpr<Myenum[]> _57() {
+    return myenumes();
+  }
+
+  @Override
+  public SqlExpr<String[]> _58() {
+    return namees();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal[]> _59() {
+    return numerices();
+  }
+
+  @Override
+  public SqlExpr<PGpath[]> _60() {
+    return pathes();
+  }
+
+  @Override
+  public SqlExpr<PGpoint[]> _61() {
+    return pointes();
+  }
+
+  @Override
+  public SqlExpr<PGpolygon[]> _62() {
+    return polygones();
+  }
+
+  @Override
+  public SqlExpr<String[]> _63() {
+    return textes();
+  }
+
+  @Override
+  public SqlExpr<LocalTime[]> _64() {
+    return timees();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime[]> _65() {
+    return timestampes();
+  }
+
+  @Override
+  public SqlExpr<Instant[]> _66() {
+    return timestampzes();
+  }
+
+  @Override
+  public SqlExpr<OffsetTime[]> _67() {
+    return timezes();
+  }
+
+  @Override
+  public SqlExpr<UUID[]> _68() {
+    return uuides();
+  }
+
+  @Override
+  public SqlExpr<String[]> _69() {
+    return varchares();
+  }
+
+  @Override
+  public SqlExpr<Xml[]> _70() {
+    return xmles();
+  }
 }

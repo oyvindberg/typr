@@ -7,84 +7,81 @@ package testdb.check_constraint_test
 
 import dev.typr.foundations.Db2Types
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr4
 
-trait CheckConstraintTestFields extends FieldsExpr0[CheckConstraintTestRow] {
-  def id: IdField[CheckConstraintTestId, CheckConstraintTestRow]
+class CheckConstraintTestFields(val `_path`: java.util.List[Path]) extends TupleExpr4[CheckConstraintTestId, Int, String, BigDecimal] with RelationStructure[CheckConstraintTestFields, CheckConstraintTestRow]  with FieldsBase[CheckConstraintTestRow] {
+  def id: IdField[CheckConstraintTestId, CheckConstraintTestRow] = {
+    new IdField[CheckConstraintTestId, CheckConstraintTestRow](
+      _path,
+      "ID",
+      _.id,
+      None,
+      None,
+      (row, value) => row.copy(id = value),
+      CheckConstraintTestId.dbType
+    )
+  }
 
-  def age: Field[Int, CheckConstraintTestRow]
+  def age: Field[Int, CheckConstraintTestRow] = {
+    new Field[Int, CheckConstraintTestRow](
+      _path,
+      "AGE",
+      _.age,
+      None,
+      None,
+      (row, value) => row.copy(age = value),
+      ScalaDbTypes.Db2Types.integer
+    )
+  }
 
-  def status: Field[String, CheckConstraintTestRow]
+  def status: Field[String, CheckConstraintTestRow] = {
+    new Field[String, CheckConstraintTestRow](
+      _path,
+      "STATUS",
+      _.status,
+      None,
+      None,
+      (row, value) => row.copy(status = value),
+      Db2Types.varchar
+    )
+  }
 
-  def price: OptField[BigDecimal, CheckConstraintTestRow]
+  def price: OptField[BigDecimal, CheckConstraintTestRow] = {
+    new OptField[BigDecimal, CheckConstraintTestRow](
+      _path,
+      "PRICE",
+      _.price,
+      None,
+      None,
+      (row, value) => row.copy(price = value),
+      ScalaDbTypes.Db2Types.decimal
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, CheckConstraintTestRow]]
+  override def columns: java.util.List[FieldLike[?, CheckConstraintTestRow]] = java.util.List.of(this.id.underlying, this.age.underlying, this.status.underlying, this.price.underlying)
 
   override def rowParser: RowParser[CheckConstraintTestRow] = CheckConstraintTestRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CheckConstraintTestFields, CheckConstraintTestRow] = new CheckConstraintTestFields(`_path`)
+
+  override def `_1`: SqlExpr[CheckConstraintTestId] = id
+
+  override def `_2`: SqlExpr[Int] = age
+
+  override def `_3`: SqlExpr[String] = status
+
+  override def `_4`: SqlExpr[BigDecimal] = price
 }
 
 object CheckConstraintTestFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends CheckConstraintTestFields with RelationStructure[CheckConstraintTestFields, CheckConstraintTestRow] {
-
-    override def id: IdField[CheckConstraintTestId, CheckConstraintTestRow] = {
-      new IdField[CheckConstraintTestId, CheckConstraintTestRow](
-        _path,
-        "ID",
-        _.id,
-        None,
-        None,
-        (row, value) => row.copy(id = value),
-        CheckConstraintTestId.pgType
-      )
-    }
-
-    override def age: Field[Int, CheckConstraintTestRow] = {
-      new Field[Int, CheckConstraintTestRow](
-        _path,
-        "AGE",
-        _.age,
-        None,
-        None,
-        (row, value) => row.copy(age = value),
-        ScalaDbTypes.Db2Types.integer
-      )
-    }
-
-    override def status: Field[String, CheckConstraintTestRow] = {
-      new Field[String, CheckConstraintTestRow](
-        _path,
-        "STATUS",
-        _.status,
-        None,
-        None,
-        (row, value) => row.copy(status = value),
-        Db2Types.varchar
-      )
-    }
-
-    override def price: OptField[BigDecimal, CheckConstraintTestRow] = {
-      new OptField[BigDecimal, CheckConstraintTestRow](
-        _path,
-        "PRICE",
-        _.price,
-        None,
-        None,
-        (row, value) => row.copy(price = value),
-        ScalaDbTypes.Db2Types.decimal
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, CheckConstraintTestRow]] = java.util.List.of(this.id.underlying, this.age.underlying, this.status.underlying, this.price.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CheckConstraintTestFields, CheckConstraintTestRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: CheckConstraintTestFields = new CheckConstraintTestFields(java.util.Collections.emptyList())
 }

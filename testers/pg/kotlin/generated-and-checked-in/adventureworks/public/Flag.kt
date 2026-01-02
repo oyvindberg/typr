@@ -20,10 +20,10 @@ data class Flag(@JsonValue val value: Boolean) {
     val bijection: Bijection<Flag, Boolean> =
       Bijection.of(Flag::value, ::Flag)
 
-    val pgType: PgType<Flag> =
+    val dbType: PgType<Flag> =
       KotlinDbTypes.PgTypes.bool.bimap(::Flag, Flag::value).renamed("\"public\".\"Flag\"")
 
-    val pgTypeArray: PgType<Array<Flag>> =
+    val dbTypeArray: PgType<Array<Flag>> =
       PgTypes.boolArray.bimap({ xs -> arrayMap.map(xs, ::Flag, Flag::class.java) }, { xs -> arrayMap.map(xs, Flag::value, Boolean::class.javaObjectType) }).renamed("\"public\".\"Flag\"[]")
   }
 }

@@ -7,36 +7,34 @@ package testdb.db2test_identity_always
 
 import dev.typr.foundations.Db2Types
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
+import dev.typr.foundations.kotlin.TupleExpr2
 import kotlin.collections.List
 
-interface Db2testIdentityAlwaysFields : FieldsExpr<Db2testIdentityAlwaysRow> {
-  abstract override fun columns(): List<FieldLike<*, Db2testIdentityAlwaysRow>>
+data class Db2testIdentityAlwaysFields(val _path: List<Path>) : TupleExpr2<Db2testIdentityAlwaysId, String>, RelationStructure<Db2testIdentityAlwaysFields, Db2testIdentityAlwaysRow>, FieldsBase<Db2testIdentityAlwaysRow> {
+  override fun _1(): SqlExpr<Db2testIdentityAlwaysId> = id()
 
-  abstract fun id(): IdField<Db2testIdentityAlwaysId, Db2testIdentityAlwaysRow>
+  override fun _2(): SqlExpr<String> = name()
 
-  abstract fun name(): Field<String, Db2testIdentityAlwaysRow>
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, Db2testIdentityAlwaysRow>> = listOf(this.id().underlying, this.name().underlying)
+
+  fun id(): IdField<Db2testIdentityAlwaysId, Db2testIdentityAlwaysRow> = IdField<Db2testIdentityAlwaysId, Db2testIdentityAlwaysRow>(_path, "ID", Db2testIdentityAlwaysRow::id, null, null, { row, value -> row.copy(id = value) }, Db2testIdentityAlwaysId.dbType)
+
+  fun name(): Field<String, Db2testIdentityAlwaysRow> = Field<String, Db2testIdentityAlwaysRow>(_path, "NAME", Db2testIdentityAlwaysRow::name, null, null, { row, value -> row.copy(name = value) }, Db2Types.varchar)
 
   override fun rowParser(): RowParser<Db2testIdentityAlwaysRow> = Db2testIdentityAlwaysRow._rowParser.underlying
 
+  override fun withPaths(_path: List<Path>): RelationStructure<Db2testIdentityAlwaysFields, Db2testIdentityAlwaysRow> = Db2testIdentityAlwaysFields(_path)
+
   companion object {
-    data class Impl(val _path: List<Path>) : Db2testIdentityAlwaysFields, RelationStructure<Db2testIdentityAlwaysFields, Db2testIdentityAlwaysRow> {
-      override fun id(): IdField<Db2testIdentityAlwaysId, Db2testIdentityAlwaysRow> = IdField<Db2testIdentityAlwaysId, Db2testIdentityAlwaysRow>(_path, "ID", Db2testIdentityAlwaysRow::id, null, null, { row, value -> row.copy(id = value) }, Db2testIdentityAlwaysId.pgType)
-
-      override fun name(): Field<String, Db2testIdentityAlwaysRow> = Field<String, Db2testIdentityAlwaysRow>(_path, "NAME", Db2testIdentityAlwaysRow::name, null, null, { row, value -> row.copy(name = value) }, Db2Types.varchar)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, Db2testIdentityAlwaysRow>> = listOf(this.id().underlying, this.name().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<Db2testIdentityAlwaysFields, Db2testIdentityAlwaysRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: Db2testIdentityAlwaysFields = Db2testIdentityAlwaysFields(emptyList<Path>())
   }
 }

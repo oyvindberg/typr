@@ -26,9 +26,8 @@ import oracledb.TagVarrayT;
 public class ProductsRepoImpl implements ProductsRepo {
   @Override
   public DeleteBuilder<ProductsFields, ProductsRow> delete() {
-    return DeleteBuilder.of("\"PRODUCTS\"", ProductsFields.structure(), Dialect.ORACLE);
+    return DeleteBuilder.of("\"PRODUCTS\"", ProductsFields.structure, Dialect.ORACLE);
   }
-  ;
 
   @Override
   public Boolean deleteById(ProductsId productId, Connection c) {
@@ -40,7 +39,6 @@ public class ProductsRepoImpl implements ProductsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(ProductsId[] productIds, Connection c) {
@@ -56,7 +54,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductsId insert(ProductsRow unsaved, Connection c) {
@@ -78,7 +75,6 @@ public class ProductsRepoImpl implements ProductsRepo {
             new String[] {"PRODUCT_ID"}, ProductsId._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductsId insert(ProductsRowUnsaved unsaved, Connection c) {
@@ -119,14 +115,12 @@ public class ProductsRepoImpl implements ProductsRepo {
             new String[] {"PRODUCT_ID"}, ProductsId._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<ProductsFields, ProductsRow> select() {
     return SelectBuilder.of(
-        "\"PRODUCTS\"", ProductsFields.structure(), ProductsRow._rowParser, Dialect.ORACLE);
+        "\"PRODUCTS\"", ProductsFields.structure, ProductsRow._rowParser, Dialect.ORACLE);
   }
-  ;
 
   @Override
   public List<ProductsRow> selectAll(Connection c) {
@@ -137,7 +131,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .query(ProductsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<ProductsRow> selectById(ProductsId productId, Connection c) {
@@ -151,7 +144,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .query(ProductsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductsRow> selectByIds(ProductsId[] productIds, Connection c) {
@@ -169,7 +161,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .query(ProductsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<ProductsId, ProductsRow> selectByIdsTracked(ProductsId[] productIds, Connection c) {
@@ -177,7 +168,6 @@ public class ProductsRepoImpl implements ProductsRepo {
     selectByIds(productIds, c).forEach(row -> ret.put(row.productId(), row));
     return ret;
   }
-  ;
 
   @Override
   public Optional<ProductsRow> selectByUniqueSku(String sku, Connection c) {
@@ -191,14 +181,12 @@ public class ProductsRepoImpl implements ProductsRepo {
         .query(ProductsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<ProductsFields, ProductsRow> update() {
     return UpdateBuilder.of(
-        "\"PRODUCTS\"", ProductsFields.structure(), ProductsRow._rowParser, Dialect.ORACLE);
+        "\"PRODUCTS\"", ProductsFields.structure, ProductsRow._rowParser, Dialect.ORACLE);
   }
-  ;
 
   @Override
   public Boolean update(ProductsRow row, Connection c) {
@@ -220,7 +208,6 @@ public class ProductsRepoImpl implements ProductsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public void upsert(ProductsRow unsaved, Connection c) {
@@ -257,7 +244,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public void upsertBatch(Iterator<ProductsRow> unsaved, Connection c) {
@@ -275,5 +261,4 @@ public class ProductsRepoImpl implements ProductsRepo {
         .updateMany(ProductsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

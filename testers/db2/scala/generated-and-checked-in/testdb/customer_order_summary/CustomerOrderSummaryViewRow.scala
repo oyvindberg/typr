@@ -7,6 +7,7 @@ package testdb.customer_order_summary
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -17,7 +18,15 @@ case class CustomerOrderSummaryViewRow(
   @JsonProperty("NAME") name: String,
   @JsonProperty("ORDER_COUNT") orderCount: Int,
   @JsonProperty("TOTAL_SPENT") totalSpent: BigDecimal
-)
+) extends Tuple4[Int, String, Int, BigDecimal] {
+  override def `_1`: Int = customerId
+
+  override def `_2`: String = name
+
+  override def `_3`: Int = orderCount
+
+  override def `_4`: BigDecimal = totalSpent
+}
 
 object CustomerOrderSummaryViewRow {
   val `_rowParser`: RowParser[CustomerOrderSummaryViewRow] = RowParsers.of(ScalaDbTypes.Db2Types.integer, Db2Types.varchar, ScalaDbTypes.Db2Types.integer, ScalaDbTypes.Db2Types.decimal)(CustomerOrderSummaryViewRow.apply)(row => Array[Any](row.customerId, row.name, row.orderCount, row.totalSpent))

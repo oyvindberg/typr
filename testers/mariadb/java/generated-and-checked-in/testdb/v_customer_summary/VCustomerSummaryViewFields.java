@@ -7,12 +7,14 @@ package testdb.v_customer_summary;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr10;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,196 +22,217 @@ import java.util.Optional;
 import testdb.customer_status.CustomerStatusId;
 import testdb.customers.CustomersId;
 
-public interface VCustomerSummaryViewFields extends FieldsExpr<VCustomerSummaryViewRow> {
-  record Impl(List<Path> _path)
-      implements VCustomerSummaryViewFields,
-          RelationStructure<VCustomerSummaryViewFields, VCustomerSummaryViewRow> {
-    @Override
-    public Field<CustomersId, VCustomerSummaryViewRow> customerId() {
-      return new Field<CustomersId, VCustomerSummaryViewRow>(
-          _path,
-          "customer_id",
-          VCustomerSummaryViewRow::customerId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerId(value),
-          CustomersId.pgType);
-    }
-    ;
+public class VCustomerSummaryViewFields
+    implements TupleExpr10<
+            CustomersId,
+            String,
+            String,
+            String,
+            CustomerStatusId,
+            LocalDateTime,
+            LocalDateTime,
+            Long,
+            BigDecimal,
+            LocalDateTime>,
+        RelationStructure<VCustomerSummaryViewFields, VCustomerSummaryViewRow>,
+        FieldsBase<VCustomerSummaryViewRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, VCustomerSummaryViewRow> email() {
-      return new Field<String, VCustomerSummaryViewRow>(
-          _path,
-          "email",
-          VCustomerSummaryViewRow::email,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withEmail(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, VCustomerSummaryViewRow> fullName() {
-      return new OptField<String, VCustomerSummaryViewRow>(
-          _path,
-          "full_name",
-          VCustomerSummaryViewRow::fullName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withFullName(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, VCustomerSummaryViewRow> tier() {
-      return new Field<String, VCustomerSummaryViewRow>(
-          _path,
-          "tier",
-          VCustomerSummaryViewRow::tier,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTier(value),
-          MariaTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<CustomerStatusId, VCustomerSummaryViewRow> status() {
-      return new Field<CustomerStatusId, VCustomerSummaryViewRow>(
-          _path,
-          "status",
-          VCustomerSummaryViewRow::status,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withStatus(value),
-          CustomerStatusId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, VCustomerSummaryViewRow> createdAt() {
-      return new Field<LocalDateTime, VCustomerSummaryViewRow>(
-          _path,
-          "created_at",
-          VCustomerSummaryViewRow::createdAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCreatedAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, VCustomerSummaryViewRow> lastLoginAt() {
-      return new OptField<LocalDateTime, VCustomerSummaryViewRow>(
-          _path,
-          "last_login_at",
-          VCustomerSummaryViewRow::lastLoginAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withLastLoginAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public Field<Long, VCustomerSummaryViewRow> totalOrders() {
-      return new Field<Long, VCustomerSummaryViewRow>(
-          _path,
-          "total_orders",
-          VCustomerSummaryViewRow::totalOrders,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTotalOrders(value),
-          MariaTypes.bigint);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, VCustomerSummaryViewRow> lifetimeValue() {
-      return new Field<BigDecimal, VCustomerSummaryViewRow>(
-          _path,
-          "lifetime_value",
-          VCustomerSummaryViewRow::lifetimeValue,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withLifetimeValue(value),
-          MariaTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, VCustomerSummaryViewRow> lastOrderDate() {
-      return new OptField<LocalDateTime, VCustomerSummaryViewRow>(
-          _path,
-          "last_order_date",
-          VCustomerSummaryViewRow::lastOrderDate,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withLastOrderDate(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, VCustomerSummaryViewRow>> columns() {
-      return java.util.List.of(
-          this.customerId(),
-          this.email(),
-          this.fullName(),
-          this.tier(),
-          this.status(),
-          this.createdAt(),
-          this.lastLoginAt(),
-          this.totalOrders(),
-          this.lifetimeValue(),
-          this.lastOrderDate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<VCustomerSummaryViewFields, VCustomerSummaryViewRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public VCustomerSummaryViewFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static VCustomerSummaryViewFields structure =
+      new VCustomerSummaryViewFields(java.util.Collections.emptyList());
+
+  public Field<CustomersId, VCustomerSummaryViewRow> customerId() {
+    return new Field<CustomersId, VCustomerSummaryViewRow>(
+        _path,
+        "customer_id",
+        VCustomerSummaryViewRow::customerId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerId(value),
+        CustomersId.dbType);
   }
-  ;
 
-  Field<CustomersId, VCustomerSummaryViewRow> customerId();
+  public Field<String, VCustomerSummaryViewRow> email() {
+    return new Field<String, VCustomerSummaryViewRow>(
+        _path,
+        "email",
+        VCustomerSummaryViewRow::email,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withEmail(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, VCustomerSummaryViewRow> email();
+  public OptField<String, VCustomerSummaryViewRow> fullName() {
+    return new OptField<String, VCustomerSummaryViewRow>(
+        _path,
+        "full_name",
+        VCustomerSummaryViewRow::fullName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withFullName(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, VCustomerSummaryViewRow> fullName();
+  public Field<String, VCustomerSummaryViewRow> tier() {
+    return new Field<String, VCustomerSummaryViewRow>(
+        _path,
+        "tier",
+        VCustomerSummaryViewRow::tier,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTier(value),
+        MariaTypes.text);
+  }
 
-  Field<String, VCustomerSummaryViewRow> tier();
+  public Field<CustomerStatusId, VCustomerSummaryViewRow> status() {
+    return new Field<CustomerStatusId, VCustomerSummaryViewRow>(
+        _path,
+        "status",
+        VCustomerSummaryViewRow::status,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withStatus(value),
+        CustomerStatusId.dbType);
+  }
 
-  Field<CustomerStatusId, VCustomerSummaryViewRow> status();
+  public Field<LocalDateTime, VCustomerSummaryViewRow> createdAt() {
+    return new Field<LocalDateTime, VCustomerSummaryViewRow>(
+        _path,
+        "created_at",
+        VCustomerSummaryViewRow::createdAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCreatedAt(value),
+        MariaTypes.datetime);
+  }
 
-  Field<LocalDateTime, VCustomerSummaryViewRow> createdAt();
+  public OptField<LocalDateTime, VCustomerSummaryViewRow> lastLoginAt() {
+    return new OptField<LocalDateTime, VCustomerSummaryViewRow>(
+        _path,
+        "last_login_at",
+        VCustomerSummaryViewRow::lastLoginAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withLastLoginAt(value),
+        MariaTypes.datetime);
+  }
 
-  OptField<LocalDateTime, VCustomerSummaryViewRow> lastLoginAt();
+  public Field<Long, VCustomerSummaryViewRow> totalOrders() {
+    return new Field<Long, VCustomerSummaryViewRow>(
+        _path,
+        "total_orders",
+        VCustomerSummaryViewRow::totalOrders,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTotalOrders(value),
+        MariaTypes.bigint);
+  }
 
-  Field<Long, VCustomerSummaryViewRow> totalOrders();
+  public Field<BigDecimal, VCustomerSummaryViewRow> lifetimeValue() {
+    return new Field<BigDecimal, VCustomerSummaryViewRow>(
+        _path,
+        "lifetime_value",
+        VCustomerSummaryViewRow::lifetimeValue,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withLifetimeValue(value),
+        MariaTypes.numeric);
+  }
 
-  Field<BigDecimal, VCustomerSummaryViewRow> lifetimeValue();
-
-  OptField<LocalDateTime, VCustomerSummaryViewRow> lastOrderDate();
+  public OptField<LocalDateTime, VCustomerSummaryViewRow> lastOrderDate() {
+    return new OptField<LocalDateTime, VCustomerSummaryViewRow>(
+        _path,
+        "last_order_date",
+        VCustomerSummaryViewRow::lastOrderDate,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withLastOrderDate(value),
+        MariaTypes.datetime);
+  }
 
   @Override
-  List<FieldLike<?, VCustomerSummaryViewRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<VCustomerSummaryViewRow> rowParser() {
+  public List<FieldLike<?, VCustomerSummaryViewRow>> columns() {
+    return java.util.List.of(
+        this.customerId(),
+        this.email(),
+        this.fullName(),
+        this.tier(),
+        this.status(),
+        this.createdAt(),
+        this.lastLoginAt(),
+        this.totalOrders(),
+        this.lifetimeValue(),
+        this.lastOrderDate());
+  }
+
+  @Override
+  public RowParser<VCustomerSummaryViewRow> rowParser() {
     return VCustomerSummaryViewRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<VCustomerSummaryViewFields, VCustomerSummaryViewRow> withPaths(
+      List<Path> _path) {
+    return new VCustomerSummaryViewFields(_path);
+  }
+
+  @Override
+  public SqlExpr<CustomersId> _1() {
+    return customerId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return email();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return fullName();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return tier();
+  }
+
+  @Override
+  public SqlExpr<CustomerStatusId> _5() {
+    return status();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _6() {
+    return createdAt();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _7() {
+    return lastLoginAt();
+  }
+
+  @Override
+  public SqlExpr<Long> _8() {
+    return totalOrders();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _9() {
+    return lifetimeValue();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _10() {
+    return lastOrderDate();
+  }
 }

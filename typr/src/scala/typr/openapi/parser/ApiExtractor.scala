@@ -198,7 +198,7 @@ object ApiExtractor {
     }
   }
 
-  private def extractFormFields(schema: io.swagger.v3.oas.models.media.Schema[_]): List[FormField] = {
+  private def extractFormFields(schema: io.swagger.v3.oas.models.media.Schema[?]): List[FormField] = {
     val properties = Option(schema.getProperties).map(_.asScala.toMap).getOrElse(Map.empty)
     val requiredFields = Option(schema.getRequired).map(_.asScala.toSet).getOrElse(Set.empty[String])
 

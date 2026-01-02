@@ -12,6 +12,7 @@ import adventureworks.userdefined.FirstName
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple18
 import dev.typr.foundations.data.Xml
 
 /** View: humanresources.vemployee */
@@ -52,8 +53,44 @@ case class VemployeeViewRow(
   countryregionname: Name,
   /** Points to [[adventureworks.person.person.PersonRow.additionalcontactinfo]] */
   additionalcontactinfo: Xml
-)
+) extends Tuple18[BusinessentityId, String, /* user-picked */ FirstName, Name, Name, String, String, Phone, Name, String, Integer, String, String, String, Name, String, Name, Xml] {
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: String = title
+
+  override def `_3`: /* user-picked */ FirstName = firstname
+
+  override def `_4`: Name = middlename
+
+  override def `_5`: Name = lastname
+
+  override def `_6`: String = suffix
+
+  override def `_7`: String = jobtitle
+
+  override def `_8`: Phone = phonenumber
+
+  override def `_9`: Name = phonenumbertype
+
+  override def `_10`: String = emailaddress
+
+  override def `_11`: Integer = emailpromotion
+
+  override def `_12`: String = addressline1
+
+  override def `_13`: String = addressline2
+
+  override def `_14`: String = city
+
+  override def `_15`: Name = stateprovincename
+
+  override def `_16`: String = postalcode
+
+  override def `_17`: Name = countryregionname
+
+  override def `_18`: Xml = additionalcontactinfo
+}
 
 object VemployeeViewRow {
-  val `_rowParser`: RowParser[VemployeeViewRow] = RowParsers.of(BusinessentityId.pgType, PgTypes.text, FirstName.pgType, Name.pgType, Name.pgType, PgTypes.text, PgTypes.text, Phone.pgType, Name.pgType, PgTypes.text, PgTypes.int4, PgTypes.text, PgTypes.text, PgTypes.text, Name.pgType, PgTypes.text, Name.pgType, PgTypes.xml, VemployeeViewRow.apply, row => Array[Any](row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.jobtitle, row.phonenumber, row.phonenumbertype, row.emailaddress, row.emailpromotion, row.addressline1, row.addressline2, row.city, row.stateprovincename, row.postalcode, row.countryregionname, row.additionalcontactinfo))
+  val `_rowParser`: RowParser[VemployeeViewRow] = RowParsers.of(BusinessentityId.dbType, PgTypes.text, FirstName.dbType, Name.dbType, Name.dbType, PgTypes.text, PgTypes.text, Phone.dbType, Name.dbType, PgTypes.text, PgTypes.int4, PgTypes.text, PgTypes.text, PgTypes.text, Name.dbType, PgTypes.text, Name.dbType, PgTypes.xml, VemployeeViewRow.apply, row => Array[Any](row.businessentityid, row.title, row.firstname, row.middlename, row.lastname, row.suffix, row.jobtitle, row.phonenumber, row.phonenumbertype, row.emailaddress, row.emailpromotion, row.addressline1, row.addressline2, row.city, row.stateprovincename, row.postalcode, row.countryregionname, row.additionalcontactinfo))
 }

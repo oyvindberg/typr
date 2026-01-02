@@ -48,7 +48,7 @@ public record StateprovinceRepoMock(
   @Override
   public DeleteBuilder<StateprovinceFields, StateprovinceRow> delete() {
     return new DeleteBuilderMock<>(
-        StateprovinceFields.structure(),
+        StateprovinceFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.stateprovinceid(),
@@ -126,7 +126,7 @@ public record StateprovinceRepoMock(
   @Override
   public SelectBuilder<StateprovinceFields, StateprovinceRow> select() {
     return new SelectBuilderMock<>(
-        StateprovinceFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        StateprovinceFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -169,7 +169,7 @@ public record StateprovinceRepoMock(
   @Override
   public UpdateBuilder<StateprovinceFields, StateprovinceRow> update() {
     return new UpdateBuilderMock<>(
-        StateprovinceFields.structure(),
+        StateprovinceFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

@@ -20,10 +20,10 @@ public record Name(@JsonValue String value) {
 
   public static Bijection<Name, String> bijection = Bijection.of(Name::value, Name::new);
 
-  public static PgType<Name> pgType =
+  public static PgType<Name> dbType =
       PgTypes.text.bimap(Name::new, Name::value).renamed("\"public\".\"Name\"");
 
-  public static PgType<Name[]> pgTypeArray =
+  public static PgType<Name[]> dbTypeArray =
       PgTypes.textArray
           .bimap(
               xs -> arrayMap.map(xs, Name::new, Name.class),

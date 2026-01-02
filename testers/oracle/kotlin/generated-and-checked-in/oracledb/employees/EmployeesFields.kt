@@ -7,18 +7,18 @@ package oracledb.employees
 
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
-import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.ForeignKey
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
-import dev.typr.foundations.kotlin.SqlExpr.CompositeIn
-import dev.typr.foundations.kotlin.SqlExpr.CompositeIn.Part
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr
+import dev.typr.foundations.kotlin.TupleExpr7
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import kotlin.collections.List
@@ -27,58 +27,54 @@ import oracledb.departments.DepartmentsFields
 import oracledb.departments.DepartmentsId
 import oracledb.departments.DepartmentsRow
 
-interface EmployeesFields : FieldsExpr<EmployeesRow> {
-  abstract override fun columns(): List<FieldLike<*, EmployeesRow>>
+data class EmployeesFields(val _path: List<Path>) : TupleExpr7<BigDecimal, String, String, String, String, MoneyT, LocalDateTime>, RelationStructure<EmployeesFields, EmployeesRow>, FieldsBase<EmployeesRow> {
+  override fun _1(): SqlExpr<BigDecimal> = empNumber()
 
-  fun compositeIdIn(compositeIds: List<EmployeesId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<BigDecimal, EmployeesId, EmployeesRow>(empNumber(), EmployeesId::empNumber, KotlinDbTypes.OracleTypes.number), Part<String, EmployeesId, EmployeesRow>(empSuffix(), EmployeesId::empSuffix, OracleTypes.varchar2)), compositeIds)
+  override fun _2(): SqlExpr<String> = empSuffix()
+
+  override fun _3(): SqlExpr<String> = deptCode()
+
+  override fun _4(): SqlExpr<String> = deptRegion()
+
+  override fun _5(): SqlExpr<String> = empName()
+
+  override fun _6(): SqlExpr<MoneyT> = salary()
+
+  override fun _7(): SqlExpr<LocalDateTime> = hireDate()
+
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, EmployeesRow>> = listOf(this.empNumber().underlying, this.empSuffix().underlying, this.deptCode().underlying, this.deptRegion().underlying, this.empName().underlying, this.salary().underlying, this.hireDate().underlying)
+
+  fun compositeIdIn(compositeIds: List<EmployeesId>): SqlExpr<Boolean> = TupleExpr.of(empNumber(), empSuffix()).among(compositeIds)
 
   fun compositeIdIs(compositeId: EmployeesId): SqlExpr<Boolean> = SqlExpr.all(empNumber().isEqual(compositeId.empNumber), empSuffix().isEqual(compositeId.empSuffix))
 
-  abstract fun deptCode(): Field<String, EmployeesRow>
+  fun deptCode(): Field<String, EmployeesRow> = Field<String, EmployeesRow>(_path, "DEPT_CODE", EmployeesRow::deptCode, null, null, { row, value -> row.copy(deptCode = value) }, OracleTypes.varchar2)
 
-  abstract fun deptRegion(): Field<String, EmployeesRow>
+  fun deptRegion(): Field<String, EmployeesRow> = Field<String, EmployeesRow>(_path, "DEPT_REGION", EmployeesRow::deptRegion, null, null, { row, value -> row.copy(deptRegion = value) }, OracleTypes.varchar2)
 
-  abstract fun empName(): Field<String, EmployeesRow>
+  fun empName(): Field<String, EmployeesRow> = Field<String, EmployeesRow>(_path, "EMP_NAME", EmployeesRow::empName, null, null, { row, value -> row.copy(empName = value) }, OracleTypes.varchar2)
 
-  abstract fun empNumber(): IdField<BigDecimal, EmployeesRow>
+  fun empNumber(): IdField<BigDecimal, EmployeesRow> = IdField<BigDecimal, EmployeesRow>(_path, "EMP_NUMBER", EmployeesRow::empNumber, null, null, { row, value -> row.copy(empNumber = value) }, KotlinDbTypes.OracleTypes.number)
 
-  abstract fun empSuffix(): IdField<String, EmployeesRow>
+  fun empSuffix(): IdField<String, EmployeesRow> = IdField<String, EmployeesRow>(_path, "EMP_SUFFIX", EmployeesRow::empSuffix, null, null, { row, value -> row.copy(empSuffix = value) }, OracleTypes.varchar2)
 
-  fun extractIdentDepartmentsIdIn(ids: List<DepartmentsId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<String, DepartmentsId, EmployeesRow>(deptCode(), DepartmentsId::deptCode, OracleTypes.varchar2), Part<String, DepartmentsId, EmployeesRow>(deptRegion(), DepartmentsId::deptRegion, OracleTypes.varchar2)), ids)
+  fun extractIdentDepartmentsIdIn(ids: List<DepartmentsId>): SqlExpr<Boolean> = TupleExpr.of(deptCode(), deptRegion()).among(ids)
 
   fun extractIdentDepartmentsIdIs(id: DepartmentsId): SqlExpr<Boolean> = SqlExpr.all(deptCode().isEqual(id.deptCode), deptRegion().isEqual(id.deptRegion))
 
   fun fkDepartments(): ForeignKey<DepartmentsFields, DepartmentsRow> = ForeignKey.of<DepartmentsFields, DepartmentsRow>("FK_EMPLOYEES_DEPARTMENTS").withColumnPair<String>(deptCode(), DepartmentsFields::deptCode).withColumnPair<String>(deptRegion(), DepartmentsFields::deptRegion)
 
-  abstract fun hireDate(): Field<LocalDateTime, EmployeesRow>
+  fun hireDate(): Field<LocalDateTime, EmployeesRow> = Field<LocalDateTime, EmployeesRow>(_path, "HIRE_DATE", EmployeesRow::hireDate, null, null, { row, value -> row.copy(hireDate = value) }, OracleTypes.date)
 
   override fun rowParser(): RowParser<EmployeesRow> = EmployeesRow._rowParser.underlying
 
-  abstract fun salary(): OptField<MoneyT, EmployeesRow>
+  fun salary(): OptField<MoneyT, EmployeesRow> = OptField<MoneyT, EmployeesRow>(_path, "SALARY", EmployeesRow::salary, null, null, { row, value -> row.copy(salary = value) }, MoneyT.oracleType)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<EmployeesFields, EmployeesRow> = EmployeesFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : EmployeesFields, RelationStructure<EmployeesFields, EmployeesRow> {
-      override fun empNumber(): IdField<BigDecimal, EmployeesRow> = IdField<BigDecimal, EmployeesRow>(_path, "EMP_NUMBER", EmployeesRow::empNumber, null, null, { row, value -> row.copy(empNumber = value) }, KotlinDbTypes.OracleTypes.number)
-
-      override fun empSuffix(): IdField<String, EmployeesRow> = IdField<String, EmployeesRow>(_path, "EMP_SUFFIX", EmployeesRow::empSuffix, null, null, { row, value -> row.copy(empSuffix = value) }, OracleTypes.varchar2)
-
-      override fun deptCode(): Field<String, EmployeesRow> = Field<String, EmployeesRow>(_path, "DEPT_CODE", EmployeesRow::deptCode, null, null, { row, value -> row.copy(deptCode = value) }, OracleTypes.varchar2)
-
-      override fun deptRegion(): Field<String, EmployeesRow> = Field<String, EmployeesRow>(_path, "DEPT_REGION", EmployeesRow::deptRegion, null, null, { row, value -> row.copy(deptRegion = value) }, OracleTypes.varchar2)
-
-      override fun empName(): Field<String, EmployeesRow> = Field<String, EmployeesRow>(_path, "EMP_NAME", EmployeesRow::empName, null, null, { row, value -> row.copy(empName = value) }, OracleTypes.varchar2)
-
-      override fun salary(): OptField<MoneyT, EmployeesRow> = OptField<MoneyT, EmployeesRow>(_path, "SALARY", EmployeesRow::salary, null, null, { row, value -> row.copy(salary = value) }, MoneyT.oracleType)
-
-      override fun hireDate(): Field<LocalDateTime, EmployeesRow> = Field<LocalDateTime, EmployeesRow>(_path, "HIRE_DATE", EmployeesRow::hireDate, null, null, { row, value -> row.copy(hireDate = value) }, OracleTypes.date)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, EmployeesRow>> = listOf(this.empNumber().underlying, this.empSuffix().underlying, this.deptCode().underlying, this.deptRegion().underlying, this.empName().underlying, this.salary().underlying, this.hireDate().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<EmployeesFields, EmployeesRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: EmployeesFields = EmployeesFields(emptyList<Path>())
   }
 }

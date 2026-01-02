@@ -41,7 +41,7 @@ object TypoType {
   }
 
   /** A user-defined type override.
-    *   - Left: qualified type that must provide its own pgType/mariaType field
+    *   - Left: qualified type that must provide its own dbType field
     *   - Right: well-known primitive (String, Int, Boolean, etc.)
     */
   case class UserDefined(jvmType: jvm.Type, underlyingDbType: db.Type, userType: Either[jvm.Type.Qualified, analysis.WellKnownPrimitive]) extends TypoType {
@@ -92,7 +92,7 @@ object TypoType {
             Standard(jvmType, dbType)
         }
 
-      // Handle UserDefined type overrides - qualified types must provide their own pgType field
+      // Handle UserDefined type overrides - qualified types must provide their own dbType field
       case jvm.Type.UserDefined(q: jvm.Type.Qualified) =>
         UserDefined(jvmType, dbType, Left(q))
 

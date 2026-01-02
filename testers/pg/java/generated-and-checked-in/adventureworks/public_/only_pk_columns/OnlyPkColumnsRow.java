@@ -10,11 +10,13 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple2;
 
 /** Table: public.only_pk_columns Composite primary key: key_column_1, key_column_2 */
 public record OnlyPkColumnsRow(
     @JsonProperty("key_column_1") String keyColumn1,
-    @JsonProperty("key_column_2") Integer keyColumn2) {
+    @JsonProperty("key_column_2") Integer keyColumn2)
+    implements Tuple2<String, Integer> {
   public OnlyPkColumnsRow withKeyColumn1(String keyColumn1) {
     return new OnlyPkColumnsRow(keyColumn1, keyColumn2);
   }
@@ -39,6 +41,18 @@ public record OnlyPkColumnsRow(
   ;
 
   public static PgText<OnlyPkColumnsRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public String _1() {
+    return keyColumn1;
+  }
+  ;
+
+  @Override
+  public Integer _2() {
+    return keyColumn2;
+  }
+  ;
 
   public OnlyPkColumnsId compositeId() {
     return new OnlyPkColumnsId(keyColumn1, keyColumn2);

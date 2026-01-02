@@ -8,156 +8,153 @@ package adventureworks.public_.flaff;
 import adventureworks.public_.ShortText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
 import dev.typr.foundations.dsl.SqlExpr;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn.Part;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5;
 import java.util.List;
 import java.util.Optional;
 
-public interface FlaffFields extends FieldsExpr<FlaffRow> {
-  record Impl(List<Path> _path) implements FlaffFields, RelationStructure<FlaffFields, FlaffRow> {
-    @Override
-    public IdField<ShortText, FlaffRow> code() {
-      return new IdField<ShortText, FlaffRow>(
-          _path,
-          "code",
-          FlaffRow::code,
-          Optional.empty(),
-          Optional.of("text"),
-          (row, value) -> row.withCode(value),
-          ShortText.pgType);
-    }
-    ;
+public class FlaffFields
+    implements TupleExpr5<ShortText, String, Integer, ShortText, ShortText>,
+        RelationStructure<FlaffFields, FlaffRow>,
+        FieldsBase<FlaffRow> {
+  List<Path> _path;
 
-    @Override
-    public IdField<String, FlaffRow> anotherCode() {
-      return new IdField<String, FlaffRow>(
-          _path,
-          "another_code",
-          FlaffRow::anotherCode,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withAnotherCode(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public IdField<Integer, FlaffRow> someNumber() {
-      return new IdField<Integer, FlaffRow>(
-          _path,
-          "some_number",
-          FlaffRow::someNumber,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withSomeNumber(value),
-          PgTypes.int4);
-    }
-    ;
-
-    @Override
-    public IdField<ShortText, FlaffRow> specifier() {
-      return new IdField<ShortText, FlaffRow>(
-          _path,
-          "specifier",
-          FlaffRow::specifier,
-          Optional.empty(),
-          Optional.of("text"),
-          (row, value) -> row.withSpecifier(value),
-          ShortText.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<ShortText, FlaffRow> parentspecifier() {
-      return new OptField<ShortText, FlaffRow>(
-          _path,
-          "parentspecifier",
-          FlaffRow::parentspecifier,
-          Optional.empty(),
-          Optional.of("text"),
-          (row, value) -> row.withParentspecifier(value),
-          ShortText.pgType);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, FlaffRow>> columns() {
-      return java.util.List.of(
-          this.code(),
-          this.anotherCode(),
-          this.someNumber(),
-          this.specifier(),
-          this.parentspecifier());
-    }
-    ;
-
-    @Override
-    public RelationStructure<FlaffFields, FlaffRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public FlaffFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static FlaffFields structure = new FlaffFields(java.util.Collections.emptyList());
+
+  public IdField<ShortText, FlaffRow> code() {
+    return new IdField<ShortText, FlaffRow>(
+        _path,
+        "code",
+        FlaffRow::code,
+        Optional.empty(),
+        Optional.of("text"),
+        (row, value) -> row.withCode(value),
+        ShortText.dbType);
   }
-  ;
 
-  IdField<ShortText, FlaffRow> code();
+  public IdField<String, FlaffRow> anotherCode() {
+    return new IdField<String, FlaffRow>(
+        _path,
+        "another_code",
+        FlaffRow::anotherCode,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withAnotherCode(value),
+        PgTypes.text);
+  }
 
-  IdField<String, FlaffRow> anotherCode();
+  public IdField<Integer, FlaffRow> someNumber() {
+    return new IdField<Integer, FlaffRow>(
+        _path,
+        "some_number",
+        FlaffRow::someNumber,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withSomeNumber(value),
+        PgTypes.int4);
+  }
 
-  IdField<Integer, FlaffRow> someNumber();
+  public IdField<ShortText, FlaffRow> specifier() {
+    return new IdField<ShortText, FlaffRow>(
+        _path,
+        "specifier",
+        FlaffRow::specifier,
+        Optional.empty(),
+        Optional.of("text"),
+        (row, value) -> row.withSpecifier(value),
+        ShortText.dbType);
+  }
 
-  IdField<ShortText, FlaffRow> specifier();
+  public OptField<ShortText, FlaffRow> parentspecifier() {
+    return new OptField<ShortText, FlaffRow>(
+        _path,
+        "parentspecifier",
+        FlaffRow::parentspecifier,
+        Optional.empty(),
+        Optional.of("text"),
+        (row, value) -> row.withParentspecifier(value),
+        ShortText.dbType);
+  }
 
-  OptField<ShortText, FlaffRow> parentspecifier();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<FlaffFields, FlaffRow> fkFlaff() {
+  public ForeignKey<FlaffFields, FlaffRow> fkFlaff() {
     return ForeignKey.<FlaffFields, FlaffRow>of("public.flaff_parent_fk")
         .<ShortText>withColumnPair(code(), FlaffFields::code)
         .<String>withColumnPair(anotherCode(), FlaffFields::anotherCode)
         .<Integer>withColumnPair(someNumber(), FlaffFields::someNumber)
         .<ShortText>withColumnPair(parentspecifier(), FlaffFields::specifier);
   }
-  ;
 
-  default SqlExpr<Boolean> compositeIdIs(FlaffId compositeId) {
+  public SqlExpr<Boolean> compositeIdIs(FlaffId compositeId) {
     return SqlExpr.all(
         code().isEqual(compositeId.code()),
         anotherCode().isEqual(compositeId.anotherCode()),
         someNumber().isEqual(compositeId.someNumber()),
         specifier().isEqual(compositeId.specifier()));
   }
-  ;
 
-  default SqlExpr<Boolean> compositeIdIn(List<FlaffId> compositeIds) {
-    return new CompositeIn(
-        List.of(
-            new Part<ShortText, FlaffId, FlaffRow>(code(), FlaffId::code, ShortText.pgType),
-            new Part<String, FlaffId, FlaffRow>(anotherCode(), FlaffId::anotherCode, PgTypes.text),
-            new Part<Integer, FlaffId, FlaffRow>(someNumber(), FlaffId::someNumber, PgTypes.int4),
-            new Part<ShortText, FlaffId, FlaffRow>(
-                specifier(), FlaffId::specifier, ShortText.pgType)),
-        compositeIds);
+  public SqlExpr<Boolean> compositeIdIn(List<FlaffId> compositeIds) {
+    return TupleExpr.of(code(), anotherCode(), someNumber(), specifier()).among(compositeIds);
   }
-  ;
 
   @Override
-  List<FieldLike<?, FlaffRow>> columns();
+  public List<FieldLike<?, FlaffRow>> columns() {
+    return java.util.List.of(
+        this.code(),
+        this.anotherCode(),
+        this.someNumber(),
+        this.specifier(),
+        this.parentspecifier());
+  }
 
   @Override
-  default RowParser<FlaffRow> rowParser() {
+  public RowParser<FlaffRow> rowParser() {
     return FlaffRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<FlaffFields, FlaffRow> withPaths(List<Path> _path) {
+    return new FlaffFields(_path);
+  }
+
+  @Override
+  public SqlExpr<ShortText> _1() {
+    return code();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return anotherCode();
+  }
+
+  @Override
+  public SqlExpr<Integer> _3() {
+    return someNumber();
+  }
+
+  @Override
+  public SqlExpr<ShortText> _4() {
+    return specifier();
+  }
+
+  @Override
+  public SqlExpr<ShortText> _5() {
+    return parentspecifier();
+  }
 }

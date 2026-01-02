@@ -6,6 +6,7 @@
 package testdb.customers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.typr.foundations.data.Json;
 import dev.typr.foundations.data.maria.MariaSet;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -32,7 +33,7 @@ public record CustomersRowUnsaved(
     /** Default: 'bronze' */
     Defaulted<String> tier,
     /** Default: NULL */
-    Defaulted<Optional<String>> preferences,
+    Defaulted<Optional<Json>> preferences,
     /** Default: NULL */
     @JsonProperty("marketing_flags") Defaulted<Optional<MariaSet>> marketingFlags,
     /** Default: NULL */
@@ -203,7 +204,7 @@ public record CustomersRowUnsaved(
   ;
 
   /** Default: NULL */
-  public CustomersRowUnsaved withPreferences(Defaulted<Optional<String>> preferences) {
+  public CustomersRowUnsaved withPreferences(Defaulted<Optional<Json>> preferences) {
     return new CustomersRowUnsaved(
         email,
         passwordHash,
@@ -320,7 +321,7 @@ public record CustomersRowUnsaved(
       java.util.function.Supplier<Optional<String>> phoneDefault,
       java.util.function.Supplier<CustomerStatusId> statusDefault,
       java.util.function.Supplier<String> tierDefault,
-      java.util.function.Supplier<Optional<String>> preferencesDefault,
+      java.util.function.Supplier<Optional<Json>> preferencesDefault,
       java.util.function.Supplier<Optional<MariaSet>> marketingFlagsDefault,
       java.util.function.Supplier<Optional<String>> notesDefault,
       java.util.function.Supplier<LocalDateTime> createdAtDefault,

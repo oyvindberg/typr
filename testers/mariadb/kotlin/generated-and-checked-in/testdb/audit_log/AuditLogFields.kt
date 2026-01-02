@@ -7,71 +7,70 @@ package testdb.audit_log
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.Inet6
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr10
 import java.time.LocalDateTime
 import kotlin.collections.List
 
-interface AuditLogFields : FieldsExpr<AuditLogRow> {
-  abstract fun action(): Field<String, AuditLogRow>
+data class AuditLogFields(val _path: List<Path>) : TupleExpr10<AuditLogId, String, String, String, Json, Json, String, LocalDateTime, Inet6, ByteArray>, RelationStructure<AuditLogFields, AuditLogRow>, FieldsBase<AuditLogRow> {
+  override fun _1(): SqlExpr<AuditLogId> = logId()
 
-  abstract fun changedAt(): Field<LocalDateTime, AuditLogRow>
+  override fun _10(): SqlExpr<ByteArray> = sessionId()
 
-  abstract fun changedBy(): OptField<String, AuditLogRow>
+  override fun _2(): SqlExpr<String> = tableName()
 
-  abstract fun clientIp(): OptField<Inet6, AuditLogRow>
+  override fun _3(): SqlExpr<String> = recordId()
 
-  abstract override fun columns(): List<FieldLike<*, AuditLogRow>>
+  override fun _4(): SqlExpr<String> = action()
 
-  abstract fun logId(): IdField<AuditLogId, AuditLogRow>
+  override fun _5(): SqlExpr<Json> = oldValues()
 
-  abstract fun newValues(): OptField<String, AuditLogRow>
+  override fun _6(): SqlExpr<Json> = newValues()
 
-  abstract fun oldValues(): OptField<String, AuditLogRow>
+  override fun _7(): SqlExpr<String> = changedBy()
 
-  abstract fun recordId(): Field<String, AuditLogRow>
+  override fun _8(): SqlExpr<LocalDateTime> = changedAt()
+
+  override fun _9(): SqlExpr<Inet6> = clientIp()
+
+  override fun _path(): List<Path> = _path
+
+  fun action(): Field<String, AuditLogRow> = Field<String, AuditLogRow>(_path, "action", AuditLogRow::action, null, null, { row, value -> row.copy(action = value) }, MariaTypes.text)
+
+  fun changedAt(): Field<LocalDateTime, AuditLogRow> = Field<LocalDateTime, AuditLogRow>(_path, "changed_at", AuditLogRow::changedAt, null, null, { row, value -> row.copy(changedAt = value) }, MariaTypes.datetime)
+
+  fun changedBy(): OptField<String, AuditLogRow> = OptField<String, AuditLogRow>(_path, "changed_by", AuditLogRow::changedBy, null, null, { row, value -> row.copy(changedBy = value) }, MariaTypes.varchar)
+
+  fun clientIp(): OptField<Inet6, AuditLogRow> = OptField<Inet6, AuditLogRow>(_path, "client_ip", AuditLogRow::clientIp, null, null, { row, value -> row.copy(clientIp = value) }, MariaTypes.inet6)
+
+  override fun columns(): List<FieldLike<*, AuditLogRow>> = listOf(this.logId().underlying, this.tableName().underlying, this.recordId().underlying, this.action().underlying, this.oldValues().underlying, this.newValues().underlying, this.changedBy().underlying, this.changedAt().underlying, this.clientIp().underlying, this.sessionId().underlying)
+
+  fun logId(): IdField<AuditLogId, AuditLogRow> = IdField<AuditLogId, AuditLogRow>(_path, "log_id", AuditLogRow::logId, null, null, { row, value -> row.copy(logId = value) }, AuditLogId.dbType)
+
+  fun newValues(): OptField<Json, AuditLogRow> = OptField<Json, AuditLogRow>(_path, "new_values", AuditLogRow::newValues, null, null, { row, value -> row.copy(newValues = value) }, MariaTypes.json)
+
+  fun oldValues(): OptField<Json, AuditLogRow> = OptField<Json, AuditLogRow>(_path, "old_values", AuditLogRow::oldValues, null, null, { row, value -> row.copy(oldValues = value) }, MariaTypes.json)
+
+  fun recordId(): Field<String, AuditLogRow> = Field<String, AuditLogRow>(_path, "record_id", AuditLogRow::recordId, null, null, { row, value -> row.copy(recordId = value) }, MariaTypes.varchar)
 
   override fun rowParser(): RowParser<AuditLogRow> = AuditLogRow._rowParser.underlying
 
-  abstract fun sessionId(): OptField<ByteArray, AuditLogRow>
+  fun sessionId(): OptField<ByteArray, AuditLogRow> = OptField<ByteArray, AuditLogRow>(_path, "session_id", AuditLogRow::sessionId, null, null, { row, value -> row.copy(sessionId = value) }, MariaTypes.varbinary)
 
-  abstract fun tableName(): Field<String, AuditLogRow>
+  fun tableName(): Field<String, AuditLogRow> = Field<String, AuditLogRow>(_path, "table_name", AuditLogRow::tableName, null, null, { row, value -> row.copy(tableName = value) }, MariaTypes.varchar)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<AuditLogFields, AuditLogRow> = AuditLogFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : AuditLogFields, RelationStructure<AuditLogFields, AuditLogRow> {
-      override fun logId(): IdField<AuditLogId, AuditLogRow> = IdField<AuditLogId, AuditLogRow>(_path, "log_id", AuditLogRow::logId, null, null, { row, value -> row.copy(logId = value) }, AuditLogId.pgType)
-
-      override fun tableName(): Field<String, AuditLogRow> = Field<String, AuditLogRow>(_path, "table_name", AuditLogRow::tableName, null, null, { row, value -> row.copy(tableName = value) }, MariaTypes.varchar)
-
-      override fun recordId(): Field<String, AuditLogRow> = Field<String, AuditLogRow>(_path, "record_id", AuditLogRow::recordId, null, null, { row, value -> row.copy(recordId = value) }, MariaTypes.varchar)
-
-      override fun action(): Field<String, AuditLogRow> = Field<String, AuditLogRow>(_path, "action", AuditLogRow::action, null, null, { row, value -> row.copy(action = value) }, MariaTypes.text)
-
-      override fun oldValues(): OptField<String, AuditLogRow> = OptField<String, AuditLogRow>(_path, "old_values", AuditLogRow::oldValues, null, null, { row, value -> row.copy(oldValues = value) }, MariaTypes.longtext)
-
-      override fun newValues(): OptField<String, AuditLogRow> = OptField<String, AuditLogRow>(_path, "new_values", AuditLogRow::newValues, null, null, { row, value -> row.copy(newValues = value) }, MariaTypes.longtext)
-
-      override fun changedBy(): OptField<String, AuditLogRow> = OptField<String, AuditLogRow>(_path, "changed_by", AuditLogRow::changedBy, null, null, { row, value -> row.copy(changedBy = value) }, MariaTypes.varchar)
-
-      override fun changedAt(): Field<LocalDateTime, AuditLogRow> = Field<LocalDateTime, AuditLogRow>(_path, "changed_at", AuditLogRow::changedAt, null, null, { row, value -> row.copy(changedAt = value) }, MariaTypes.datetime)
-
-      override fun clientIp(): OptField<Inet6, AuditLogRow> = OptField<Inet6, AuditLogRow>(_path, "client_ip", AuditLogRow::clientIp, null, null, { row, value -> row.copy(clientIp = value) }, MariaTypes.inet6)
-
-      override fun sessionId(): OptField<ByteArray, AuditLogRow> = OptField<ByteArray, AuditLogRow>(_path, "session_id", AuditLogRow::sessionId, null, null, { row, value -> row.copy(sessionId = value) }, MariaTypes.varbinary)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, AuditLogRow>> = listOf(this.logId().underlying, this.tableName().underlying, this.recordId().underlying, this.action().underlying, this.oldValues().underlying, this.newValues().underlying, this.changedBy().underlying, this.changedAt().underlying, this.clientIp().underlying, this.sessionId().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<AuditLogFields, AuditLogRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: AuditLogFields = AuditLogFields(emptyList<Path>())
   }
 }

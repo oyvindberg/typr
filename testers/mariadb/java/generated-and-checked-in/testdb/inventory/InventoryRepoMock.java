@@ -49,7 +49,7 @@ public record InventoryRepoMock(
   @Override
   public DeleteBuilder<InventoryFields, InventoryRow> delete() {
     return new DeleteBuilderMock<>(
-        InventoryFields.structure(),
+        InventoryFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.inventoryId(),
@@ -98,7 +98,7 @@ public record InventoryRepoMock(
   @Override
   public SelectBuilder<InventoryFields, InventoryRow> select() {
     return new SelectBuilderMock<>(
-        InventoryFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        InventoryFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -150,7 +150,7 @@ public record InventoryRepoMock(
   @Override
   public UpdateBuilder<InventoryFields, InventoryRow> update() {
     return new UpdateBuilderMock<>(
-        InventoryFields.structure(),
+        InventoryFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

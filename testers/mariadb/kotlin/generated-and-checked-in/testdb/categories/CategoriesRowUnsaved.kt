@@ -6,6 +6,7 @@
 package testdb.categories
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 
@@ -38,7 +39,7 @@ data class CategoriesRowUnsaved(
   /** Default: NULL
 
     */
-  val metadata: Defaulted<String?> = UseDefault()
+  val metadata: Defaulted<Json?> = UseDefault()
 ) {
   fun toRow(
     parentIdDefault: () -> CategoriesId?,
@@ -46,7 +47,7 @@ data class CategoriesRowUnsaved(
     imageUrlDefault: () -> String?,
     sortOrderDefault: () -> Short,
     isVisibleDefault: () -> Boolean,
-    metadataDefault: () -> String?,
+    metadataDefault: () -> Json?,
     categoryIdDefault: () -> CategoriesId
   ): CategoriesRow = CategoriesRow(categoryId = categoryIdDefault(), parentId = parentId.getOrElse(parentIdDefault), name = name, slug = slug, description = description.getOrElse(descriptionDefault), imageUrl = imageUrl.getOrElse(imageUrlDefault), sortOrder = sortOrder.getOrElse(sortOrderDefault), isVisible = isVisible.getOrElse(isVisibleDefault), metadata = metadata.getOrElse(metadataDefault))
 }

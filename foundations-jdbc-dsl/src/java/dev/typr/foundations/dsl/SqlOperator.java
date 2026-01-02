@@ -97,7 +97,7 @@ public record SqlOperator<T1, T2, O>(String op, BiFunction<T1, T2, O> eval, DbTy
   public static <T> SqlOperator<T, String, Boolean> like(Bijection<T, String> bijection) {
     return new SqlOperator<>(
         "LIKE",
-        (value, pattern) -> pattern.contains(bijection.underlying(value)),
+        (value, pattern) -> Like.like(bijection.underlying(value), pattern),
         GenericDbTypes.bool);
   }
 

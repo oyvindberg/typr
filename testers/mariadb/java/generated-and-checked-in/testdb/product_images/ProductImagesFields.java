@@ -7,182 +7,195 @@ package testdb.product_images;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr8;
 import java.util.List;
 import java.util.Optional;
 import testdb.products.ProductsFields;
 import testdb.products.ProductsId;
 import testdb.products.ProductsRow;
 
-public interface ProductImagesFields extends FieldsExpr<ProductImagesRow> {
-  record Impl(List<Path> _path)
-      implements ProductImagesFields, RelationStructure<ProductImagesFields, ProductImagesRow> {
-    @Override
-    public IdField<ProductImagesId, ProductImagesRow> imageId() {
-      return new IdField<ProductImagesId, ProductImagesRow>(
-          _path,
-          "image_id",
-          ProductImagesRow::imageId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withImageId(value),
-          ProductImagesId.pgType);
-    }
-    ;
+public class ProductImagesFields
+    implements TupleExpr8<
+            ProductImagesId, ProductsId, String, String, String, Uint1, Boolean, byte[]>,
+        RelationStructure<ProductImagesFields, ProductImagesRow>,
+        FieldsBase<ProductImagesRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<ProductsId, ProductImagesRow> productId() {
-      return new Field<ProductsId, ProductImagesRow>(
-          _path,
-          "product_id",
-          ProductImagesRow::productId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withProductId(value),
-          ProductsId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<String, ProductImagesRow> imageUrl() {
-      return new Field<String, ProductImagesRow>(
-          _path,
-          "image_url",
-          ProductImagesRow::imageUrl,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withImageUrl(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, ProductImagesRow> thumbnailUrl() {
-      return new OptField<String, ProductImagesRow>(
-          _path,
-          "thumbnail_url",
-          ProductImagesRow::thumbnailUrl,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withThumbnailUrl(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, ProductImagesRow> altText() {
-      return new OptField<String, ProductImagesRow>(
-          _path,
-          "alt_text",
-          ProductImagesRow::altText,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withAltText(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<Short, ProductImagesRow> sortOrder() {
-      return new Field<Short, ProductImagesRow>(
-          _path,
-          "sort_order",
-          ProductImagesRow::sortOrder,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withSortOrder(value),
-          MariaTypes.tinyintUnsigned);
-    }
-    ;
-
-    @Override
-    public Field<Boolean, ProductImagesRow> isPrimary() {
-      return new Field<Boolean, ProductImagesRow>(
-          _path,
-          "is_primary",
-          ProductImagesRow::isPrimary,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withIsPrimary(value),
-          MariaTypes.bool);
-    }
-    ;
-
-    @Override
-    public OptField<byte[], ProductImagesRow> imageData() {
-      return new OptField<byte[], ProductImagesRow>(
-          _path,
-          "image_data",
-          ProductImagesRow::imageData,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withImageData(value),
-          MariaTypes.longblob);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, ProductImagesRow>> columns() {
-      return java.util.List.of(
-          this.imageId(),
-          this.productId(),
-          this.imageUrl(),
-          this.thumbnailUrl(),
-          this.altText(),
-          this.sortOrder(),
-          this.isPrimary(),
-          this.imageData());
-    }
-    ;
-
-    @Override
-    public RelationStructure<ProductImagesFields, ProductImagesRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public ProductImagesFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static ProductImagesFields structure =
+      new ProductImagesFields(java.util.Collections.emptyList());
+
+  public IdField<ProductImagesId, ProductImagesRow> imageId() {
+    return new IdField<ProductImagesId, ProductImagesRow>(
+        _path,
+        "image_id",
+        ProductImagesRow::imageId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withImageId(value),
+        ProductImagesId.dbType);
   }
-  ;
 
-  IdField<ProductImagesId, ProductImagesRow> imageId();
+  public Field<ProductsId, ProductImagesRow> productId() {
+    return new Field<ProductsId, ProductImagesRow>(
+        _path,
+        "product_id",
+        ProductImagesRow::productId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withProductId(value),
+        ProductsId.dbType);
+  }
 
-  Field<ProductsId, ProductImagesRow> productId();
+  public Field<String, ProductImagesRow> imageUrl() {
+    return new Field<String, ProductImagesRow>(
+        _path,
+        "image_url",
+        ProductImagesRow::imageUrl,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withImageUrl(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, ProductImagesRow> imageUrl();
+  public OptField<String, ProductImagesRow> thumbnailUrl() {
+    return new OptField<String, ProductImagesRow>(
+        _path,
+        "thumbnail_url",
+        ProductImagesRow::thumbnailUrl,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withThumbnailUrl(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, ProductImagesRow> thumbnailUrl();
+  public OptField<String, ProductImagesRow> altText() {
+    return new OptField<String, ProductImagesRow>(
+        _path,
+        "alt_text",
+        ProductImagesRow::altText,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withAltText(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, ProductImagesRow> altText();
+  public Field<Uint1, ProductImagesRow> sortOrder() {
+    return new Field<Uint1, ProductImagesRow>(
+        _path,
+        "sort_order",
+        ProductImagesRow::sortOrder,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withSortOrder(value),
+        MariaTypes.tinyintUnsigned);
+  }
 
-  Field<Short, ProductImagesRow> sortOrder();
+  public Field<Boolean, ProductImagesRow> isPrimary() {
+    return new Field<Boolean, ProductImagesRow>(
+        _path,
+        "is_primary",
+        ProductImagesRow::isPrimary,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withIsPrimary(value),
+        MariaTypes.bool);
+  }
 
-  Field<Boolean, ProductImagesRow> isPrimary();
+  public OptField<byte[], ProductImagesRow> imageData() {
+    return new OptField<byte[], ProductImagesRow>(
+        _path,
+        "image_data",
+        ProductImagesRow::imageData,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withImageData(value),
+        MariaTypes.longblob);
+  }
 
-  OptField<byte[], ProductImagesRow> imageData();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<ProductsFields, ProductsRow> fkProducts() {
+  public ForeignKey<ProductsFields, ProductsRow> fkProducts() {
     return ForeignKey.<ProductsFields, ProductsRow>of("fk_pi_product")
         .<ProductsId>withColumnPair(productId(), ProductsFields::productId);
   }
-  ;
 
   @Override
-  List<FieldLike<?, ProductImagesRow>> columns();
+  public List<FieldLike<?, ProductImagesRow>> columns() {
+    return java.util.List.of(
+        this.imageId(),
+        this.productId(),
+        this.imageUrl(),
+        this.thumbnailUrl(),
+        this.altText(),
+        this.sortOrder(),
+        this.isPrimary(),
+        this.imageData());
+  }
 
   @Override
-  default RowParser<ProductImagesRow> rowParser() {
+  public RowParser<ProductImagesRow> rowParser() {
     return ProductImagesRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<ProductImagesFields, ProductImagesRow> withPaths(List<Path> _path) {
+    return new ProductImagesFields(_path);
+  }
+
+  @Override
+  public SqlExpr<ProductImagesId> _1() {
+    return imageId();
+  }
+
+  @Override
+  public SqlExpr<ProductsId> _2() {
+    return productId();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return imageUrl();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return thumbnailUrl();
+  }
+
+  @Override
+  public SqlExpr<String> _5() {
+    return altText();
+  }
+
+  @Override
+  public SqlExpr<Uint1> _6() {
+    return sortOrder();
+  }
+
+  @Override
+  public SqlExpr<Boolean> _7() {
+    return isPrimary();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _8() {
+    return imageData();
+  }
 }

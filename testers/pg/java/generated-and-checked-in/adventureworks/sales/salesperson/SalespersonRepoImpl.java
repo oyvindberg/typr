@@ -28,33 +28,30 @@ public class SalespersonRepoImpl implements SalespersonRepo {
   @Override
   public DeleteBuilder<SalespersonFields, SalespersonRow> delete() {
     return DeleteBuilder.of(
-        "\"sales\".\"salesperson\"", SalespersonFields.structure(), Dialect.POSTGRESQL);
+        "\"sales\".\"salesperson\"", SalespersonFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(BusinessentityId businessentityid, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"sales\".\"salesperson\" where \"businessentityid\" = "),
-                Fragment.encode(BusinessentityId.pgType, businessentityid),
+                Fragment.encode(BusinessentityId.dbType, businessentityid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(BusinessentityId[] businessentityids, Connection c) {
     return interpolate(
             Fragment.lit(
                 "delete\nfrom \"sales\".\"salesperson\"\nwhere \"businessentityid\" = ANY("),
-            Fragment.encode(BusinessentityId.pgTypeArray, businessentityids),
+            Fragment.encode(BusinessentityId.dbTypeArray, businessentityids),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public SalespersonRow insert(SalespersonRow unsaved, Connection c) {
@@ -64,9 +61,9 @@ public class SalespersonRepoImpl implements SalespersonRepo {
                     + " \"salesquota\", \"bonus\", \"commissionpct\", \"salesytd\","
                     + " \"saleslastyear\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(SalesterritoryId.pgType.opt(), unsaved.territoryid()),
+            Fragment.encode(SalesterritoryId.dbType.opt(), unsaved.territoryid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.numeric.opt(), unsaved.salesquota()),
             Fragment.lit("::numeric, "),
@@ -89,7 +86,6 @@ public class SalespersonRepoImpl implements SalespersonRepo {
         .updateReturning(SalespersonRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public SalespersonRow insert(SalespersonRowUnsaved unsaved, Connection c) {
@@ -100,12 +96,12 @@ public class SalespersonRepoImpl implements SalespersonRepo {
     columns.add(Fragment.lit("\"businessentityid\""));
     values.add(
         interpolate(
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"territoryid\""));
     values.add(
         interpolate(
-            Fragment.encode(SalesterritoryId.pgType.opt(), unsaved.territoryid()),
+            Fragment.encode(SalesterritoryId.dbType.opt(), unsaved.territoryid()),
             Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"salesquota\""));
     values.add(
@@ -186,7 +182,6 @@ public class SalespersonRepoImpl implements SalespersonRepo {
     ;
     return q.updateReturning(SalespersonRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<SalespersonRow> unsaved, Integer batchSize, Connection c) {
@@ -199,7 +194,6 @@ public class SalespersonRepoImpl implements SalespersonRepo {
         c,
         SalespersonRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -214,17 +208,15 @@ public class SalespersonRepoImpl implements SalespersonRepo {
         c,
         SalespersonRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<SalespersonFields, SalespersonRow> select() {
     return SelectBuilder.of(
         "\"sales\".\"salesperson\"",
-        SalespersonFields.structure(),
+        SalespersonFields.structure,
         SalespersonRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<SalespersonRow> selectAll(Connection c) {
@@ -237,7 +229,6 @@ public class SalespersonRepoImpl implements SalespersonRepo {
         .query(SalespersonRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<SalespersonRow> selectById(BusinessentityId businessentityid, Connection c) {
@@ -248,12 +239,11 @@ public class SalespersonRepoImpl implements SalespersonRepo {
                     + " \"modifieddate\"\n"
                     + "from \"sales\".\"salesperson\"\n"
                     + "where \"businessentityid\" = "),
-            Fragment.encode(BusinessentityId.pgType, businessentityid),
+            Fragment.encode(BusinessentityId.dbType, businessentityid),
             Fragment.lit(""))
         .query(SalespersonRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<SalespersonRow> selectByIds(BusinessentityId[] businessentityids, Connection c) {
@@ -264,12 +254,11 @@ public class SalespersonRepoImpl implements SalespersonRepo {
                     + " \"modifieddate\"\n"
                     + "from \"sales\".\"salesperson\"\n"
                     + "where \"businessentityid\" = ANY("),
-            Fragment.encode(BusinessentityId.pgTypeArray, businessentityids),
+            Fragment.encode(BusinessentityId.dbTypeArray, businessentityids),
             Fragment.lit(")"))
         .query(SalespersonRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<BusinessentityId, SalespersonRow> selectByIdsTracked(
@@ -278,17 +267,15 @@ public class SalespersonRepoImpl implements SalespersonRepo {
     selectByIds(businessentityids, c).forEach(row -> ret.put(row.businessentityid(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<SalespersonFields, SalespersonRow> update() {
     return UpdateBuilder.of(
         "\"sales\".\"salesperson\"",
-        SalespersonFields.structure(),
+        SalespersonFields.structure,
         SalespersonRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(SalespersonRow row, Connection c) {
@@ -296,7 +283,7 @@ public class SalespersonRepoImpl implements SalespersonRepo {
     ;
     return interpolate(
                 Fragment.lit("update \"sales\".\"salesperson\"\nset \"territoryid\" = "),
-                Fragment.encode(SalesterritoryId.pgType.opt(), row.territoryid()),
+                Fragment.encode(SalesterritoryId.dbType.opt(), row.territoryid()),
                 Fragment.lit("::int4,\n\"salesquota\" = "),
                 Fragment.encode(PgTypes.numeric.opt(), row.salesquota()),
                 Fragment.lit("::numeric,\n\"bonus\" = "),
@@ -312,13 +299,12 @@ public class SalespersonRepoImpl implements SalespersonRepo {
                 Fragment.lit("::uuid,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"businessentityid\" = "),
-                Fragment.encode(BusinessentityId.pgType, businessentityid),
+                Fragment.encode(BusinessentityId.dbType, businessentityid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public SalespersonRow upsert(SalespersonRow unsaved, Connection c) {
@@ -328,9 +314,9 @@ public class SalespersonRepoImpl implements SalespersonRepo {
                     + " \"salesquota\", \"bonus\", \"commissionpct\", \"salesytd\","
                     + " \"saleslastyear\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(BusinessentityId.pgType, unsaved.businessentityid()),
+            Fragment.encode(BusinessentityId.dbType, unsaved.businessentityid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(SalesterritoryId.pgType.opt(), unsaved.territoryid()),
+            Fragment.encode(SalesterritoryId.dbType.opt(), unsaved.territoryid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.numeric.opt(), unsaved.salesquota()),
             Fragment.lit("::numeric, "),
@@ -363,7 +349,6 @@ public class SalespersonRepoImpl implements SalespersonRepo {
         .updateReturning(SalespersonRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<SalespersonRow> upsertBatch(Iterator<SalespersonRow> unsaved, Connection c) {
@@ -390,7 +375,6 @@ public class SalespersonRepoImpl implements SalespersonRepo {
         .updateManyReturning(SalespersonRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -431,5 +415,4 @@ public class SalespersonRepoImpl implements SalespersonRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

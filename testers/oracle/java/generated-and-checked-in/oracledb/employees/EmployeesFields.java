@@ -7,17 +7,17 @@ package oracledb.employees;
 
 import dev.typr.foundations.OracleTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
 import dev.typr.foundations.dsl.SqlExpr;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn.Part;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr7;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,186 +27,177 @@ import oracledb.departments.DepartmentsFields;
 import oracledb.departments.DepartmentsId;
 import oracledb.departments.DepartmentsRow;
 
-public interface EmployeesFields extends FieldsExpr<EmployeesRow> {
-  record Impl(List<Path> _path)
-      implements EmployeesFields, RelationStructure<EmployeesFields, EmployeesRow> {
-    @Override
-    public IdField<BigDecimal, EmployeesRow> empNumber() {
-      return new IdField<BigDecimal, EmployeesRow>(
-          _path,
-          "EMP_NUMBER",
-          EmployeesRow::empNumber,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withEmpNumber(value),
-          OracleTypes.number);
-    }
-    ;
+public class EmployeesFields
+    implements TupleExpr7<BigDecimal, String, String, String, String, MoneyT, LocalDateTime>,
+        RelationStructure<EmployeesFields, EmployeesRow>,
+        FieldsBase<EmployeesRow> {
+  List<Path> _path;
 
-    @Override
-    public IdField<String, EmployeesRow> empSuffix() {
-      return new IdField<String, EmployeesRow>(
-          _path,
-          "EMP_SUFFIX",
-          EmployeesRow::empSuffix,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withEmpSuffix(value),
-          OracleTypes.varchar2);
-    }
-    ;
-
-    @Override
-    public Field<String, EmployeesRow> deptCode() {
-      return new Field<String, EmployeesRow>(
-          _path,
-          "DEPT_CODE",
-          EmployeesRow::deptCode,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDeptCode(value),
-          OracleTypes.varchar2);
-    }
-    ;
-
-    @Override
-    public Field<String, EmployeesRow> deptRegion() {
-      return new Field<String, EmployeesRow>(
-          _path,
-          "DEPT_REGION",
-          EmployeesRow::deptRegion,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDeptRegion(value),
-          OracleTypes.varchar2);
-    }
-    ;
-
-    @Override
-    public Field<String, EmployeesRow> empName() {
-      return new Field<String, EmployeesRow>(
-          _path,
-          "EMP_NAME",
-          EmployeesRow::empName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withEmpName(value),
-          OracleTypes.varchar2);
-    }
-    ;
-
-    @Override
-    public OptField<MoneyT, EmployeesRow> salary() {
-      return new OptField<MoneyT, EmployeesRow>(
-          _path,
-          "SALARY",
-          EmployeesRow::salary,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withSalary(value),
-          MoneyT.oracleType);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, EmployeesRow> hireDate() {
-      return new Field<LocalDateTime, EmployeesRow>(
-          _path,
-          "HIRE_DATE",
-          EmployeesRow::hireDate,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withHireDate(value),
-          OracleTypes.date);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, EmployeesRow>> columns() {
-      return java.util.List.of(
-          this.empNumber(),
-          this.empSuffix(),
-          this.deptCode(),
-          this.deptRegion(),
-          this.empName(),
-          this.salary(),
-          this.hireDate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<EmployeesFields, EmployeesRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public EmployeesFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static EmployeesFields structure = new EmployeesFields(java.util.Collections.emptyList());
+
+  public IdField<BigDecimal, EmployeesRow> empNumber() {
+    return new IdField<BigDecimal, EmployeesRow>(
+        _path,
+        "EMP_NUMBER",
+        EmployeesRow::empNumber,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withEmpNumber(value),
+        OracleTypes.number);
   }
-  ;
 
-  IdField<BigDecimal, EmployeesRow> empNumber();
+  public IdField<String, EmployeesRow> empSuffix() {
+    return new IdField<String, EmployeesRow>(
+        _path,
+        "EMP_SUFFIX",
+        EmployeesRow::empSuffix,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withEmpSuffix(value),
+        OracleTypes.varchar2);
+  }
 
-  IdField<String, EmployeesRow> empSuffix();
+  public Field<String, EmployeesRow> deptCode() {
+    return new Field<String, EmployeesRow>(
+        _path,
+        "DEPT_CODE",
+        EmployeesRow::deptCode,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDeptCode(value),
+        OracleTypes.varchar2);
+  }
 
-  Field<String, EmployeesRow> deptCode();
+  public Field<String, EmployeesRow> deptRegion() {
+    return new Field<String, EmployeesRow>(
+        _path,
+        "DEPT_REGION",
+        EmployeesRow::deptRegion,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDeptRegion(value),
+        OracleTypes.varchar2);
+  }
 
-  Field<String, EmployeesRow> deptRegion();
+  public Field<String, EmployeesRow> empName() {
+    return new Field<String, EmployeesRow>(
+        _path,
+        "EMP_NAME",
+        EmployeesRow::empName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withEmpName(value),
+        OracleTypes.varchar2);
+  }
 
-  Field<String, EmployeesRow> empName();
+  public OptField<MoneyT, EmployeesRow> salary() {
+    return new OptField<MoneyT, EmployeesRow>(
+        _path,
+        "SALARY",
+        EmployeesRow::salary,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withSalary(value),
+        MoneyT.oracleType);
+  }
 
-  OptField<MoneyT, EmployeesRow> salary();
+  public Field<LocalDateTime, EmployeesRow> hireDate() {
+    return new Field<LocalDateTime, EmployeesRow>(
+        _path,
+        "HIRE_DATE",
+        EmployeesRow::hireDate,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withHireDate(value),
+        OracleTypes.date);
+  }
 
-  Field<LocalDateTime, EmployeesRow> hireDate();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<DepartmentsFields, DepartmentsRow> fkDepartments() {
+  public ForeignKey<DepartmentsFields, DepartmentsRow> fkDepartments() {
     return ForeignKey.<DepartmentsFields, DepartmentsRow>of("FK_EMPLOYEES_DEPARTMENTS")
         .<String>withColumnPair(deptCode(), DepartmentsFields::deptCode)
         .<String>withColumnPair(deptRegion(), DepartmentsFields::deptRegion);
   }
-  ;
 
-  default SqlExpr<Boolean> extractIdentDepartmentsIdIs(DepartmentsId id) {
+  public SqlExpr<Boolean> extractIdentDepartmentsIdIs(DepartmentsId id) {
     return SqlExpr.all(deptCode().isEqual(id.deptCode()), deptRegion().isEqual(id.deptRegion()));
   }
-  ;
 
-  default SqlExpr<Boolean> extractIdentDepartmentsIdIn(List<DepartmentsId> ids) {
-    return new CompositeIn(
-        List.of(
-            new Part<String, DepartmentsId, EmployeesRow>(
-                deptCode(), DepartmentsId::deptCode, OracleTypes.varchar2),
-            new Part<String, DepartmentsId, EmployeesRow>(
-                deptRegion(), DepartmentsId::deptRegion, OracleTypes.varchar2)),
-        ids);
+  public SqlExpr<Boolean> extractIdentDepartmentsIdIn(List<DepartmentsId> ids) {
+    return TupleExpr.of(deptCode(), deptRegion()).among(ids);
   }
-  ;
 
-  default SqlExpr<Boolean> compositeIdIs(EmployeesId compositeId) {
+  public SqlExpr<Boolean> compositeIdIs(EmployeesId compositeId) {
     return SqlExpr.all(
         empNumber().isEqual(compositeId.empNumber()), empSuffix().isEqual(compositeId.empSuffix()));
   }
-  ;
 
-  default SqlExpr<Boolean> compositeIdIn(List<EmployeesId> compositeIds) {
-    return new CompositeIn(
-        List.of(
-            new Part<BigDecimal, EmployeesId, EmployeesRow>(
-                empNumber(), EmployeesId::empNumber, OracleTypes.number),
-            new Part<String, EmployeesId, EmployeesRow>(
-                empSuffix(), EmployeesId::empSuffix, OracleTypes.varchar2)),
-        compositeIds);
+  public SqlExpr<Boolean> compositeIdIn(List<EmployeesId> compositeIds) {
+    return TupleExpr.of(empNumber(), empSuffix()).among(compositeIds);
   }
-  ;
 
   @Override
-  List<FieldLike<?, EmployeesRow>> columns();
+  public List<FieldLike<?, EmployeesRow>> columns() {
+    return java.util.List.of(
+        this.empNumber(),
+        this.empSuffix(),
+        this.deptCode(),
+        this.deptRegion(),
+        this.empName(),
+        this.salary(),
+        this.hireDate());
+  }
 
   @Override
-  default RowParser<EmployeesRow> rowParser() {
+  public RowParser<EmployeesRow> rowParser() {
     return EmployeesRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<EmployeesFields, EmployeesRow> withPaths(List<Path> _path) {
+    return new EmployeesFields(_path);
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _1() {
+    return empNumber();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return empSuffix();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return deptCode();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return deptRegion();
+  }
+
+  @Override
+  public SqlExpr<String> _5() {
+    return empName();
+  }
+
+  @Override
+  public SqlExpr<MoneyT> _6() {
+    return salary();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _7() {
+    return hireDate();
+  }
 }

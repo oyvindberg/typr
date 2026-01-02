@@ -40,14 +40,14 @@ case class CommentsSqlRow(
 )
 
 object CommentsSqlRow {
-  implicit lazy val reads: Reads[CommentsSqlRow] = {
+  given reads: Reads[CommentsSqlRow] = {
     Reads[CommentsSqlRow](json => JsResult.fromTry(
         Try(
           CommentsSqlRow(
-            tableSchema = json.\("table_schema").toOption.map(_.as(Reads.StringReads)),
-            tableName = json.\("table_name").toOption.map(_.as(Reads.StringReads)),
-            columnName = json.\("column_name").toOption.map(_.as(Reads.StringReads)),
-            description = json.\("description").as(Reads.StringReads)
+            tableSchema = json.\("table_schema").toOption.map(_.as(using Reads.StringReads)),
+            tableName = json.\("table_name").toOption.map(_.as(using Reads.StringReads)),
+            columnName = json.\("column_name").toOption.map(_.as(using Reads.StringReads)),
+            description = json.\("description").as(using Reads.StringReads)
           )
         )
       ),
@@ -58,21 +58,21 @@ object CommentsSqlRow {
     RowParser[CommentsSqlRow] { row =>
       Success(
         CommentsSqlRow(
-          tableSchema = row(idx + 0)(Column.columnToOption(Column.columnToString)),
-          tableName = row(idx + 1)(Column.columnToOption(Column.columnToString)),
-          columnName = row(idx + 2)(Column.columnToOption(Column.columnToString)),
-          description = row(idx + 3)(Column.columnToString)
+          tableSchema = row(idx + 0)(using Column.columnToOption(using Column.columnToString)),
+          tableName = row(idx + 1)(using Column.columnToOption(using Column.columnToString)),
+          columnName = row(idx + 2)(using Column.columnToOption(using Column.columnToString)),
+          description = row(idx + 3)(using Column.columnToString)
         )
       )
     }
   }
 
-  implicit lazy val writes: OWrites[CommentsSqlRow] = {
+  given writes: OWrites[CommentsSqlRow] = {
     OWrites[CommentsSqlRow](o =>
       new JsObject(ListMap[String, JsValue](
-        "table_schema" -> Writes.OptionWrites(Writes.StringWrites).writes(o.tableSchema),
-        "table_name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.tableName),
-        "column_name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.columnName),
+        "table_schema" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.tableSchema),
+        "table_name" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.tableName),
+        "column_name" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.columnName),
         "description" -> Writes.StringWrites.writes(o.description)
       ))
     )

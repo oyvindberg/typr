@@ -7,93 +7,89 @@ package adventureworks.public_.only_pk_columns;
 
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
 import dev.typr.foundations.dsl.SqlExpr;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn.Part;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr2;
 import java.util.List;
 import java.util.Optional;
 
-public interface OnlyPkColumnsFields extends FieldsExpr<OnlyPkColumnsRow> {
-  record Impl(List<Path> _path)
-      implements OnlyPkColumnsFields, RelationStructure<OnlyPkColumnsFields, OnlyPkColumnsRow> {
-    @Override
-    public IdField<String, OnlyPkColumnsRow> keyColumn1() {
-      return new IdField<String, OnlyPkColumnsRow>(
-          _path,
-          "key_column_1",
-          OnlyPkColumnsRow::keyColumn1,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withKeyColumn1(value),
-          PgTypes.text);
-    }
-    ;
+public class OnlyPkColumnsFields
+    implements TupleExpr2<String, Integer>,
+        RelationStructure<OnlyPkColumnsFields, OnlyPkColumnsRow>,
+        FieldsBase<OnlyPkColumnsRow> {
+  List<Path> _path;
 
-    @Override
-    public IdField<Integer, OnlyPkColumnsRow> keyColumn2() {
-      return new IdField<Integer, OnlyPkColumnsRow>(
-          _path,
-          "key_column_2",
-          OnlyPkColumnsRow::keyColumn2,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withKeyColumn2(value),
-          PgTypes.int4);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, OnlyPkColumnsRow>> columns() {
-      return java.util.List.of(this.keyColumn1(), this.keyColumn2());
-    }
-    ;
-
-    @Override
-    public RelationStructure<OnlyPkColumnsFields, OnlyPkColumnsRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public OnlyPkColumnsFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static OnlyPkColumnsFields structure =
+      new OnlyPkColumnsFields(java.util.Collections.emptyList());
+
+  public IdField<String, OnlyPkColumnsRow> keyColumn1() {
+    return new IdField<String, OnlyPkColumnsRow>(
+        _path,
+        "key_column_1",
+        OnlyPkColumnsRow::keyColumn1,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withKeyColumn1(value),
+        PgTypes.text);
   }
-  ;
 
-  IdField<String, OnlyPkColumnsRow> keyColumn1();
+  public IdField<Integer, OnlyPkColumnsRow> keyColumn2() {
+    return new IdField<Integer, OnlyPkColumnsRow>(
+        _path,
+        "key_column_2",
+        OnlyPkColumnsRow::keyColumn2,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withKeyColumn2(value),
+        PgTypes.int4);
+  }
 
-  IdField<Integer, OnlyPkColumnsRow> keyColumn2();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default SqlExpr<Boolean> compositeIdIs(OnlyPkColumnsId compositeId) {
+  public SqlExpr<Boolean> compositeIdIs(OnlyPkColumnsId compositeId) {
     return SqlExpr.all(
         keyColumn1().isEqual(compositeId.keyColumn1()),
         keyColumn2().isEqual(compositeId.keyColumn2()));
   }
-  ;
 
-  default SqlExpr<Boolean> compositeIdIn(List<OnlyPkColumnsId> compositeIds) {
-    return new CompositeIn(
-        List.of(
-            new Part<String, OnlyPkColumnsId, OnlyPkColumnsRow>(
-                keyColumn1(), OnlyPkColumnsId::keyColumn1, PgTypes.text),
-            new Part<Integer, OnlyPkColumnsId, OnlyPkColumnsRow>(
-                keyColumn2(), OnlyPkColumnsId::keyColumn2, PgTypes.int4)),
-        compositeIds);
+  public SqlExpr<Boolean> compositeIdIn(List<OnlyPkColumnsId> compositeIds) {
+    return TupleExpr.of(keyColumn1(), keyColumn2()).among(compositeIds);
   }
-  ;
 
   @Override
-  List<FieldLike<?, OnlyPkColumnsRow>> columns();
+  public List<FieldLike<?, OnlyPkColumnsRow>> columns() {
+    return java.util.List.of(this.keyColumn1(), this.keyColumn2());
+  }
 
   @Override
-  default RowParser<OnlyPkColumnsRow> rowParser() {
+  public RowParser<OnlyPkColumnsRow> rowParser() {
     return OnlyPkColumnsRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<OnlyPkColumnsFields, OnlyPkColumnsRow> withPaths(List<Path> _path) {
+    return new OnlyPkColumnsFields(_path);
+  }
+
+  @Override
+  public SqlExpr<String> _1() {
+    return keyColumn1();
+  }
+
+  @Override
+  public SqlExpr<Integer> _2() {
+    return keyColumn2();
+  }
 }

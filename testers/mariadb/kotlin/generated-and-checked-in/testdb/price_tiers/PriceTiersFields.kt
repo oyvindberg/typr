@@ -7,50 +7,49 @@ package testdb.price_tiers
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.data.Uint4
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
+import dev.typr.foundations.kotlin.TupleExpr5
 import java.math.BigDecimal
 import kotlin.collections.List
 
-interface PriceTiersFields : FieldsExpr<PriceTiersRow> {
-  abstract override fun columns(): List<FieldLike<*, PriceTiersRow>>
+data class PriceTiersFields(val _path: List<Path>) : TupleExpr5<PriceTiersId, String, Uint4, String, BigDecimal>, RelationStructure<PriceTiersFields, PriceTiersRow>, FieldsBase<PriceTiersRow> {
+  override fun _1(): SqlExpr<PriceTiersId> = tierId()
 
-  abstract fun discountType(): Field<String, PriceTiersRow>
+  override fun _2(): SqlExpr<String> = name()
 
-  abstract fun discountValue(): Field<BigDecimal, PriceTiersRow>
+  override fun _3(): SqlExpr<Uint4> = minQuantity()
 
-  abstract fun minQuantity(): Field<Long, PriceTiersRow>
+  override fun _4(): SqlExpr<String> = discountType()
 
-  abstract fun name(): Field<String, PriceTiersRow>
+  override fun _5(): SqlExpr<BigDecimal> = discountValue()
+
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, PriceTiersRow>> = listOf(this.tierId().underlying, this.name().underlying, this.minQuantity().underlying, this.discountType().underlying, this.discountValue().underlying)
+
+  fun discountType(): Field<String, PriceTiersRow> = Field<String, PriceTiersRow>(_path, "discount_type", PriceTiersRow::discountType, null, null, { row, value -> row.copy(discountType = value) }, MariaTypes.text)
+
+  fun discountValue(): Field<BigDecimal, PriceTiersRow> = Field<BigDecimal, PriceTiersRow>(_path, "discount_value", PriceTiersRow::discountValue, null, null, { row, value -> row.copy(discountValue = value) }, KotlinDbTypes.MariaTypes.numeric)
+
+  fun minQuantity(): Field<Uint4, PriceTiersRow> = Field<Uint4, PriceTiersRow>(_path, "min_quantity", PriceTiersRow::minQuantity, null, null, { row, value -> row.copy(minQuantity = value) }, MariaTypes.intUnsigned)
+
+  fun name(): Field<String, PriceTiersRow> = Field<String, PriceTiersRow>(_path, "name", PriceTiersRow::name, null, null, { row, value -> row.copy(name = value) }, MariaTypes.varchar)
 
   override fun rowParser(): RowParser<PriceTiersRow> = PriceTiersRow._rowParser.underlying
 
-  abstract fun tierId(): IdField<PriceTiersId, PriceTiersRow>
+  fun tierId(): IdField<PriceTiersId, PriceTiersRow> = IdField<PriceTiersId, PriceTiersRow>(_path, "tier_id", PriceTiersRow::tierId, null, null, { row, value -> row.copy(tierId = value) }, PriceTiersId.dbType)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<PriceTiersFields, PriceTiersRow> = PriceTiersFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : PriceTiersFields, RelationStructure<PriceTiersFields, PriceTiersRow> {
-      override fun tierId(): IdField<PriceTiersId, PriceTiersRow> = IdField<PriceTiersId, PriceTiersRow>(_path, "tier_id", PriceTiersRow::tierId, null, null, { row, value -> row.copy(tierId = value) }, PriceTiersId.pgType)
-
-      override fun name(): Field<String, PriceTiersRow> = Field<String, PriceTiersRow>(_path, "name", PriceTiersRow::name, null, null, { row, value -> row.copy(name = value) }, MariaTypes.varchar)
-
-      override fun minQuantity(): Field<Long, PriceTiersRow> = Field<Long, PriceTiersRow>(_path, "min_quantity", PriceTiersRow::minQuantity, null, null, { row, value -> row.copy(minQuantity = value) }, KotlinDbTypes.MariaTypes.intUnsigned)
-
-      override fun discountType(): Field<String, PriceTiersRow> = Field<String, PriceTiersRow>(_path, "discount_type", PriceTiersRow::discountType, null, null, { row, value -> row.copy(discountType = value) }, MariaTypes.text)
-
-      override fun discountValue(): Field<BigDecimal, PriceTiersRow> = Field<BigDecimal, PriceTiersRow>(_path, "discount_value", PriceTiersRow::discountValue, null, null, { row, value -> row.copy(discountValue = value) }, KotlinDbTypes.MariaTypes.numeric)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, PriceTiersRow>> = listOf(this.tierId().underlying, this.name().underlying, this.minQuantity().underlying, this.discountType().underlying, this.discountValue().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<PriceTiersFields, PriceTiersRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: PriceTiersFields = PriceTiersFields(emptyList<Path>())
   }
 }

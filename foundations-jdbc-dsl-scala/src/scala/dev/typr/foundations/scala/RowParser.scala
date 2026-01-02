@@ -1,8 +1,8 @@
 package dev.typr.foundations.scala
 
 import java.sql.ResultSet
-import _root_.scala.jdk.CollectionConverters._
-import _root_.scala.jdk.OptionConverters._
+import _root_.scala.jdk.CollectionConverters.*
+import _root_.scala.jdk.OptionConverters.*
 
 /** Scala wrapper for dev.typr.foundations.RowParser that provides Scala-native methods.
   *

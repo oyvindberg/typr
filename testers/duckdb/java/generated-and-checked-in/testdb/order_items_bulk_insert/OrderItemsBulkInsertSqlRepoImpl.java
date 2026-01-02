@@ -11,12 +11,13 @@ import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.Fragment;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.util.List;
 import testdb.orders.OrdersId;
 import testdb.products.ProductsId;
 
 public class OrderItemsBulkInsertSqlRepoImpl implements OrderItemsBulkInsertSqlRepo {
   @Override
-  public Integer apply(
+  public List<OrderItemsBulkInsertSqlRow> apply(
       /* user-picked */ OrdersId orderId,
       /* user-picked */ ProductsId productId,
       Integer quantity,
@@ -45,8 +46,7 @@ public class OrderItemsBulkInsertSqlRepoImpl implements OrderItemsBulkInsertSqlR
                     + "    product_id,\n"
                     + "    quantity,\n"
                     + "    unit_price"))
-        .update()
+        .query(OrderItemsBulkInsertSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

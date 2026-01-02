@@ -23,9 +23,8 @@ import java.util.Optional;
 public class ProductsRepoImpl implements ProductsRepo {
   @Override
   public DeleteBuilder<ProductsFields, ProductsRow> delete() {
-    return DeleteBuilder.of("\"products\"", ProductsFields.structure(), Dialect.DUCKDB);
+    return DeleteBuilder.of("\"products\"", ProductsFields.structure, Dialect.DUCKDB);
   }
-  ;
 
   @Override
   public Boolean deleteById(ProductsId productId, Connection c) {
@@ -37,18 +36,16 @@ public class ProductsRepoImpl implements ProductsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(ProductsId[] productIds, Connection c) {
     return interpolate(
             Fragment.lit("delete\nfrom \"products\"\nwhere \"product_id\" = ANY("),
-            Fragment.encode(ProductsId.pgTypeArray, productIds),
+            Fragment.encode(ProductsId.dbTypeArray, productIds),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductsRow insert(ProductsRow unsaved, Connection c) {
@@ -71,14 +68,12 @@ public class ProductsRepoImpl implements ProductsRepo {
         .updateReturning(ProductsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<ProductsFields, ProductsRow> select() {
     return SelectBuilder.of(
-        "\"products\"", ProductsFields.structure(), ProductsRow._rowParser, Dialect.DUCKDB);
+        "\"products\"", ProductsFields.structure, ProductsRow._rowParser, Dialect.DUCKDB);
   }
-  ;
 
   @Override
   public List<ProductsRow> selectAll(Connection c) {
@@ -89,7 +84,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .query(ProductsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<ProductsRow> selectById(ProductsId productId, Connection c) {
@@ -103,7 +97,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .query(ProductsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductsRow> selectByIds(ProductsId[] productIds, Connection c) {
@@ -112,12 +105,11 @@ public class ProductsRepoImpl implements ProductsRepo {
                 "select \"product_id\", \"sku\", \"name\", \"price\", \"metadata\"\n"
                     + "from \"products\"\n"
                     + "where \"product_id\" = ANY("),
-            Fragment.encode(ProductsId.pgTypeArray, productIds),
+            Fragment.encode(ProductsId.dbTypeArray, productIds),
             Fragment.lit(")"))
         .query(ProductsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<ProductsId, ProductsRow> selectByIdsTracked(ProductsId[] productIds, Connection c) {
@@ -125,7 +117,6 @@ public class ProductsRepoImpl implements ProductsRepo {
     selectByIds(productIds, c).forEach(row -> ret.put(row.productId(), row));
     return ret;
   }
-  ;
 
   @Override
   public Optional<ProductsRow> selectByUniqueSku(String sku, Connection c) {
@@ -139,14 +130,12 @@ public class ProductsRepoImpl implements ProductsRepo {
         .query(ProductsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<ProductsFields, ProductsRow> update() {
     return UpdateBuilder.of(
-        "\"products\"", ProductsFields.structure(), ProductsRow._rowParser, Dialect.DUCKDB);
+        "\"products\"", ProductsFields.structure, ProductsRow._rowParser, Dialect.DUCKDB);
   }
-  ;
 
   @Override
   public Boolean update(ProductsRow row, Connection c) {
@@ -168,7 +157,6 @@ public class ProductsRepoImpl implements ProductsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public ProductsRow upsert(ProductsRow unsaved, Connection c) {
@@ -198,7 +186,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .updateReturning(ProductsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductsRow> upsertBatch(Iterator<ProductsRow> unsaved, Connection c) {
@@ -217,5 +204,4 @@ public class ProductsRepoImpl implements ProductsRepo {
         .updateReturningEach(ProductsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

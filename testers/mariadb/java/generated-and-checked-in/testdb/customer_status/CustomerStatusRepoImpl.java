@@ -24,27 +24,25 @@ import java.util.Optional;
 public class CustomerStatusRepoImpl implements CustomerStatusRepo {
   @Override
   public DeleteBuilder<CustomerStatusFields, CustomerStatusRow> delete() {
-    return DeleteBuilder.of("`customer_status`", CustomerStatusFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`customer_status`", CustomerStatusFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(CustomerStatusId statusCode, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `customer_status` where `status_code` = "),
-                Fragment.encode(CustomerStatusId.pgType, statusCode),
+                Fragment.encode(CustomerStatusId.dbType, statusCode),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(CustomerStatusId[] statusCodes, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : statusCodes) {
-      fragments.add(Fragment.encode(CustomerStatusId.pgType, id));
+      fragments.add(Fragment.encode(CustomerStatusId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -54,7 +52,6 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CustomerStatusRow insert(CustomerStatusRow unsaved, Connection c) {
@@ -62,7 +59,7 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
             Fragment.lit(
                 "insert into `customer_status`(`status_code`, `description`, `is_active`)\n"
                     + "values ("),
-            Fragment.encode(CustomerStatusId.pgType, unsaved.statusCode()),
+            Fragment.encode(CustomerStatusId.dbType, unsaved.statusCode()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.description()),
             Fragment.lit(", "),
@@ -71,7 +68,6 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
         .updateReturning(CustomerStatusRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public CustomerStatusRow insert(CustomerStatusRowUnsaved unsaved, Connection c) {
@@ -82,7 +78,7 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
     columns.add(Fragment.lit("`status_code`"));
     values.add(
         interpolate(
-            Fragment.encode(CustomerStatusId.pgType, unsaved.statusCode()), Fragment.lit("")));
+            Fragment.encode(CustomerStatusId.dbType, unsaved.statusCode()), Fragment.lit("")));
     columns.add(Fragment.lit("`description`"));
     values.add(
         interpolate(Fragment.encode(MariaTypes.varchar, unsaved.description()), Fragment.lit("")));
@@ -105,17 +101,15 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
     ;
     return q.updateReturning(CustomerStatusRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<CustomerStatusFields, CustomerStatusRow> select() {
     return SelectBuilder.of(
         "`customer_status`",
-        CustomerStatusFields.structure(),
+        CustomerStatusFields.structure,
         CustomerStatusRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<CustomerStatusRow> selectAll(Connection c) {
@@ -125,7 +119,6 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
         .query(CustomerStatusRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<CustomerStatusRow> selectById(CustomerStatusId statusCode, Connection c) {
@@ -134,18 +127,17 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
                 "select `status_code`, `description`, `is_active`\n"
                     + "from `customer_status`\n"
                     + "where `status_code` = "),
-            Fragment.encode(CustomerStatusId.pgType, statusCode),
+            Fragment.encode(CustomerStatusId.dbType, statusCode),
             Fragment.lit(""))
         .query(CustomerStatusRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<CustomerStatusRow> selectByIds(CustomerStatusId[] statusCodes, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : statusCodes) {
-      fragments.add(Fragment.encode(CustomerStatusId.pgType, id));
+      fragments.add(Fragment.encode(CustomerStatusId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -157,7 +149,6 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
         .query(CustomerStatusRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<CustomerStatusId, CustomerStatusRow> selectByIdsTracked(
@@ -167,17 +158,15 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
     selectByIds(statusCodes, c).forEach(row -> ret.put(row.statusCode(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<CustomerStatusFields, CustomerStatusRow> update() {
     return UpdateBuilder.of(
         "`customer_status`",
-        CustomerStatusFields.structure(),
+        CustomerStatusFields.structure,
         CustomerStatusRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(CustomerStatusRow row, Connection c) {
@@ -189,13 +178,12 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
                 Fragment.lit(",\n`is_active` = "),
                 Fragment.encode(MariaTypes.bool, row.isActive()),
                 Fragment.lit("\nwhere `status_code` = "),
-                Fragment.encode(CustomerStatusId.pgType, statusCode),
+                Fragment.encode(CustomerStatusId.dbType, statusCode),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public CustomerStatusRow upsert(CustomerStatusRow unsaved, Connection c) {
@@ -203,7 +191,7 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
             Fragment.lit(
                 "INSERT INTO `customer_status`(`status_code`, `description`, `is_active`)\n"
                     + "VALUES ("),
-            Fragment.encode(CustomerStatusId.pgType, unsaved.statusCode()),
+            Fragment.encode(CustomerStatusId.dbType, unsaved.statusCode()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.description()),
             Fragment.lit(", "),
@@ -216,7 +204,6 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
         .updateReturning(CustomerStatusRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<CustomerStatusRow> upsertBatch(Iterator<CustomerStatusRow> unsaved, Connection c) {
@@ -230,5 +217,4 @@ public class CustomerStatusRepoImpl implements CustomerStatusRepo {
         .updateReturningEach(CustomerStatusRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

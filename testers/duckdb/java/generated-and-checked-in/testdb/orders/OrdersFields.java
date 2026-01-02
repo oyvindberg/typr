@@ -7,122 +7,130 @@ package testdb.orders;
 
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface OrdersFields extends FieldsExpr<OrdersRow> {
-  record Impl(List<Path> _path)
-      implements OrdersFields, RelationStructure<OrdersFields, OrdersRow> {
-    @Override
-    public IdField<OrdersId, OrdersRow> orderId() {
-      return new IdField<OrdersId, OrdersRow>(
-          _path,
-          "order_id",
-          OrdersRow::orderId,
-          Optional.empty(),
-          Optional.of("INTEGER"),
-          (row, value) -> row.withOrderId(value),
-          OrdersId.duckDbType);
-    }
-    ;
+public class OrdersFields
+    implements TupleExpr5<OrdersId, Integer, LocalDate, BigDecimal, String>,
+        RelationStructure<OrdersFields, OrdersRow>,
+        FieldsBase<OrdersRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<Integer, OrdersRow> customerId() {
-      return new Field<Integer, OrdersRow>(
-          _path,
-          "customer_id",
-          OrdersRow::customerId,
-          Optional.empty(),
-          Optional.of("INTEGER"),
-          (row, value) -> row.withCustomerId(value),
-          DuckDbTypes.integer);
-    }
-    ;
-
-    @Override
-    public Field<LocalDate, OrdersRow> orderDate() {
-      return new Field<LocalDate, OrdersRow>(
-          _path,
-          "order_date",
-          OrdersRow::orderDate,
-          Optional.empty(),
-          Optional.of("DATE"),
-          (row, value) -> row.withOrderDate(value),
-          DuckDbTypes.date);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, OrdersRow> totalAmount() {
-      return new OptField<BigDecimal, OrdersRow>(
-          _path,
-          "total_amount",
-          OrdersRow::totalAmount,
-          Optional.empty(),
-          Optional.of("DECIMAL(12,2)"),
-          (row, value) -> row.withTotalAmount(value),
-          DuckDbTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<String, OrdersRow> status() {
-      return new OptField<String, OrdersRow>(
-          _path,
-          "status",
-          OrdersRow::status,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withStatus(value),
-          DuckDbTypes.varchar);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, OrdersRow>> columns() {
-      return java.util.List.of(
-          this.orderId(), this.customerId(), this.orderDate(), this.totalAmount(), this.status());
-    }
-    ;
-
-    @Override
-    public RelationStructure<OrdersFields, OrdersRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public OrdersFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static OrdersFields structure = new OrdersFields(java.util.Collections.emptyList());
+
+  public IdField<OrdersId, OrdersRow> orderId() {
+    return new IdField<OrdersId, OrdersRow>(
+        _path,
+        "order_id",
+        OrdersRow::orderId,
+        Optional.empty(),
+        Optional.of("INTEGER"),
+        (row, value) -> row.withOrderId(value),
+        OrdersId.duckDbType);
   }
-  ;
 
-  IdField<OrdersId, OrdersRow> orderId();
+  public Field<Integer, OrdersRow> customerId() {
+    return new Field<Integer, OrdersRow>(
+        _path,
+        "customer_id",
+        OrdersRow::customerId,
+        Optional.empty(),
+        Optional.of("INTEGER"),
+        (row, value) -> row.withCustomerId(value),
+        DuckDbTypes.integer);
+  }
 
-  Field<Integer, OrdersRow> customerId();
+  public Field<LocalDate, OrdersRow> orderDate() {
+    return new Field<LocalDate, OrdersRow>(
+        _path,
+        "order_date",
+        OrdersRow::orderDate,
+        Optional.empty(),
+        Optional.of("DATE"),
+        (row, value) -> row.withOrderDate(value),
+        DuckDbTypes.date);
+  }
 
-  Field<LocalDate, OrdersRow> orderDate();
+  public OptField<BigDecimal, OrdersRow> totalAmount() {
+    return new OptField<BigDecimal, OrdersRow>(
+        _path,
+        "total_amount",
+        OrdersRow::totalAmount,
+        Optional.empty(),
+        Optional.of("DECIMAL(12,2)"),
+        (row, value) -> row.withTotalAmount(value),
+        DuckDbTypes.numeric);
+  }
 
-  OptField<BigDecimal, OrdersRow> totalAmount();
-
-  OptField<String, OrdersRow> status();
+  public OptField<String, OrdersRow> status() {
+    return new OptField<String, OrdersRow>(
+        _path,
+        "status",
+        OrdersRow::status,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withStatus(value),
+        DuckDbTypes.varchar);
+  }
 
   @Override
-  List<FieldLike<?, OrdersRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<OrdersRow> rowParser() {
+  public List<FieldLike<?, OrdersRow>> columns() {
+    return java.util.List.of(
+        this.orderId(), this.customerId(), this.orderDate(), this.totalAmount(), this.status());
+  }
+
+  @Override
+  public RowParser<OrdersRow> rowParser() {
     return OrdersRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<OrdersFields, OrdersRow> withPaths(List<Path> _path) {
+    return new OrdersFields(_path);
+  }
+
+  @Override
+  public SqlExpr<OrdersId> _1() {
+    return orderId();
+  }
+
+  @Override
+  public SqlExpr<Integer> _2() {
+    return customerId();
+  }
+
+  @Override
+  public SqlExpr<LocalDate> _3() {
+    return orderDate();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _4() {
+    return totalAmount();
+  }
+
+  @Override
+  public SqlExpr<String> _5() {
+    return status();
+  }
 }

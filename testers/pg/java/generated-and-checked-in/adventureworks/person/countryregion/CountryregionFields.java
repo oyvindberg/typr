@@ -8,89 +8,96 @@ package adventureworks.person.countryregion;
 import adventureworks.public_.Name;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr3;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface CountryregionFields extends FieldsExpr<CountryregionRow> {
-  record Impl(List<Path> _path)
-      implements CountryregionFields, RelationStructure<CountryregionFields, CountryregionRow> {
-    @Override
-    public IdField<CountryregionId, CountryregionRow> countryregioncode() {
-      return new IdField<CountryregionId, CountryregionRow>(
-          _path,
-          "countryregioncode",
-          CountryregionRow::countryregioncode,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCountryregioncode(value),
-          CountryregionId.pgType);
-    }
-    ;
+public class CountryregionFields
+    implements TupleExpr3<CountryregionId, Name, LocalDateTime>,
+        RelationStructure<CountryregionFields, CountryregionRow>,
+        FieldsBase<CountryregionRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<Name, CountryregionRow> name() {
-      return new Field<Name, CountryregionRow>(
-          _path,
-          "name",
-          CountryregionRow::name,
-          Optional.empty(),
-          Optional.of("varchar"),
-          (row, value) -> row.withName(value),
-          Name.pgType);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, CountryregionRow> modifieddate() {
-      return new Field<LocalDateTime, CountryregionRow>(
-          _path,
-          "modifieddate",
-          CountryregionRow::modifieddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withModifieddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, CountryregionRow>> columns() {
-      return java.util.List.of(this.countryregioncode(), this.name(), this.modifieddate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<CountryregionFields, CountryregionRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public CountryregionFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static CountryregionFields structure =
+      new CountryregionFields(java.util.Collections.emptyList());
+
+  public IdField<CountryregionId, CountryregionRow> countryregioncode() {
+    return new IdField<CountryregionId, CountryregionRow>(
+        _path,
+        "countryregioncode",
+        CountryregionRow::countryregioncode,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCountryregioncode(value),
+        CountryregionId.dbType);
   }
-  ;
 
-  IdField<CountryregionId, CountryregionRow> countryregioncode();
+  public Field<Name, CountryregionRow> name() {
+    return new Field<Name, CountryregionRow>(
+        _path,
+        "name",
+        CountryregionRow::name,
+        Optional.empty(),
+        Optional.of("varchar"),
+        (row, value) -> row.withName(value),
+        Name.dbType);
+  }
 
-  Field<Name, CountryregionRow> name();
-
-  Field<LocalDateTime, CountryregionRow> modifieddate();
+  public Field<LocalDateTime, CountryregionRow> modifieddate() {
+    return new Field<LocalDateTime, CountryregionRow>(
+        _path,
+        "modifieddate",
+        CountryregionRow::modifieddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withModifieddate(value),
+        PgTypes.timestamp);
+  }
 
   @Override
-  List<FieldLike<?, CountryregionRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<CountryregionRow> rowParser() {
+  public List<FieldLike<?, CountryregionRow>> columns() {
+    return java.util.List.of(this.countryregioncode(), this.name(), this.modifieddate());
+  }
+
+  @Override
+  public RowParser<CountryregionRow> rowParser() {
     return CountryregionRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<CountryregionFields, CountryregionRow> withPaths(List<Path> _path) {
+    return new CountryregionFields(_path);
+  }
+
+  @Override
+  public SqlExpr<CountryregionId> _1() {
+    return countryregioncode();
+  }
+
+  @Override
+  public SqlExpr<Name> _2() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _3() {
+    return modifieddate();
+  }
 }

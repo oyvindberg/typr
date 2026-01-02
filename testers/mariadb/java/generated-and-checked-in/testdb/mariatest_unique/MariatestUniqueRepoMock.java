@@ -48,7 +48,7 @@ public record MariatestUniqueRepoMock(
   @Override
   public DeleteBuilder<MariatestUniqueFields, MariatestUniqueRow> delete() {
     return new DeleteBuilderMock<>(
-        MariatestUniqueFields.structure(),
+        MariatestUniqueFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.id(),
@@ -97,9 +97,7 @@ public record MariatestUniqueRepoMock(
   @Override
   public SelectBuilder<MariatestUniqueFields, MariatestUniqueRow> select() {
     return new SelectBuilderMock<>(
-        MariatestUniqueFields.structure(),
-        () -> new ArrayList<>(map.values()),
-        SelectParams.empty());
+        MariatestUniqueFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -155,7 +153,7 @@ public record MariatestUniqueRepoMock(
   @Override
   public UpdateBuilder<MariatestUniqueFields, MariatestUniqueRow> update() {
     return new UpdateBuilderMock<>(
-        MariatestUniqueFields.structure(),
+        MariatestUniqueFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

@@ -7,6 +7,7 @@ package testdb.orders
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple22
 import dev.typr.foundations.data.maria.Inet6
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
@@ -107,7 +108,7 @@ case class OrdersRow(
    * Default: NULL
    */
   @JsonProperty("delivered_at") deliveredAt: Option[LocalDateTime]
-) {
+) extends Tuple22[OrdersId, String, CustomersId, String, String, Option[CustomerAddressesId], Option[CustomerAddressesId], BigDecimal, BigDecimal, BigDecimal, BigDecimal, BigDecimal, String, Option[PromotionsId], Option[String], Option[String], Option[Inet6], Option[String], LocalDateTime, Option[LocalDateTime], Option[LocalDateTime], Option[LocalDateTime]] {
   def id: OrdersId = orderId
 
   def toUnsavedRow(
@@ -153,8 +154,52 @@ case class OrdersRow(
       deliveredAt
     )
   }
+
+  override def `_1`: OrdersId = orderId
+
+  override def `_2`: String = orderNumber
+
+  override def `_3`: CustomersId = customerId
+
+  override def `_4`: String = orderStatus
+
+  override def `_5`: String = paymentStatus
+
+  override def `_6`: Option[CustomerAddressesId] = shippingAddressId
+
+  override def `_7`: Option[CustomerAddressesId] = billingAddressId
+
+  override def `_8`: BigDecimal = subtotal
+
+  override def `_9`: BigDecimal = shippingCost
+
+  override def `_10`: BigDecimal = taxAmount
+
+  override def `_11`: BigDecimal = discountAmount
+
+  override def `_12`: BigDecimal = totalAmount
+
+  override def `_13`: String = currencyCode
+
+  override def `_14`: Option[PromotionsId] = promotionId
+
+  override def `_15`: Option[String] = notes
+
+  override def `_16`: Option[String] = internalNotes
+
+  override def `_17`: Option[Inet6] = ipAddress
+
+  override def `_18`: Option[String] = userAgent
+
+  override def `_19`: LocalDateTime = orderedAt
+
+  override def `_20`: Option[LocalDateTime] = confirmedAt
+
+  override def `_21`: Option[LocalDateTime] = shippedAt
+
+  override def `_22`: Option[LocalDateTime] = deliveredAt
 }
 
 object OrdersRow {
-  val `_rowParser`: RowParser[OrdersRow] = RowParsers.of(OrdersId.pgType, MariaTypes.varchar, CustomersId.pgType, MariaTypes.text, MariaTypes.text, CustomerAddressesId.pgType.nullable, CustomerAddressesId.pgType.nullable, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, MariaTypes.char_, PromotionsId.pgType.nullable, MariaTypes.text.nullable, MariaTypes.mediumtext.nullable, MariaTypes.inet6.nullable, MariaTypes.varchar.nullable, MariaTypes.datetime, MariaTypes.datetime.nullable, MariaTypes.datetime.nullable, MariaTypes.datetime.nullable)(OrdersRow.apply)(row => Array[Any](row.orderId, row.orderNumber, row.customerId, row.orderStatus, row.paymentStatus, row.shippingAddressId, row.billingAddressId, row.subtotal, row.shippingCost, row.taxAmount, row.discountAmount, row.totalAmount, row.currencyCode, row.promotionId, row.notes, row.internalNotes, row.ipAddress, row.userAgent, row.orderedAt, row.confirmedAt, row.shippedAt, row.deliveredAt))
+  val `_rowParser`: RowParser[OrdersRow] = RowParsers.of(OrdersId.dbType, MariaTypes.varchar, CustomersId.dbType, MariaTypes.text, MariaTypes.text, CustomerAddressesId.dbType.nullable, CustomerAddressesId.dbType.nullable, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, MariaTypes.char_, PromotionsId.dbType.nullable, MariaTypes.text.nullable, MariaTypes.mediumtext.nullable, MariaTypes.inet6.nullable, MariaTypes.varchar.nullable, MariaTypes.datetime, MariaTypes.datetime.nullable, MariaTypes.datetime.nullable, MariaTypes.datetime.nullable)(OrdersRow.apply)(row => Array[Any](row.orderId, row.orderNumber, row.customerId, row.orderStatus, row.paymentStatus, row.shippingAddressId, row.billingAddressId, row.subtotal, row.shippingCost, row.taxAmount, row.discountAmount, row.totalAmount, row.currencyCode, row.promotionId, row.notes, row.internalNotes, row.ipAddress, row.userAgent, row.orderedAt, row.confirmedAt, row.shippedAt, row.deliveredAt))
 }

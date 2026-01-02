@@ -12,6 +12,7 @@ import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple5
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -34,7 +35,7 @@ case class ProductsubcategoryRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple5[ProductsubcategoryId, ProductcategoryId, Name, UUID, LocalDateTime] {
   def id: ProductsubcategoryId = productsubcategoryid
 
   def toUnsavedRow(
@@ -50,10 +51,20 @@ case class ProductsubcategoryRow(
       modifieddate
     )
   }
+
+  override def `_1`: ProductsubcategoryId = productsubcategoryid
+
+  override def `_2`: ProductcategoryId = productcategoryid
+
+  override def `_3`: Name = name
+
+  override def `_4`: UUID = rowguid
+
+  override def `_5`: LocalDateTime = modifieddate
 }
 
 object ProductsubcategoryRow {
-  val `_rowParser`: RowParser[ProductsubcategoryRow] = RowParsers.of(ProductsubcategoryId.pgType, ProductcategoryId.pgType, Name.pgType, PgTypes.uuid, PgTypes.timestamp, ProductsubcategoryRow.apply, row => Array[Any](row.productsubcategoryid, row.productcategoryid, row.name, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[ProductsubcategoryRow] = RowParsers.of(ProductsubcategoryId.dbType, ProductcategoryId.dbType, Name.dbType, PgTypes.uuid, PgTypes.timestamp, ProductsubcategoryRow.apply, row => Array[Any](row.productsubcategoryid, row.productcategoryid, row.name, row.rowguid, row.modifieddate))
 
   given pgText: PgText[ProductsubcategoryRow] = PgText.from(`_rowParser`)
 }

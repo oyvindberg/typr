@@ -40,15 +40,15 @@ case class ConstraintsSqlRow(
 )
 
 object ConstraintsSqlRow {
-  implicit lazy val reads: Reads[ConstraintsSqlRow] = {
+  given reads: Reads[ConstraintsSqlRow] = {
     Reads[ConstraintsSqlRow](json => JsResult.fromTry(
         Try(
           ConstraintsSqlRow(
-            tableSchema = json.\("table_schema").toOption.map(_.as(Reads.StringReads)),
-            tableName = json.\("table_name").toOption.map(_.as(Reads.StringReads)),
-            columns = json.\("columns").toOption.map(_.as(Reads.ArrayReads[String](Reads.StringReads, implicitly))),
-            constraintName = json.\("constraint_name").toOption.map(_.as(Reads.StringReads)),
-            checkClause = json.\("check_clause").toOption.map(_.as(Reads.StringReads))
+            tableSchema = json.\("table_schema").toOption.map(_.as(using Reads.StringReads)),
+            tableName = json.\("table_name").toOption.map(_.as(using Reads.StringReads)),
+            columns = json.\("columns").toOption.map(_.as(using Reads.ArrayReads[String](using Reads.StringReads, implicitly))),
+            constraintName = json.\("constraint_name").toOption.map(_.as(using Reads.StringReads)),
+            checkClause = json.\("check_clause").toOption.map(_.as(using Reads.StringReads))
           )
         )
       ),
@@ -59,24 +59,24 @@ object ConstraintsSqlRow {
     RowParser[ConstraintsSqlRow] { row =>
       Success(
         ConstraintsSqlRow(
-          tableSchema = row(idx + 0)(Column.columnToOption(Column.columnToString)),
-          tableName = row(idx + 1)(Column.columnToOption(Column.columnToString)),
-          columns = row(idx + 2)(Column.columnToOption(Column.columnToArray[String](Column.columnToString, implicitly))),
-          constraintName = row(idx + 3)(Column.columnToOption(Column.columnToString)),
-          checkClause = row(idx + 4)(Column.columnToOption(Column.columnToString))
+          tableSchema = row(idx + 0)(using Column.columnToOption(using Column.columnToString)),
+          tableName = row(idx + 1)(using Column.columnToOption(using Column.columnToString)),
+          columns = row(idx + 2)(using Column.columnToOption(using Column.columnToArray[String](using Column.columnToString, summon))),
+          constraintName = row(idx + 3)(using Column.columnToOption(using Column.columnToString)),
+          checkClause = row(idx + 4)(using Column.columnToOption(using Column.columnToString))
         )
       )
     }
   }
 
-  implicit lazy val writes: OWrites[ConstraintsSqlRow] = {
+  given writes: OWrites[ConstraintsSqlRow] = {
     OWrites[ConstraintsSqlRow](o =>
       new JsObject(ListMap[String, JsValue](
-        "table_schema" -> Writes.OptionWrites(Writes.StringWrites).writes(o.tableSchema),
-        "table_name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.tableName),
-        "columns" -> Writes.OptionWrites(Writes.arrayWrites[String](implicitly, Writes.StringWrites)).writes(o.columns),
-        "constraint_name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.constraintName),
-        "check_clause" -> Writes.OptionWrites(Writes.StringWrites).writes(o.checkClause)
+        "table_schema" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.tableSchema),
+        "table_name" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.tableName),
+        "columns" -> Writes.OptionWrites(using Writes.arrayWrites[String](using implicitly, Writes.StringWrites)).writes(o.columns),
+        "constraint_name" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.constraintName),
+        "check_clause" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.checkClause)
       ))
     )
   }

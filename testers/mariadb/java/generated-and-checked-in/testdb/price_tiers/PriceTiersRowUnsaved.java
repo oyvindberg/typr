@@ -6,6 +6,7 @@
 package testdb.price_tiers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.typr.foundations.data.Uint4;
 import java.math.BigDecimal;
 import testdb.customtypes.Defaulted;
 import testdb.customtypes.Defaulted.UseDefault;
@@ -19,7 +20,7 @@ public record PriceTiersRowUnsaved(
     /** */
     @JsonProperty("discount_value") BigDecimal discountValue,
     /** Default: 1 */
-    @JsonProperty("min_quantity") Defaulted<Long> minQuantity) {
+    @JsonProperty("min_quantity") Defaulted<Uint4> minQuantity) {
   public PriceTiersRowUnsaved(
       /** */
       String name,
@@ -50,13 +51,13 @@ public record PriceTiersRowUnsaved(
   ;
 
   /** Default: 1 */
-  public PriceTiersRowUnsaved withMinQuantity(Defaulted<Long> minQuantity) {
+  public PriceTiersRowUnsaved withMinQuantity(Defaulted<Uint4> minQuantity) {
     return new PriceTiersRowUnsaved(name, discountType, discountValue, minQuantity);
   }
   ;
 
   public PriceTiersRow toRow(
-      java.util.function.Supplier<Long> minQuantityDefault,
+      java.util.function.Supplier<Uint4> minQuantityDefault,
       java.util.function.Supplier<PriceTiersId> tierIdDefault) {
     return new PriceTiersRow(
         tierIdDefault.get(),

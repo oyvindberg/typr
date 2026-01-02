@@ -8,6 +8,7 @@ package testdb.insert_order_with_items
 import java.math.BigDecimal
 import java.sql.Connection
 import java.time.LocalDate
+import kotlin.collections.List
 import testdb.customers.CustomersId
 
 interface InsertOrderWithItemsSqlRepo {
@@ -18,5 +19,5 @@ interface InsertOrderWithItemsSqlRepo {
     totalAmount: BigDecimal?,
     status: String?,
     c: Connection
-  ): Int
+  ): List<InsertOrderWithItemsSqlRow>
 }

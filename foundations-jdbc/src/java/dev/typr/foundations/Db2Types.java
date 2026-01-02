@@ -285,12 +285,12 @@ public interface Db2Types {
   // Note: DB2's JSON_OBJECT does not support XML type (SQLCODE=-171)
 
   // XML - Native XML support
-  Db2Type<String> xml =
+  Db2Type<dev.typr.foundations.data.Xml> xml =
       Db2Type.of(
           "XML",
           Db2Read.readXml,
           Db2Write.writeXml,
-          Db2Text.textString,
+          Db2Text.textString.contramap(dev.typr.foundations.data.Xml::value),
           Db2Json.unsupported("XML"));
 
   // ROWID - DB2 row identifier
@@ -302,4 +302,15 @@ public interface Db2Types {
   Db2Type<Object> object =
       Db2Type.of(
           "OBJECT", Db2Read.readObject, Db2Write.writeObject, Db2Text.textObject, Db2Json.unknown);
+
+  // ==================== Unknown Type ====================
+  // For columns whose type typr doesn't know how to handle - cast to/from string
+  Db2Type<dev.typr.foundations.data.Unknown> unknown =
+      Db2Type.of(
+              "VARCHAR(32672)",
+              Db2Read.readString,
+              Db2Write.writeString,
+              Db2Text.textString,
+              Db2Json.text)
+          .bimap(dev.typr.foundations.data.Unknown::new, dev.typr.foundations.data.Unknown::value);
 }

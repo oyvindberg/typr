@@ -21,29 +21,29 @@ import typr.generated.Text
 case class Name(value: String)
 
 object Name {
-  implicit lazy val arrayColumn: Column[Array[Name]] = Column.columnToArray(column, implicitly)
+  given arrayColumn: Column[Array[Name]] = Column.columnToArray(using column, summon)
 
-  implicit lazy val arrayToStatement: ToStatement[Array[Name]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
+  given arrayToStatement: ToStatement[Array[Name]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
 
-  implicit lazy val column: Column[Name] = Column.columnToString.map(Name.apply)
+  given column: Column[Name] = Column.columnToString.map(Name.apply)
 
-  implicit lazy val parameterMetadata: ParameterMetaData[Name] = {
+  given parameterMetadata: ParameterMetaData[Name] = {
     new ParameterMetaData[Name] {
       override def sqlType: String = """"public"."Name""""
       override def jdbcType: Int = Types.OTHER
     }
   }
 
-  implicit lazy val pgText: Text[Name] = {
+  given pgText: Text[Name] = {
     new Text[Name] {
       override def unsafeEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
       override def unsafeArrayEncode(v: Name, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
     }
   }
 
-  implicit lazy val reads: Reads[Name] = Reads.StringReads.map(Name.apply)
+  given reads: Reads[Name] = Reads.StringReads.map(Name.apply)
 
-  implicit lazy val toStatement: ToStatement[Name] = ToStatement.stringToStatement.contramap(_.value)
+  given toStatement: ToStatement[Name] = ToStatement.stringToStatement.contramap(_.value)
 
-  implicit lazy val writes: Writes[Name] = Writes.StringWrites.contramap(_.value)
+  given writes: Writes[Name] = Writes.StringWrites.contramap(_.value)
 }

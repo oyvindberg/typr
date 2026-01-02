@@ -23,17 +23,17 @@ import dev.typr.foundations.scala.Fragment.sql
 class ReviewsRepoImpl extends ReviewsRepo {
   override def delete: DeleteBuilder[ReviewsFields, ReviewsRow] = DeleteBuilder.of("`reviews`", ReviewsFields.structure, Dialect.MARIADB)
 
-  override def deleteById(reviewId: ReviewsId)(using c: Connection): Boolean = sql"delete from `reviews` where `review_id` = ${Fragment.encode(ReviewsId.pgType, reviewId)}".update().runUnchecked(c) > 0
+  override def deleteById(reviewId: ReviewsId)(using c: Connection): Boolean = sql"delete from `reviews` where `review_id` = ${Fragment.encode(ReviewsId.dbType, reviewId)}".update().runUnchecked(c) > 0
 
   override def deleteByIds(reviewIds: Array[ReviewsId])(using c: Connection): Int = {
     val fragments: ListBuffer[Fragment] = ListBuffer()
-    reviewIds.foreach { id => fragments.addOne(Fragment.encode(ReviewsId.pgType, id)): @scala.annotation.nowarn }
+    reviewIds.foreach { id => fragments.addOne(Fragment.encode(ReviewsId.dbType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("delete from `reviews` where `review_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
   override def insert(unsaved: ReviewsRow)(using c: Connection): ReviewsRow = {
   sql"""insert into `reviews`(`product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`)
-    values (${Fragment.encode(ProductsId.pgType, unsaved.productId)}, ${Fragment.encode(CustomersId.pgType, unsaved.customerId)}, ${Fragment.encode(OrderItemsId.pgType.nullable, unsaved.orderItemId)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.tinyintUnsigned, unsaved.rating)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.title)}, ${Fragment.encode(MariaTypes.text.nullable, unsaved.content)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.pros)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.cons)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.images)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isVerifiedPurchase)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isApproved)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.intUnsigned, unsaved.helpfulVotes)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.intUnsigned, unsaved.unhelpfulVotes)}, ${Fragment.encode(MariaTypes.text.nullable, unsaved.adminResponse)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.respondedAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)})
+    values (${Fragment.encode(ProductsId.dbType, unsaved.productId)}, ${Fragment.encode(CustomersId.dbType, unsaved.customerId)}, ${Fragment.encode(OrderItemsId.dbType.nullable, unsaved.orderItemId)}, ${Fragment.encode(MariaTypes.tinyintUnsigned, unsaved.rating)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.title)}, ${Fragment.encode(MariaTypes.text.nullable, unsaved.content)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.pros)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.cons)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.images)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isVerifiedPurchase)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isApproved)}, ${Fragment.encode(MariaTypes.intUnsigned, unsaved.helpfulVotes)}, ${Fragment.encode(MariaTypes.intUnsigned, unsaved.unhelpfulVotes)}, ${Fragment.encode(MariaTypes.text.nullable, unsaved.adminResponse)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.respondedAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)})
     RETURNING `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`
     """
     .updateReturning(ReviewsRow.`_rowParser`.exactlyOne()).runUnchecked(c)
@@ -43,14 +43,14 @@ class ReviewsRepoImpl extends ReviewsRepo {
     val columns: ListBuffer[Fragment] = ListBuffer()
     val values: ListBuffer[Fragment] = ListBuffer()
     columns.addOne(Fragment.lit("`product_id`")): @scala.annotation.nowarn
-    values.addOne(sql"${Fragment.encode(ProductsId.pgType, unsaved.productId)}"): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(ProductsId.dbType, unsaved.productId)}"): @scala.annotation.nowarn
     columns.addOne(Fragment.lit("`customer_id`")): @scala.annotation.nowarn
-    values.addOne(sql"${Fragment.encode(CustomersId.pgType, unsaved.customerId)}"): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(CustomersId.dbType, unsaved.customerId)}"): @scala.annotation.nowarn
     columns.addOne(Fragment.lit("`rating`")): @scala.annotation.nowarn
-    values.addOne(sql"${Fragment.encode(ScalaDbTypes.MariaTypes.tinyintUnsigned, unsaved.rating)}"): @scala.annotation.nowarn
+    values.addOne(sql"${Fragment.encode(MariaTypes.tinyintUnsigned, unsaved.rating)}"): @scala.annotation.nowarn
     unsaved.orderItemId.visit(
       {  },
-      value => { columns.addOne(Fragment.lit("`order_item_id`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(OrderItemsId.pgType.nullable, value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`order_item_id`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(OrderItemsId.dbType.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.title.visit(
       {  },
@@ -62,15 +62,15 @@ class ReviewsRepoImpl extends ReviewsRepo {
     );
     unsaved.pros.visit(
       {  },
-      value => { columns.addOne(Fragment.lit("`pros`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.longtext.nullable, value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`pros`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.json.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.cons.visit(
       {  },
-      value => { columns.addOne(Fragment.lit("`cons`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.longtext.nullable, value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`cons`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.json.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.images.visit(
       {  },
-      value => { columns.addOne(Fragment.lit("`images`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.longtext.nullable, value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`images`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.json.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.isVerifiedPurchase.visit(
       {  },
@@ -82,11 +82,11 @@ class ReviewsRepoImpl extends ReviewsRepo {
     );
     unsaved.helpfulVotes.visit(
       {  },
-      value => { columns.addOne(Fragment.lit("`helpful_votes`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(ScalaDbTypes.MariaTypes.intUnsigned, value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`helpful_votes`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.intUnsigned, value)}"): @scala.annotation.nowarn }
     );
     unsaved.unhelpfulVotes.visit(
       {  },
-      value => { columns.addOne(Fragment.lit("`unhelpful_votes`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(ScalaDbTypes.MariaTypes.intUnsigned, value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`unhelpful_votes`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.intUnsigned, value)}"): @scala.annotation.nowarn }
     );
     unsaved.adminResponse.visit(
       {  },
@@ -124,12 +124,12 @@ class ReviewsRepoImpl extends ReviewsRepo {
   override def selectById(reviewId: ReviewsId)(using c: Connection): Option[ReviewsRow] = {
     sql"""select `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`
     from `reviews`
-    where `review_id` = ${Fragment.encode(ReviewsId.pgType, reviewId)}""".query(ReviewsRow.`_rowParser`.first()).runUnchecked(c)
+    where `review_id` = ${Fragment.encode(ReviewsId.dbType, reviewId)}""".query(ReviewsRow.`_rowParser`.first()).runUnchecked(c)
   }
 
   override def selectByIds(reviewIds: Array[ReviewsId])(using c: Connection): List[ReviewsRow] = {
     val fragments: ListBuffer[Fragment] = ListBuffer()
-    reviewIds.foreach { id => fragments.addOne(Fragment.encode(ReviewsId.pgType, id)): @scala.annotation.nowarn }
+    reviewIds.foreach { id => fragments.addOne(Fragment.encode(ReviewsId.dbType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("select `review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at` from `reviews` where `review_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(ReviewsRow.`_rowParser`.all()).runUnchecked(c)
   }
 
@@ -144,29 +144,29 @@ class ReviewsRepoImpl extends ReviewsRepo {
   override def update(row: ReviewsRow)(using c: Connection): Boolean = {
     val reviewId: ReviewsId = row.reviewId
     return sql"""update `reviews`
-    set `product_id` = ${Fragment.encode(ProductsId.pgType, row.productId)},
-    `customer_id` = ${Fragment.encode(CustomersId.pgType, row.customerId)},
-    `order_item_id` = ${Fragment.encode(OrderItemsId.pgType.nullable, row.orderItemId)},
-    `rating` = ${Fragment.encode(ScalaDbTypes.MariaTypes.tinyintUnsigned, row.rating)},
+    set `product_id` = ${Fragment.encode(ProductsId.dbType, row.productId)},
+    `customer_id` = ${Fragment.encode(CustomersId.dbType, row.customerId)},
+    `order_item_id` = ${Fragment.encode(OrderItemsId.dbType.nullable, row.orderItemId)},
+    `rating` = ${Fragment.encode(MariaTypes.tinyintUnsigned, row.rating)},
     `title` = ${Fragment.encode(MariaTypes.varchar.nullable, row.title)},
     `content` = ${Fragment.encode(MariaTypes.text.nullable, row.content)},
-    `pros` = ${Fragment.encode(MariaTypes.longtext.nullable, row.pros)},
-    `cons` = ${Fragment.encode(MariaTypes.longtext.nullable, row.cons)},
-    `images` = ${Fragment.encode(MariaTypes.longtext.nullable, row.images)},
+    `pros` = ${Fragment.encode(MariaTypes.json.nullable, row.pros)},
+    `cons` = ${Fragment.encode(MariaTypes.json.nullable, row.cons)},
+    `images` = ${Fragment.encode(MariaTypes.json.nullable, row.images)},
     `is_verified_purchase` = ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, row.isVerifiedPurchase)},
     `is_approved` = ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, row.isApproved)},
-    `helpful_votes` = ${Fragment.encode(ScalaDbTypes.MariaTypes.intUnsigned, row.helpfulVotes)},
-    `unhelpful_votes` = ${Fragment.encode(ScalaDbTypes.MariaTypes.intUnsigned, row.unhelpfulVotes)},
+    `helpful_votes` = ${Fragment.encode(MariaTypes.intUnsigned, row.helpfulVotes)},
+    `unhelpful_votes` = ${Fragment.encode(MariaTypes.intUnsigned, row.unhelpfulVotes)},
     `admin_response` = ${Fragment.encode(MariaTypes.text.nullable, row.adminResponse)},
     `responded_at` = ${Fragment.encode(MariaTypes.datetime.nullable, row.respondedAt)},
     `created_at` = ${Fragment.encode(MariaTypes.datetime, row.createdAt)},
     `updated_at` = ${Fragment.encode(MariaTypes.datetime, row.updatedAt)}
-    where `review_id` = ${Fragment.encode(ReviewsId.pgType, reviewId)}""".update().runUnchecked(c) > 0
+    where `review_id` = ${Fragment.encode(ReviewsId.dbType, reviewId)}""".update().runUnchecked(c) > 0
   }
 
   override def upsert(unsaved: ReviewsRow)(using c: Connection): ReviewsRow = {
-  sql"""INSERT INTO `reviews`(`product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`)
-    VALUES (${Fragment.encode(ProductsId.pgType, unsaved.productId)}, ${Fragment.encode(CustomersId.pgType, unsaved.customerId)}, ${Fragment.encode(OrderItemsId.pgType.nullable, unsaved.orderItemId)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.tinyintUnsigned, unsaved.rating)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.title)}, ${Fragment.encode(MariaTypes.text.nullable, unsaved.content)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.pros)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.cons)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.images)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isVerifiedPurchase)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isApproved)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.intUnsigned, unsaved.helpfulVotes)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.intUnsigned, unsaved.unhelpfulVotes)}, ${Fragment.encode(MariaTypes.text.nullable, unsaved.adminResponse)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.respondedAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)})
+  sql"""INSERT INTO `reviews`(`review_id`, `product_id`, `customer_id`, `order_item_id`, `rating`, `title`, `content`, `pros`, `cons`, `images`, `is_verified_purchase`, `is_approved`, `helpful_votes`, `unhelpful_votes`, `admin_response`, `responded_at`, `created_at`, `updated_at`)
+    VALUES (${Fragment.encode(ReviewsId.dbType, unsaved.reviewId)}, ${Fragment.encode(ProductsId.dbType, unsaved.productId)}, ${Fragment.encode(CustomersId.dbType, unsaved.customerId)}, ${Fragment.encode(OrderItemsId.dbType.nullable, unsaved.orderItemId)}, ${Fragment.encode(MariaTypes.tinyintUnsigned, unsaved.rating)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.title)}, ${Fragment.encode(MariaTypes.text.nullable, unsaved.content)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.pros)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.cons)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.images)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isVerifiedPurchase)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isApproved)}, ${Fragment.encode(MariaTypes.intUnsigned, unsaved.helpfulVotes)}, ${Fragment.encode(MariaTypes.intUnsigned, unsaved.unhelpfulVotes)}, ${Fragment.encode(MariaTypes.text.nullable, unsaved.adminResponse)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.respondedAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)})
     ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`),
     `customer_id` = VALUES(`customer_id`),
     `order_item_id` = VALUES(`order_item_id`),

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple7;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -21,7 +22,15 @@ public record OrderDetailsViewRow(
     @JsonProperty("product_name") Optional<String> productName,
     Optional<Integer> quantity,
     @JsonProperty("unit_price") Optional<BigDecimal> unitPrice,
-    @JsonProperty("line_total") Optional<BigDecimal> lineTotal) {
+    @JsonProperty("line_total") Optional<BigDecimal> lineTotal)
+    implements Tuple7<
+        Optional<Integer>,
+        Optional<LocalDate>,
+        Optional<String>,
+        Optional<String>,
+        Optional<Integer>,
+        Optional<BigDecimal>,
+        Optional<BigDecimal>> {
   public OrderDetailsViewRow withOrderId(Optional<Integer> orderId) {
     return new OrderDetailsViewRow(
         orderId, orderDate, customerName, productName, quantity, unitPrice, lineTotal);
@@ -84,5 +93,47 @@ public record OrderDetailsViewRow(
                 row.unitPrice(),
                 row.lineTotal()
               });
+  ;
+
+  @Override
+  public Optional<Integer> _1() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDate> _2() {
+    return orderDate;
+  }
+  ;
+
+  @Override
+  public Optional<String> _3() {
+    return customerName;
+  }
+  ;
+
+  @Override
+  public Optional<String> _4() {
+    return productName;
+  }
+  ;
+
+  @Override
+  public Optional<Integer> _5() {
+    return quantity;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _6() {
+    return unitPrice;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _7() {
+    return lineTotal;
+  }
   ;
 }

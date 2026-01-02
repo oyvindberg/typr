@@ -6,17 +6,20 @@
 package adventureworks.public.issue142
 
 import dev.typr.foundations.PgText
+import dev.typr.foundations.Tuple.Tuple1
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 
 /** Table: public.issue142
   * Primary key: tabellkode
   */
-data class Issue142Row(val tabellkode: Issue142Id) {
+data class Issue142Row(val tabellkode: Issue142Id) : Tuple1<Issue142Id> {
+  override fun _1(): Issue142Id = tabellkode
+
   fun id(): Issue142Id = tabellkode
 
   companion object {
-    val _rowParser: RowParser<Issue142Row> = RowParsers.of(Issue142Id.pgType, { t0 -> Issue142Row(t0) }, { row -> arrayOf<Any?>(row.tabellkode) })
+    val _rowParser: RowParser<Issue142Row> = RowParsers.of(Issue142Id.dbType, { t0 -> Issue142Row(t0) }, { row -> arrayOf<Any?>(row.tabellkode) })
 
     val pgText: PgText<Issue142Row> =
       PgText.from(_rowParser.underlying)

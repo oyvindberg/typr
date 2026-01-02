@@ -20,11 +20,11 @@ import dev.typr.foundations.scala.Fragment.sql
 class BrandsRepoImpl extends BrandsRepo {
   override def delete: DeleteBuilder[BrandsFields, BrandsRow] = DeleteBuilder.of("`brands`", BrandsFields.structure, Dialect.MARIADB)
 
-  override def deleteById(brandId: BrandsId)(using c: Connection): Boolean = sql"delete from `brands` where `brand_id` = ${Fragment.encode(BrandsId.pgType, brandId)}".update().runUnchecked(c) > 0
+  override def deleteById(brandId: BrandsId)(using c: Connection): Boolean = sql"delete from `brands` where `brand_id` = ${Fragment.encode(BrandsId.dbType, brandId)}".update().runUnchecked(c) > 0
 
   override def deleteByIds(brandIds: Array[BrandsId])(using c: Connection): Int = {
     val fragments: ListBuffer[Fragment] = ListBuffer()
-    brandIds.foreach { id => fragments.addOne(Fragment.encode(BrandsId.pgType, id)): @scala.annotation.nowarn }
+    brandIds.foreach { id => fragments.addOne(Fragment.encode(BrandsId.dbType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("delete from `brands` where `brand_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).update().runUnchecked(c)
   }
 
@@ -79,12 +79,12 @@ class BrandsRepoImpl extends BrandsRepo {
   override def selectById(brandId: BrandsId)(using c: Connection): Option[BrandsRow] = {
     sql"""select `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`
     from `brands`
-    where `brand_id` = ${Fragment.encode(BrandsId.pgType, brandId)}""".query(BrandsRow.`_rowParser`.first()).runUnchecked(c)
+    where `brand_id` = ${Fragment.encode(BrandsId.dbType, brandId)}""".query(BrandsRow.`_rowParser`.first()).runUnchecked(c)
   }
 
   override def selectByIds(brandIds: Array[BrandsId])(using c: Connection): List[BrandsRow] = {
     val fragments: ListBuffer[Fragment] = ListBuffer()
-    brandIds.foreach { id => fragments.addOne(Fragment.encode(BrandsId.pgType, id)): @scala.annotation.nowarn }
+    brandIds.foreach { id => fragments.addOne(Fragment.encode(BrandsId.dbType, id)): @scala.annotation.nowarn }
     return Fragment.interpolate(Fragment.lit("select `brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active` from `brands` where `brand_id` in ("), Fragment.comma(fragments), Fragment.lit(")")).query(BrandsRow.`_rowParser`.all()).runUnchecked(c)
   }
 
@@ -112,12 +112,12 @@ class BrandsRepoImpl extends BrandsRepo {
     `website_url` = ${Fragment.encode(MariaTypes.varchar.nullable, row.websiteUrl)},
     `country_of_origin` = ${Fragment.encode(MariaTypes.char_.nullable, row.countryOfOrigin)},
     `is_active` = ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, row.isActive)}
-    where `brand_id` = ${Fragment.encode(BrandsId.pgType, brandId)}""".update().runUnchecked(c) > 0
+    where `brand_id` = ${Fragment.encode(BrandsId.dbType, brandId)}""".update().runUnchecked(c) > 0
   }
 
   override def upsert(unsaved: BrandsRow)(using c: Connection): BrandsRow = {
-  sql"""INSERT INTO `brands`(`name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`)
-    VALUES (${Fragment.encode(MariaTypes.varchar, unsaved.name)}, ${Fragment.encode(MariaTypes.varchar, unsaved.slug)}, ${Fragment.encode(MariaTypes.mediumblob.nullable, unsaved.logoBlob)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.websiteUrl)}, ${Fragment.encode(MariaTypes.char_.nullable, unsaved.countryOfOrigin)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isActive)})
+  sql"""INSERT INTO `brands`(`brand_id`, `name`, `slug`, `logo_blob`, `website_url`, `country_of_origin`, `is_active`)
+    VALUES (${Fragment.encode(BrandsId.dbType, unsaved.brandId)}, ${Fragment.encode(MariaTypes.varchar, unsaved.name)}, ${Fragment.encode(MariaTypes.varchar, unsaved.slug)}, ${Fragment.encode(MariaTypes.mediumblob.nullable, unsaved.logoBlob)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.websiteUrl)}, ${Fragment.encode(MariaTypes.char_.nullable, unsaved.countryOfOrigin)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.bool, unsaved.isActive)})
     ON DUPLICATE KEY UPDATE `name` = VALUES(`name`),
     `slug` = VALUES(`slug`),
     `logo_blob` = VALUES(`logo_blob`),

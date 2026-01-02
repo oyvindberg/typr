@@ -5,14 +5,15 @@
  */
 package testdb.inventory_check
 
-import java.math.BigInteger
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint8
 import java.sql.Connection
 import kotlin.collections.List
 
 interface InventoryCheckSqlRepo {
   abstract fun apply(
-    warehouseId: Short?,
-    productId: BigInteger?,
+    warehouseId: Uint1?,
+    productId: Uint8?,
     lowStockOnly: Boolean?,
     c: Connection
   ): List<InventoryCheckSqlRow>

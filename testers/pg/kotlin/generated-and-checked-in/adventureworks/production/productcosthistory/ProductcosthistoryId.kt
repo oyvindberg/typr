@@ -7,6 +7,7 @@ package adventureworks.production.productcosthistory
 
 import adventureworks.production.product.ProductId
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import java.time.LocalDateTime
@@ -15,8 +16,12 @@ import java.time.LocalDateTime
 data class ProductcosthistoryId(
   val productid: ProductId,
   val startdate: LocalDateTime
-) {
+) : Tuple2<ProductId, LocalDateTime> {
+  override fun _1(): ProductId = productid
+
+  override fun _2(): LocalDateTime = startdate
+
   companion object {
-    val _rowParser: RowParser<ProductcosthistoryId> = RowParsers.of(ProductId.pgType, PgTypes.timestamp, { t0, t1 -> ProductcosthistoryId(t0, t1) }, { row -> arrayOf<Any?>(row.productid, row.startdate) })
+    val _rowParser: RowParser<ProductcosthistoryId> = RowParsers.of(ProductId.dbType, PgTypes.timestamp, { t0, t1 -> ProductcosthistoryId(t0, t1) }, { row -> arrayOf<Any?>(row.productid, row.startdate) })
   }
 }

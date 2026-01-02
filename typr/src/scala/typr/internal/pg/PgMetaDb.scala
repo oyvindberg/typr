@@ -89,16 +89,16 @@ object PgMetaDb {
       val tableConstraints = logger.timed("fetching tableConstraints")(ds.run(implicit c => (new TableConstraintsViewRepoImpl).selectAll))
       val keyColumnUsage = logger.timed("fetching keyColumnUsage")(ds.run(implicit c => (new KeyColumnUsageViewRepoImpl).selectAll))
       val referentialConstraints = logger.timed("fetching referentialConstraints")(ds.run(implicit c => (new ReferentialConstraintsViewRepoImpl).selectAll))
-      val pgEnums = logger.timed("fetching pgEnums")(ds.run(implicit c => (new EnumsSqlRepoImpl).apply(c)))
+      val pgEnums = logger.timed("fetching pgEnums")(ds.run(implicit c => (new EnumsSqlRepoImpl).apply))
       val tables = logger.timed("fetching tables")(ds.run(implicit c => (new TablesViewRepoImpl).selectAll.filter(_.tableType.contains("BASE TABLE"))))
       val columns = logger.timed("fetching columns")(ds.run(implicit c => (new ColumnsViewRepoImpl).selectAll))
-      val domains = logger.timed("fetching domains")(ds.run(implicit c => (new DomainsSqlRepoImpl).apply(c)))
-      val columnComments = logger.timed("fetching columnComments")(ds.run(implicit c => (new CommentsSqlRepoImpl).apply(c)))
-      val constraints = logger.timed("fetching constraints")(ds.run(implicit c => (new ConstraintsSqlRepoImpl).apply(c)))
-      val tableComments = logger.timed("fetching tableComments")(ds.run(implicit c => (new TableCommentsSqlRepoImpl).apply(c)))
+      val domains = logger.timed("fetching domains")(ds.run(implicit c => (new DomainsSqlRepoImpl).apply))
+      val columnComments = logger.timed("fetching columnComments")(ds.run(implicit c => (new CommentsSqlRepoImpl).apply))
+      val constraints = logger.timed("fetching constraints")(ds.run(implicit c => (new ConstraintsSqlRepoImpl).apply))
+      val tableComments = logger.timed("fetching tableComments")(ds.run(implicit c => (new TableCommentsSqlRepoImpl).apply))
 
       // Fetch view rows - we'll analyze them with sqlglot after getting the schema
-      val viewRows = logger.timed("fetching view rows")(ds.run(implicit c => (new ViewFindAllSqlRepoImpl).apply(c)))
+      val viewRows = logger.timed("fetching view rows")(ds.run(implicit c => (new ViewFindAllSqlRepoImpl).apply))
 
       for {
         tableConstraints <- tableConstraints

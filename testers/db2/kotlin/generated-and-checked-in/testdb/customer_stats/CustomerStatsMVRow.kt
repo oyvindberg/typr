@@ -7,6 +7,7 @@ package testdb.customer_stats
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -18,7 +19,15 @@ data class CustomerStatsMVRow(
   @JsonProperty("CUSTOMER_NAME") val customerName: String,
   @JsonProperty("TOTAL_ORDERS") val totalOrders: Int,
   @JsonProperty("TOTAL_REVENUE") val totalRevenue: BigDecimal
-) {
+) : Tuple4<Int, String, Int, BigDecimal> {
+  override fun _1(): Int = customerId
+
+  override fun _2(): String = customerName
+
+  override fun _3(): Int = totalOrders
+
+  override fun _4(): BigDecimal = totalRevenue
+
   companion object {
     val _rowParser: RowParser<CustomerStatsMVRow> = RowParsers.of(KotlinDbTypes.Db2Types.integer, Db2Types.varchar, KotlinDbTypes.Db2Types.integer, KotlinDbTypes.Db2Types.decimal, { t0, t1, t2, t3 -> CustomerStatsMVRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.customerId, row.customerName, row.totalOrders, row.totalRevenue) })
   }

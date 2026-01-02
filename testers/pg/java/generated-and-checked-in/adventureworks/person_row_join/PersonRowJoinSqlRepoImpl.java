@@ -27,5 +27,4 @@ public class PersonRowJoinSqlRepoImpl implements PersonRowJoinSqlRepo {
         .query(PersonRowJoinSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

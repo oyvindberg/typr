@@ -7,6 +7,7 @@ package testdb.employees
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -15,7 +16,11 @@ import dev.typr.foundations.kotlin.RowParsers
 data class EmployeesId(
   @JsonProperty("emp_number") val empNumber: Int,
   @JsonProperty("emp_suffix") val empSuffix: String
-) {
+) : Tuple2<Int, String> {
+  override fun _1(): Int = empNumber
+
+  override fun _2(): String = empSuffix
+
   companion object {
     val _rowParser: RowParser<EmployeesId> = RowParsers.of(KotlinDbTypes.DuckDbTypes.integer, DuckDbTypes.varchar, { t0, t1 -> EmployeesId(t0, t1) }, { row -> arrayOf<Any?>(row.empNumber, row.empSuffix) })
   }

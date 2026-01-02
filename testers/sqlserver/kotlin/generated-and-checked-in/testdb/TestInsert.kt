@@ -7,12 +7,18 @@ package testdb
 
 import com.microsoft.sqlserver.jdbc.Geography
 import com.microsoft.sqlserver.jdbc.Geometry
+import dev.typr.foundations.data.HierarchyId
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Xml
+import dev.typr.foundations.internal.RandomHelper
 import java.math.BigDecimal
 import java.sql.Connection
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.Random
 import java.util.UUID
 import testdb.all_scalar_types.AllScalarTypesRepoImpl
@@ -23,6 +29,7 @@ import testdb.customers.CustomersRepoImpl
 import testdb.customers.CustomersRow
 import testdb.customers.CustomersRowUnsaved
 import testdb.customtypes.Defaulted
+import testdb.customtypes.Defaulted.UseDefault
 import testdb.order_items.OrderItemsRepoImpl
 import testdb.order_items.OrderItemsRow
 import testdb.order_items.OrderItemsRowUnsaved
@@ -34,75 +41,84 @@ import testdb.products.ProductsId
 import testdb.products.ProductsRepoImpl
 import testdb.products.ProductsRow
 import testdb.products.ProductsRowUnsaved
+import testdb.test_connection.TestConnectionRepoImpl
+import testdb.test_connection.TestConnectionRow
+import testdb.test_connection.TestConnectionRowUnsaved
 
 /** Methods to generate random data for `Ident(TestInsert)` */
 data class TestInsert(val random: Random) {
   fun AllScalarTypes(
-    colTinyint: Short?,
-    colSmallint: Short?,
-    colInt: Int?,
-    colBigint: Long?,
-    colDecimal: BigDecimal?,
-    colNumeric: BigDecimal?,
-    colMoney: BigDecimal?,
-    colSmallmoney: BigDecimal?,
-    colReal: Float?,
-    colFloat: Double?,
-    colBit: Boolean?,
-    colChar: String?,
-    colVarchar: String?,
-    colVarcharMax: String?,
-    colText: String?,
-    colNchar: String?,
-    colNvarchar: String?,
-    colNvarcharMax: String?,
-    colNtext: String?,
-    colBinary: ByteArray?,
-    colVarbinary: ByteArray?,
-    colVarbinaryMax: ByteArray?,
-    colImage: ByteArray?,
-    colDate: LocalDate?,
-    colTime: LocalTime?,
-    colDatetime: LocalDateTime?,
-    colSmalldatetime: LocalDateTime?,
-    colDatetime2: LocalDateTime?,
-    colDatetimeoffset: OffsetDateTime?,
-    colUniqueidentifier: UUID?,
-    colXml: /* XML */ String?,
-    colJson: String?,
-    colHierarchyid: /* HIERARCHYID */ String?,
-    colGeography: Geography?,
-    colGeometry: Geometry?,
-    colNotNull: Defaulted<String>,
+    colTinyint: Uint1? = if (random.nextBoolean()) null else Uint1.of(random.nextInt(256)),
+    colSmallint: Short? = if (random.nextBoolean()) null else random.nextInt(Short.MAX_VALUE.toInt()).toShort(),
+    colInt: Int? = if (random.nextBoolean()) null else random.nextInt(),
+    colBigint: Long? = if (random.nextBoolean()) null else random.nextLong(),
+    colDecimal: BigDecimal? = if (random.nextBoolean()) null else BigDecimal.valueOf(random.nextDouble()),
+    colNumeric: BigDecimal? = if (random.nextBoolean()) null else BigDecimal.valueOf(random.nextDouble()),
+    colMoney: BigDecimal? = if (random.nextBoolean()) null else BigDecimal.valueOf(random.nextDouble()),
+    colSmallmoney: BigDecimal? = if (random.nextBoolean()) null else BigDecimal.valueOf(random.nextDouble()),
+    colReal: Float? = if (random.nextBoolean()) null else random.nextFloat(),
+    colFloat: Double? = if (random.nextBoolean()) null else random.nextDouble(),
+    colBit: Boolean? = if (random.nextBoolean()) null else random.nextBoolean(),
+    colChar: String? = null,
+    colVarchar: String? = null,
+    colVarcharMax: String? = null,
+    colText: String? = null,
+    colNchar: String? = null,
+    colNvarchar: String? = null,
+    colNvarcharMax: String? = null,
+    colNtext: String? = null,
+    colBinary: ByteArray? = null,
+    colVarbinary: ByteArray? = null,
+    colVarbinaryMax: ByteArray? = null,
+    colImage: ByteArray? = null,
+    colDate: LocalDate? = if (random.nextBoolean()) null else LocalDate.ofEpochDay(random.nextInt(30000).toLong()),
+    colTime: LocalTime? = if (random.nextBoolean()) null else LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong()),
+    colDatetime: LocalDateTime? = if (random.nextBoolean()) null else LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
+    colSmalldatetime: LocalDateTime? = if (random.nextBoolean()) null else LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
+    colDatetime2: LocalDateTime? = if (random.nextBoolean()) null else LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
+    colDatetimeoffset: OffsetDateTime? = if (random.nextBoolean()) null else OffsetDateTime.of(LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())), ZoneOffset.ofHours(random.nextInt(24) - 12)),
+    colUniqueidentifier: UUID? = if (random.nextBoolean()) null else RandomHelper.randomUUID(random),
+    colXml: Xml? = if (random.nextBoolean()) null else Xml("<root/>"),
+    colJson: Json? = if (random.nextBoolean()) null else Json("{}"),
+    colHierarchyid: HierarchyId? = null,
+    colGeography: Geography? = null,
+    colGeometry: Geometry? = null,
+    colNotNull: Defaulted<String> = UseDefault(),
     c: Connection
   ): AllScalarTypesRow = (AllScalarTypesRepoImpl()).insert(AllScalarTypesRowUnsaved(colTinyint = colTinyint, colSmallint = colSmallint, colInt = colInt, colBigint = colBigint, colDecimal = colDecimal, colNumeric = colNumeric, colMoney = colMoney, colSmallmoney = colSmallmoney, colReal = colReal, colFloat = colFloat, colBit = colBit, colChar = colChar, colVarchar = colVarchar, colVarcharMax = colVarcharMax, colText = colText, colNchar = colNchar, colNvarchar = colNvarchar, colNvarcharMax = colNvarcharMax, colNtext = colNtext, colBinary = colBinary, colVarbinary = colVarbinary, colVarbinaryMax = colVarbinaryMax, colImage = colImage, colDate = colDate, colTime = colTime, colDatetime = colDatetime, colSmalldatetime = colSmalldatetime, colDatetime2 = colDatetime2, colDatetimeoffset = colDatetimeoffset, colUniqueidentifier = colUniqueidentifier, colXml = colXml, colJson = colJson, colHierarchyid = colHierarchyid, colGeography = colGeography, colGeometry = colGeometry, colNotNull = colNotNull), c)
 
   fun Customers(
     name: String,
     email: String,
-    createdAt: Defaulted<LocalDateTime?>,
+    createdAt: Defaulted<LocalDateTime?> = UseDefault(),
     c: Connection
   ): CustomersRow = (CustomersRepoImpl()).insert(CustomersRowUnsaved(name = name, email = email, createdAt = createdAt), c)
 
   fun OrderItems(
     orderId: OrdersId,
     productId: ProductsId,
-    quantity: Int,
-    price: BigDecimal,
+    quantity: Int = random.nextInt(),
+    price: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
     c: Connection
   ): OrderItemsRow = (OrderItemsRepoImpl()).insert(OrderItemsRowUnsaved(orderId = orderId, productId = productId, quantity = quantity, price = price), c)
 
   fun Orders(
     customerId: CustomersId,
-    totalAmount: BigDecimal,
-    orderDate: Defaulted<LocalDateTime?>,
+    totalAmount: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
+    orderDate: Defaulted<LocalDateTime?> = UseDefault(),
     c: Connection
   ): OrdersRow = (OrdersRepoImpl()).insert(OrdersRowUnsaved(customerId = customerId, totalAmount = totalAmount, orderDate = orderDate), c)
 
   fun Products(
     name: String,
-    price: BigDecimal,
-    description: String?,
+    price: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
+    description: String? = null,
     c: Connection
   ): ProductsRow = (ProductsRepoImpl()).insert(ProductsRowUnsaved(name = name, price = price, description = description), c)
+
+  fun TestConnection(
+    message: String,
+    createdAt: Defaulted<LocalDateTime?> = UseDefault(),
+    c: Connection
+  ): TestConnectionRow = (TestConnectionRepoImpl()).insert(TestConnectionRowUnsaved(message = message, createdAt = createdAt), c)
 }

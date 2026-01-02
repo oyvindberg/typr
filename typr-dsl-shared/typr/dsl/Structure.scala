@@ -90,7 +90,7 @@ object Structure {
     def castRow[R1]: SqlExpr.FieldLike[T, R1] = field.asInstanceOf[SqlExpr.FieldLike[T, R1]]
   }
 
-  private class Tupled[Fields1, Fields2, Row1, Row2](val _path: List[Path], val left: Structure[Fields1, Row1], val right: Structure[Fields2, Row2]) extends Structure[Fields1 ~ Fields2, Row1 ~ Row2] {
+  class Tupled[Fields1, Fields2, Row1, Row2](val _path: List[Path], val left: Structure[Fields1, Row1], val right: Structure[Fields2, Row2]) extends Structure[Fields1 ~ Fields2, Row1 ~ Row2] {
     override val fields: Fields1 ~ Fields2 =
       (left.fields, right.fields)
 
@@ -105,7 +105,7 @@ object Structure {
       new Tupled(newPath :: _path, left.withPath(newPath), right.withPath(newPath))
   }
 
-  private class LeftTupled[Fields1, Fields2, Row1, Row2](val _path: List[Path], val left: Structure[Fields1, Row1], val right: Structure[Fields2, Row2])
+  class LeftTupled[Fields1, Fields2, Row1, Row2](val _path: List[Path], val left: Structure[Fields1, Row1], val right: Structure[Fields2, Row2])
       extends Structure[Fields1 ~ Fields2, Row1 ~ Option[Row2]] {
 
     override val fields: Fields1 ~ Fields2 =

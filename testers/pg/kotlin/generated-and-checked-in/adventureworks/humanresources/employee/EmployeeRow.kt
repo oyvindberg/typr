@@ -10,6 +10,7 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.public.Flag
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple15
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -75,7 +76,37 @@ data class EmployeeRow(
     * Default: '/'::character varying
     */
   val organizationnode: String?
-) {
+) : Tuple15<BusinessentityId, String, String, String, LocalDate, String, String, LocalDate, Flag, Short, Short, Flag, UUID, LocalDateTime, String?> {
+  override fun _1(): BusinessentityId = businessentityid
+
+  override fun _10(): Short = vacationhours
+
+  override fun _11(): Short = sickleavehours
+
+  override fun _12(): Flag = currentflag
+
+  override fun _13(): UUID = rowguid
+
+  override fun _14(): LocalDateTime = modifieddate
+
+  override fun _15(): String? = organizationnode
+
+  override fun _2(): String = nationalidnumber
+
+  override fun _3(): String = loginid
+
+  override fun _4(): String = jobtitle
+
+  override fun _5(): LocalDate = birthdate
+
+  override fun _6(): String = maritalstatus
+
+  override fun _7(): String = gender
+
+  override fun _8(): LocalDate = hiredate
+
+  override fun _9(): Flag = salariedflag
+
   fun id(): BusinessentityId = businessentityid
 
   fun toUnsavedRow(
@@ -89,7 +120,7 @@ data class EmployeeRow(
   ): EmployeeRowUnsaved = EmployeeRowUnsaved(businessentityid, nationalidnumber, loginid, jobtitle, birthdate, maritalstatus, gender, hiredate, salariedflag, vacationhours, sickleavehours, currentflag, rowguid, modifieddate, organizationnode)
 
   companion object {
-    val _rowParser: RowParser<EmployeeRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.date, PgTypes.bpchar, PgTypes.bpchar, PgTypes.date, Flag.pgType, KotlinDbTypes.PgTypes.int2, KotlinDbTypes.PgTypes.int2, Flag.pgType, PgTypes.uuid, PgTypes.timestamp, PgTypes.text.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14 -> EmployeeRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) }, { row -> arrayOf<Any?>(row.businessentityid, row.nationalidnumber, row.loginid, row.jobtitle, row.birthdate, row.maritalstatus, row.gender, row.hiredate, row.salariedflag, row.vacationhours, row.sickleavehours, row.currentflag, row.rowguid, row.modifieddate, row.organizationnode) })
+    val _rowParser: RowParser<EmployeeRow> = RowParsers.of(BusinessentityId.dbType, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.date, PgTypes.bpchar, PgTypes.bpchar, PgTypes.date, Flag.dbType, KotlinDbTypes.PgTypes.int2, KotlinDbTypes.PgTypes.int2, Flag.dbType, PgTypes.uuid, PgTypes.timestamp, PgTypes.text.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14 -> EmployeeRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) }, { row -> arrayOf<Any?>(row.businessentityid, row.nationalidnumber, row.loginid, row.jobtitle, row.birthdate, row.maritalstatus, row.gender, row.hiredate, row.salariedflag, row.vacationhours, row.sickleavehours, row.currentflag, row.rowguid, row.modifieddate, row.organizationnode) })
 
     val pgText: PgText<EmployeeRow> =
       PgText.from(_rowParser.underlying)

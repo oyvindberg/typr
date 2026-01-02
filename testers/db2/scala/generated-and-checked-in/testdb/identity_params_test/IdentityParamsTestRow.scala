@@ -7,6 +7,7 @@ package testdb.identity_params_test
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 
@@ -17,10 +18,14 @@ case class IdentityParamsTestRow(
   /** Identity ALWAYS */
   @JsonProperty("ID") id: IdentityParamsTestId,
   @JsonProperty("NAME") name: String
-) {
+) extends Tuple2[IdentityParamsTestId, String] {
   def toUnsavedRow: IdentityParamsTestRowUnsaved = new IdentityParamsTestRowUnsaved(name)
+
+  override def `_1`: IdentityParamsTestId = id
+
+  override def `_2`: String = name
 }
 
 object IdentityParamsTestRow {
-  val `_rowParser`: RowParser[IdentityParamsTestRow] = RowParsers.of(IdentityParamsTestId.pgType, Db2Types.varchar)(IdentityParamsTestRow.apply)(row => Array[Any](row.id, row.name))
+  val `_rowParser`: RowParser[IdentityParamsTestRow] = RowParsers.of(IdentityParamsTestId.dbType, Db2Types.varchar)(IdentityParamsTestRow.apply)(row => Array[Any](row.id, row.name))
 }

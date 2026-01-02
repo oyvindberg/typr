@@ -6,6 +6,7 @@
 package testdb.audit_log;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.typr.foundations.data.Json;
 import dev.typr.foundations.data.maria.Inet6;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -21,9 +22,9 @@ public record AuditLogRowUnsaved(
     /** */
     String action,
     /** Default: NULL */
-    @JsonProperty("old_values") Defaulted<Optional<String>> oldValues,
+    @JsonProperty("old_values") Defaulted<Optional<Json>> oldValues,
     /** Default: NULL */
-    @JsonProperty("new_values") Defaulted<Optional<String>> newValues,
+    @JsonProperty("new_values") Defaulted<Optional<Json>> newValues,
     /** Default: NULL */
     @JsonProperty("changed_by") Defaulted<Optional<String>> changedBy,
     /** Default: current_timestamp(6) */
@@ -77,7 +78,7 @@ public record AuditLogRowUnsaved(
   ;
 
   /** Default: NULL */
-  public AuditLogRowUnsaved withOldValues(Defaulted<Optional<String>> oldValues) {
+  public AuditLogRowUnsaved withOldValues(Defaulted<Optional<Json>> oldValues) {
     return new AuditLogRowUnsaved(
         tableName, recordId, action, oldValues, newValues, changedBy, changedAt, clientIp,
         sessionId);
@@ -85,7 +86,7 @@ public record AuditLogRowUnsaved(
   ;
 
   /** Default: NULL */
-  public AuditLogRowUnsaved withNewValues(Defaulted<Optional<String>> newValues) {
+  public AuditLogRowUnsaved withNewValues(Defaulted<Optional<Json>> newValues) {
     return new AuditLogRowUnsaved(
         tableName, recordId, action, oldValues, newValues, changedBy, changedAt, clientIp,
         sessionId);
@@ -125,8 +126,8 @@ public record AuditLogRowUnsaved(
   ;
 
   public AuditLogRow toRow(
-      java.util.function.Supplier<Optional<String>> oldValuesDefault,
-      java.util.function.Supplier<Optional<String>> newValuesDefault,
+      java.util.function.Supplier<Optional<Json>> oldValuesDefault,
+      java.util.function.Supplier<Optional<Json>> newValuesDefault,
       java.util.function.Supplier<Optional<String>> changedByDefault,
       java.util.function.Supplier<LocalDateTime> changedAtDefault,
       java.util.function.Supplier<Optional<Inet6>> clientIpDefault,

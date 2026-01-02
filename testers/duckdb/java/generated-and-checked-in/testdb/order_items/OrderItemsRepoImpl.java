@@ -24,9 +24,8 @@ import java.util.Optional;
 public class OrderItemsRepoImpl implements OrderItemsRepo {
   @Override
   public DeleteBuilder<OrderItemsFields, OrderItemsRow> delete() {
-    return DeleteBuilder.of("\"order_items\"", OrderItemsFields.structure(), Dialect.DUCKDB);
+    return DeleteBuilder.of("\"order_items\"", OrderItemsFields.structure, Dialect.DUCKDB);
   }
-  ;
 
   @Override
   public Boolean deleteById(OrderItemsId compositeId, Connection c) {
@@ -40,7 +39,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(OrderItemsId[] compositeIds, Connection c) {
@@ -64,7 +62,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public OrderItemsRow insert(OrderItemsRow unsaved, Connection c) {
@@ -85,7 +82,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .updateReturning(OrderItemsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public OrderItemsRow insert(OrderItemsRowUnsaved unsaved, Connection c) {
@@ -123,14 +119,12 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
     ;
     return q.updateReturning(OrderItemsRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<OrderItemsFields, OrderItemsRow> select() {
     return SelectBuilder.of(
-        "\"order_items\"", OrderItemsFields.structure(), OrderItemsRow._rowParser, Dialect.DUCKDB);
+        "\"order_items\"", OrderItemsFields.structure, OrderItemsRow._rowParser, Dialect.DUCKDB);
   }
-  ;
 
   @Override
   public List<OrderItemsRow> selectAll(Connection c) {
@@ -141,7 +135,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .query(OrderItemsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<OrderItemsRow> selectById(OrderItemsId compositeId, Connection c) {
@@ -157,7 +150,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .query(OrderItemsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<OrderItemsRow> selectByIds(OrderItemsId[] compositeIds, Connection c) {
@@ -184,7 +176,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .query(OrderItemsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<OrderItemsId, OrderItemsRow> selectByIdsTracked(
@@ -193,14 +184,12 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
     selectByIds(compositeIds, c).forEach(row -> ret.put(row.compositeId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<OrderItemsFields, OrderItemsRow> update() {
     return UpdateBuilder.of(
-        "\"order_items\"", OrderItemsFields.structure(), OrderItemsRow._rowParser, Dialect.DUCKDB);
+        "\"order_items\"", OrderItemsFields.structure, OrderItemsRow._rowParser, Dialect.DUCKDB);
   }
-  ;
 
   @Override
   public Boolean update(OrderItemsRow row, Connection c) {
@@ -220,7 +209,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public OrderItemsRow upsert(OrderItemsRow unsaved, Connection c) {
@@ -246,7 +234,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .updateReturning(OrderItemsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<OrderItemsRow> upsertBatch(Iterator<OrderItemsRow> unsaved, Connection c) {
@@ -263,5 +250,4 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .updateReturningEach(OrderItemsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

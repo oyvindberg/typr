@@ -9,565 +9,566 @@ import com.microsoft.sqlserver.jdbc.Geography
 import com.microsoft.sqlserver.jdbc.Geometry
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.SqlServerTypes
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.data.HierarchyId
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Xml
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr38
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.util.UUID
 
-trait AllScalarTypesFields extends FieldsExpr0[AllScalarTypesRow] {
-  def id: IdField[AllScalarTypesId, AllScalarTypesRow]
+class AllScalarTypesFields(val `_path`: java.util.List[Path]) extends TupleExpr38[AllScalarTypesId, Uint1, Short, Int, Long, BigDecimal, BigDecimal, BigDecimal, BigDecimal, Float, Double, Boolean, String, String, String, String, String, String, String, String, Array[Byte], Array[Byte], Array[Byte], Array[Byte], LocalDate, LocalTime, LocalDateTime, LocalDateTime, LocalDateTime, OffsetDateTime, UUID, Xml, Json, Array[Byte], HierarchyId, Geography, Geometry, String] with RelationStructure[AllScalarTypesFields, AllScalarTypesRow]  with FieldsBase[AllScalarTypesRow] {
+  def id: IdField[AllScalarTypesId, AllScalarTypesRow] = {
+    new IdField[AllScalarTypesId, AllScalarTypesRow](
+      _path,
+      "id",
+      _.id,
+      None,
+      None,
+      (row, value) => row.copy(id = value),
+      AllScalarTypesId.sqlServerType
+    )
+  }
 
-  def colTinyint: OptField[Short, AllScalarTypesRow]
+  def colTinyint: OptField[Uint1, AllScalarTypesRow] = {
+    new OptField[Uint1, AllScalarTypesRow](
+      _path,
+      "col_tinyint",
+      _.colTinyint,
+      None,
+      None,
+      (row, value) => row.copy(colTinyint = value),
+      SqlServerTypes.tinyint
+    )
+  }
 
-  def colSmallint: OptField[Short, AllScalarTypesRow]
+  def colSmallint: OptField[Short, AllScalarTypesRow] = {
+    new OptField[Short, AllScalarTypesRow](
+      _path,
+      "col_smallint",
+      _.colSmallint,
+      None,
+      None,
+      (row, value) => row.copy(colSmallint = value),
+      ScalaDbTypes.SqlServerTypes.smallint
+    )
+  }
 
-  def colInt: OptField[Int, AllScalarTypesRow]
+  def colInt: OptField[Int, AllScalarTypesRow] = {
+    new OptField[Int, AllScalarTypesRow](
+      _path,
+      "col_int",
+      _.colInt,
+      None,
+      None,
+      (row, value) => row.copy(colInt = value),
+      ScalaDbTypes.SqlServerTypes.int_
+    )
+  }
 
-  def colBigint: OptField[Long, AllScalarTypesRow]
+  def colBigint: OptField[Long, AllScalarTypesRow] = {
+    new OptField[Long, AllScalarTypesRow](
+      _path,
+      "col_bigint",
+      _.colBigint,
+      None,
+      None,
+      (row, value) => row.copy(colBigint = value),
+      ScalaDbTypes.SqlServerTypes.bigint
+    )
+  }
 
-  def colDecimal: OptField[BigDecimal, AllScalarTypesRow]
+  def colDecimal: OptField[BigDecimal, AllScalarTypesRow] = {
+    new OptField[BigDecimal, AllScalarTypesRow](
+      _path,
+      "col_decimal",
+      _.colDecimal,
+      None,
+      None,
+      (row, value) => row.copy(colDecimal = value),
+      ScalaDbTypes.SqlServerTypes.decimal
+    )
+  }
 
-  def colNumeric: OptField[BigDecimal, AllScalarTypesRow]
+  def colNumeric: OptField[BigDecimal, AllScalarTypesRow] = {
+    new OptField[BigDecimal, AllScalarTypesRow](
+      _path,
+      "col_numeric",
+      _.colNumeric,
+      None,
+      None,
+      (row, value) => row.copy(colNumeric = value),
+      ScalaDbTypes.SqlServerTypes.decimal
+    )
+  }
 
-  def colMoney: OptField[BigDecimal, AllScalarTypesRow]
+  def colMoney: OptField[BigDecimal, AllScalarTypesRow] = {
+    new OptField[BigDecimal, AllScalarTypesRow](
+      _path,
+      "col_money",
+      _.colMoney,
+      None,
+      None,
+      (row, value) => row.copy(colMoney = value),
+      ScalaDbTypes.SqlServerTypes.money
+    )
+  }
 
-  def colSmallmoney: OptField[BigDecimal, AllScalarTypesRow]
+  def colSmallmoney: OptField[BigDecimal, AllScalarTypesRow] = {
+    new OptField[BigDecimal, AllScalarTypesRow](
+      _path,
+      "col_smallmoney",
+      _.colSmallmoney,
+      None,
+      None,
+      (row, value) => row.copy(colSmallmoney = value),
+      ScalaDbTypes.SqlServerTypes.smallmoney
+    )
+  }
 
-  def colReal: OptField[Float, AllScalarTypesRow]
+  def colReal: OptField[Float, AllScalarTypesRow] = {
+    new OptField[Float, AllScalarTypesRow](
+      _path,
+      "col_real",
+      _.colReal,
+      None,
+      None,
+      (row, value) => row.copy(colReal = value),
+      ScalaDbTypes.SqlServerTypes.real
+    )
+  }
 
-  def colFloat: OptField[Double, AllScalarTypesRow]
+  def colFloat: OptField[Double, AllScalarTypesRow] = {
+    new OptField[Double, AllScalarTypesRow](
+      _path,
+      "col_float",
+      _.colFloat,
+      None,
+      None,
+      (row, value) => row.copy(colFloat = value),
+      ScalaDbTypes.SqlServerTypes.float_
+    )
+  }
 
-  def colBit: OptField[Boolean, AllScalarTypesRow]
+  def colBit: OptField[Boolean, AllScalarTypesRow] = {
+    new OptField[Boolean, AllScalarTypesRow](
+      _path,
+      "col_bit",
+      _.colBit,
+      None,
+      None,
+      (row, value) => row.copy(colBit = value),
+      ScalaDbTypes.SqlServerTypes.bit
+    )
+  }
 
-  def colChar: OptField[String, AllScalarTypesRow]
+  def colChar: OptField[String, AllScalarTypesRow] = {
+    new OptField[String, AllScalarTypesRow](
+      _path,
+      "col_char",
+      _.colChar,
+      None,
+      None,
+      (row, value) => row.copy(colChar = value),
+      SqlServerTypes.char_
+    )
+  }
 
-  def colVarchar: OptField[String, AllScalarTypesRow]
+  def colVarchar: OptField[String, AllScalarTypesRow] = {
+    new OptField[String, AllScalarTypesRow](
+      _path,
+      "col_varchar",
+      _.colVarchar,
+      None,
+      None,
+      (row, value) => row.copy(colVarchar = value),
+      SqlServerTypes.varchar
+    )
+  }
 
-  def colVarcharMax: OptField[String, AllScalarTypesRow]
+  def colVarcharMax: OptField[String, AllScalarTypesRow] = {
+    new OptField[String, AllScalarTypesRow](
+      _path,
+      "col_varchar_max",
+      _.colVarcharMax,
+      None,
+      None,
+      (row, value) => row.copy(colVarcharMax = value),
+      SqlServerTypes.varchar
+    )
+  }
 
-  def colText: OptField[String, AllScalarTypesRow]
+  def colText: OptField[String, AllScalarTypesRow] = {
+    new OptField[String, AllScalarTypesRow](
+      _path,
+      "col_text",
+      _.colText,
+      None,
+      None,
+      (row, value) => row.copy(colText = value),
+      SqlServerTypes.text
+    )
+  }
 
-  def colNchar: OptField[String, AllScalarTypesRow]
+  def colNchar: OptField[String, AllScalarTypesRow] = {
+    new OptField[String, AllScalarTypesRow](
+      _path,
+      "col_nchar",
+      _.colNchar,
+      None,
+      None,
+      (row, value) => row.copy(colNchar = value),
+      SqlServerTypes.nchar
+    )
+  }
 
-  def colNvarchar: OptField[String, AllScalarTypesRow]
+  def colNvarchar: OptField[String, AllScalarTypesRow] = {
+    new OptField[String, AllScalarTypesRow](
+      _path,
+      "col_nvarchar",
+      _.colNvarchar,
+      None,
+      None,
+      (row, value) => row.copy(colNvarchar = value),
+      SqlServerTypes.nvarchar
+    )
+  }
 
-  def colNvarcharMax: OptField[String, AllScalarTypesRow]
+  def colNvarcharMax: OptField[String, AllScalarTypesRow] = {
+    new OptField[String, AllScalarTypesRow](
+      _path,
+      "col_nvarchar_max",
+      _.colNvarcharMax,
+      None,
+      None,
+      (row, value) => row.copy(colNvarcharMax = value),
+      SqlServerTypes.nvarchar
+    )
+  }
 
-  def colNtext: OptField[String, AllScalarTypesRow]
+  def colNtext: OptField[String, AllScalarTypesRow] = {
+    new OptField[String, AllScalarTypesRow](
+      _path,
+      "col_ntext",
+      _.colNtext,
+      None,
+      None,
+      (row, value) => row.copy(colNtext = value),
+      SqlServerTypes.ntext
+    )
+  }
 
-  def colBinary: OptField[Array[Byte], AllScalarTypesRow]
+  def colBinary: OptField[Array[Byte], AllScalarTypesRow] = {
+    new OptField[Array[Byte], AllScalarTypesRow](
+      _path,
+      "col_binary",
+      _.colBinary,
+      None,
+      None,
+      (row, value) => row.copy(colBinary = value),
+      SqlServerTypes.binary
+    )
+  }
 
-  def colVarbinary: OptField[Array[Byte], AllScalarTypesRow]
+  def colVarbinary: OptField[Array[Byte], AllScalarTypesRow] = {
+    new OptField[Array[Byte], AllScalarTypesRow](
+      _path,
+      "col_varbinary",
+      _.colVarbinary,
+      None,
+      None,
+      (row, value) => row.copy(colVarbinary = value),
+      SqlServerTypes.varbinary
+    )
+  }
 
-  def colVarbinaryMax: OptField[Array[Byte], AllScalarTypesRow]
+  def colVarbinaryMax: OptField[Array[Byte], AllScalarTypesRow] = {
+    new OptField[Array[Byte], AllScalarTypesRow](
+      _path,
+      "col_varbinary_max",
+      _.colVarbinaryMax,
+      None,
+      None,
+      (row, value) => row.copy(colVarbinaryMax = value),
+      SqlServerTypes.varbinary
+    )
+  }
 
-  def colImage: OptField[Array[Byte], AllScalarTypesRow]
+  def colImage: OptField[Array[Byte], AllScalarTypesRow] = {
+    new OptField[Array[Byte], AllScalarTypesRow](
+      _path,
+      "col_image",
+      _.colImage,
+      None,
+      None,
+      (row, value) => row.copy(colImage = value),
+      SqlServerTypes.image
+    )
+  }
 
-  def colDate: OptField[LocalDate, AllScalarTypesRow]
+  def colDate: OptField[LocalDate, AllScalarTypesRow] = {
+    new OptField[LocalDate, AllScalarTypesRow](
+      _path,
+      "col_date",
+      _.colDate,
+      None,
+      None,
+      (row, value) => row.copy(colDate = value),
+      SqlServerTypes.date
+    )
+  }
 
-  def colTime: OptField[LocalTime, AllScalarTypesRow]
+  def colTime: OptField[LocalTime, AllScalarTypesRow] = {
+    new OptField[LocalTime, AllScalarTypesRow](
+      _path,
+      "col_time",
+      _.colTime,
+      None,
+      None,
+      (row, value) => row.copy(colTime = value),
+      SqlServerTypes.time
+    )
+  }
 
-  def colDatetime: OptField[LocalDateTime, AllScalarTypesRow]
+  def colDatetime: OptField[LocalDateTime, AllScalarTypesRow] = {
+    new OptField[LocalDateTime, AllScalarTypesRow](
+      _path,
+      "col_datetime",
+      _.colDatetime,
+      None,
+      None,
+      (row, value) => row.copy(colDatetime = value),
+      SqlServerTypes.datetime
+    )
+  }
 
-  def colSmalldatetime: OptField[LocalDateTime, AllScalarTypesRow]
+  def colSmalldatetime: OptField[LocalDateTime, AllScalarTypesRow] = {
+    new OptField[LocalDateTime, AllScalarTypesRow](
+      _path,
+      "col_smalldatetime",
+      _.colSmalldatetime,
+      None,
+      None,
+      (row, value) => row.copy(colSmalldatetime = value),
+      SqlServerTypes.smalldatetime
+    )
+  }
 
-  def colDatetime2: OptField[LocalDateTime, AllScalarTypesRow]
+  def colDatetime2: OptField[LocalDateTime, AllScalarTypesRow] = {
+    new OptField[LocalDateTime, AllScalarTypesRow](
+      _path,
+      "col_datetime2",
+      _.colDatetime2,
+      None,
+      None,
+      (row, value) => row.copy(colDatetime2 = value),
+      SqlServerTypes.datetime2
+    )
+  }
 
-  def colDatetimeoffset: OptField[OffsetDateTime, AllScalarTypesRow]
+  def colDatetimeoffset: OptField[OffsetDateTime, AllScalarTypesRow] = {
+    new OptField[OffsetDateTime, AllScalarTypesRow](
+      _path,
+      "col_datetimeoffset",
+      _.colDatetimeoffset,
+      None,
+      None,
+      (row, value) => row.copy(colDatetimeoffset = value),
+      SqlServerTypes.datetimeoffset
+    )
+  }
 
-  def colUniqueidentifier: OptField[UUID, AllScalarTypesRow]
+  def colUniqueidentifier: OptField[UUID, AllScalarTypesRow] = {
+    new OptField[UUID, AllScalarTypesRow](
+      _path,
+      "col_uniqueidentifier",
+      _.colUniqueidentifier,
+      None,
+      None,
+      (row, value) => row.copy(colUniqueidentifier = value),
+      SqlServerTypes.uniqueidentifier
+    )
+  }
 
-  def colXml: OptField[/* XML */ String, AllScalarTypesRow]
+  def colXml: OptField[Xml, AllScalarTypesRow] = {
+    new OptField[Xml, AllScalarTypesRow](
+      _path,
+      "col_xml",
+      _.colXml,
+      None,
+      None,
+      (row, value) => row.copy(colXml = value),
+      SqlServerTypes.xml
+    )
+  }
 
-  def colJson: OptField[String, AllScalarTypesRow]
+  def colJson: OptField[Json, AllScalarTypesRow] = {
+    new OptField[Json, AllScalarTypesRow](
+      _path,
+      "col_json",
+      _.colJson,
+      None,
+      None,
+      (row, value) => row.copy(colJson = value),
+      SqlServerTypes.json
+    )
+  }
 
-  def colRowversion: Field[Array[Byte], AllScalarTypesRow]
+  def colRowversion: Field[Array[Byte], AllScalarTypesRow] = {
+    new Field[Array[Byte], AllScalarTypesRow](
+      _path,
+      "col_rowversion",
+      _.colRowversion,
+      None,
+      None,
+      (row, value) => row.copy(colRowversion = value),
+      SqlServerTypes.rowversion
+    )
+  }
 
-  def colHierarchyid: OptField[/* HIERARCHYID */ String, AllScalarTypesRow]
+  def colHierarchyid: OptField[HierarchyId, AllScalarTypesRow] = {
+    new OptField[HierarchyId, AllScalarTypesRow](
+      _path,
+      "col_hierarchyid",
+      _.colHierarchyid,
+      None,
+      None,
+      (row, value) => row.copy(colHierarchyid = value),
+      SqlServerTypes.hierarchyid
+    )
+  }
 
-  def colGeography: OptField[Geography, AllScalarTypesRow]
+  def colGeography: OptField[Geography, AllScalarTypesRow] = {
+    new OptField[Geography, AllScalarTypesRow](
+      _path,
+      "col_geography",
+      _.colGeography,
+      None,
+      None,
+      (row, value) => row.copy(colGeography = value),
+      SqlServerTypes.geography
+    )
+  }
 
-  def colGeometry: OptField[Geometry, AllScalarTypesRow]
+  def colGeometry: OptField[Geometry, AllScalarTypesRow] = {
+    new OptField[Geometry, AllScalarTypesRow](
+      _path,
+      "col_geometry",
+      _.colGeometry,
+      None,
+      None,
+      (row, value) => row.copy(colGeometry = value),
+      SqlServerTypes.geometry
+    )
+  }
 
-  def colNotNull: Field[String, AllScalarTypesRow]
+  def colNotNull: Field[String, AllScalarTypesRow] = {
+    new Field[String, AllScalarTypesRow](
+      _path,
+      "col_not_null",
+      _.colNotNull,
+      None,
+      None,
+      (row, value) => row.copy(colNotNull = value),
+      SqlServerTypes.nvarchar
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, AllScalarTypesRow]]
+  override def columns: java.util.List[FieldLike[?, AllScalarTypesRow]] = java.util.List.of(this.id.underlying, this.colTinyint.underlying, this.colSmallint.underlying, this.colInt.underlying, this.colBigint.underlying, this.colDecimal.underlying, this.colNumeric.underlying, this.colMoney.underlying, this.colSmallmoney.underlying, this.colReal.underlying, this.colFloat.underlying, this.colBit.underlying, this.colChar.underlying, this.colVarchar.underlying, this.colVarcharMax.underlying, this.colText.underlying, this.colNchar.underlying, this.colNvarchar.underlying, this.colNvarcharMax.underlying, this.colNtext.underlying, this.colBinary.underlying, this.colVarbinary.underlying, this.colVarbinaryMax.underlying, this.colImage.underlying, this.colDate.underlying, this.colTime.underlying, this.colDatetime.underlying, this.colSmalldatetime.underlying, this.colDatetime2.underlying, this.colDatetimeoffset.underlying, this.colUniqueidentifier.underlying, this.colXml.underlying, this.colJson.underlying, this.colRowversion.underlying, this.colHierarchyid.underlying, this.colGeography.underlying, this.colGeometry.underlying, this.colNotNull.underlying)
 
   override def rowParser: RowParser[AllScalarTypesRow] = AllScalarTypesRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[AllScalarTypesFields, AllScalarTypesRow] = new AllScalarTypesFields(`_path`)
+
+  override def `_1`: SqlExpr[AllScalarTypesId] = id
+
+  override def `_2`: SqlExpr[Uint1] = colTinyint
+
+  override def `_3`: SqlExpr[Short] = colSmallint
+
+  override def `_4`: SqlExpr[Int] = colInt
+
+  override def `_5`: SqlExpr[Long] = colBigint
+
+  override def `_6`: SqlExpr[BigDecimal] = colDecimal
+
+  override def `_7`: SqlExpr[BigDecimal] = colNumeric
+
+  override def `_8`: SqlExpr[BigDecimal] = colMoney
+
+  override def `_9`: SqlExpr[BigDecimal] = colSmallmoney
+
+  override def `_10`: SqlExpr[Float] = colReal
+
+  override def `_11`: SqlExpr[Double] = colFloat
+
+  override def `_12`: SqlExpr[Boolean] = colBit
+
+  override def `_13`: SqlExpr[String] = colChar
+
+  override def `_14`: SqlExpr[String] = colVarchar
+
+  override def `_15`: SqlExpr[String] = colVarcharMax
+
+  override def `_16`: SqlExpr[String] = colText
+
+  override def `_17`: SqlExpr[String] = colNchar
+
+  override def `_18`: SqlExpr[String] = colNvarchar
+
+  override def `_19`: SqlExpr[String] = colNvarcharMax
+
+  override def `_20`: SqlExpr[String] = colNtext
+
+  override def `_21`: SqlExpr[Array[Byte]] = colBinary
+
+  override def `_22`: SqlExpr[Array[Byte]] = colVarbinary
+
+  override def `_23`: SqlExpr[Array[Byte]] = colVarbinaryMax
+
+  override def `_24`: SqlExpr[Array[Byte]] = colImage
+
+  override def `_25`: SqlExpr[LocalDate] = colDate
+
+  override def `_26`: SqlExpr[LocalTime] = colTime
+
+  override def `_27`: SqlExpr[LocalDateTime] = colDatetime
+
+  override def `_28`: SqlExpr[LocalDateTime] = colSmalldatetime
+
+  override def `_29`: SqlExpr[LocalDateTime] = colDatetime2
+
+  override def `_30`: SqlExpr[OffsetDateTime] = colDatetimeoffset
+
+  override def `_31`: SqlExpr[UUID] = colUniqueidentifier
+
+  override def `_32`: SqlExpr[Xml] = colXml
+
+  override def `_33`: SqlExpr[Json] = colJson
+
+  override def `_34`: SqlExpr[Array[Byte]] = colRowversion
+
+  override def `_35`: SqlExpr[HierarchyId] = colHierarchyid
+
+  override def `_36`: SqlExpr[Geography] = colGeography
+
+  override def `_37`: SqlExpr[Geometry] = colGeometry
+
+  override def `_38`: SqlExpr[String] = colNotNull
 }
 
 object AllScalarTypesFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends AllScalarTypesFields with RelationStructure[AllScalarTypesFields, AllScalarTypesRow] {
-
-    override def id: IdField[AllScalarTypesId, AllScalarTypesRow] = {
-      new IdField[AllScalarTypesId, AllScalarTypesRow](
-        _path,
-        "id",
-        _.id,
-        None,
-        None,
-        (row, value) => row.copy(id = value),
-        AllScalarTypesId.sqlServerType
-      )
-    }
-
-    override def colTinyint: OptField[Short, AllScalarTypesRow] = {
-      new OptField[Short, AllScalarTypesRow](
-        _path,
-        "col_tinyint",
-        _.colTinyint,
-        None,
-        None,
-        (row, value) => row.copy(colTinyint = value),
-        ScalaDbTypes.SqlServerTypes.tinyint
-      )
-    }
-
-    override def colSmallint: OptField[Short, AllScalarTypesRow] = {
-      new OptField[Short, AllScalarTypesRow](
-        _path,
-        "col_smallint",
-        _.colSmallint,
-        None,
-        None,
-        (row, value) => row.copy(colSmallint = value),
-        ScalaDbTypes.SqlServerTypes.smallint
-      )
-    }
-
-    override def colInt: OptField[Int, AllScalarTypesRow] = {
-      new OptField[Int, AllScalarTypesRow](
-        _path,
-        "col_int",
-        _.colInt,
-        None,
-        None,
-        (row, value) => row.copy(colInt = value),
-        ScalaDbTypes.SqlServerTypes.int_
-      )
-    }
-
-    override def colBigint: OptField[Long, AllScalarTypesRow] = {
-      new OptField[Long, AllScalarTypesRow](
-        _path,
-        "col_bigint",
-        _.colBigint,
-        None,
-        None,
-        (row, value) => row.copy(colBigint = value),
-        ScalaDbTypes.SqlServerTypes.bigint
-      )
-    }
-
-    override def colDecimal: OptField[BigDecimal, AllScalarTypesRow] = {
-      new OptField[BigDecimal, AllScalarTypesRow](
-        _path,
-        "col_decimal",
-        _.colDecimal,
-        None,
-        None,
-        (row, value) => row.copy(colDecimal = value),
-        ScalaDbTypes.SqlServerTypes.decimal
-      )
-    }
-
-    override def colNumeric: OptField[BigDecimal, AllScalarTypesRow] = {
-      new OptField[BigDecimal, AllScalarTypesRow](
-        _path,
-        "col_numeric",
-        _.colNumeric,
-        None,
-        None,
-        (row, value) => row.copy(colNumeric = value),
-        ScalaDbTypes.SqlServerTypes.decimal
-      )
-    }
-
-    override def colMoney: OptField[BigDecimal, AllScalarTypesRow] = {
-      new OptField[BigDecimal, AllScalarTypesRow](
-        _path,
-        "col_money",
-        _.colMoney,
-        None,
-        None,
-        (row, value) => row.copy(colMoney = value),
-        ScalaDbTypes.SqlServerTypes.money
-      )
-    }
-
-    override def colSmallmoney: OptField[BigDecimal, AllScalarTypesRow] = {
-      new OptField[BigDecimal, AllScalarTypesRow](
-        _path,
-        "col_smallmoney",
-        _.colSmallmoney,
-        None,
-        None,
-        (row, value) => row.copy(colSmallmoney = value),
-        ScalaDbTypes.SqlServerTypes.smallmoney
-      )
-    }
-
-    override def colReal: OptField[Float, AllScalarTypesRow] = {
-      new OptField[Float, AllScalarTypesRow](
-        _path,
-        "col_real",
-        _.colReal,
-        None,
-        None,
-        (row, value) => row.copy(colReal = value),
-        ScalaDbTypes.SqlServerTypes.real
-      )
-    }
-
-    override def colFloat: OptField[Double, AllScalarTypesRow] = {
-      new OptField[Double, AllScalarTypesRow](
-        _path,
-        "col_float",
-        _.colFloat,
-        None,
-        None,
-        (row, value) => row.copy(colFloat = value),
-        ScalaDbTypes.SqlServerTypes.float_
-      )
-    }
-
-    override def colBit: OptField[Boolean, AllScalarTypesRow] = {
-      new OptField[Boolean, AllScalarTypesRow](
-        _path,
-        "col_bit",
-        _.colBit,
-        None,
-        None,
-        (row, value) => row.copy(colBit = value),
-        ScalaDbTypes.SqlServerTypes.bit
-      )
-    }
-
-    override def colChar: OptField[String, AllScalarTypesRow] = {
-      new OptField[String, AllScalarTypesRow](
-        _path,
-        "col_char",
-        _.colChar,
-        None,
-        None,
-        (row, value) => row.copy(colChar = value),
-        SqlServerTypes.char_
-      )
-    }
-
-    override def colVarchar: OptField[String, AllScalarTypesRow] = {
-      new OptField[String, AllScalarTypesRow](
-        _path,
-        "col_varchar",
-        _.colVarchar,
-        None,
-        None,
-        (row, value) => row.copy(colVarchar = value),
-        SqlServerTypes.varchar
-      )
-    }
-
-    override def colVarcharMax: OptField[String, AllScalarTypesRow] = {
-      new OptField[String, AllScalarTypesRow](
-        _path,
-        "col_varchar_max",
-        _.colVarcharMax,
-        None,
-        None,
-        (row, value) => row.copy(colVarcharMax = value),
-        SqlServerTypes.varchar
-      )
-    }
-
-    override def colText: OptField[String, AllScalarTypesRow] = {
-      new OptField[String, AllScalarTypesRow](
-        _path,
-        "col_text",
-        _.colText,
-        None,
-        None,
-        (row, value) => row.copy(colText = value),
-        SqlServerTypes.text
-      )
-    }
-
-    override def colNchar: OptField[String, AllScalarTypesRow] = {
-      new OptField[String, AllScalarTypesRow](
-        _path,
-        "col_nchar",
-        _.colNchar,
-        None,
-        None,
-        (row, value) => row.copy(colNchar = value),
-        SqlServerTypes.nchar
-      )
-    }
-
-    override def colNvarchar: OptField[String, AllScalarTypesRow] = {
-      new OptField[String, AllScalarTypesRow](
-        _path,
-        "col_nvarchar",
-        _.colNvarchar,
-        None,
-        None,
-        (row, value) => row.copy(colNvarchar = value),
-        SqlServerTypes.nvarchar
-      )
-    }
-
-    override def colNvarcharMax: OptField[String, AllScalarTypesRow] = {
-      new OptField[String, AllScalarTypesRow](
-        _path,
-        "col_nvarchar_max",
-        _.colNvarcharMax,
-        None,
-        None,
-        (row, value) => row.copy(colNvarcharMax = value),
-        SqlServerTypes.nvarchar
-      )
-    }
-
-    override def colNtext: OptField[String, AllScalarTypesRow] = {
-      new OptField[String, AllScalarTypesRow](
-        _path,
-        "col_ntext",
-        _.colNtext,
-        None,
-        None,
-        (row, value) => row.copy(colNtext = value),
-        SqlServerTypes.ntext
-      )
-    }
-
-    override def colBinary: OptField[Array[Byte], AllScalarTypesRow] = {
-      new OptField[Array[Byte], AllScalarTypesRow](
-        _path,
-        "col_binary",
-        _.colBinary,
-        None,
-        None,
-        (row, value) => row.copy(colBinary = value),
-        SqlServerTypes.binary
-      )
-    }
-
-    override def colVarbinary: OptField[Array[Byte], AllScalarTypesRow] = {
-      new OptField[Array[Byte], AllScalarTypesRow](
-        _path,
-        "col_varbinary",
-        _.colVarbinary,
-        None,
-        None,
-        (row, value) => row.copy(colVarbinary = value),
-        SqlServerTypes.varbinary
-      )
-    }
-
-    override def colVarbinaryMax: OptField[Array[Byte], AllScalarTypesRow] = {
-      new OptField[Array[Byte], AllScalarTypesRow](
-        _path,
-        "col_varbinary_max",
-        _.colVarbinaryMax,
-        None,
-        None,
-        (row, value) => row.copy(colVarbinaryMax = value),
-        SqlServerTypes.varbinary
-      )
-    }
-
-    override def colImage: OptField[Array[Byte], AllScalarTypesRow] = {
-      new OptField[Array[Byte], AllScalarTypesRow](
-        _path,
-        "col_image",
-        _.colImage,
-        None,
-        None,
-        (row, value) => row.copy(colImage = value),
-        SqlServerTypes.image
-      )
-    }
-
-    override def colDate: OptField[LocalDate, AllScalarTypesRow] = {
-      new OptField[LocalDate, AllScalarTypesRow](
-        _path,
-        "col_date",
-        _.colDate,
-        None,
-        None,
-        (row, value) => row.copy(colDate = value),
-        SqlServerTypes.date
-      )
-    }
-
-    override def colTime: OptField[LocalTime, AllScalarTypesRow] = {
-      new OptField[LocalTime, AllScalarTypesRow](
-        _path,
-        "col_time",
-        _.colTime,
-        None,
-        None,
-        (row, value) => row.copy(colTime = value),
-        SqlServerTypes.time
-      )
-    }
-
-    override def colDatetime: OptField[LocalDateTime, AllScalarTypesRow] = {
-      new OptField[LocalDateTime, AllScalarTypesRow](
-        _path,
-        "col_datetime",
-        _.colDatetime,
-        None,
-        None,
-        (row, value) => row.copy(colDatetime = value),
-        SqlServerTypes.datetime
-      )
-    }
-
-    override def colSmalldatetime: OptField[LocalDateTime, AllScalarTypesRow] = {
-      new OptField[LocalDateTime, AllScalarTypesRow](
-        _path,
-        "col_smalldatetime",
-        _.colSmalldatetime,
-        None,
-        None,
-        (row, value) => row.copy(colSmalldatetime = value),
-        SqlServerTypes.smalldatetime
-      )
-    }
-
-    override def colDatetime2: OptField[LocalDateTime, AllScalarTypesRow] = {
-      new OptField[LocalDateTime, AllScalarTypesRow](
-        _path,
-        "col_datetime2",
-        _.colDatetime2,
-        None,
-        None,
-        (row, value) => row.copy(colDatetime2 = value),
-        SqlServerTypes.datetime2
-      )
-    }
-
-    override def colDatetimeoffset: OptField[OffsetDateTime, AllScalarTypesRow] = {
-      new OptField[OffsetDateTime, AllScalarTypesRow](
-        _path,
-        "col_datetimeoffset",
-        _.colDatetimeoffset,
-        None,
-        None,
-        (row, value) => row.copy(colDatetimeoffset = value),
-        SqlServerTypes.datetimeoffset
-      )
-    }
-
-    override def colUniqueidentifier: OptField[UUID, AllScalarTypesRow] = {
-      new OptField[UUID, AllScalarTypesRow](
-        _path,
-        "col_uniqueidentifier",
-        _.colUniqueidentifier,
-        None,
-        None,
-        (row, value) => row.copy(colUniqueidentifier = value),
-        SqlServerTypes.uniqueidentifier
-      )
-    }
-
-    override def colXml: OptField[String, AllScalarTypesRow] = {
-      new OptField[String, AllScalarTypesRow](
-        _path,
-        "col_xml",
-        _.colXml,
-        None,
-        None,
-        (row, value) => row.copy(colXml = value),
-        SqlServerTypes.xml
-      )
-    }
-
-    override def colJson: OptField[String, AllScalarTypesRow] = {
-      new OptField[String, AllScalarTypesRow](
-        _path,
-        "col_json",
-        _.colJson,
-        None,
-        None,
-        (row, value) => row.copy(colJson = value),
-        SqlServerTypes.nvarchar
-      )
-    }
-
-    override def colRowversion: Field[Array[Byte], AllScalarTypesRow] = {
-      new Field[Array[Byte], AllScalarTypesRow](
-        _path,
-        "col_rowversion",
-        _.colRowversion,
-        None,
-        None,
-        (row, value) => row.copy(colRowversion = value),
-        SqlServerTypes.rowversion
-      )
-    }
-
-    override def colHierarchyid: OptField[String, AllScalarTypesRow] = {
-      new OptField[String, AllScalarTypesRow](
-        _path,
-        "col_hierarchyid",
-        _.colHierarchyid,
-        None,
-        None,
-        (row, value) => row.copy(colHierarchyid = value),
-        SqlServerTypes.hierarchyid
-      )
-    }
-
-    override def colGeography: OptField[Geography, AllScalarTypesRow] = {
-      new OptField[Geography, AllScalarTypesRow](
-        _path,
-        "col_geography",
-        _.colGeography,
-        None,
-        None,
-        (row, value) => row.copy(colGeography = value),
-        SqlServerTypes.geography
-      )
-    }
-
-    override def colGeometry: OptField[Geometry, AllScalarTypesRow] = {
-      new OptField[Geometry, AllScalarTypesRow](
-        _path,
-        "col_geometry",
-        _.colGeometry,
-        None,
-        None,
-        (row, value) => row.copy(colGeometry = value),
-        SqlServerTypes.geometry
-      )
-    }
-
-    override def colNotNull: Field[String, AllScalarTypesRow] = {
-      new Field[String, AllScalarTypesRow](
-        _path,
-        "col_not_null",
-        _.colNotNull,
-        None,
-        None,
-        (row, value) => row.copy(colNotNull = value),
-        SqlServerTypes.nvarchar
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, AllScalarTypesRow]] = java.util.List.of(this.id.underlying, this.colTinyint.underlying, this.colSmallint.underlying, this.colInt.underlying, this.colBigint.underlying, this.colDecimal.underlying, this.colNumeric.underlying, this.colMoney.underlying, this.colSmallmoney.underlying, this.colReal.underlying, this.colFloat.underlying, this.colBit.underlying, this.colChar.underlying, this.colVarchar.underlying, this.colVarcharMax.underlying, this.colText.underlying, this.colNchar.underlying, this.colNvarchar.underlying, this.colNvarcharMax.underlying, this.colNtext.underlying, this.colBinary.underlying, this.colVarbinary.underlying, this.colVarbinaryMax.underlying, this.colImage.underlying, this.colDate.underlying, this.colTime.underlying, this.colDatetime.underlying, this.colSmalldatetime.underlying, this.colDatetime2.underlying, this.colDatetimeoffset.underlying, this.colUniqueidentifier.underlying, this.colXml.underlying, this.colJson.underlying, this.colRowversion.underlying, this.colHierarchyid.underlying, this.colGeography.underlying, this.colGeometry.underlying, this.colNotNull.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[AllScalarTypesFields, AllScalarTypesRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: AllScalarTypesFields = new AllScalarTypesFields(java.util.Collections.emptyList())
 }

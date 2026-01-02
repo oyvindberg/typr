@@ -7,226 +7,223 @@ package testdb.v_inventory_status
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr14
 import java.time.LocalDateTime
 import testdb.products.ProductsId
 import testdb.warehouses.WarehousesId
 
-trait VInventoryStatusViewFields extends FieldsExpr0[VInventoryStatusViewRow] {
-  def productId: Field[ProductsId, VInventoryStatusViewRow]
+class VInventoryStatusViewFields(val `_path`: java.util.List[Path]) extends TupleExpr14[ProductsId, String, String, WarehousesId, String, String, Int, Int, Int, Long, Int, String, String, LocalDateTime] with RelationStructure[VInventoryStatusViewFields, VInventoryStatusViewRow]  with FieldsBase[VInventoryStatusViewRow] {
+  def productId: Field[ProductsId, VInventoryStatusViewRow] = {
+    new Field[ProductsId, VInventoryStatusViewRow](
+      _path,
+      "product_id",
+      _.productId,
+      None,
+      None,
+      (row, value) => row.copy(productId = value),
+      ProductsId.dbType
+    )
+  }
 
-  def sku: Field[String, VInventoryStatusViewRow]
+  def sku: Field[String, VInventoryStatusViewRow] = {
+    new Field[String, VInventoryStatusViewRow](
+      _path,
+      "sku",
+      _.sku,
+      None,
+      None,
+      (row, value) => row.copy(sku = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def productName: Field[String, VInventoryStatusViewRow]
+  def productName: Field[String, VInventoryStatusViewRow] = {
+    new Field[String, VInventoryStatusViewRow](
+      _path,
+      "product_name",
+      _.productName,
+      None,
+      None,
+      (row, value) => row.copy(productName = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def warehouseId: Field[WarehousesId, VInventoryStatusViewRow]
+  def warehouseId: Field[WarehousesId, VInventoryStatusViewRow] = {
+    new Field[WarehousesId, VInventoryStatusViewRow](
+      _path,
+      "warehouse_id",
+      _.warehouseId,
+      None,
+      None,
+      (row, value) => row.copy(warehouseId = value),
+      WarehousesId.dbType
+    )
+  }
 
-  def warehouseCode: Field[String, VInventoryStatusViewRow]
+  def warehouseCode: Field[String, VInventoryStatusViewRow] = {
+    new Field[String, VInventoryStatusViewRow](
+      _path,
+      "warehouse_code",
+      _.warehouseCode,
+      None,
+      None,
+      (row, value) => row.copy(warehouseCode = value),
+      MariaTypes.char_
+    )
+  }
 
-  def warehouseName: Field[String, VInventoryStatusViewRow]
+  def warehouseName: Field[String, VInventoryStatusViewRow] = {
+    new Field[String, VInventoryStatusViewRow](
+      _path,
+      "warehouse_name",
+      _.warehouseName,
+      None,
+      None,
+      (row, value) => row.copy(warehouseName = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def quantityOnHand: Field[Int, VInventoryStatusViewRow]
+  def quantityOnHand: Field[Int, VInventoryStatusViewRow] = {
+    new Field[Int, VInventoryStatusViewRow](
+      _path,
+      "quantity_on_hand",
+      _.quantityOnHand,
+      None,
+      None,
+      (row, value) => row.copy(quantityOnHand = value),
+      ScalaDbTypes.MariaTypes.int_
+    )
+  }
 
-  def quantityReserved: Field[Int, VInventoryStatusViewRow]
+  def quantityReserved: Field[Int, VInventoryStatusViewRow] = {
+    new Field[Int, VInventoryStatusViewRow](
+      _path,
+      "quantity_reserved",
+      _.quantityReserved,
+      None,
+      None,
+      (row, value) => row.copy(quantityReserved = value),
+      ScalaDbTypes.MariaTypes.int_
+    )
+  }
 
-  def quantityOnOrder: Field[Int, VInventoryStatusViewRow]
+  def quantityOnOrder: Field[Int, VInventoryStatusViewRow] = {
+    new Field[Int, VInventoryStatusViewRow](
+      _path,
+      "quantity_on_order",
+      _.quantityOnOrder,
+      None,
+      None,
+      (row, value) => row.copy(quantityOnOrder = value),
+      ScalaDbTypes.MariaTypes.int_
+    )
+  }
 
-  def available: Field[Long, VInventoryStatusViewRow]
+  def available: Field[Long, VInventoryStatusViewRow] = {
+    new Field[Long, VInventoryStatusViewRow](
+      _path,
+      "available",
+      _.available,
+      None,
+      None,
+      (row, value) => row.copy(available = value),
+      ScalaDbTypes.MariaTypes.bigint
+    )
+  }
 
-  def reorderPoint: Field[Int, VInventoryStatusViewRow]
+  def reorderPoint: Field[Int, VInventoryStatusViewRow] = {
+    new Field[Int, VInventoryStatusViewRow](
+      _path,
+      "reorder_point",
+      _.reorderPoint,
+      None,
+      None,
+      (row, value) => row.copy(reorderPoint = value),
+      ScalaDbTypes.MariaTypes.int_
+    )
+  }
 
-  def stockStatus: Field[String, VInventoryStatusViewRow]
+  def stockStatus: Field[String, VInventoryStatusViewRow] = {
+    new Field[String, VInventoryStatusViewRow](
+      _path,
+      "stock_status",
+      _.stockStatus,
+      None,
+      None,
+      (row, value) => row.copy(stockStatus = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def binLocation: OptField[String, VInventoryStatusViewRow]
+  def binLocation: OptField[String, VInventoryStatusViewRow] = {
+    new OptField[String, VInventoryStatusViewRow](
+      _path,
+      "bin_location",
+      _.binLocation,
+      None,
+      None,
+      (row, value) => row.copy(binLocation = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def lastCountedAt: OptField[LocalDateTime, VInventoryStatusViewRow]
+  def lastCountedAt: OptField[LocalDateTime, VInventoryStatusViewRow] = {
+    new OptField[LocalDateTime, VInventoryStatusViewRow](
+      _path,
+      "last_counted_at",
+      _.lastCountedAt,
+      None,
+      None,
+      (row, value) => row.copy(lastCountedAt = value),
+      MariaTypes.datetime
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, VInventoryStatusViewRow]]
+  override def columns: java.util.List[FieldLike[?, VInventoryStatusViewRow]] = java.util.List.of(this.productId.underlying, this.sku.underlying, this.productName.underlying, this.warehouseId.underlying, this.warehouseCode.underlying, this.warehouseName.underlying, this.quantityOnHand.underlying, this.quantityReserved.underlying, this.quantityOnOrder.underlying, this.available.underlying, this.reorderPoint.underlying, this.stockStatus.underlying, this.binLocation.underlying, this.lastCountedAt.underlying)
 
   override def rowParser: RowParser[VInventoryStatusViewRow] = VInventoryStatusViewRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[VInventoryStatusViewFields, VInventoryStatusViewRow] = new VInventoryStatusViewFields(`_path`)
+
+  override def `_1`: SqlExpr[ProductsId] = productId
+
+  override def `_2`: SqlExpr[String] = sku
+
+  override def `_3`: SqlExpr[String] = productName
+
+  override def `_4`: SqlExpr[WarehousesId] = warehouseId
+
+  override def `_5`: SqlExpr[String] = warehouseCode
+
+  override def `_6`: SqlExpr[String] = warehouseName
+
+  override def `_7`: SqlExpr[Int] = quantityOnHand
+
+  override def `_8`: SqlExpr[Int] = quantityReserved
+
+  override def `_9`: SqlExpr[Int] = quantityOnOrder
+
+  override def `_10`: SqlExpr[Long] = available
+
+  override def `_11`: SqlExpr[Int] = reorderPoint
+
+  override def `_12`: SqlExpr[String] = stockStatus
+
+  override def `_13`: SqlExpr[String] = binLocation
+
+  override def `_14`: SqlExpr[LocalDateTime] = lastCountedAt
 }
 
 object VInventoryStatusViewFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends VInventoryStatusViewFields with RelationStructure[VInventoryStatusViewFields, VInventoryStatusViewRow] {
-
-    override def productId: Field[ProductsId, VInventoryStatusViewRow] = {
-      new Field[ProductsId, VInventoryStatusViewRow](
-        _path,
-        "product_id",
-        _.productId,
-        None,
-        None,
-        (row, value) => row.copy(productId = value),
-        ProductsId.pgType
-      )
-    }
-
-    override def sku: Field[String, VInventoryStatusViewRow] = {
-      new Field[String, VInventoryStatusViewRow](
-        _path,
-        "sku",
-        _.sku,
-        None,
-        None,
-        (row, value) => row.copy(sku = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def productName: Field[String, VInventoryStatusViewRow] = {
-      new Field[String, VInventoryStatusViewRow](
-        _path,
-        "product_name",
-        _.productName,
-        None,
-        None,
-        (row, value) => row.copy(productName = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def warehouseId: Field[WarehousesId, VInventoryStatusViewRow] = {
-      new Field[WarehousesId, VInventoryStatusViewRow](
-        _path,
-        "warehouse_id",
-        _.warehouseId,
-        None,
-        None,
-        (row, value) => row.copy(warehouseId = value),
-        WarehousesId.pgType
-      )
-    }
-
-    override def warehouseCode: Field[String, VInventoryStatusViewRow] = {
-      new Field[String, VInventoryStatusViewRow](
-        _path,
-        "warehouse_code",
-        _.warehouseCode,
-        None,
-        None,
-        (row, value) => row.copy(warehouseCode = value),
-        MariaTypes.char_
-      )
-    }
-
-    override def warehouseName: Field[String, VInventoryStatusViewRow] = {
-      new Field[String, VInventoryStatusViewRow](
-        _path,
-        "warehouse_name",
-        _.warehouseName,
-        None,
-        None,
-        (row, value) => row.copy(warehouseName = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def quantityOnHand: Field[Int, VInventoryStatusViewRow] = {
-      new Field[Int, VInventoryStatusViewRow](
-        _path,
-        "quantity_on_hand",
-        _.quantityOnHand,
-        None,
-        None,
-        (row, value) => row.copy(quantityOnHand = value),
-        ScalaDbTypes.MariaTypes.int_
-      )
-    }
-
-    override def quantityReserved: Field[Int, VInventoryStatusViewRow] = {
-      new Field[Int, VInventoryStatusViewRow](
-        _path,
-        "quantity_reserved",
-        _.quantityReserved,
-        None,
-        None,
-        (row, value) => row.copy(quantityReserved = value),
-        ScalaDbTypes.MariaTypes.int_
-      )
-    }
-
-    override def quantityOnOrder: Field[Int, VInventoryStatusViewRow] = {
-      new Field[Int, VInventoryStatusViewRow](
-        _path,
-        "quantity_on_order",
-        _.quantityOnOrder,
-        None,
-        None,
-        (row, value) => row.copy(quantityOnOrder = value),
-        ScalaDbTypes.MariaTypes.int_
-      )
-    }
-
-    override def available: Field[Long, VInventoryStatusViewRow] = {
-      new Field[Long, VInventoryStatusViewRow](
-        _path,
-        "available",
-        _.available,
-        None,
-        None,
-        (row, value) => row.copy(available = value),
-        ScalaDbTypes.MariaTypes.bigint
-      )
-    }
-
-    override def reorderPoint: Field[Int, VInventoryStatusViewRow] = {
-      new Field[Int, VInventoryStatusViewRow](
-        _path,
-        "reorder_point",
-        _.reorderPoint,
-        None,
-        None,
-        (row, value) => row.copy(reorderPoint = value),
-        ScalaDbTypes.MariaTypes.int_
-      )
-    }
-
-    override def stockStatus: Field[String, VInventoryStatusViewRow] = {
-      new Field[String, VInventoryStatusViewRow](
-        _path,
-        "stock_status",
-        _.stockStatus,
-        None,
-        None,
-        (row, value) => row.copy(stockStatus = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def binLocation: OptField[String, VInventoryStatusViewRow] = {
-      new OptField[String, VInventoryStatusViewRow](
-        _path,
-        "bin_location",
-        _.binLocation,
-        None,
-        None,
-        (row, value) => row.copy(binLocation = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def lastCountedAt: OptField[LocalDateTime, VInventoryStatusViewRow] = {
-      new OptField[LocalDateTime, VInventoryStatusViewRow](
-        _path,
-        "last_counted_at",
-        _.lastCountedAt,
-        None,
-        None,
-        (row, value) => row.copy(lastCountedAt = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, VInventoryStatusViewRow]] = java.util.List.of(this.productId.underlying, this.sku.underlying, this.productName.underlying, this.warehouseId.underlying, this.warehouseCode.underlying, this.warehouseName.underlying, this.quantityOnHand.underlying, this.quantityReserved.underlying, this.quantityOnOrder.underlying, this.available.underlying, this.reorderPoint.underlying, this.stockStatus.underlying, this.binLocation.underlying, this.lastCountedAt.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[VInventoryStatusViewFields, VInventoryStatusViewRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: VInventoryStatusViewFields = new VInventoryStatusViewFields(java.util.Collections.emptyList())
 }

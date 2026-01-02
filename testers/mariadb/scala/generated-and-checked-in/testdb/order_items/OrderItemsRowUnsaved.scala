@@ -6,6 +6,7 @@
 package testdb.order_items
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Uint2
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 import testdb.orders.OrdersId
@@ -27,7 +28,7 @@ case class OrderItemsRowUnsaved(
   /**  */
   @JsonProperty("product_name") productName: String,
   /**  */
-  quantity: Int,
+  quantity: Uint2,
   /**  */
   @JsonProperty("unit_price") unitPrice: BigDecimal,
   /**  */

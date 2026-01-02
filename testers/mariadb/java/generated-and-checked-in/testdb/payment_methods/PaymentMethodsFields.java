@@ -7,156 +7,168 @@ package testdb.payment_methods;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.data.Json;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr7;
 import java.util.List;
 import java.util.Optional;
 
-public interface PaymentMethodsFields extends FieldsExpr<PaymentMethodsRow> {
-  record Impl(List<Path> _path)
-      implements PaymentMethodsFields, RelationStructure<PaymentMethodsFields, PaymentMethodsRow> {
-    @Override
-    public IdField<PaymentMethodsId, PaymentMethodsRow> methodId() {
-      return new IdField<PaymentMethodsId, PaymentMethodsRow>(
-          _path,
-          "method_id",
-          PaymentMethodsRow::methodId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withMethodId(value),
-          PaymentMethodsId.pgType);
-    }
-    ;
+public class PaymentMethodsFields
+    implements TupleExpr7<PaymentMethodsId, String, String, String, Json, Boolean, Byte>,
+        RelationStructure<PaymentMethodsFields, PaymentMethodsRow>,
+        FieldsBase<PaymentMethodsRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, PaymentMethodsRow> code() {
-      return new Field<String, PaymentMethodsRow>(
-          _path,
-          "code",
-          PaymentMethodsRow::code,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCode(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, PaymentMethodsRow> name() {
-      return new Field<String, PaymentMethodsRow>(
-          _path,
-          "name",
-          PaymentMethodsRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, PaymentMethodsRow> methodType() {
-      return new Field<String, PaymentMethodsRow>(
-          _path,
-          "method_type",
-          PaymentMethodsRow::methodType,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withMethodType(value),
-          MariaTypes.text);
-    }
-    ;
-
-    @Override
-    public OptField<String, PaymentMethodsRow> processorConfig() {
-      return new OptField<String, PaymentMethodsRow>(
-          _path,
-          "processor_config",
-          PaymentMethodsRow::processorConfig,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withProcessorConfig(value),
-          MariaTypes.longtext);
-    }
-    ;
-
-    @Override
-    public Field<Boolean, PaymentMethodsRow> isActive() {
-      return new Field<Boolean, PaymentMethodsRow>(
-          _path,
-          "is_active",
-          PaymentMethodsRow::isActive,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withIsActive(value),
-          MariaTypes.bool);
-    }
-    ;
-
-    @Override
-    public Field<Byte, PaymentMethodsRow> sortOrder() {
-      return new Field<Byte, PaymentMethodsRow>(
-          _path,
-          "sort_order",
-          PaymentMethodsRow::sortOrder,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withSortOrder(value),
-          MariaTypes.tinyint);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, PaymentMethodsRow>> columns() {
-      return java.util.List.of(
-          this.methodId(),
-          this.code(),
-          this.name(),
-          this.methodType(),
-          this.processorConfig(),
-          this.isActive(),
-          this.sortOrder());
-    }
-    ;
-
-    @Override
-    public RelationStructure<PaymentMethodsFields, PaymentMethodsRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public PaymentMethodsFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static PaymentMethodsFields structure =
+      new PaymentMethodsFields(java.util.Collections.emptyList());
+
+  public IdField<PaymentMethodsId, PaymentMethodsRow> methodId() {
+    return new IdField<PaymentMethodsId, PaymentMethodsRow>(
+        _path,
+        "method_id",
+        PaymentMethodsRow::methodId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withMethodId(value),
+        PaymentMethodsId.dbType);
   }
-  ;
 
-  IdField<PaymentMethodsId, PaymentMethodsRow> methodId();
+  public Field<String, PaymentMethodsRow> code() {
+    return new Field<String, PaymentMethodsRow>(
+        _path,
+        "code",
+        PaymentMethodsRow::code,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCode(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, PaymentMethodsRow> code();
+  public Field<String, PaymentMethodsRow> name() {
+    return new Field<String, PaymentMethodsRow>(
+        _path,
+        "name",
+        PaymentMethodsRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, PaymentMethodsRow> name();
+  public Field<String, PaymentMethodsRow> methodType() {
+    return new Field<String, PaymentMethodsRow>(
+        _path,
+        "method_type",
+        PaymentMethodsRow::methodType,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withMethodType(value),
+        MariaTypes.text);
+  }
 
-  Field<String, PaymentMethodsRow> methodType();
+  public OptField<Json, PaymentMethodsRow> processorConfig() {
+    return new OptField<Json, PaymentMethodsRow>(
+        _path,
+        "processor_config",
+        PaymentMethodsRow::processorConfig,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withProcessorConfig(value),
+        MariaTypes.json);
+  }
 
-  OptField<String, PaymentMethodsRow> processorConfig();
+  public Field<Boolean, PaymentMethodsRow> isActive() {
+    return new Field<Boolean, PaymentMethodsRow>(
+        _path,
+        "is_active",
+        PaymentMethodsRow::isActive,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withIsActive(value),
+        MariaTypes.bool);
+  }
 
-  Field<Boolean, PaymentMethodsRow> isActive();
-
-  Field<Byte, PaymentMethodsRow> sortOrder();
+  public Field<Byte, PaymentMethodsRow> sortOrder() {
+    return new Field<Byte, PaymentMethodsRow>(
+        _path,
+        "sort_order",
+        PaymentMethodsRow::sortOrder,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withSortOrder(value),
+        MariaTypes.tinyint);
+  }
 
   @Override
-  List<FieldLike<?, PaymentMethodsRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<PaymentMethodsRow> rowParser() {
+  public List<FieldLike<?, PaymentMethodsRow>> columns() {
+    return java.util.List.of(
+        this.methodId(),
+        this.code(),
+        this.name(),
+        this.methodType(),
+        this.processorConfig(),
+        this.isActive(),
+        this.sortOrder());
+  }
+
+  @Override
+  public RowParser<PaymentMethodsRow> rowParser() {
     return PaymentMethodsRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<PaymentMethodsFields, PaymentMethodsRow> withPaths(List<Path> _path) {
+    return new PaymentMethodsFields(_path);
+  }
+
+  @Override
+  public SqlExpr<PaymentMethodsId> _1() {
+    return methodId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return code();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return methodType();
+  }
+
+  @Override
+  public SqlExpr<Json> _5() {
+    return processorConfig();
+  }
+
+  @Override
+  public SqlExpr<Boolean> _6() {
+    return isActive();
+  }
+
+  @Override
+  public SqlExpr<Byte> _7() {
+    return sortOrder();
+  }
 }

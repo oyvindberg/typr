@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple3
 import java.time.LocalDateTime
 
 /** Table: production.unitmeasure
@@ -24,14 +25,20 @@ case class UnitmeasureRow(
   name: Name,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple3[UnitmeasureId, Name, LocalDateTime] {
   def id: UnitmeasureId = unitmeasurecode
 
   def toUnsavedRow(modifieddate: Defaulted[LocalDateTime] = Defaulted.Provided(this.modifieddate)): UnitmeasureRowUnsaved = new UnitmeasureRowUnsaved(unitmeasurecode, name, modifieddate)
+
+  override def `_1`: UnitmeasureId = unitmeasurecode
+
+  override def `_2`: Name = name
+
+  override def `_3`: LocalDateTime = modifieddate
 }
 
 object UnitmeasureRow {
-  val `_rowParser`: RowParser[UnitmeasureRow] = RowParsers.of(UnitmeasureId.pgType, Name.pgType, PgTypes.timestamp, UnitmeasureRow.apply, row => Array[Any](row.unitmeasurecode, row.name, row.modifieddate))
+  val `_rowParser`: RowParser[UnitmeasureRow] = RowParsers.of(UnitmeasureId.dbType, Name.dbType, PgTypes.timestamp, UnitmeasureRow.apply, row => Array[Any](row.unitmeasurecode, row.name, row.modifieddate))
 
   given pgText: PgText[UnitmeasureRow] = PgText.from(`_rowParser`)
 }

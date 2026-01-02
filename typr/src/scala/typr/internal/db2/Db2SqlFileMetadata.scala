@@ -315,12 +315,14 @@ object Db2SqlFileMetadata {
         p <- sqlglotParam
         sourceTable <- p.sourceTable
         sourceColumn <- p.sourceColumn
+        // Case-insensitive lookup - DB2 stores in uppercase, SQL files use lowercase
         tableSchema <- schema
           .find { case (tableName, _) =>
-            tableName.endsWith(s".$sourceTable") || tableName == sourceTable
+            tableName.toLowerCase.endsWith(s".${sourceTable.toLowerCase}") || tableName.equalsIgnoreCase(sourceTable)
           }
           .map(_._2)
-        columnSchema <- tableSchema.get(sourceColumn)
+        // Case-insensitive column lookup
+        columnSchema <- tableSchema.find { case (colName, _) => colName.equalsIgnoreCase(sourceColumn) }.map(_._2)
       } yield columnSchema.`type`
 
       val fallbackFromUserType: Option[String] = userOverriddenType.flatMap {

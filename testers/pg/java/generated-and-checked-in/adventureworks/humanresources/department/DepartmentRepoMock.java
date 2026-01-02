@@ -48,7 +48,7 @@ public record DepartmentRepoMock(
   @Override
   public DeleteBuilder<DepartmentFields, DepartmentRow> delete() {
     return new DeleteBuilderMock<>(
-        DepartmentFields.structure(),
+        DepartmentFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.departmentid(),
@@ -126,7 +126,7 @@ public record DepartmentRepoMock(
   @Override
   public SelectBuilder<DepartmentFields, DepartmentRow> select() {
     return new SelectBuilderMock<>(
-        DepartmentFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        DepartmentFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -168,7 +168,7 @@ public record DepartmentRepoMock(
   @Override
   public UpdateBuilder<DepartmentFields, DepartmentRow> update() {
     return new UpdateBuilderMock<>(
-        DepartmentFields.structure(),
+        DepartmentFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

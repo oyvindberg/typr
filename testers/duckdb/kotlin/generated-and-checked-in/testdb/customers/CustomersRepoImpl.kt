@@ -31,7 +31,7 @@ class CustomersRepoImpl() : CustomersRepo {
   override fun deleteByIds(
     customerIds: Array<CustomersId>,
     c: Connection
-  ): Int = Fragment.interpolate(Fragment.lit("delete\nfrom \"customers\"\nwhere \"customer_id\" = ANY("), Fragment.encode(CustomersId.pgTypeArray, customerIds), Fragment.lit(")"))
+  ): Int = Fragment.interpolate(Fragment.lit("delete\nfrom \"customers\"\nwhere \"customer_id\" = ANY("), Fragment.encode(CustomersId.dbTypeArray, customerIds), Fragment.lit(")"))
     .update()
     .runUnchecked(c)
 
@@ -79,7 +79,7 @@ class CustomersRepoImpl() : CustomersRepo {
   override fun selectByIds(
     customerIds: Array<CustomersId>,
     c: Connection
-  ): List<CustomersRow> = Fragment.interpolate(Fragment.lit("select \"customer_id\", \"name\", \"email\", \"created_at\", \"priority\"\nfrom \"customers\"\nwhere \"customer_id\" = ANY("), Fragment.encode(CustomersId.pgTypeArray, customerIds), Fragment.lit(")")).query(CustomersRow._rowParser.all()).runUnchecked(c)
+  ): List<CustomersRow> = Fragment.interpolate(Fragment.lit("select \"customer_id\", \"name\", \"email\", \"created_at\", \"priority\"\nfrom \"customers\"\nwhere \"customer_id\" = ANY("), Fragment.encode(CustomersId.dbTypeArray, customerIds), Fragment.lit(")")).query(CustomersRow._rowParser.all()).runUnchecked(c)
 
   override fun selectByIdsTracked(
     customerIds: Array<CustomersId>,

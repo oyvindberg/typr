@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
 import dev.typr.foundations.SqlServerTypes;
+import dev.typr.foundations.Tuple.Tuple6;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -28,7 +29,8 @@ public record OrdersWithCustomerDetailsSqlRow(
     /** Points to {@link testdb.customers.CustomersRow#name()} */
     @JsonProperty("customer_name") String customerName,
     /** Points to {@link testdb.customers.CustomersRow#email()} */
-    @JsonProperty("customer_email") String customerEmail) {
+    @JsonProperty("customer_email") String customerEmail)
+    implements Tuple6<OrdersId, Optional<LocalDateTime>, BigDecimal, CustomersId, String, String> {
   /** Points to {@link testdb.orders.OrdersRow#orderId()} */
   public OrdersWithCustomerDetailsSqlRow withOrderId(OrdersId orderId) {
     return new OrdersWithCustomerDetailsSqlRow(
@@ -89,5 +91,41 @@ public record OrdersWithCustomerDetailsSqlRow(
                 row.customerName(),
                 row.customerEmail()
               });
+  ;
+
+  @Override
+  public OrdersId _1() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _2() {
+    return orderDate;
+  }
+  ;
+
+  @Override
+  public BigDecimal _3() {
+    return totalAmount;
+  }
+  ;
+
+  @Override
+  public CustomersId _4() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _5() {
+    return customerName;
+  }
+  ;
+
+  @Override
+  public String _6() {
+    return customerEmail;
+  }
   ;
 }

@@ -28,32 +28,29 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
   @Override
   public DeleteBuilder<SalesterritoryFields, SalesterritoryRow> delete() {
     return DeleteBuilder.of(
-        "\"sales\".\"salesterritory\"", SalesterritoryFields.structure(), Dialect.POSTGRESQL);
+        "\"sales\".\"salesterritory\"", SalesterritoryFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(SalesterritoryId territoryid, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"sales\".\"salesterritory\" where \"territoryid\" = "),
-                Fragment.encode(SalesterritoryId.pgType, territoryid),
+                Fragment.encode(SalesterritoryId.dbType, territoryid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(SalesterritoryId[] territoryids, Connection c) {
     return interpolate(
             Fragment.lit("delete\nfrom \"sales\".\"salesterritory\"\nwhere \"territoryid\" = ANY("),
-            Fragment.encode(SalesterritoryId.pgTypeArray, territoryids),
+            Fragment.encode(SalesterritoryId.dbTypeArray, territoryids),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public SalesterritoryRow insert(SalesterritoryRow unsaved, Connection c) {
@@ -63,11 +60,11 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
                     + " \"countryregioncode\", \"group\", \"salesytd\", \"saleslastyear\","
                     + " \"costytd\", \"costlastyear\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(SalesterritoryId.pgType, unsaved.territoryid()),
+            Fragment.encode(SalesterritoryId.dbType, unsaved.territoryid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
-            Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode()),
+            Fragment.encode(CountryregionId.dbType, unsaved.countryregioncode()),
             Fragment.lit(", "),
             Fragment.encode(PgTypes.text, unsaved.group()),
             Fragment.lit(", "),
@@ -90,7 +87,6 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
         .updateReturning(SalesterritoryRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public SalesterritoryRow insert(SalesterritoryRowUnsaved unsaved, Connection c) {
@@ -100,11 +96,11 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
     ;
     columns.add(Fragment.lit("\"name\""));
     values.add(
-        interpolate(Fragment.encode(Name.pgType, unsaved.name()), Fragment.lit("::varchar")));
+        interpolate(Fragment.encode(Name.dbType, unsaved.name()), Fragment.lit("::varchar")));
     columns.add(Fragment.lit("\"countryregioncode\""));
     values.add(
         interpolate(
-            Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode()),
+            Fragment.encode(CountryregionId.dbType, unsaved.countryregioncode()),
             Fragment.lit("")));
     columns.add(Fragment.lit("\"group\""));
     values.add(interpolate(Fragment.encode(PgTypes.text, unsaved.group()), Fragment.lit("")));
@@ -116,7 +112,7 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
               columns.add(Fragment.lit("\"territoryid\""));
               values.add(
                   interpolate(
-                      Fragment.encode(SalesterritoryId.pgType, value), Fragment.lit("::int4")));
+                      Fragment.encode(SalesterritoryId.dbType, value), Fragment.lit("::int4")));
             });
     ;
     unsaved
@@ -193,7 +189,6 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
     ;
     return q.updateReturning(SalesterritoryRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(
@@ -207,7 +202,6 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
         c,
         SalesterritoryRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -222,17 +216,15 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
         c,
         SalesterritoryRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<SalesterritoryFields, SalesterritoryRow> select() {
     return SelectBuilder.of(
         "\"sales\".\"salesterritory\"",
-        SalesterritoryFields.structure(),
+        SalesterritoryFields.structure,
         SalesterritoryRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<SalesterritoryRow> selectAll(Connection c) {
@@ -245,7 +237,6 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
         .query(SalesterritoryRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<SalesterritoryRow> selectById(SalesterritoryId territoryid, Connection c) {
@@ -256,12 +247,11 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
                     + " \"modifieddate\"\n"
                     + "from \"sales\".\"salesterritory\"\n"
                     + "where \"territoryid\" = "),
-            Fragment.encode(SalesterritoryId.pgType, territoryid),
+            Fragment.encode(SalesterritoryId.dbType, territoryid),
             Fragment.lit(""))
         .query(SalesterritoryRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<SalesterritoryRow> selectByIds(SalesterritoryId[] territoryids, Connection c) {
@@ -272,12 +262,11 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
                     + " \"modifieddate\"\n"
                     + "from \"sales\".\"salesterritory\"\n"
                     + "where \"territoryid\" = ANY("),
-            Fragment.encode(SalesterritoryId.pgTypeArray, territoryids),
+            Fragment.encode(SalesterritoryId.dbTypeArray, territoryids),
             Fragment.lit(")"))
         .query(SalesterritoryRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<SalesterritoryId, SalesterritoryRow> selectByIdsTracked(
@@ -287,17 +276,15 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
     selectByIds(territoryids, c).forEach(row -> ret.put(row.territoryid(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<SalesterritoryFields, SalesterritoryRow> update() {
     return UpdateBuilder.of(
         "\"sales\".\"salesterritory\"",
-        SalesterritoryFields.structure(),
+        SalesterritoryFields.structure,
         SalesterritoryRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(SalesterritoryRow row, Connection c) {
@@ -305,9 +292,9 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
     ;
     return interpolate(
                 Fragment.lit("update \"sales\".\"salesterritory\"\nset \"name\" = "),
-                Fragment.encode(Name.pgType, row.name()),
+                Fragment.encode(Name.dbType, row.name()),
                 Fragment.lit("::varchar,\n\"countryregioncode\" = "),
-                Fragment.encode(CountryregionId.pgType, row.countryregioncode()),
+                Fragment.encode(CountryregionId.dbType, row.countryregioncode()),
                 Fragment.lit(",\n\"group\" = "),
                 Fragment.encode(PgTypes.text, row.group()),
                 Fragment.lit(",\n\"salesytd\" = "),
@@ -323,13 +310,12 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
                 Fragment.lit("::uuid,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"territoryid\" = "),
-                Fragment.encode(SalesterritoryId.pgType, territoryid),
+                Fragment.encode(SalesterritoryId.dbType, territoryid),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public SalesterritoryRow upsert(SalesterritoryRow unsaved, Connection c) {
@@ -339,11 +325,11 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
                     + " \"countryregioncode\", \"group\", \"salesytd\", \"saleslastyear\","
                     + " \"costytd\", \"costlastyear\", \"rowguid\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(SalesterritoryId.pgType, unsaved.territoryid()),
+            Fragment.encode(SalesterritoryId.dbType, unsaved.territoryid()),
             Fragment.lit("::int4, "),
-            Fragment.encode(Name.pgType, unsaved.name()),
+            Fragment.encode(Name.dbType, unsaved.name()),
             Fragment.lit("::varchar, "),
-            Fragment.encode(CountryregionId.pgType, unsaved.countryregioncode()),
+            Fragment.encode(CountryregionId.dbType, unsaved.countryregioncode()),
             Fragment.lit(", "),
             Fragment.encode(PgTypes.text, unsaved.group()),
             Fragment.lit(", "),
@@ -377,7 +363,6 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
         .updateReturning(SalesterritoryRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<SalesterritoryRow> upsertBatch(Iterator<SalesterritoryRow> unsaved, Connection c) {
@@ -405,7 +390,6 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
         .updateManyReturning(SalesterritoryRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -447,5 +431,4 @@ public class SalesterritoryRepoImpl implements SalesterritoryRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

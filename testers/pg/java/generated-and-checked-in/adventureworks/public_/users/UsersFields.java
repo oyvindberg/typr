@@ -8,156 +8,167 @@ package adventureworks.public_.users;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.data.Unknown;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr7;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-public interface UsersFields extends FieldsExpr<UsersRow> {
-  record Impl(List<Path> _path) implements UsersFields, RelationStructure<UsersFields, UsersRow> {
-    @Override
-    public IdField<UsersId, UsersRow> userId() {
-      return new IdField<UsersId, UsersRow>(
-          _path,
-          "user_id",
-          UsersRow::userId,
-          Optional.empty(),
-          Optional.of("uuid"),
-          (row, value) -> row.withUserId(value),
-          UsersId.pgType);
-    }
-    ;
+public class UsersFields
+    implements TupleExpr7<UsersId, String, String, Unknown, String, Instant, Instant>,
+        RelationStructure<UsersFields, UsersRow>,
+        FieldsBase<UsersRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, UsersRow> name() {
-      return new Field<String, UsersRow>(
-          _path,
-          "name",
-          UsersRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public OptField<String, UsersRow> lastName() {
-      return new OptField<String, UsersRow>(
-          _path,
-          "last_name",
-          UsersRow::lastName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withLastName(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<Unknown, UsersRow> email() {
-      return new Field<Unknown, UsersRow>(
-          _path,
-          "email",
-          UsersRow::email,
-          Optional.of("text"),
-          Optional.of("citext"),
-          (row, value) -> row.withEmail(value),
-          PgTypes.unknown);
-    }
-    ;
-
-    @Override
-    public Field<String, UsersRow> password() {
-      return new Field<String, UsersRow>(
-          _path,
-          "password",
-          UsersRow::password,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPassword(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<Instant, UsersRow> createdAt() {
-      return new Field<Instant, UsersRow>(
-          _path,
-          "created_at",
-          UsersRow::createdAt,
-          Optional.empty(),
-          Optional.of("timestamptz"),
-          (row, value) -> row.withCreatedAt(value),
-          PgTypes.timestamptz);
-    }
-    ;
-
-    @Override
-    public OptField<Instant, UsersRow> verifiedOn() {
-      return new OptField<Instant, UsersRow>(
-          _path,
-          "verified_on",
-          UsersRow::verifiedOn,
-          Optional.empty(),
-          Optional.of("timestamptz"),
-          (row, value) -> row.withVerifiedOn(value),
-          PgTypes.timestamptz);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, UsersRow>> columns() {
-      return java.util.List.of(
-          this.userId(),
-          this.name(),
-          this.lastName(),
-          this.email(),
-          this.password(),
-          this.createdAt(),
-          this.verifiedOn());
-    }
-    ;
-
-    @Override
-    public RelationStructure<UsersFields, UsersRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public UsersFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static UsersFields structure = new UsersFields(java.util.Collections.emptyList());
+
+  public IdField<UsersId, UsersRow> userId() {
+    return new IdField<UsersId, UsersRow>(
+        _path,
+        "user_id",
+        UsersRow::userId,
+        Optional.empty(),
+        Optional.of("uuid"),
+        (row, value) -> row.withUserId(value),
+        UsersId.dbType);
   }
-  ;
 
-  IdField<UsersId, UsersRow> userId();
+  public Field<String, UsersRow> name() {
+    return new Field<String, UsersRow>(
+        _path,
+        "name",
+        UsersRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        PgTypes.text);
+  }
 
-  Field<String, UsersRow> name();
+  public OptField<String, UsersRow> lastName() {
+    return new OptField<String, UsersRow>(
+        _path,
+        "last_name",
+        UsersRow::lastName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withLastName(value),
+        PgTypes.text);
+  }
 
-  OptField<String, UsersRow> lastName();
+  public Field<Unknown, UsersRow> email() {
+    return new Field<Unknown, UsersRow>(
+        _path,
+        "email",
+        UsersRow::email,
+        Optional.of("text"),
+        Optional.of("citext"),
+        (row, value) -> row.withEmail(value),
+        PgTypes.unknown);
+  }
 
-  Field<Unknown, UsersRow> email();
+  public Field<String, UsersRow> password() {
+    return new Field<String, UsersRow>(
+        _path,
+        "password",
+        UsersRow::password,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPassword(value),
+        PgTypes.text);
+  }
 
-  Field<String, UsersRow> password();
+  public Field<Instant, UsersRow> createdAt() {
+    return new Field<Instant, UsersRow>(
+        _path,
+        "created_at",
+        UsersRow::createdAt,
+        Optional.empty(),
+        Optional.of("timestamptz"),
+        (row, value) -> row.withCreatedAt(value),
+        PgTypes.timestamptz);
+  }
 
-  Field<Instant, UsersRow> createdAt();
-
-  OptField<Instant, UsersRow> verifiedOn();
+  public OptField<Instant, UsersRow> verifiedOn() {
+    return new OptField<Instant, UsersRow>(
+        _path,
+        "verified_on",
+        UsersRow::verifiedOn,
+        Optional.empty(),
+        Optional.of("timestamptz"),
+        (row, value) -> row.withVerifiedOn(value),
+        PgTypes.timestamptz);
+  }
 
   @Override
-  List<FieldLike<?, UsersRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<UsersRow> rowParser() {
+  public List<FieldLike<?, UsersRow>> columns() {
+    return java.util.List.of(
+        this.userId(),
+        this.name(),
+        this.lastName(),
+        this.email(),
+        this.password(),
+        this.createdAt(),
+        this.verifiedOn());
+  }
+
+  @Override
+  public RowParser<UsersRow> rowParser() {
     return UsersRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<UsersFields, UsersRow> withPaths(List<Path> _path) {
+    return new UsersFields(_path);
+  }
+
+  @Override
+  public SqlExpr<UsersId> _1() {
+    return userId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return lastName();
+  }
+
+  @Override
+  public SqlExpr<Unknown> _4() {
+    return email();
+  }
+
+  @Override
+  public SqlExpr<String> _5() {
+    return password();
+  }
+
+  @Override
+  public SqlExpr<Instant> _6() {
+    return createdAt();
+  }
+
+  @Override
+  public SqlExpr<Instant> _7() {
+    return verifiedOn();
+  }
 }

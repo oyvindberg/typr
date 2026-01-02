@@ -14,263 +14,291 @@ import adventureworks.userdefined.FirstName;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.data.Xml;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr13;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface PersonFields extends FieldsExpr<PersonRow> {
-  record Impl(List<Path> _path)
-      implements PersonFields, RelationStructure<PersonFields, PersonRow> {
-    @Override
-    public IdField<BusinessentityId, PersonRow> businessentityid() {
-      return new IdField<BusinessentityId, PersonRow>(
-          _path,
-          "businessentityid",
-          PersonRow::businessentityid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withBusinessentityid(value),
-          BusinessentityId.pgType);
-    }
-    ;
+public class PersonFields
+    implements TupleExpr13<
+            BusinessentityId,
+            String,
+            NameStyle, /* max 8 chars */
+            String, /* user-picked */
+            FirstName,
+            Name,
+            Name, /* max 10 chars */
+            String,
+            Integer,
+            Xml,
+            Xml,
+            UUID,
+            LocalDateTime>,
+        RelationStructure<PersonFields, PersonRow>,
+        FieldsBase<PersonRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, PersonRow> persontype() {
-      return new Field<String, PersonRow>(
-          _path,
-          "persontype",
-          PersonRow::persontype,
-          Optional.empty(),
-          Optional.of("bpchar"),
-          (row, value) -> row.withPersontype(value),
-          PgTypes.bpchar);
-    }
-    ;
-
-    @Override
-    public Field<NameStyle, PersonRow> namestyle() {
-      return new Field<NameStyle, PersonRow>(
-          _path,
-          "namestyle",
-          PersonRow::namestyle,
-          Optional.empty(),
-          Optional.of("bool"),
-          (row, value) -> row.withNamestyle(value),
-          NameStyle.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<String, PersonRow> title() {
-      return new OptField<String, PersonRow>(
-          _path,
-          "title",
-          PersonRow::title,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTitle(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field</* user-picked */ FirstName, PersonRow> firstname() {
-      return new Field</* user-picked */ FirstName, PersonRow>(
-          _path,
-          "firstname",
-          PersonRow::firstname,
-          Optional.empty(),
-          Optional.of("varchar"),
-          (row, value) -> row.withFirstname(value),
-          FirstName.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<Name, PersonRow> middlename() {
-      return new OptField<Name, PersonRow>(
-          _path,
-          "middlename",
-          PersonRow::middlename,
-          Optional.empty(),
-          Optional.of("varchar"),
-          (row, value) -> row.withMiddlename(value),
-          Name.pgType);
-    }
-    ;
-
-    @Override
-    public Field<Name, PersonRow> lastname() {
-      return new Field<Name, PersonRow>(
-          _path,
-          "lastname",
-          PersonRow::lastname,
-          Optional.empty(),
-          Optional.of("varchar"),
-          (row, value) -> row.withLastname(value),
-          Name.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<String, PersonRow> suffix() {
-      return new OptField<String, PersonRow>(
-          _path,
-          "suffix",
-          PersonRow::suffix,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withSuffix(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<Integer, PersonRow> emailpromotion() {
-      return new Field<Integer, PersonRow>(
-          _path,
-          "emailpromotion",
-          PersonRow::emailpromotion,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withEmailpromotion(value),
-          PgTypes.int4);
-    }
-    ;
-
-    @Override
-    public OptField<Xml, PersonRow> additionalcontactinfo() {
-      return new OptField<Xml, PersonRow>(
-          _path,
-          "additionalcontactinfo",
-          PersonRow::additionalcontactinfo,
-          Optional.empty(),
-          Optional.of("xml"),
-          (row, value) -> row.withAdditionalcontactinfo(value),
-          PgTypes.xml);
-    }
-    ;
-
-    @Override
-    public OptField<Xml, PersonRow> demographics() {
-      return new OptField<Xml, PersonRow>(
-          _path,
-          "demographics",
-          PersonRow::demographics,
-          Optional.empty(),
-          Optional.of("xml"),
-          (row, value) -> row.withDemographics(value),
-          PgTypes.xml);
-    }
-    ;
-
-    @Override
-    public Field<UUID, PersonRow> rowguid() {
-      return new Field<UUID, PersonRow>(
-          _path,
-          "rowguid",
-          PersonRow::rowguid,
-          Optional.empty(),
-          Optional.of("uuid"),
-          (row, value) -> row.withRowguid(value),
-          PgTypes.uuid);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, PersonRow> modifieddate() {
-      return new Field<LocalDateTime, PersonRow>(
-          _path,
-          "modifieddate",
-          PersonRow::modifieddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withModifieddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, PersonRow>> columns() {
-      return java.util.List.of(
-          this.businessentityid(),
-          this.persontype(),
-          this.namestyle(),
-          this.title(),
-          this.firstname(),
-          this.middlename(),
-          this.lastname(),
-          this.suffix(),
-          this.emailpromotion(),
-          this.additionalcontactinfo(),
-          this.demographics(),
-          this.rowguid(),
-          this.modifieddate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<PersonFields, PersonRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public PersonFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static PersonFields structure = new PersonFields(java.util.Collections.emptyList());
+
+  public IdField<BusinessentityId, PersonRow> businessentityid() {
+    return new IdField<BusinessentityId, PersonRow>(
+        _path,
+        "businessentityid",
+        PersonRow::businessentityid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withBusinessentityid(value),
+        BusinessentityId.dbType);
   }
-  ;
 
-  IdField<BusinessentityId, PersonRow> businessentityid();
+  public Field<String, PersonRow> persontype() {
+    return new Field<String, PersonRow>(
+        _path,
+        "persontype",
+        PersonRow::persontype,
+        Optional.empty(),
+        Optional.of("bpchar"),
+        (row, value) -> row.withPersontype(value),
+        PgTypes.bpchar);
+  }
 
-  Field<String, PersonRow> persontype();
+  public Field<NameStyle, PersonRow> namestyle() {
+    return new Field<NameStyle, PersonRow>(
+        _path,
+        "namestyle",
+        PersonRow::namestyle,
+        Optional.empty(),
+        Optional.of("bool"),
+        (row, value) -> row.withNamestyle(value),
+        NameStyle.dbType);
+  }
 
-  Field<NameStyle, PersonRow> namestyle();
+  public OptField<String, PersonRow> title() {
+    return new OptField<String, PersonRow>(
+        _path,
+        "title",
+        PersonRow::title,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTitle(value),
+        PgTypes.text);
+  }
 
-  OptField</* max 8 chars */ String, PersonRow> title();
+  public Field</* user-picked */ FirstName, PersonRow> firstname() {
+    return new Field</* user-picked */ FirstName, PersonRow>(
+        _path,
+        "firstname",
+        PersonRow::firstname,
+        Optional.empty(),
+        Optional.of("varchar"),
+        (row, value) -> row.withFirstname(value),
+        FirstName.dbType);
+  }
 
-  Field</* user-picked */ FirstName, PersonRow> firstname();
+  public OptField<Name, PersonRow> middlename() {
+    return new OptField<Name, PersonRow>(
+        _path,
+        "middlename",
+        PersonRow::middlename,
+        Optional.empty(),
+        Optional.of("varchar"),
+        (row, value) -> row.withMiddlename(value),
+        Name.dbType);
+  }
 
-  OptField<Name, PersonRow> middlename();
+  public Field<Name, PersonRow> lastname() {
+    return new Field<Name, PersonRow>(
+        _path,
+        "lastname",
+        PersonRow::lastname,
+        Optional.empty(),
+        Optional.of("varchar"),
+        (row, value) -> row.withLastname(value),
+        Name.dbType);
+  }
 
-  Field<Name, PersonRow> lastname();
+  public OptField<String, PersonRow> suffix() {
+    return new OptField<String, PersonRow>(
+        _path,
+        "suffix",
+        PersonRow::suffix,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withSuffix(value),
+        PgTypes.text);
+  }
 
-  OptField</* max 10 chars */ String, PersonRow> suffix();
+  public Field<Integer, PersonRow> emailpromotion() {
+    return new Field<Integer, PersonRow>(
+        _path,
+        "emailpromotion",
+        PersonRow::emailpromotion,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withEmailpromotion(value),
+        PgTypes.int4);
+  }
 
-  Field<Integer, PersonRow> emailpromotion();
+  public OptField<Xml, PersonRow> additionalcontactinfo() {
+    return new OptField<Xml, PersonRow>(
+        _path,
+        "additionalcontactinfo",
+        PersonRow::additionalcontactinfo,
+        Optional.empty(),
+        Optional.of("xml"),
+        (row, value) -> row.withAdditionalcontactinfo(value),
+        PgTypes.xml);
+  }
 
-  OptField<Xml, PersonRow> additionalcontactinfo();
+  public OptField<Xml, PersonRow> demographics() {
+    return new OptField<Xml, PersonRow>(
+        _path,
+        "demographics",
+        PersonRow::demographics,
+        Optional.empty(),
+        Optional.of("xml"),
+        (row, value) -> row.withDemographics(value),
+        PgTypes.xml);
+  }
 
-  OptField<Xml, PersonRow> demographics();
+  public Field<UUID, PersonRow> rowguid() {
+    return new Field<UUID, PersonRow>(
+        _path,
+        "rowguid",
+        PersonRow::rowguid,
+        Optional.empty(),
+        Optional.of("uuid"),
+        (row, value) -> row.withRowguid(value),
+        PgTypes.uuid);
+  }
 
-  Field<UUID, PersonRow> rowguid();
+  public Field<LocalDateTime, PersonRow> modifieddate() {
+    return new Field<LocalDateTime, PersonRow>(
+        _path,
+        "modifieddate",
+        PersonRow::modifieddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withModifieddate(value),
+        PgTypes.timestamp);
+  }
 
-  Field<LocalDateTime, PersonRow> modifieddate();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<BusinessentityFields, BusinessentityRow> fkBusinessentity() {
+  public ForeignKey<BusinessentityFields, BusinessentityRow> fkBusinessentity() {
     return ForeignKey.<BusinessentityFields, BusinessentityRow>of(
             "person.FK_Person_BusinessEntity_BusinessEntityID")
         .<BusinessentityId>withColumnPair(
             businessentityid(), BusinessentityFields::businessentityid);
   }
-  ;
 
   @Override
-  List<FieldLike<?, PersonRow>> columns();
+  public List<FieldLike<?, PersonRow>> columns() {
+    return java.util.List.of(
+        this.businessentityid(),
+        this.persontype(),
+        this.namestyle(),
+        this.title(),
+        this.firstname(),
+        this.middlename(),
+        this.lastname(),
+        this.suffix(),
+        this.emailpromotion(),
+        this.additionalcontactinfo(),
+        this.demographics(),
+        this.rowguid(),
+        this.modifieddate());
+  }
 
   @Override
-  default RowParser<PersonRow> rowParser() {
+  public RowParser<PersonRow> rowParser() {
     return PersonRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<PersonFields, PersonRow> withPaths(List<Path> _path) {
+    return new PersonFields(_path);
+  }
+
+  @Override
+  public SqlExpr<BusinessentityId> _1() {
+    return businessentityid();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return persontype();
+  }
+
+  @Override
+  public SqlExpr<NameStyle> _3() {
+    return namestyle();
+  }
+
+  @Override
+  public SqlExpr</* max 8 chars */ String> _4() {
+    return title();
+  }
+
+  @Override
+  public SqlExpr</* user-picked */ FirstName> _5() {
+    return firstname();
+  }
+
+  @Override
+  public SqlExpr<Name> _6() {
+    return middlename();
+  }
+
+  @Override
+  public SqlExpr<Name> _7() {
+    return lastname();
+  }
+
+  @Override
+  public SqlExpr</* max 10 chars */ String> _8() {
+    return suffix();
+  }
+
+  @Override
+  public SqlExpr<Integer> _9() {
+    return emailpromotion();
+  }
+
+  @Override
+  public SqlExpr<Xml> _10() {
+    return additionalcontactinfo();
+  }
+
+  @Override
+  public SqlExpr<Xml> _11() {
+    return demographics();
+  }
+
+  @Override
+  public SqlExpr<UUID> _12() {
+    return rowguid();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _13() {
+    return modifieddate();
+  }
 }

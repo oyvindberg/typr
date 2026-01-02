@@ -24,6 +24,9 @@ object db {
     case object Float8 extends PgType
     case object Hstore extends PgType
     case object Inet extends PgType
+    case object Cidr extends PgType
+    case object MacAddr extends PgType
+    case object MacAddr8 extends PgType
     case object Int2 extends PgType
     case object Int4 extends PgType
     case object Int8 extends PgType

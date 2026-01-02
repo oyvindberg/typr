@@ -7,6 +7,7 @@ package testdb.v_customer_summary
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple10
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -65,8 +66,28 @@ data class VCustomerSummaryViewRow(
     * Default: current_timestamp(6)
     */
   @JsonProperty("last_order_date") val lastOrderDate: LocalDateTime?
-) {
+) : Tuple10<CustomersId, String, String?, String, CustomerStatusId, LocalDateTime, LocalDateTime?, Long, BigDecimal, LocalDateTime?> {
+  override fun _1(): CustomersId = customerId
+
+  override fun _10(): LocalDateTime? = lastOrderDate
+
+  override fun _2(): String = email
+
+  override fun _3(): String? = fullName
+
+  override fun _4(): String = tier
+
+  override fun _5(): CustomerStatusId = status
+
+  override fun _6(): LocalDateTime = createdAt
+
+  override fun _7(): LocalDateTime? = lastLoginAt
+
+  override fun _8(): Long = totalOrders
+
+  override fun _9(): BigDecimal = lifetimeValue
+
   companion object {
-    val _rowParser: RowParser<VCustomerSummaryViewRow> = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.text, CustomerStatusId.pgType, MariaTypes.datetime, MariaTypes.datetime.nullable(), KotlinDbTypes.MariaTypes.bigint, KotlinDbTypes.MariaTypes.numeric, MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> VCustomerSummaryViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.fullName, row.tier, row.status, row.createdAt, row.lastLoginAt, row.totalOrders, row.lifetimeValue, row.lastOrderDate) })
+    val _rowParser: RowParser<VCustomerSummaryViewRow> = RowParsers.of(CustomersId.dbType, MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.text, CustomerStatusId.dbType, MariaTypes.datetime, MariaTypes.datetime.nullable(), KotlinDbTypes.MariaTypes.bigint, KotlinDbTypes.MariaTypes.numeric, MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> VCustomerSummaryViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.fullName, row.tier, row.status, row.createdAt, row.lastLoginAt, row.totalOrders, row.lifetimeValue, row.lastOrderDate) })
   }
 }

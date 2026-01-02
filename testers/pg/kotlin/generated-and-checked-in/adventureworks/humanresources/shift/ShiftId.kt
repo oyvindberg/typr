@@ -22,10 +22,10 @@ data class ShiftId(@JsonValue val value: Int) {
     val bijection: Bijection<ShiftId, Int> =
       Bijection.of(ShiftId::value, ::ShiftId)
 
-    val pgType: PgType<ShiftId> =
+    val dbType: PgType<ShiftId> =
       KotlinDbTypes.PgTypes.int4.bimap(::ShiftId, ShiftId::value)
 
-    val pgTypeArray: PgType<Array<ShiftId>> =
+    val dbTypeArray: PgType<Array<ShiftId>> =
       PgTypes.int4Array.bimap({ xs -> arrayMap.map(xs, ::ShiftId, ShiftId::class.java) }, { xs -> arrayMap.map(xs, ShiftId::value, Int::class.javaObjectType) })
   }
 }

@@ -7,6 +7,7 @@ package testdb.db2test_identity_always
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 
@@ -17,10 +18,14 @@ data class Db2testIdentityAlwaysRow(
   /** Identity ALWAYS */
   @JsonProperty("ID") val id: Db2testIdentityAlwaysId,
   @JsonProperty("NAME") val name: String
-) {
+) : Tuple2<Db2testIdentityAlwaysId, String> {
+  override fun _1(): Db2testIdentityAlwaysId = id
+
+  override fun _2(): String = name
+
   fun toUnsavedRow(): Db2testIdentityAlwaysRowUnsaved = Db2testIdentityAlwaysRowUnsaved(name)
 
   companion object {
-    val _rowParser: RowParser<Db2testIdentityAlwaysRow> = RowParsers.of(Db2testIdentityAlwaysId.pgType, Db2Types.varchar, { t0, t1 -> Db2testIdentityAlwaysRow(t0, t1) }, { row -> arrayOf<Any?>(row.id, row.name) })
+    val _rowParser: RowParser<Db2testIdentityAlwaysRow> = RowParsers.of(Db2testIdentityAlwaysId.dbType, Db2Types.varchar, { t0, t1 -> Db2testIdentityAlwaysRow(t0, t1) }, { row -> arrayOf<Any?>(row.id, row.name) })
   }
 }

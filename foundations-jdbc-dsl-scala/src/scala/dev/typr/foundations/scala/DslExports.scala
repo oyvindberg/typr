@@ -1,6 +1,6 @@
 package dev.typr.foundations.scala
 
-import _root_.scala.jdk.CollectionConverters._
+import _root_.scala.jdk.CollectionConverters.*
 
 object DslExports {
 
@@ -27,7 +27,7 @@ object DslExports {
       allRowsSupplier: () => List[Row],
       params: SelectParams[Fields, Row]
   ): SelectBuilder[Fields, Row] = {
-    new SelectBuilder(
+    SelectBuilder(
       dev.typr.foundations.dsl.SelectBuilderMock(
         structure,
         () => allRowsSupplier().asJava,

@@ -39,15 +39,15 @@ case class ViewFindAllSqlRow(
 )
 
 object ViewFindAllSqlRow {
-  implicit lazy val reads: Reads[ViewFindAllSqlRow] = {
+  given reads: Reads[ViewFindAllSqlRow] = {
     Reads[ViewFindAllSqlRow](json => JsResult.fromTry(
         Try(
           ViewFindAllSqlRow(
-            tableOid = json.\("table_oid").as(PgNamespaceId.reads),
-            tableSchema = json.\("table_schema").toOption.map(_.as(Reads.StringReads)),
-            tableName = json.\("table_name").toOption.map(_.as(Reads.StringReads)),
-            relkind = json.\("relkind").as(Reads.StringReads),
-            viewDefinition = json.\("view_definition").toOption.map(_.as(Reads.StringReads))
+            tableOid = json.\("table_oid").as(using PgNamespaceId.reads),
+            tableSchema = json.\("table_schema").toOption.map(_.as(using Reads.StringReads)),
+            tableName = json.\("table_name").toOption.map(_.as(using Reads.StringReads)),
+            relkind = json.\("relkind").as(using Reads.StringReads),
+            viewDefinition = json.\("view_definition").toOption.map(_.as(using Reads.StringReads))
           )
         )
       ),
@@ -58,24 +58,24 @@ object ViewFindAllSqlRow {
     RowParser[ViewFindAllSqlRow] { row =>
       Success(
         ViewFindAllSqlRow(
-          tableOid = row(idx + 0)(PgNamespaceId.column),
-          tableSchema = row(idx + 1)(Column.columnToOption(Column.columnToString)),
-          tableName = row(idx + 2)(Column.columnToOption(Column.columnToString)),
-          relkind = row(idx + 3)(Column.columnToString),
-          viewDefinition = row(idx + 4)(Column.columnToOption(Column.columnToString))
+          tableOid = row(idx + 0)(using PgNamespaceId.column),
+          tableSchema = row(idx + 1)(using Column.columnToOption(using Column.columnToString)),
+          tableName = row(idx + 2)(using Column.columnToOption(using Column.columnToString)),
+          relkind = row(idx + 3)(using Column.columnToString),
+          viewDefinition = row(idx + 4)(using Column.columnToOption(using Column.columnToString))
         )
       )
     }
   }
 
-  implicit lazy val writes: OWrites[ViewFindAllSqlRow] = {
+  given writes: OWrites[ViewFindAllSqlRow] = {
     OWrites[ViewFindAllSqlRow](o =>
       new JsObject(ListMap[String, JsValue](
         "table_oid" -> PgNamespaceId.writes.writes(o.tableOid),
-        "table_schema" -> Writes.OptionWrites(Writes.StringWrites).writes(o.tableSchema),
-        "table_name" -> Writes.OptionWrites(Writes.StringWrites).writes(o.tableName),
+        "table_schema" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.tableSchema),
+        "table_name" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.tableName),
         "relkind" -> Writes.StringWrites.writes(o.relkind),
-        "view_definition" -> Writes.OptionWrites(Writes.StringWrites).writes(o.viewDefinition)
+        "view_definition" -> Writes.OptionWrites(using Writes.StringWrites).writes(o.viewDefinition)
       ))
     )
   }

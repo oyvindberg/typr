@@ -2,6 +2,10 @@ package dev.typr.foundations;
 
 import dev.typr.foundations.data.Json;
 import dev.typr.foundations.data.JsonValue;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint2;
+import dev.typr.foundations.data.Uint4;
+import dev.typr.foundations.data.Uint8;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.*;
@@ -114,15 +118,15 @@ public class DuckDbTypeTest {
           new DuckDbTypeAndExample<>(DuckDbTypes.hugeint, BigInteger.ZERO),
 
           // ==================== Integer Types (Unsigned) ====================
-          new DuckDbTypeAndExample<>(DuckDbTypes.utinyint, (short) 255),
-          new DuckDbTypeAndExample<>(DuckDbTypes.utinyint, (short) 0),
-          new DuckDbTypeAndExample<>(DuckDbTypes.usmallint, 65535),
-          new DuckDbTypeAndExample<>(DuckDbTypes.usmallint, 0),
-          new DuckDbTypeAndExample<>(DuckDbTypes.uinteger, 4294967295L),
-          new DuckDbTypeAndExample<>(DuckDbTypes.uinteger, 0L),
+          new DuckDbTypeAndExample<>(DuckDbTypes.utinyint, new Uint1((short) 255)),
+          new DuckDbTypeAndExample<>(DuckDbTypes.utinyint, new Uint1((short) 0)),
+          new DuckDbTypeAndExample<>(DuckDbTypes.usmallint, new Uint2(65535)),
+          new DuckDbTypeAndExample<>(DuckDbTypes.usmallint, new Uint2(0)),
+          new DuckDbTypeAndExample<>(DuckDbTypes.uinteger, new Uint4(4294967295L)),
+          new DuckDbTypeAndExample<>(DuckDbTypes.uinteger, new Uint4(0L)),
           // UBIGINT - 64-bit unsigned integer
-          new DuckDbTypeAndExample<>(DuckDbTypes.ubigint, UBIGINT_MAX),
-          new DuckDbTypeAndExample<>(DuckDbTypes.ubigint, BigInteger.ZERO),
+          new DuckDbTypeAndExample<>(DuckDbTypes.ubigint, new Uint8(UBIGINT_MAX)),
+          new DuckDbTypeAndExample<>(DuckDbTypes.ubigint, new Uint8(BigInteger.ZERO)),
           // UHUGEINT - 128-bit unsigned integer
           new DuckDbTypeAndExample<>(DuckDbTypes.uhugeint, UHUGEINT_MAX),
           new DuckDbTypeAndExample<>(DuckDbTypes.uhugeint, BigInteger.ZERO),
@@ -269,9 +273,9 @@ public class DuckDbTypeTest {
                   DuckDbTypes.mapUuidTime(),
                   java.util.Map.of(
                       UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
-                          LocalTime.of(14, 30, 45),
+                      LocalTime.of(14, 30, 45),
                       UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
-                          LocalTime.of(8, 15, 0)))
+                      LocalTime.of(8, 15, 0)))
               .noIdentity(),
 
           // ==================== LIST Types with complex element types ====================

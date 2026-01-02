@@ -10,158 +10,155 @@ import adventureworks.person.stateprovince.StateprovinceId
 import adventureworks.person.stateprovince.StateprovinceRow
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr9
 import java.time.LocalDateTime
 import java.util.UUID
 
-trait AddressFields extends FieldsExpr0[AddressRow] {
-  def addressid: IdField[AddressId, AddressRow]
+class AddressFields(val `_path`: java.util.List[Path]) extends TupleExpr9[AddressId, String, /* max 60 chars */ String, String, StateprovinceId, String, Array[Byte], UUID, LocalDateTime] with RelationStructure[AddressFields, AddressRow]  with FieldsBase[AddressRow] {
+  def addressid: IdField[AddressId, AddressRow] = {
+    new IdField[AddressId, AddressRow](
+      _path,
+      "addressid",
+      _.addressid,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(addressid = value),
+      AddressId.dbType
+    )
+  }
 
-  def addressline1: Field[String, AddressRow]
+  def addressline1: Field[String, AddressRow] = {
+    new Field[String, AddressRow](
+      _path,
+      "addressline1",
+      _.addressline1,
+      None,
+      None,
+      (row, value) => row.copy(addressline1 = value),
+      PgTypes.text
+    )
+  }
 
-  def addressline2: OptField[/* max 60 chars */ String, AddressRow]
+  def addressline2: OptField[String, AddressRow] = {
+    new OptField[String, AddressRow](
+      _path,
+      "addressline2",
+      _.addressline2,
+      None,
+      None,
+      (row, value) => row.copy(addressline2 = value),
+      PgTypes.text
+    )
+  }
 
-  def city: Field[String, AddressRow]
+  def city: Field[String, AddressRow] = {
+    new Field[String, AddressRow](
+      _path,
+      "city",
+      _.city,
+      None,
+      None,
+      (row, value) => row.copy(city = value),
+      PgTypes.text
+    )
+  }
 
-  def stateprovinceid: Field[StateprovinceId, AddressRow]
+  def stateprovinceid: Field[StateprovinceId, AddressRow] = {
+    new Field[StateprovinceId, AddressRow](
+      _path,
+      "stateprovinceid",
+      _.stateprovinceid,
+      None,
+      Some("int4"),
+      (row, value) => row.copy(stateprovinceid = value),
+      StateprovinceId.dbType
+    )
+  }
 
-  def postalcode: Field[String, AddressRow]
+  def postalcode: Field[String, AddressRow] = {
+    new Field[String, AddressRow](
+      _path,
+      "postalcode",
+      _.postalcode,
+      None,
+      None,
+      (row, value) => row.copy(postalcode = value),
+      PgTypes.text
+    )
+  }
 
-  def spatiallocation: OptField[Array[Byte], AddressRow]
+  def spatiallocation: OptField[Array[Byte], AddressRow] = {
+    new OptField[Array[Byte], AddressRow](
+      _path,
+      "spatiallocation",
+      _.spatiallocation,
+      None,
+      Some("bytea"),
+      (row, value) => row.copy(spatiallocation = value),
+      PgTypes.bytea
+    )
+  }
 
-  def rowguid: Field[UUID, AddressRow]
+  def rowguid: Field[UUID, AddressRow] = {
+    new Field[UUID, AddressRow](
+      _path,
+      "rowguid",
+      _.rowguid,
+      None,
+      Some("uuid"),
+      (row, value) => row.copy(rowguid = value),
+      PgTypes.uuid
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, AddressRow]
+  def modifieddate: Field[LocalDateTime, AddressRow] = {
+    new Field[LocalDateTime, AddressRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      None,
+      Some("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
   def fkStateprovince: ForeignKey[StateprovinceFields, StateprovinceRow] = ForeignKey.of[StateprovinceFields, StateprovinceRow]("person.FK_Address_StateProvince_StateProvinceID").withColumnPair[StateprovinceId](stateprovinceid, _.stateprovinceid)
 
-  override def columns: java.util.List[FieldLike[?, AddressRow]]
+  override def columns: java.util.List[FieldLike[?, AddressRow]] = java.util.List.of(this.addressid.underlying, this.addressline1.underlying, this.addressline2.underlying, this.city.underlying, this.stateprovinceid.underlying, this.postalcode.underlying, this.spatiallocation.underlying, this.rowguid.underlying, this.modifieddate.underlying)
 
   override def rowParser: RowParser[AddressRow] = AddressRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[AddressFields, AddressRow] = new AddressFields(`_path`)
+
+  override def `_1`: SqlExpr[AddressId] = addressid
+
+  override def `_2`: SqlExpr[String] = addressline1
+
+  override def `_3`: SqlExpr[/* max 60 chars */ String] = addressline2
+
+  override def `_4`: SqlExpr[String] = city
+
+  override def `_5`: SqlExpr[StateprovinceId] = stateprovinceid
+
+  override def `_6`: SqlExpr[String] = postalcode
+
+  override def `_7`: SqlExpr[Array[Byte]] = spatiallocation
+
+  override def `_8`: SqlExpr[UUID] = rowguid
+
+  override def `_9`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object AddressFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends AddressFields with RelationStructure[AddressFields, AddressRow] {
-
-    override def addressid: IdField[AddressId, AddressRow] = {
-      new IdField[AddressId, AddressRow](
-        _path,
-        "addressid",
-        _.addressid,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(addressid = value),
-        AddressId.pgType
-      )
-    }
-
-    override def addressline1: Field[String, AddressRow] = {
-      new Field[String, AddressRow](
-        _path,
-        "addressline1",
-        _.addressline1,
-        None,
-        None,
-        (row, value) => row.copy(addressline1 = value),
-        PgTypes.text
-      )
-    }
-
-    override def addressline2: OptField[String, AddressRow] = {
-      new OptField[String, AddressRow](
-        _path,
-        "addressline2",
-        _.addressline2,
-        None,
-        None,
-        (row, value) => row.copy(addressline2 = value),
-        PgTypes.text
-      )
-    }
-
-    override def city: Field[String, AddressRow] = {
-      new Field[String, AddressRow](
-        _path,
-        "city",
-        _.city,
-        None,
-        None,
-        (row, value) => row.copy(city = value),
-        PgTypes.text
-      )
-    }
-
-    override def stateprovinceid: Field[StateprovinceId, AddressRow] = {
-      new Field[StateprovinceId, AddressRow](
-        _path,
-        "stateprovinceid",
-        _.stateprovinceid,
-        None,
-        Some("int4"),
-        (row, value) => row.copy(stateprovinceid = value),
-        StateprovinceId.pgType
-      )
-    }
-
-    override def postalcode: Field[String, AddressRow] = {
-      new Field[String, AddressRow](
-        _path,
-        "postalcode",
-        _.postalcode,
-        None,
-        None,
-        (row, value) => row.copy(postalcode = value),
-        PgTypes.text
-      )
-    }
-
-    override def spatiallocation: OptField[Array[Byte], AddressRow] = {
-      new OptField[Array[Byte], AddressRow](
-        _path,
-        "spatiallocation",
-        _.spatiallocation,
-        None,
-        Some("bytea"),
-        (row, value) => row.copy(spatiallocation = value),
-        PgTypes.bytea
-      )
-    }
-
-    override def rowguid: Field[UUID, AddressRow] = {
-      new Field[UUID, AddressRow](
-        _path,
-        "rowguid",
-        _.rowguid,
-        None,
-        Some("uuid"),
-        (row, value) => row.copy(rowguid = value),
-        PgTypes.uuid
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, AddressRow] = {
-      new Field[LocalDateTime, AddressRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        None,
-        Some("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, AddressRow]] = java.util.List.of(this.addressid.underlying, this.addressline1.underlying, this.addressline2.underlying, this.city.underlying, this.stateprovinceid.underlying, this.postalcode.underlying, this.spatiallocation.underlying, this.rowguid.underlying, this.modifieddate.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[AddressFields, AddressRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: AddressFields = new AddressFields(java.util.Collections.emptyList())
 }

@@ -6,6 +6,7 @@
 package testdb.order_history;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.typr.foundations.data.Json;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
@@ -25,7 +26,7 @@ public record OrderHistoryRowUnsaved(
     /** Default: NULL */
     @JsonProperty("change_reason") Defaulted<Optional<String>> changeReason,
     /** Default: NULL */
-    Defaulted<Optional<String>> metadata,
+    Defaulted<Optional<Json>> metadata,
     /** Default: current_timestamp(6) */
     @JsonProperty("created_at") Defaulted<LocalDateTime> createdAt) {
   public OrderHistoryRowUnsaved(
@@ -80,7 +81,7 @@ public record OrderHistoryRowUnsaved(
   ;
 
   /** Default: NULL */
-  public OrderHistoryRowUnsaved withMetadata(Defaulted<Optional<String>> metadata) {
+  public OrderHistoryRowUnsaved withMetadata(Defaulted<Optional<Json>> metadata) {
     return new OrderHistoryRowUnsaved(
         orderId, newStatus, previousStatus, changedBy, changeReason, metadata, createdAt);
   }
@@ -97,7 +98,7 @@ public record OrderHistoryRowUnsaved(
       java.util.function.Supplier<Optional<String>> previousStatusDefault,
       java.util.function.Supplier<Optional<String>> changedByDefault,
       java.util.function.Supplier<Optional<String>> changeReasonDefault,
-      java.util.function.Supplier<Optional<String>> metadataDefault,
+      java.util.function.Supplier<Optional<Json>> metadataDefault,
       java.util.function.Supplier<LocalDateTime> createdAtDefault,
       java.util.function.Supplier<OrderHistoryId> historyIdDefault) {
     return new OrderHistoryRow(

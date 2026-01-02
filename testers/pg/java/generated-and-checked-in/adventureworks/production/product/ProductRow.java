@@ -15,6 +15,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple25;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -122,7 +123,33 @@ public record ProductRow(
     /** Default: uuid_generate_v1() */
     UUID rowguid,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple25<
+        ProductId,
+        Name,
+        String,
+        Flag,
+        Flag,
+        Optional</* max 15 chars */ String>,
+        Short,
+        Short,
+        BigDecimal,
+        BigDecimal,
+        Optional</* max 5 chars */ String>,
+        Optional<UnitmeasureId>,
+        Optional<UnitmeasureId>,
+        Optional<BigDecimal>,
+        Integer,
+        Optional</* bpchar, max 2 chars */ String>,
+        Optional</* bpchar, max 2 chars */ String>,
+        Optional</* bpchar, max 2 chars */ String>,
+        Optional<ProductsubcategoryId>,
+        Optional<ProductmodelId>,
+        LocalDateTime,
+        Optional<LocalDateTime>,
+        Optional<LocalDateTime>,
+        UUID,
+        LocalDateTime> {
   /**
    * Primary key for Product records. Default: nextval('production.product_productid_seq'::regclass)
    */
@@ -946,26 +973,26 @@ public record ProductRow(
 
   public static RowParser<ProductRow> _rowParser =
       RowParsers.of(
-          ProductId.pgType,
-          Name.pgType,
+          ProductId.dbType,
+          Name.dbType,
           PgTypes.text,
-          Flag.pgType,
-          Flag.pgType,
+          Flag.dbType,
+          Flag.dbType,
           PgTypes.text.opt(),
           PgTypes.int2,
           PgTypes.int2,
           PgTypes.numeric,
           PgTypes.numeric,
           PgTypes.text.opt(),
-          UnitmeasureId.pgType.opt(),
-          UnitmeasureId.pgType.opt(),
+          UnitmeasureId.dbType.opt(),
+          UnitmeasureId.dbType.opt(),
           PgTypes.numeric.opt(),
           PgTypes.int4,
           PgTypes.bpchar.opt(),
           PgTypes.bpchar.opt(),
           PgTypes.bpchar.opt(),
-          ProductsubcategoryId.pgType.opt(),
-          ProductmodelId.pgType.opt(),
+          ProductsubcategoryId.dbType.opt(),
+          ProductmodelId.dbType.opt(),
           PgTypes.timestamp,
           PgTypes.timestamp.opt(),
           PgTypes.timestamp.opt(),
@@ -1003,6 +1030,156 @@ public record ProductRow(
   ;
 
   public static PgText<ProductRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public ProductId _1() {
+    return productid;
+  }
+  ;
+
+  @Override
+  public BigDecimal _10() {
+    return listprice;
+  }
+  ;
+
+  @Override
+  public Optional</* max 5 chars */ String> _11() {
+    return size;
+  }
+  ;
+
+  @Override
+  public Optional<UnitmeasureId> _12() {
+    return sizeunitmeasurecode;
+  }
+  ;
+
+  @Override
+  public Optional<UnitmeasureId> _13() {
+    return weightunitmeasurecode;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _14() {
+    return weight;
+  }
+  ;
+
+  @Override
+  public Integer _15() {
+    return daystomanufacture;
+  }
+  ;
+
+  @Override
+  public Optional</* bpchar, max 2 chars */ String> _16() {
+    return productline;
+  }
+  ;
+
+  @Override
+  public Optional</* bpchar, max 2 chars */ String> _17() {
+    return class_;
+  }
+  ;
+
+  @Override
+  public Optional</* bpchar, max 2 chars */ String> _18() {
+    return style;
+  }
+  ;
+
+  @Override
+  public Optional<ProductsubcategoryId> _19() {
+    return productsubcategoryid;
+  }
+  ;
+
+  @Override
+  public Name _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public Optional<ProductmodelId> _20() {
+    return productmodelid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _21() {
+    return sellstartdate;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _22() {
+    return sellenddate;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _23() {
+    return discontinueddate;
+  }
+  ;
+
+  @Override
+  public UUID _24() {
+    return rowguid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _25() {
+    return modifieddate;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return productnumber;
+  }
+  ;
+
+  @Override
+  public Flag _4() {
+    return makeflag;
+  }
+  ;
+
+  @Override
+  public Flag _5() {
+    return finishedgoodsflag;
+  }
+  ;
+
+  @Override
+  public Optional</* max 15 chars */ String> _6() {
+    return color;
+  }
+  ;
+
+  @Override
+  public Short _7() {
+    return safetystocklevel;
+  }
+  ;
+
+  @Override
+  public Short _8() {
+    return reorderpoint;
+  }
+  ;
+
+  @Override
+  public BigDecimal _9() {
+    return standardcost;
+  }
+  ;
 
   public ProductId id() {
     return productid;

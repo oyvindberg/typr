@@ -6,6 +6,7 @@
 package adventureworks.person.emailaddress
 
 import adventureworks.person.businessentity.BusinessentityId
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -14,8 +15,12 @@ import dev.typr.foundations.kotlin.RowParsers
 data class EmailaddressId(
   val businessentityid: BusinessentityId,
   val emailaddressid: Int
-) {
+) : Tuple2<BusinessentityId, Int> {
+  override fun _1(): BusinessentityId = businessentityid
+
+  override fun _2(): Int = emailaddressid
+
   companion object {
-    val _rowParser: RowParser<EmailaddressId> = RowParsers.of(BusinessentityId.pgType, KotlinDbTypes.PgTypes.int4, { t0, t1 -> EmailaddressId(t0, t1) }, { row -> arrayOf<Any?>(row.businessentityid, row.emailaddressid) })
+    val _rowParser: RowParser<EmailaddressId> = RowParsers.of(BusinessentityId.dbType, KotlinDbTypes.PgTypes.int4, { t0, t1 -> EmailaddressId(t0, t1) }, { row -> arrayOf<Any?>(row.businessentityid, row.emailaddressid) })
   }
 }

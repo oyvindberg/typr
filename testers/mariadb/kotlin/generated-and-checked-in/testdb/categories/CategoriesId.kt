@@ -7,20 +7,21 @@ package testdb.categories
 
 import com.fasterxml.jackson.annotation.JsonValue
 import dev.typr.foundations.MariaType
+import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.kotlin.Bijection
-import dev.typr.foundations.kotlin.KotlinDbTypes
 
 /** Type for the primary key of table `categories` */
-data class CategoriesId(@JsonValue val value: Int) {
+data class CategoriesId(@JsonValue val value: Uint4) {
   override fun toString(): kotlin.String {
     return value.toString()
   }
 
   companion object {
-    val bijection: Bijection<CategoriesId, Int> =
+    val bijection: Bijection<CategoriesId, Uint4> =
       Bijection.of(CategoriesId::value, ::CategoriesId)
 
-    val pgType: MariaType<CategoriesId> =
-      KotlinDbTypes.MariaTypes.mediumintUnsigned.bimap(::CategoriesId, CategoriesId::value)
+    val dbType: MariaType<CategoriesId> =
+      MariaTypes.mediumintUnsigned.bimap(::CategoriesId, CategoriesId::value)
   }
 }

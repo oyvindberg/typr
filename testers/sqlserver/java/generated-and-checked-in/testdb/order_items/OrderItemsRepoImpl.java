@@ -26,9 +26,8 @@ import testdb.products.ProductsId;
 public class OrderItemsRepoImpl implements OrderItemsRepo {
   @Override
   public DeleteBuilder<OrderItemsFields, OrderItemsRow> delete() {
-    return DeleteBuilder.of("[order_items]", OrderItemsFields.structure(), Dialect.SQLSERVER);
+    return DeleteBuilder.of("[order_items]", OrderItemsFields.structure, Dialect.SQLSERVER);
   }
-  ;
 
   @Override
   public Boolean deleteById(OrderItemsId orderItemId, Connection c) {
@@ -40,7 +39,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(OrderItemsId[] orderItemIds, Connection c) {
@@ -56,7 +54,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public OrderItemsRow insert(OrderItemsRow unsaved, Connection c) {
@@ -77,7 +74,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .updateReturning(OrderItemsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public OrderItemsRow insert(OrderItemsRowUnsaved unsaved, Connection c) {
@@ -112,14 +108,12 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
     ;
     return q.updateReturning(OrderItemsRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<OrderItemsFields, OrderItemsRow> select() {
     return SelectBuilder.of(
-        "[order_items]", OrderItemsFields.structure(), OrderItemsRow._rowParser, Dialect.SQLSERVER);
+        "[order_items]", OrderItemsFields.structure, OrderItemsRow._rowParser, Dialect.SQLSERVER);
   }
-  ;
 
   @Override
   public List<OrderItemsRow> selectAll(Connection c) {
@@ -130,7 +124,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .query(OrderItemsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<OrderItemsRow> selectById(OrderItemsId orderItemId, Connection c) {
@@ -144,7 +137,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .query(OrderItemsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<OrderItemsRow> selectByIds(OrderItemsId[] orderItemIds, Connection c) {
@@ -162,7 +154,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .query(OrderItemsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<OrderItemsId, OrderItemsRow> selectByIdsTracked(
@@ -171,14 +162,12 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
     selectByIds(orderItemIds, c).forEach(row -> ret.put(row.orderItemId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<OrderItemsFields, OrderItemsRow> update() {
     return UpdateBuilder.of(
-        "[order_items]", OrderItemsFields.structure(), OrderItemsRow._rowParser, Dialect.SQLSERVER);
+        "[order_items]", OrderItemsFields.structure, OrderItemsRow._rowParser, Dialect.SQLSERVER);
   }
-  ;
 
   @Override
   public Boolean update(OrderItemsRow row, Connection c) {
@@ -200,12 +189,13 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public OrderItemsRow upsert(OrderItemsRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit("MERGE INTO [order_items] AS target\nUSING (VALUES ("),
+            Fragment.encode(OrderItemsId.sqlServerType, unsaved.orderItemId()),
+            Fragment.lit(", "),
             Fragment.encode(OrdersId.sqlServerType, unsaved.orderId()),
             Fragment.lit(", "),
             Fragment.encode(ProductsId.sqlServerType, unsaved.productId()),
@@ -214,14 +204,16 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.money, unsaved.price()),
             Fragment.lit(
-                ")) AS source([order_id], [product_id], [quantity], [price])\n"
+                ")) AS source([order_item_id], [order_id], [product_id], [quantity], [price])\n"
                     + "ON target.[order_item_id] = source.[order_item_id]\n"
                     + "WHEN MATCHED THEN UPDATE SET [order_id] = source.[order_id],\n"
                     + "[product_id] = source.[product_id],\n"
                     + "[quantity] = source.[quantity],\n"
                     + "[price] = source.[price]\n"
-                    + "WHEN NOT MATCHED THEN INSERT ([order_id], [product_id], [quantity], [price])"
-                    + " VALUES ("),
+                    + "WHEN NOT MATCHED THEN INSERT ([order_item_id], [order_id], [product_id],"
+                    + " [quantity], [price]) VALUES ("),
+            Fragment.encode(OrderItemsId.sqlServerType, unsaved.orderItemId()),
+            Fragment.lit(", "),
             Fragment.encode(OrdersId.sqlServerType, unsaved.orderId()),
             Fragment.lit(", "),
             Fragment.encode(ProductsId.sqlServerType, unsaved.productId()),
@@ -236,7 +228,6 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .updateReturning(OrderItemsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<OrderItemsRow> upsertBatch(Iterator<OrderItemsRow> unsaved, Connection c) {
@@ -257,5 +248,4 @@ public class OrderItemsRepoImpl implements OrderItemsRepo {
         .updateReturningEach(OrderItemsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

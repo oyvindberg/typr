@@ -19,7 +19,7 @@ object ModelExtractor {
     val schemas = Option(openApi.getComponents)
       .flatMap(c => Option(c.getSchemas))
       .map(_.asScala.toMap)
-      .getOrElse(Map.empty[String, Schema[_]])
+      .getOrElse(Map.empty[String, Schema[?]])
 
     val models = List.newBuilder[ModelClass]
     val sumTypes = List.newBuilder[SumType]
@@ -37,8 +37,8 @@ object ModelExtractor {
 
   private def extractSchema(
       name: String,
-      schema: Schema[_],
-      allSchemas: Map[String, Schema[_]]
+      schema: Schema[?],
+      allSchemas: Map[String, Schema[?]]
   ): Either[ModelClass, SumType] = {
     val description = Option(schema.getDescription)
 
@@ -73,8 +73,8 @@ object ModelExtractor {
 
   private def extractModelClass(
       name: String,
-      schema: Schema[_],
-      allSchemas: Map[String, Schema[_]]
+      schema: Schema[?],
+      allSchemas: Map[String, Schema[?]]
   ): ModelClass = {
     val description = Option(schema.getDescription)
 
@@ -134,8 +134,8 @@ object ModelExtractor {
   private def extractAllOfModel(
       name: String,
       description: Option[String],
-      allOf: List[Schema[_]],
-      allSchemas: Map[String, Schema[_]]
+      allOf: List[Schema[?]],
+      allSchemas: Map[String, Schema[?]]
   ): ModelClass = {
     // Flatten properties from all schemas in allOf
     val allProperties = allOf.flatMap { schema =>
@@ -160,8 +160,8 @@ object ModelExtractor {
     )
   }
 
-  private def extractProperties(schema: Schema[_]): List[Property] = {
-    val properties = Option(schema.getProperties).map(_.asScala.toMap).getOrElse(Map.empty[String, Schema[_]])
+  private def extractProperties(schema: Schema[?]): List[Property] = {
+    val properties = Option(schema.getProperties).map(_.asScala.toMap).getOrElse(Map.empty[String, Schema[?]])
     val requiredSet = Option(schema.getRequired).map(_.asScala.toSet).getOrElse(Set.empty[String])
 
     properties
@@ -188,8 +188,8 @@ object ModelExtractor {
   private def extractSumType(
       name: String,
       description: Option[String],
-      schema: Schema[_],
-      oneOf: List[Schema[_]]
+      schema: Schema[?],
+      oneOf: List[Schema[?]]
   ): SumType = {
     val discriminator = schema.getDiscriminator
     val propertyName = discriminator.getPropertyName
@@ -221,7 +221,7 @@ object ModelExtractor {
     )
   }
 
-  private def inferEnumUnderlyingType(schema: Schema[_]): PrimitiveType = {
+  private def inferEnumUnderlyingType(schema: Schema[?]): PrimitiveType = {
     val schemaType = Option(schema.getType).orElse(Option(schema.getTypes).flatMap(_.asScala.headOption))
     schemaType match {
       case Some("integer") => PrimitiveType.Int32
@@ -229,7 +229,7 @@ object ModelExtractor {
     }
   }
 
-  private def extractValidationConstraints(schema: Schema[_]): ValidationConstraints = {
+  private def extractValidationConstraints(schema: Schema[?]): ValidationConstraints = {
     val format = Option(schema.getFormat)
     val isEmail = format.contains("email")
 

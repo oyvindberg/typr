@@ -6,6 +6,7 @@
 package testdb.categories
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 
@@ -38,7 +39,7 @@ case class CategoriesRowUnsaved(
   /** Default: NULL
 
    */
-  metadata: Defaulted[Option[String]] = new UseDefault()
+  metadata: Defaulted[Option[Json]] = new UseDefault()
 ) {
   def toRow(
     parentIdDefault: => Option[CategoriesId],
@@ -46,7 +47,7 @@ case class CategoriesRowUnsaved(
     imageUrlDefault: => Option[String],
     sortOrderDefault: => Short,
     isVisibleDefault: => Boolean,
-    metadataDefault: => Option[String],
+    metadataDefault: => Option[Json],
     categoryIdDefault: => CategoriesId
   ): CategoriesRow = {
     new CategoriesRow(

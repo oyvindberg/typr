@@ -65,5 +65,4 @@ public class OrderSummaryByCustomerSqlRepoImpl implements OrderSummaryByCustomer
         .query(OrderSummaryByCustomerSqlRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

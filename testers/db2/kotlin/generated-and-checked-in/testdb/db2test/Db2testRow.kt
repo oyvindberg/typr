@@ -7,6 +7,8 @@ package testdb.db2test
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple24
+import dev.typr.foundations.data.Xml
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -42,11 +44,59 @@ data class Db2testRow(
   @JsonProperty("TIMESTAMP_COL") val timestampCol: LocalDateTime,
   @JsonProperty("TIMESTAMP6_COL") val timestamp6Col: LocalDateTime,
   @JsonProperty("TIMESTAMP12_COL") val timestamp12Col: LocalDateTime,
-  @JsonProperty("XML_COL") val xmlCol: String
-) {
+  @JsonProperty("XML_COL") val xmlCol: Xml
+) : Tuple24<Short, Db2testId, Long, BigDecimal, BigDecimal, BigDecimal, BigDecimal, Float, Double, Boolean, String, String, String, String, String, ByteArray, ByteArray, ByteArray, LocalDate, LocalTime, LocalDateTime, LocalDateTime, LocalDateTime, Xml> {
+  override fun _1(): Short = smallintCol
+
+  override fun _10(): Boolean = boolCol
+
+  override fun _11(): String = charCol
+
+  override fun _12(): String = varcharCol
+
+  override fun _13(): String = clobCol
+
+  override fun _14(): String = graphicCol
+
+  override fun _15(): String = vargraphicCol
+
+  override fun _16(): ByteArray = binaryCol
+
+  override fun _17(): ByteArray = varbinaryCol
+
+  override fun _18(): ByteArray = blobCol
+
+  override fun _19(): LocalDate = dateCol
+
+  override fun _2(): Db2testId = intCol
+
+  override fun _20(): LocalTime = timeCol
+
+  override fun _21(): LocalDateTime = timestampCol
+
+  override fun _22(): LocalDateTime = timestamp6Col
+
+  override fun _23(): LocalDateTime = timestamp12Col
+
+  override fun _24(): Xml = xmlCol
+
+  override fun _3(): Long = bigintCol
+
+  override fun _4(): BigDecimal = decimalCol
+
+  override fun _5(): BigDecimal = numericCol
+
+  override fun _6(): BigDecimal = decfloat16Col
+
+  override fun _7(): BigDecimal = decfloat34Col
+
+  override fun _8(): Float = realCol
+
+  override fun _9(): Double = doubleCol
+
   fun id(): Db2testId = intCol
 
   companion object {
-    val _rowParser: RowParser<Db2testRow> = RowParsers.of(KotlinDbTypes.Db2Types.smallint, Db2testId.pgType, KotlinDbTypes.Db2Types.bigint, KotlinDbTypes.Db2Types.decimal, KotlinDbTypes.Db2Types.decimal, KotlinDbTypes.Db2Types.decfloat, KotlinDbTypes.Db2Types.decfloat, KotlinDbTypes.Db2Types.real, KotlinDbTypes.Db2Types.double_, KotlinDbTypes.Db2Types.boolean_, Db2Types.char_, Db2Types.varchar, Db2Types.clob, Db2Types.graphic, Db2Types.vargraphic, Db2Types.binary, Db2Types.varbinary, Db2Types.blob, Db2Types.date, Db2Types.time, Db2Types.timestamp, Db2Types.timestamp, Db2Types.timestamp, Db2Types.xml, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23 -> Db2testRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23) }, { row -> arrayOf<Any?>(row.smallintCol, row.intCol, row.bigintCol, row.decimalCol, row.numericCol, row.decfloat16Col, row.decfloat34Col, row.realCol, row.doubleCol, row.boolCol, row.charCol, row.varcharCol, row.clobCol, row.graphicCol, row.vargraphicCol, row.binaryCol, row.varbinaryCol, row.blobCol, row.dateCol, row.timeCol, row.timestampCol, row.timestamp6Col, row.timestamp12Col, row.xmlCol) })
+    val _rowParser: RowParser<Db2testRow> = RowParsers.of(KotlinDbTypes.Db2Types.smallint, Db2testId.dbType, KotlinDbTypes.Db2Types.bigint, KotlinDbTypes.Db2Types.decimal, KotlinDbTypes.Db2Types.decimal, KotlinDbTypes.Db2Types.decfloat, KotlinDbTypes.Db2Types.decfloat, KotlinDbTypes.Db2Types.real, KotlinDbTypes.Db2Types.double_, KotlinDbTypes.Db2Types.boolean_, Db2Types.char_, Db2Types.varchar, Db2Types.clob, Db2Types.graphic, Db2Types.vargraphic, Db2Types.binary, Db2Types.varbinary, Db2Types.blob, Db2Types.date, Db2Types.time, Db2Types.timestamp, Db2Types.timestamp, Db2Types.timestamp, Db2Types.xml, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23 -> Db2testRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23) }, { row -> arrayOf<Any?>(row.smallintCol, row.intCol, row.bigintCol, row.decimalCol, row.numericCol, row.decfloat16Col, row.decfloat34Col, row.realCol, row.doubleCol, row.boolCol, row.charCol, row.varcharCol, row.clobCol, row.graphicCol, row.vargraphicCol, row.binaryCol, row.varbinaryCol, row.blobCol, row.dateCol, row.timeCol, row.timestampCol, row.timestamp6Col, row.timestamp12Col, row.xmlCol) })
   }
 }

@@ -11,7 +11,7 @@ import java.sql.Connection
 import anorm.SqlStringInterpolation
 
 class TablesViewRepoImpl extends TablesViewRepo {
-  override def selectAll(implicit c: Connection): List[TablesViewRow] = {
+  override def selectAll(using c: Connection): List[TablesViewRow] = {
     SQL"""select "table_catalog", "table_schema", "table_name", "table_type", "self_referencing_column_name", "reference_generation", "user_defined_type_catalog", "user_defined_type_schema", "user_defined_type_name", "is_insertable_into", "is_typed", "commit_action"
     from "information_schema"."tables"
     """.as(TablesViewRow.rowParser(1).*)

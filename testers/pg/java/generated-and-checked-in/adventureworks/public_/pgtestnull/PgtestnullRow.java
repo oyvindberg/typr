@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple70;
 import dev.typr.foundations.data.Inet;
 import dev.typr.foundations.data.Int2Vector;
 import dev.typr.foundations.data.Json;
@@ -107,7 +108,78 @@ public record PgtestnullRow(
     Optional<OffsetTime[]> timezes,
     Optional<UUID[]> uuides,
     Optional<String[]> varchares,
-    Optional<Xml[]> xmles) {
+    Optional<Xml[]> xmles)
+    implements Tuple70<
+        Optional<Boolean>,
+        Optional<PGbox>,
+        Optional</* bpchar, max 3 chars */ String>,
+        Optional<byte[]>,
+        Optional</* bpchar, max 1 chars */ String>,
+        Optional<PGcircle>,
+        Optional<LocalDate>,
+        Optional<Float>,
+        Optional<Double>,
+        Optional<Map<String, String>>,
+        Optional<Inet>,
+        Optional<Short>,
+        Optional<Int2Vector>,
+        Optional<Integer>,
+        Optional<Long>,
+        Optional<PGInterval>,
+        Optional<Json>,
+        Optional<Jsonb>,
+        Optional<PGline>,
+        Optional<PGlseg>,
+        Optional<Money>,
+        Optional<Mydomain>,
+        Optional<Myenum>,
+        Optional<String>,
+        Optional<BigDecimal>,
+        Optional<PGpath>,
+        Optional<PGpoint>,
+        Optional<PGpolygon>,
+        Optional<String>,
+        Optional<LocalTime>,
+        Optional<LocalDateTime>,
+        Optional<Instant>,
+        Optional<OffsetTime>,
+        Optional<UUID>,
+        Optional<String>,
+        Optional<Vector>,
+        Optional<Xml>,
+        Optional<PGbox[]>,
+        Optional</* bpchar */ String[]>,
+        Optional</* bpchar */ String[]>,
+        Optional<PGcircle[]>,
+        Optional<LocalDate[]>,
+        Optional<Float[]>,
+        Optional<Double[]>,
+        Optional<Inet[]>,
+        Optional<Short[]>,
+        Optional<Int2Vector[]>,
+        Optional<Integer[]>,
+        Optional<Long[]>,
+        Optional<PGInterval[]>,
+        Optional<Json[]>,
+        Optional<Jsonb[]>,
+        Optional<PGline[]>,
+        Optional<PGlseg[]>,
+        Optional<Money[]>,
+        Optional<Mydomain[]>,
+        Optional<Myenum[]>,
+        Optional<String[]>,
+        Optional<BigDecimal[]>,
+        Optional<PGpath[]>,
+        Optional<PGpoint[]>,
+        Optional<PGpolygon[]>,
+        Optional<String[]>,
+        Optional<LocalTime[]>,
+        Optional<LocalDateTime[]>,
+        Optional<Instant[]>,
+        Optional<OffsetTime[]>,
+        Optional<UUID[]>,
+        Optional<String[]>,
+        Optional<Xml[]>> {
   public PgtestnullRow withBool(Optional<Boolean> bool) {
     return new PgtestnullRow(
         bool,
@@ -5381,8 +5453,8 @@ public record PgtestnullRow(
           PgTypes.line.opt(),
           PgTypes.lseg.opt(),
           PgTypes.money.opt(),
-          Mydomain.pgType.opt(),
-          Myenum.pgType.opt(),
+          Mydomain.dbType.opt(),
+          Myenum.dbType.opt(),
           PgTypes.name.opt(),
           PgTypes.numeric.opt(),
           PgTypes.path.opt(),
@@ -5415,8 +5487,8 @@ public record PgtestnullRow(
           PgTypes.lineArray.opt(),
           PgTypes.lsegArray.opt(),
           PgTypes.moneyArray.opt(),
-          Mydomain.pgTypeArray.opt(),
-          Myenum.pgTypeArray.opt(),
+          Mydomain.dbTypeArray.opt(),
+          Myenum.dbTypeArray.opt(),
           PgTypes.nameArray.opt(),
           PgTypes.numericArray.opt(),
           PgTypes.pathArray.opt(),
@@ -5507,4 +5579,424 @@ public record PgtestnullRow(
   ;
 
   public static PgText<PgtestnullRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public Optional<Boolean> _1() {
+    return bool;
+  }
+  ;
+
+  @Override
+  public Optional<Map<String, String>> _10() {
+    return hstore;
+  }
+  ;
+
+  @Override
+  public Optional<Inet> _11() {
+    return inet;
+  }
+  ;
+
+  @Override
+  public Optional<Short> _12() {
+    return int2;
+  }
+  ;
+
+  @Override
+  public Optional<Int2Vector> _13() {
+    return int2vector;
+  }
+  ;
+
+  @Override
+  public Optional<Integer> _14() {
+    return int4;
+  }
+  ;
+
+  @Override
+  public Optional<Long> _15() {
+    return int8;
+  }
+  ;
+
+  @Override
+  public Optional<PGInterval> _16() {
+    return interval;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _17() {
+    return json;
+  }
+  ;
+
+  @Override
+  public Optional<Jsonb> _18() {
+    return jsonb;
+  }
+  ;
+
+  @Override
+  public Optional<PGline> _19() {
+    return line;
+  }
+  ;
+
+  @Override
+  public Optional<PGbox> _2() {
+    return box;
+  }
+  ;
+
+  @Override
+  public Optional<PGlseg> _20() {
+    return lseg;
+  }
+  ;
+
+  @Override
+  public Optional<Money> _21() {
+    return money;
+  }
+  ;
+
+  @Override
+  public Optional<Mydomain> _22() {
+    return mydomain;
+  }
+  ;
+
+  @Override
+  public Optional<Myenum> _23() {
+    return myenum;
+  }
+  ;
+
+  @Override
+  public Optional<String> _24() {
+    return name;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _25() {
+    return numeric;
+  }
+  ;
+
+  @Override
+  public Optional<PGpath> _26() {
+    return path;
+  }
+  ;
+
+  @Override
+  public Optional<PGpoint> _27() {
+    return point;
+  }
+  ;
+
+  @Override
+  public Optional<PGpolygon> _28() {
+    return polygon;
+  }
+  ;
+
+  @Override
+  public Optional<String> _29() {
+    return text;
+  }
+  ;
+
+  @Override
+  public Optional</* bpchar, max 3 chars */ String> _3() {
+    return bpchar;
+  }
+  ;
+
+  @Override
+  public Optional<LocalTime> _30() {
+    return time;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _31() {
+    return timestamp;
+  }
+  ;
+
+  @Override
+  public Optional<Instant> _32() {
+    return timestampz;
+  }
+  ;
+
+  @Override
+  public Optional<OffsetTime> _33() {
+    return timez;
+  }
+  ;
+
+  @Override
+  public Optional<UUID> _34() {
+    return uuid;
+  }
+  ;
+
+  @Override
+  public Optional<String> _35() {
+    return varchar;
+  }
+  ;
+
+  @Override
+  public Optional<Vector> _36() {
+    return vector;
+  }
+  ;
+
+  @Override
+  public Optional<Xml> _37() {
+    return xml;
+  }
+  ;
+
+  @Override
+  public Optional<PGbox[]> _38() {
+    return boxes;
+  }
+  ;
+
+  @Override
+  public Optional</* bpchar */ String[]> _39() {
+    return bpchares;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _4() {
+    return bytea;
+  }
+  ;
+
+  @Override
+  public Optional</* bpchar */ String[]> _40() {
+    return chares;
+  }
+  ;
+
+  @Override
+  public Optional<PGcircle[]> _41() {
+    return circlees;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDate[]> _42() {
+    return datees;
+  }
+  ;
+
+  @Override
+  public Optional<Float[]> _43() {
+    return float4es;
+  }
+  ;
+
+  @Override
+  public Optional<Double[]> _44() {
+    return float8es;
+  }
+  ;
+
+  @Override
+  public Optional<Inet[]> _45() {
+    return inetes;
+  }
+  ;
+
+  @Override
+  public Optional<Short[]> _46() {
+    return int2es;
+  }
+  ;
+
+  @Override
+  public Optional<Int2Vector[]> _47() {
+    return int2vectores;
+  }
+  ;
+
+  @Override
+  public Optional<Integer[]> _48() {
+    return int4es;
+  }
+  ;
+
+  @Override
+  public Optional<Long[]> _49() {
+    return int8es;
+  }
+  ;
+
+  @Override
+  public Optional</* bpchar, max 1 chars */ String> _5() {
+    return char_;
+  }
+  ;
+
+  @Override
+  public Optional<PGInterval[]> _50() {
+    return intervales;
+  }
+  ;
+
+  @Override
+  public Optional<Json[]> _51() {
+    return jsones;
+  }
+  ;
+
+  @Override
+  public Optional<Jsonb[]> _52() {
+    return jsonbes;
+  }
+  ;
+
+  @Override
+  public Optional<PGline[]> _53() {
+    return linees;
+  }
+  ;
+
+  @Override
+  public Optional<PGlseg[]> _54() {
+    return lseges;
+  }
+  ;
+
+  @Override
+  public Optional<Money[]> _55() {
+    return moneyes;
+  }
+  ;
+
+  @Override
+  public Optional<Mydomain[]> _56() {
+    return mydomaines;
+  }
+  ;
+
+  @Override
+  public Optional<Myenum[]> _57() {
+    return myenumes;
+  }
+  ;
+
+  @Override
+  public Optional<String[]> _58() {
+    return namees;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal[]> _59() {
+    return numerices;
+  }
+  ;
+
+  @Override
+  public Optional<PGcircle> _6() {
+    return circle;
+  }
+  ;
+
+  @Override
+  public Optional<PGpath[]> _60() {
+    return pathes;
+  }
+  ;
+
+  @Override
+  public Optional<PGpoint[]> _61() {
+    return pointes;
+  }
+  ;
+
+  @Override
+  public Optional<PGpolygon[]> _62() {
+    return polygones;
+  }
+  ;
+
+  @Override
+  public Optional<String[]> _63() {
+    return textes;
+  }
+  ;
+
+  @Override
+  public Optional<LocalTime[]> _64() {
+    return timees;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime[]> _65() {
+    return timestampes;
+  }
+  ;
+
+  @Override
+  public Optional<Instant[]> _66() {
+    return timestampzes;
+  }
+  ;
+
+  @Override
+  public Optional<OffsetTime[]> _67() {
+    return timezes;
+  }
+  ;
+
+  @Override
+  public Optional<UUID[]> _68() {
+    return uuides;
+  }
+  ;
+
+  @Override
+  public Optional<String[]> _69() {
+    return varchares;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDate> _7() {
+    return date;
+  }
+  ;
+
+  @Override
+  public Optional<Xml[]> _70() {
+    return xmles;
+  }
+  ;
+
+  @Override
+  public Optional<Float> _8() {
+    return float4;
+  }
+  ;
+
+  @Override
+  public Optional<Double> _9() {
+    return float8;
+  }
+  ;
 }

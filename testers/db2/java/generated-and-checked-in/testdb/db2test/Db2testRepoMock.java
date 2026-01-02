@@ -38,7 +38,7 @@ public record Db2testRepoMock(HashMap<Db2testId, Db2testRow> map) implements Db2
   @Override
   public DeleteBuilder<Db2testFields, Db2testRow> delete() {
     return new DeleteBuilderMock<>(
-        Db2testFields.structure(),
+        Db2testFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.intCol(),
@@ -81,7 +81,7 @@ public record Db2testRepoMock(HashMap<Db2testId, Db2testRow> map) implements Db2
   @Override
   public SelectBuilder<Db2testFields, Db2testRow> select() {
     return new SelectBuilderMock<>(
-        Db2testFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        Db2testFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -122,7 +122,7 @@ public record Db2testRepoMock(HashMap<Db2testId, Db2testRow> map) implements Db2
   @Override
   public UpdateBuilder<Db2testFields, Db2testRow> update() {
     return new UpdateBuilderMock<>(
-        Db2testFields.structure(),
+        Db2testFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

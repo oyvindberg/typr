@@ -7,6 +7,7 @@ package testdb.customers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -23,10 +24,18 @@ case class CustomersRow(
   email: String,
   /** Default: (getdate()) */
   @JsonProperty("created_at") createdAt: Option[LocalDateTime]
-) {
+) extends Tuple4[CustomersId, String, String, Option[LocalDateTime]] {
   def id: CustomersId = customerId
 
   def toUnsavedRow(createdAt: Defaulted[Option[LocalDateTime]] = Defaulted.Provided(this.createdAt)): CustomersRowUnsaved = new CustomersRowUnsaved(name, email, createdAt)
+
+  override def `_1`: CustomersId = customerId
+
+  override def `_2`: String = name
+
+  override def `_3`: String = email
+
+  override def `_4`: Option[LocalDateTime] = createdAt
 }
 
 object CustomersRow {

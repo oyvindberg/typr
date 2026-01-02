@@ -7,6 +7,7 @@ package testdb.customers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -23,10 +24,18 @@ data class CustomersRow(
   val email: String,
   /** Default: (getdate()) */
   @JsonProperty("created_at") val createdAt: LocalDateTime?
-) {
+) : Tuple4<CustomersId, String, String, LocalDateTime?> {
+  override fun _1(): CustomersId = customerId
+
+  override fun _2(): String = name
+
+  override fun _3(): String = email
+
+  override fun _4(): LocalDateTime? = createdAt
+
   fun id(): CustomersId = customerId
 
-  fun toUnsavedRow(createdAt: Defaulted<LocalDateTime?>): CustomersRowUnsaved = CustomersRowUnsaved(name, email, createdAt)
+  fun toUnsavedRow(createdAt: Defaulted<LocalDateTime?> = Defaulted.Provided(this.createdAt)): CustomersRowUnsaved = CustomersRowUnsaved(name, email, createdAt)
 
   companion object {
     val _rowParser: RowParser<CustomersRow> = RowParsers.of(CustomersId.sqlServerType, SqlServerTypes.nvarchar, SqlServerTypes.nvarchar, SqlServerTypes.datetime2.nullable(), { t0, t1, t2, t3 -> CustomersRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.customerId, row.name, row.email, row.createdAt) })

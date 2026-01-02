@@ -9,6 +9,7 @@ import adventureworks.customtypes.Defaulted
 import adventureworks.production.product.ProductId
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -38,7 +39,7 @@ case class ProductcosthistoryRow(
   standardcost: BigDecimal,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple5[ProductId, LocalDateTime, Option[LocalDateTime], BigDecimal, LocalDateTime] {
   def compositeId: ProductcosthistoryId = new ProductcosthistoryId(productid, startdate)
 
   def id: ProductcosthistoryId = this.compositeId
@@ -52,10 +53,20 @@ case class ProductcosthistoryRow(
       modifieddate
     )
   }
+
+  override def `_1`: ProductId = productid
+
+  override def `_2`: LocalDateTime = startdate
+
+  override def `_3`: Option[LocalDateTime] = enddate
+
+  override def `_4`: BigDecimal = standardcost
+
+  override def `_5`: LocalDateTime = modifieddate
 }
 
 object ProductcosthistoryRow {
-  val `_rowParser`: RowParser[ProductcosthistoryRow] = RowParsers.of(ProductId.pgType, PgTypes.timestamp, PgTypes.timestamp.nullable, ScalaDbTypes.PgTypes.numeric, PgTypes.timestamp)(ProductcosthistoryRow.apply)(row => Array[Any](row.productid, row.startdate, row.enddate, row.standardcost, row.modifieddate))
+  val `_rowParser`: RowParser[ProductcosthistoryRow] = RowParsers.of(ProductId.dbType, PgTypes.timestamp, PgTypes.timestamp.nullable, ScalaDbTypes.PgTypes.numeric, PgTypes.timestamp)(ProductcosthistoryRow.apply)(row => Array[Any](row.productid, row.startdate, row.enddate, row.standardcost, row.modifieddate))
 
   def apply(
     compositeId: ProductcosthistoryId,

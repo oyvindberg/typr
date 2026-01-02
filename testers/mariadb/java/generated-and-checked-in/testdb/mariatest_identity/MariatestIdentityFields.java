@@ -7,75 +7,80 @@ package testdb.mariatest_identity;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr2;
 import java.util.List;
 import java.util.Optional;
 
-public interface MariatestIdentityFields extends FieldsExpr<MariatestIdentityRow> {
-  record Impl(List<Path> _path)
-      implements MariatestIdentityFields,
-          RelationStructure<MariatestIdentityFields, MariatestIdentityRow> {
-    @Override
-    public IdField<MariatestIdentityId, MariatestIdentityRow> id() {
-      return new IdField<MariatestIdentityId, MariatestIdentityRow>(
-          _path,
-          "id",
-          MariatestIdentityRow::id,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withId(value),
-          MariatestIdentityId.pgType);
-    }
-    ;
+public class MariatestIdentityFields
+    implements TupleExpr2<MariatestIdentityId, String>,
+        RelationStructure<MariatestIdentityFields, MariatestIdentityRow>,
+        FieldsBase<MariatestIdentityRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, MariatestIdentityRow> name() {
-      return new Field<String, MariatestIdentityRow>(
-          _path,
-          "name",
-          MariatestIdentityRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, MariatestIdentityRow>> columns() {
-      return java.util.List.of(this.id(), this.name());
-    }
-    ;
-
-    @Override
-    public RelationStructure<MariatestIdentityFields, MariatestIdentityRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public MariatestIdentityFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static MariatestIdentityFields structure =
+      new MariatestIdentityFields(java.util.Collections.emptyList());
+
+  public IdField<MariatestIdentityId, MariatestIdentityRow> id() {
+    return new IdField<MariatestIdentityId, MariatestIdentityRow>(
+        _path,
+        "id",
+        MariatestIdentityRow::id,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withId(value),
+        MariatestIdentityId.dbType);
   }
-  ;
 
-  IdField<MariatestIdentityId, MariatestIdentityRow> id();
-
-  Field<String, MariatestIdentityRow> name();
+  public Field<String, MariatestIdentityRow> name() {
+    return new Field<String, MariatestIdentityRow>(
+        _path,
+        "name",
+        MariatestIdentityRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        MariaTypes.varchar);
+  }
 
   @Override
-  List<FieldLike<?, MariatestIdentityRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<MariatestIdentityRow> rowParser() {
+  public List<FieldLike<?, MariatestIdentityRow>> columns() {
+    return java.util.List.of(this.id(), this.name());
+  }
+
+  @Override
+  public RowParser<MariatestIdentityRow> rowParser() {
     return MariatestIdentityRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<MariatestIdentityFields, MariatestIdentityRow> withPaths(
+      List<Path> _path) {
+    return new MariatestIdentityFields(_path);
+  }
+
+  @Override
+  public SqlExpr<MariatestIdentityId> _1() {
+    return id();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return name();
+  }
 }

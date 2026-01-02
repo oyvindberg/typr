@@ -6,6 +6,7 @@
 package testdb.distinct_type_test
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.Tuple.Tuple3
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -20,10 +21,16 @@ data class DistinctTypeTestRow(
   @JsonProperty("ID") val id: DistinctTypeTestId,
   @JsonProperty("EMAIL") val email: EmailAddress,
   @JsonProperty("BALANCE") val balance: MoneyAmount?
-) {
+) : Tuple3<DistinctTypeTestId, EmailAddress, MoneyAmount?> {
+  override fun _1(): DistinctTypeTestId = id
+
+  override fun _2(): EmailAddress = email
+
+  override fun _3(): MoneyAmount? = balance
+
   fun toUnsavedRow(): DistinctTypeTestRowUnsaved = DistinctTypeTestRowUnsaved(email, balance)
 
   companion object {
-    val _rowParser: RowParser<DistinctTypeTestRow> = RowParsers.of(DistinctTypeTestId.pgType, EmailAddress.pgType, MoneyAmount.pgType.nullable(), { t0, t1, t2 -> DistinctTypeTestRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.id, row.email, row.balance) })
+    val _rowParser: RowParser<DistinctTypeTestRow> = RowParsers.of(DistinctTypeTestId.dbType, EmailAddress.dbType, MoneyAmount.dbType.nullable(), { t0, t1, t2 -> DistinctTypeTestRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.id, row.email, row.balance) })
   }
 }

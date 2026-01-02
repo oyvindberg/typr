@@ -7,6 +7,7 @@ package testdb.warehouses
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple10
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -51,7 +52,7 @@ case class WarehousesRow(
    * Default: NULL
    */
   @JsonProperty("contact_phone") contactPhone: Option[String]
-) {
+) extends Tuple10[WarehousesId, String, String, String, Point, Option[Polygon], String, Boolean, Option[String], Option[String]] {
   def id: WarehousesId = warehouseId
 
   def toUnsavedRow(
@@ -73,8 +74,28 @@ case class WarehousesRow(
       contactPhone
     )
   }
+
+  override def `_1`: WarehousesId = warehouseId
+
+  override def `_2`: String = code
+
+  override def `_3`: String = name
+
+  override def `_4`: String = address
+
+  override def `_5`: Point = location
+
+  override def `_6`: Option[Polygon] = serviceArea
+
+  override def `_7`: String = timezone
+
+  override def `_8`: Boolean = isActive
+
+  override def `_9`: Option[String] = contactEmail
+
+  override def `_10`: Option[String] = contactPhone
 }
 
 object WarehousesRow {
-  val `_rowParser`: RowParser[WarehousesRow] = RowParsers.of(WarehousesId.pgType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.point, MariaTypes.polygon.nullable, MariaTypes.varchar, ScalaDbTypes.MariaTypes.bool, MariaTypes.varchar.nullable, MariaTypes.varchar.nullable)(WarehousesRow.apply)(row => Array[Any](row.warehouseId, row.code, row.name, row.address, row.location, row.serviceArea, row.timezone, row.isActive, row.contactEmail, row.contactPhone))
+  val `_rowParser`: RowParser[WarehousesRow] = RowParsers.of(WarehousesId.dbType, MariaTypes.char_, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.point, MariaTypes.polygon.nullable, MariaTypes.varchar, ScalaDbTypes.MariaTypes.bool, MariaTypes.varchar.nullable, MariaTypes.varchar.nullable)(WarehousesRow.apply)(row => Array[Any](row.warehouseId, row.code, row.name, row.address, row.location, row.serviceArea, row.timezone, row.isActive, row.contactEmail, row.contactPhone))
 }

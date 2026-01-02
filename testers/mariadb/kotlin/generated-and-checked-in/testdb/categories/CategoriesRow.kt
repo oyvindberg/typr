@@ -7,6 +7,8 @@ package testdb.categories
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple9
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -49,8 +51,26 @@ data class CategoriesRow(
   /** 
     * Default: NULL
     */
-  val metadata: String?
-) {
+  val metadata: Json?
+) : Tuple9<CategoriesId, CategoriesId?, String, String, String?, String?, Short, Boolean, Json?> {
+  override fun _1(): CategoriesId = categoryId
+
+  override fun _2(): CategoriesId? = parentId
+
+  override fun _3(): String = name
+
+  override fun _4(): String = slug
+
+  override fun _5(): String? = description
+
+  override fun _6(): String? = imageUrl
+
+  override fun _7(): Short = sortOrder
+
+  override fun _8(): Boolean = isVisible
+
+  override fun _9(): Json? = metadata
+
   fun id(): CategoriesId = categoryId
 
   fun toUnsavedRow(
@@ -59,10 +79,10 @@ data class CategoriesRow(
     imageUrl: Defaulted<String?> = Defaulted.Provided(this.imageUrl),
     sortOrder: Defaulted<Short> = Defaulted.Provided(this.sortOrder),
     isVisible: Defaulted<Boolean> = Defaulted.Provided(this.isVisible),
-    metadata: Defaulted<String?> = Defaulted.Provided(this.metadata)
+    metadata: Defaulted<Json?> = Defaulted.Provided(this.metadata)
   ): CategoriesRowUnsaved = CategoriesRowUnsaved(name, slug, parentId, description, imageUrl, sortOrder, isVisible, metadata)
 
   companion object {
-    val _rowParser: RowParser<CategoriesRow> = RowParsers.of(CategoriesId.pgType, CategoriesId.pgType.nullable(), MariaTypes.varchar, MariaTypes.varchar, MariaTypes.mediumtext.nullable(), MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.smallint, KotlinDbTypes.MariaTypes.bool, MariaTypes.longtext.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> CategoriesRow(t0, t1, t2, t3, t4, t5, t6, t7, t8) }, { row -> arrayOf<Any?>(row.categoryId, row.parentId, row.name, row.slug, row.description, row.imageUrl, row.sortOrder, row.isVisible, row.metadata) })
+    val _rowParser: RowParser<CategoriesRow> = RowParsers.of(CategoriesId.dbType, CategoriesId.dbType.nullable(), MariaTypes.varchar, MariaTypes.varchar, MariaTypes.mediumtext.nullable(), MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.smallint, KotlinDbTypes.MariaTypes.bool, MariaTypes.json.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> CategoriesRow(t0, t1, t2, t3, t4, t5, t6, t7, t8) }, { row -> arrayOf<Any?>(row.categoryId, row.parentId, row.name, row.slug, row.description, row.imageUrl, row.sortOrder, row.isVisible, row.metadata) })
   }
 }

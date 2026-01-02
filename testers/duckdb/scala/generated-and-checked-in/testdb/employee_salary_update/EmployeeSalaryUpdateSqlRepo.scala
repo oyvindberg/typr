@@ -13,5 +13,5 @@ trait EmployeeSalaryUpdateSqlRepo {
     newSalary: BigDecimal,
     empNumber: Int,
     empSuffix: String
-  )(using c: Connection): Int
+  )(using c: Connection): List[EmployeeSalaryUpdateSqlRow]
 }

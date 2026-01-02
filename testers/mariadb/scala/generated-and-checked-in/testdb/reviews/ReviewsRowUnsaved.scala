@@ -6,6 +6,9 @@
 package testdb.reviews
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint4
 import java.time.LocalDateTime
 import testdb.customers.CustomersId
 import testdb.customtypes.Defaulted
@@ -24,7 +27,7 @@ case class ReviewsRowUnsaved(
    */
   @JsonProperty("customer_id") customerId: CustomersId,
   /**  */
-  rating: Short,
+  rating: Uint1,
   /** Default: NULL
    * Points to [[testdb.order_items.OrderItemsRow.itemId]]
    */
@@ -40,15 +43,15 @@ case class ReviewsRowUnsaved(
   /** Default: NULL
 
    */
-  pros: Defaulted[Option[String]] = new UseDefault(),
+  pros: Defaulted[Option[Json]] = new UseDefault(),
   /** Default: NULL
 
    */
-  cons: Defaulted[Option[String]] = new UseDefault(),
+  cons: Defaulted[Option[Json]] = new UseDefault(),
   /** Default: NULL
    * Array of image URLs
    */
-  images: Defaulted[Option[String]] = new UseDefault(),
+  images: Defaulted[Option[Json]] = new UseDefault(),
   /** Default: 0
 
    */
@@ -60,11 +63,11 @@ case class ReviewsRowUnsaved(
   /** Default: 0
 
    */
-  @JsonProperty("helpful_votes") helpfulVotes: Defaulted[Long] = new UseDefault(),
+  @JsonProperty("helpful_votes") helpfulVotes: Defaulted[Uint4] = new UseDefault(),
   /** Default: 0
 
    */
-  @JsonProperty("unhelpful_votes") unhelpfulVotes: Defaulted[Long] = new UseDefault(),
+  @JsonProperty("unhelpful_votes") unhelpfulVotes: Defaulted[Uint4] = new UseDefault(),
   /** Default: NULL
 
    */
@@ -86,13 +89,13 @@ case class ReviewsRowUnsaved(
     orderItemIdDefault: => Option[OrderItemsId],
     titleDefault: => Option[String],
     contentDefault: => Option[String],
-    prosDefault: => Option[String],
-    consDefault: => Option[String],
-    imagesDefault: => Option[String],
+    prosDefault: => Option[Json],
+    consDefault: => Option[Json],
+    imagesDefault: => Option[Json],
     isVerifiedPurchaseDefault: => Boolean,
     isApprovedDefault: => Boolean,
-    helpfulVotesDefault: => Long,
-    unhelpfulVotesDefault: => Long,
+    helpfulVotesDefault: => Uint4,
+    unhelpfulVotesDefault: => Uint4,
     adminResponseDefault: => Option[String],
     respondedAtDefault: => Option[LocalDateTime],
     createdAtDefault: => LocalDateTime,

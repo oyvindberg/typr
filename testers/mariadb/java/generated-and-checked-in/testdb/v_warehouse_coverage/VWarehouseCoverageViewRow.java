@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple10;
 import java.math.BigDecimal;
 import java.util.Optional;
 import testdb.warehouses.WarehousesId;
@@ -34,7 +35,18 @@ public record VWarehouseCoverageViewRow(
     /** Default: 0 */
     @JsonProperty("products_stocked") Long productsStocked,
     /** Default: NULL */
-    @JsonProperty("total_inventory") Optional<BigDecimal> totalInventory) {
+    @JsonProperty("total_inventory") Optional<BigDecimal> totalInventory)
+    implements Tuple10<
+        WarehousesId,
+        String,
+        String,
+        String,
+        Optional<String>,
+        Optional<String>,
+        String,
+        Boolean,
+        Long,
+        Optional<BigDecimal>> {
   /** Default: 0 Points to {@link testdb.warehouses.WarehousesRow#warehouseId()} */
   public VWarehouseCoverageViewRow withWarehouseId(WarehousesId warehouseId) {
     return new VWarehouseCoverageViewRow(
@@ -197,7 +209,7 @@ public record VWarehouseCoverageViewRow(
 
   public static RowParser<VWarehouseCoverageViewRow> _rowParser =
       RowParsers.of(
-          WarehousesId.pgType,
+          WarehousesId.dbType,
           MariaTypes.char_,
           MariaTypes.varchar,
           MariaTypes.varchar,
@@ -221,5 +233,65 @@ public record VWarehouseCoverageViewRow(
                 row.productsStocked(),
                 row.totalInventory()
               });
+  ;
+
+  @Override
+  public WarehousesId _1() {
+    return warehouseId;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _10() {
+    return totalInventory;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return code;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return name;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return address;
+  }
+  ;
+
+  @Override
+  public Optional<String> _5() {
+    return locationWkt;
+  }
+  ;
+
+  @Override
+  public Optional<String> _6() {
+    return serviceAreaWkt;
+  }
+  ;
+
+  @Override
+  public String _7() {
+    return timezone;
+  }
+  ;
+
+  @Override
+  public Boolean _8() {
+    return isActive;
+  }
+  ;
+
+  @Override
+  public Long _9() {
+    return productsStocked;
+  }
   ;
 }

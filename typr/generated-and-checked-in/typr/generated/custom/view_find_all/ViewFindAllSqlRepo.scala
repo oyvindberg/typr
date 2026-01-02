@@ -10,5 +10,5 @@ package typr.generated.custom.view_find_all
 import java.sql.Connection
 
 trait ViewFindAllSqlRepo {
-  def apply(implicit c: Connection): List[ViewFindAllSqlRow]
+  def apply(using c: Connection): List[ViewFindAllSqlRow]
 }

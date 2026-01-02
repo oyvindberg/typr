@@ -47,7 +47,7 @@ public record ContactsRepoMock(
   @Override
   public DeleteBuilder<ContactsFields, ContactsRow> delete() {
     return new DeleteBuilderMock<>(
-        ContactsFields.structure(),
+        ContactsFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.contactId(),
@@ -96,7 +96,7 @@ public record ContactsRepoMock(
   @Override
   public SelectBuilder<ContactsFields, ContactsRow> select() {
     return new SelectBuilderMock<>(
-        ContactsFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        ContactsFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -137,7 +137,7 @@ public record ContactsRepoMock(
   @Override
   public UpdateBuilder<ContactsFields, ContactsRow> update() {
     return new UpdateBuilderMock<>(
-        ContactsFields.structure(),
+        ContactsFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

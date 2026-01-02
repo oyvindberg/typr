@@ -547,4 +547,11 @@ public interface OracleTypes {
   //
   // These are used for generic/polymorphic PL/SQL procedures
   // Not commonly mapped to Java types directly
+
+  // ==================== Unknown Type ====================
+  // For columns whose type typr doesn't know how to handle - cast to/from string
+  OracleType<dev.typr.foundations.data.Unknown> unknown =
+      OracleType.of(
+              "VARCHAR2(4000)", OracleRead.readString, OracleWrite.writeString, OracleJson.text)
+          .bimap(dev.typr.foundations.data.Unknown::new, dev.typr.foundations.data.Unknown::value);
 }

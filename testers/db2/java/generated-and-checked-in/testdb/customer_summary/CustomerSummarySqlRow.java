@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -17,8 +18,9 @@ public record CustomerSummarySqlRow(
     @JsonProperty("customer_id") Integer customerId,
     String name,
     String email,
-    @JsonProperty("order_count") Optional<Long> orderCount,
-    @JsonProperty("total_spent") Optional<BigDecimal> totalSpent) {
+    @JsonProperty("order_count") Optional<Integer> orderCount,
+    @JsonProperty("total_spent") Optional<BigDecimal> totalSpent)
+    implements Tuple5<Integer, String, String, Optional<Integer>, Optional<BigDecimal>> {
   public CustomerSummarySqlRow withCustomerId(Integer customerId) {
     return new CustomerSummarySqlRow(customerId, name, email, orderCount, totalSpent);
   }
@@ -34,7 +36,7 @@ public record CustomerSummarySqlRow(
   }
   ;
 
-  public CustomerSummarySqlRow withOrderCount(Optional<Long> orderCount) {
+  public CustomerSummarySqlRow withOrderCount(Optional<Integer> orderCount) {
     return new CustomerSummarySqlRow(customerId, name, email, orderCount, totalSpent);
   }
   ;
@@ -49,12 +51,42 @@ public record CustomerSummarySqlRow(
           Db2Types.integer,
           Db2Types.varchar,
           Db2Types.varchar,
-          Db2Types.bigint.opt(),
+          Db2Types.integer.opt(),
           Db2Types.decimal.opt(),
           CustomerSummarySqlRow::new,
           row ->
               new Object[] {
                 row.customerId(), row.name(), row.email(), row.orderCount(), row.totalSpent()
               });
+  ;
+
+  @Override
+  public Integer _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return email;
+  }
+  ;
+
+  @Override
+  public Optional<Integer> _4() {
+    return orderCount;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _5() {
+    return totalSpent;
+  }
   ;
 }

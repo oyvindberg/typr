@@ -7,6 +7,7 @@ package testdb.v_customer_summary
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple10
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -64,8 +65,28 @@ case class VCustomerSummaryViewRow(
    * Default: current_timestamp(6)
    */
   @JsonProperty("last_order_date") lastOrderDate: Option[LocalDateTime]
-)
+) extends Tuple10[CustomersId, String, Option[String], String, CustomerStatusId, LocalDateTime, Option[LocalDateTime], Long, BigDecimal, Option[LocalDateTime]] {
+  override def `_1`: CustomersId = customerId
+
+  override def `_2`: String = email
+
+  override def `_3`: Option[String] = fullName
+
+  override def `_4`: String = tier
+
+  override def `_5`: CustomerStatusId = status
+
+  override def `_6`: LocalDateTime = createdAt
+
+  override def `_7`: Option[LocalDateTime] = lastLoginAt
+
+  override def `_8`: Long = totalOrders
+
+  override def `_9`: BigDecimal = lifetimeValue
+
+  override def `_10`: Option[LocalDateTime] = lastOrderDate
+}
 
 object VCustomerSummaryViewRow {
-  val `_rowParser`: RowParser[VCustomerSummaryViewRow] = RowParsers.of(CustomersId.pgType, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.text, CustomerStatusId.pgType, MariaTypes.datetime, MariaTypes.datetime.nullable, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.numeric, MariaTypes.datetime.nullable)(VCustomerSummaryViewRow.apply)(row => Array[Any](row.customerId, row.email, row.fullName, row.tier, row.status, row.createdAt, row.lastLoginAt, row.totalOrders, row.lifetimeValue, row.lastOrderDate))
+  val `_rowParser`: RowParser[VCustomerSummaryViewRow] = RowParsers.of(CustomersId.dbType, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.text, CustomerStatusId.dbType, MariaTypes.datetime, MariaTypes.datetime.nullable, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.numeric, MariaTypes.datetime.nullable)(VCustomerSummaryViewRow.apply)(row => Array[Any](row.customerId, row.email, row.fullName, row.tier, row.status, row.createdAt, row.lastLoginAt, row.totalOrders, row.lifetimeValue, row.lastOrderDate))
 }

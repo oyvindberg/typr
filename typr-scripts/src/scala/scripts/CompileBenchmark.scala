@@ -31,7 +31,7 @@ object CompileBenchmark extends BleepScript("CompileBenchmark") {
     val ds = TypoDataSource.hikariPostgres(server = "localhost", port = 6432, databaseName = "Adventureworks", username = "postgres", password = "password")
     val externalTools = ExternalTools.init(TypoLogger.Noop, ExternalToolsConfig.default)
     val metadb = Await.result(MetaDb.fromDb(logger = TypoLogger.Noop, ds = ds, viewSelector = Selector.All, schemaMode = SchemaMode.MultiSchema, externalTools = externalTools), Duration.Inf)
-    val sqlFiles = Await.result(SqlFileReader(TypoLogger.Noop, buildDir.resolve("adventureworks_sql"), ds, externalTools), Duration.Inf)
+    val sqlFiles = Await.result(SqlFileReader(TypoLogger.Noop, buildDir.resolve("sql-scripts/postgres"), ds, externalTools), Duration.Inf)
 
     val crossIds = List(
       "jvm212",

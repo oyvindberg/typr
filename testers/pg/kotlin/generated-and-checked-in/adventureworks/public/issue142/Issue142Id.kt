@@ -26,10 +26,10 @@ sealed interface Issue142Id {
     companion object {
         fun apply(str: String): Issue142Id =
             Known.ByName[str] ?: Unknown(str)
-        val pgTypeArray: PgType<Array<Issue142Id>> =
+        val dbTypeArray: PgType<Array<Issue142Id>> =
           PgTypes.textArray
             .bimap({ xs -> arrayMap.map(xs, Issue142Id::apply, Issue142Id::class.java) }, { xs -> arrayMap.map(xs, Issue142Id::value, String::class.java) })
-        val pgType: PgType<Issue142Id> =
+        val dbType: PgType<Issue142Id> =
           PgTypes.text.bimap(Issue142Id::apply, Issue142Id::value)
     }
 }

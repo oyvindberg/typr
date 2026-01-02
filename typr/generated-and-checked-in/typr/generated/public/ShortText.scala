@@ -21,29 +21,29 @@ import typr.generated.Text
 case class ShortText(value: String)
 
 object ShortText {
-  implicit lazy val arrayColumn: Column[Array[ShortText]] = Column.columnToArray(column, implicitly)
+  given arrayColumn: Column[Array[ShortText]] = Column.columnToArray(using column, summon)
 
-  implicit lazy val arrayToStatement: ToStatement[Array[ShortText]] = ToStatement.arrayToParameter(ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
+  given arrayToStatement: ToStatement[Array[ShortText]] = ToStatement.arrayToParameter(using ParameterMetaData.StringParameterMetaData).contramap(_.map(_.value))
 
-  implicit lazy val column: Column[ShortText] = Column.columnToString.map(ShortText.apply)
+  given column: Column[ShortText] = Column.columnToString.map(ShortText.apply)
 
-  implicit lazy val parameterMetadata: ParameterMetaData[ShortText] = {
+  given parameterMetadata: ParameterMetaData[ShortText] = {
     new ParameterMetaData[ShortText] {
       override def sqlType: String = """"public"."short_text""""
       override def jdbcType: Int = Types.OTHER
     }
   }
 
-  implicit lazy val pgText: Text[ShortText] = {
+  given pgText: Text[ShortText] = {
     new Text[ShortText] {
       override def unsafeEncode(v: ShortText, sb: StringBuilder): Unit = Text.stringInstance.unsafeEncode(v.value, sb)
       override def unsafeArrayEncode(v: ShortText, sb: StringBuilder): Unit = Text.stringInstance.unsafeArrayEncode(v.value, sb)
     }
   }
 
-  implicit lazy val reads: Reads[ShortText] = Reads.StringReads.map(ShortText.apply)
+  given reads: Reads[ShortText] = Reads.StringReads.map(ShortText.apply)
 
-  implicit lazy val toStatement: ToStatement[ShortText] = ToStatement.stringToStatement.contramap(_.value)
+  given toStatement: ToStatement[ShortText] = ToStatement.stringToStatement.contramap(_.value)
 
-  implicit lazy val writes: Writes[ShortText] = Writes.StringWrites.contramap(_.value)
+  given writes: Writes[ShortText] = Writes.StringWrites.contramap(_.value)
 }

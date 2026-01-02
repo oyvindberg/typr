@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple11;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
@@ -38,7 +39,19 @@ public record InventoryRow(
     /** Default: NULL */
     @JsonProperty("last_counted_at") Optional<LocalDateTime> lastCountedAt,
     /** Default: current_timestamp(6) */
-    @JsonProperty("updated_at") LocalDateTime updatedAt) {
+    @JsonProperty("updated_at") LocalDateTime updatedAt)
+    implements Tuple11<
+        InventoryId,
+        ProductsId,
+        WarehousesId,
+        Integer,
+        Integer,
+        Integer,
+        Integer,
+        Integer,
+        Optional<String>,
+        Optional<LocalDateTime>,
+        LocalDateTime> {
   /** AUTO_INCREMENT */
   public InventoryRow withInventoryId(InventoryId inventoryId) {
     return new InventoryRow(
@@ -228,9 +241,9 @@ public record InventoryRow(
 
   public static RowParser<InventoryRow> _rowParser =
       RowParsers.of(
-          InventoryId.pgType,
-          ProductsId.pgType,
-          WarehousesId.pgType,
+          InventoryId.dbType,
+          ProductsId.dbType,
+          WarehousesId.dbType,
           MariaTypes.int_,
           MariaTypes.int_,
           MariaTypes.int_,
@@ -254,6 +267,72 @@ public record InventoryRow(
                 row.lastCountedAt(),
                 row.updatedAt()
               });
+  ;
+
+  @Override
+  public InventoryId _1() {
+    return inventoryId;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _10() {
+    return lastCountedAt;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _11() {
+    return updatedAt;
+  }
+  ;
+
+  @Override
+  public ProductsId _2() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public WarehousesId _3() {
+    return warehouseId;
+  }
+  ;
+
+  @Override
+  public Integer _4() {
+    return quantityOnHand;
+  }
+  ;
+
+  @Override
+  public Integer _5() {
+    return quantityReserved;
+  }
+  ;
+
+  @Override
+  public Integer _6() {
+    return quantityOnOrder;
+  }
+  ;
+
+  @Override
+  public Integer _7() {
+    return reorderPoint;
+  }
+  ;
+
+  @Override
+  public Integer _8() {
+    return reorderQuantity;
+  }
+  ;
+
+  @Override
+  public Optional<String> _9() {
+    return binLocation;
+  }
   ;
 
   public InventoryId id() {

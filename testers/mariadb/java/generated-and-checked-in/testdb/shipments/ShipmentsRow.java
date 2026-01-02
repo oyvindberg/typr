@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple17;
+import dev.typr.foundations.data.Json;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,7 +35,7 @@ public record ShipmentsRow(
     /** Default: NULL */
     @JsonProperty("weight_kg") Optional<BigDecimal> weightKg,
     /** Default: NULL */
-    @JsonProperty("dimensions_json") Optional<String> dimensionsJson,
+    @JsonProperty("dimensions_json") Optional<Json> dimensionsJson,
     /** Default: NULL */
     @JsonProperty("label_data") Optional<byte[]> labelData,
     /** Default: 'pending' */
@@ -53,7 +55,25 @@ public record ShipmentsRow(
     /** Default: current_timestamp(6) */
     @JsonProperty("created_at") LocalDateTime createdAt,
     /** Default: current_timestamp(6) */
-    @JsonProperty("updated_at") LocalDateTime updatedAt) {
+    @JsonProperty("updated_at") LocalDateTime updatedAt)
+    implements Tuple17<
+        ShipmentsId,
+        OrdersId,
+        ShippingCarriersId,
+        Optional<String>,
+        String,
+        Optional<BigDecimal>,
+        Optional<Json>,
+        Optional<byte[]>,
+        String,
+        Optional<LocalDate>,
+        Optional<LocalDateTime>,
+        BigDecimal,
+        Optional<BigDecimal>,
+        Optional<WarehousesId>,
+        Optional<LocalDateTime>,
+        LocalDateTime,
+        LocalDateTime> {
   /** AUTO_INCREMENT */
   public ShipmentsRow withShipmentId(ShipmentsId shipmentId) {
     return new ShipmentsRow(
@@ -193,7 +213,7 @@ public record ShipmentsRow(
   ;
 
   /** Default: NULL */
-  public ShipmentsRow withDimensionsJson(Optional<String> dimensionsJson) {
+  public ShipmentsRow withDimensionsJson(Optional<Json> dimensionsJson) {
     return new ShipmentsRow(
         shipmentId,
         orderId,
@@ -447,20 +467,20 @@ public record ShipmentsRow(
 
   public static RowParser<ShipmentsRow> _rowParser =
       RowParsers.of(
-          ShipmentsId.pgType,
-          OrdersId.pgType,
-          ShippingCarriersId.pgType,
+          ShipmentsId.dbType,
+          OrdersId.dbType,
+          ShippingCarriersId.dbType,
           MariaTypes.varchar.opt(),
           MariaTypes.varchar,
           MariaTypes.numeric.opt(),
-          MariaTypes.longtext.opt(),
+          MariaTypes.json.opt(),
           MariaTypes.longblob.opt(),
           MariaTypes.text,
           MariaTypes.date.opt(),
           MariaTypes.datetime.opt(),
           MariaTypes.numeric,
           MariaTypes.numeric.opt(),
-          WarehousesId.pgType.opt(),
+          WarehousesId.dbType.opt(),
           MariaTypes.datetime.opt(),
           MariaTypes.datetime,
           MariaTypes.datetime,
@@ -487,6 +507,108 @@ public record ShipmentsRow(
               });
   ;
 
+  @Override
+  public ShipmentsId _1() {
+    return shipmentId;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDate> _10() {
+    return estimatedDeliveryDate;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _11() {
+    return actualDeliveryAt;
+  }
+  ;
+
+  @Override
+  public BigDecimal _12() {
+    return shippingCost;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _13() {
+    return insuranceAmount;
+  }
+  ;
+
+  @Override
+  public Optional<WarehousesId> _14() {
+    return originWarehouseId;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _15() {
+    return shippedAt;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _16() {
+    return createdAt;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _17() {
+    return updatedAt;
+  }
+  ;
+
+  @Override
+  public OrdersId _2() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public ShippingCarriersId _3() {
+    return carrierId;
+  }
+  ;
+
+  @Override
+  public Optional<String> _4() {
+    return trackingNumber;
+  }
+  ;
+
+  @Override
+  public String _5() {
+    return shippingMethod;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _6() {
+    return weightKg;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _7() {
+    return dimensionsJson;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _8() {
+    return labelData;
+  }
+  ;
+
+  @Override
+  public String _9() {
+    return status;
+  }
+  ;
+
   public ShipmentsId id() {
     return shipmentId;
   }
@@ -495,7 +617,7 @@ public record ShipmentsRow(
   public ShipmentsRowUnsaved toUnsavedRow(
       Defaulted<Optional<String>> trackingNumber,
       Defaulted<Optional<BigDecimal>> weightKg,
-      Defaulted<Optional<String>> dimensionsJson,
+      Defaulted<Optional<Json>> dimensionsJson,
       Defaulted<Optional<byte[]>> labelData,
       Defaulted<String> status,
       Defaulted<Optional<LocalDate>> estimatedDeliveryDate,

@@ -7,6 +7,7 @@ package testdb.product_details_with_sales
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple9
 import dev.typr.foundations.data.Json
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
@@ -35,7 +36,25 @@ data class ProductDetailsWithSalesSqlRow(
   @JsonProperty("total_revenue") val totalRevenue: Double?,
   /** Points to [testdb.order_items.OrderItemsRow.orderId] */
   val popularity: String?
-) {
+) : Tuple9<ProductsId, String, String, BigDecimal, Json?, Long?, Long?, Double?, String?> {
+  override fun _1(): ProductsId = productId
+
+  override fun _2(): String = sku
+
+  override fun _3(): String = name
+
+  override fun _4(): BigDecimal = price
+
+  override fun _5(): Json? = metadata
+
+  override fun _6(): Long? = timesOrdered
+
+  override fun _7(): Long? = totalQuantitySold
+
+  override fun _8(): Double? = totalRevenue
+
+  override fun _9(): String? = popularity
+
   companion object {
     val _rowParser: RowParser<ProductDetailsWithSalesSqlRow> = RowParsers.of(ProductsId.duckDbType, DuckDbTypes.varchar, DuckDbTypes.varchar, DuckDbTypes.numeric, DuckDbTypes.json.nullable(), KotlinDbTypes.DuckDbTypes.bigint.nullable(), KotlinDbTypes.DuckDbTypes.bigint.nullable(), KotlinDbTypes.DuckDbTypes.double_.nullable(), DuckDbTypes.varchar.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> ProductDetailsWithSalesSqlRow(t0, t1, t2, t3, t4, t5, t6, t7, t8) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.name, row.price, row.metadata, row.timesOrdered, row.totalQuantitySold, row.totalRevenue, row.popularity) })
   }

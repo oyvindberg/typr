@@ -7,113 +7,110 @@ package oracledb.customer_products
 
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
+import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.OptField
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr6
 import java.util.Optional
 import oracledb.AddressT
 import oracledb.MoneyT
 
-trait CustomerProductsViewFields extends FieldsExpr0[CustomerProductsViewRow] {
-  def customerId: Field[java.math.BigDecimal, CustomerProductsViewRow]
+class CustomerProductsViewFields(val `_path`: java.util.List[Path]) extends TupleExpr6[java.math.BigDecimal, String, AddressT, java.math.BigDecimal, String, MoneyT] with RelationStructure[CustomerProductsViewFields, CustomerProductsViewRow]  with FieldsBase[CustomerProductsViewRow] {
+  def customerId: Field[java.math.BigDecimal, CustomerProductsViewRow] = {
+    new Field[java.math.BigDecimal, CustomerProductsViewRow](
+      _path,
+      "CUSTOMER_ID",
+      _.customerId,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(customerId = value),
+      OracleTypes.number
+    )
+  }
 
-  def customerName: Field[String, CustomerProductsViewRow]
+  def customerName: Field[String, CustomerProductsViewRow] = {
+    new Field[String, CustomerProductsViewRow](
+      _path,
+      "CUSTOMER_NAME",
+      _.customerName,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(customerName = value),
+      OracleTypes.varchar2
+    )
+  }
 
-  def billingAddress: OptField[AddressT, CustomerProductsViewRow]
+  def billingAddress: OptField[AddressT, CustomerProductsViewRow] = {
+    new OptField[AddressT, CustomerProductsViewRow](
+      _path,
+      "BILLING_ADDRESS",
+      _.billingAddress,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(billingAddress = value),
+      AddressT.oracleType
+    )
+  }
 
-  def productId: Field[java.math.BigDecimal, CustomerProductsViewRow]
+  def productId: Field[java.math.BigDecimal, CustomerProductsViewRow] = {
+    new Field[java.math.BigDecimal, CustomerProductsViewRow](
+      _path,
+      "PRODUCT_ID",
+      _.productId,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(productId = value),
+      OracleTypes.number
+    )
+  }
 
-  def productName: Field[String, CustomerProductsViewRow]
+  def productName: Field[String, CustomerProductsViewRow] = {
+    new Field[String, CustomerProductsViewRow](
+      _path,
+      "PRODUCT_NAME",
+      _.productName,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(productName = value),
+      OracleTypes.varchar2
+    )
+  }
 
-  def price: OptField[MoneyT, CustomerProductsViewRow]
+  def price: OptField[MoneyT, CustomerProductsViewRow] = {
+    new OptField[MoneyT, CustomerProductsViewRow](
+      _path,
+      "PRICE",
+      _.price,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(price = value),
+      MoneyT.oracleType
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, CustomerProductsViewRow]]
+  override def columns: java.util.List[FieldLike[?, CustomerProductsViewRow]] = java.util.List.of(this.customerId, this.customerName, this.billingAddress, this.productId, this.productName, this.price)
 
   override def rowParser: RowParser[CustomerProductsViewRow] = CustomerProductsViewRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomerProductsViewFields, CustomerProductsViewRow] = new CustomerProductsViewFields(`_path`)
+
+  override def `_1`: SqlExpr[java.math.BigDecimal] = customerId
+
+  override def `_2`: SqlExpr[String] = customerName
+
+  override def `_3`: SqlExpr[AddressT] = billingAddress
+
+  override def `_4`: SqlExpr[java.math.BigDecimal] = productId
+
+  override def `_5`: SqlExpr[String] = productName
+
+  override def `_6`: SqlExpr[MoneyT] = price
 }
 
 object CustomerProductsViewFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends CustomerProductsViewFields with RelationStructure[CustomerProductsViewFields, CustomerProductsViewRow] {
-
-    override def customerId: Field[java.math.BigDecimal, CustomerProductsViewRow] = {
-      new Field[java.math.BigDecimal, CustomerProductsViewRow](
-        _path,
-        "CUSTOMER_ID",
-        _.customerId,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(customerId = value),
-        OracleTypes.number
-      )
-    }
-
-    override def customerName: Field[String, CustomerProductsViewRow] = {
-      new Field[String, CustomerProductsViewRow](
-        _path,
-        "CUSTOMER_NAME",
-        _.customerName,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(customerName = value),
-        OracleTypes.varchar2
-      )
-    }
-
-    override def billingAddress: OptField[AddressT, CustomerProductsViewRow] = {
-      new OptField[AddressT, CustomerProductsViewRow](
-        _path,
-        "BILLING_ADDRESS",
-        _.billingAddress,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(billingAddress = value),
-        AddressT.oracleType
-      )
-    }
-
-    override def productId: Field[java.math.BigDecimal, CustomerProductsViewRow] = {
-      new Field[java.math.BigDecimal, CustomerProductsViewRow](
-        _path,
-        "PRODUCT_ID",
-        _.productId,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(productId = value),
-        OracleTypes.number
-      )
-    }
-
-    override def productName: Field[String, CustomerProductsViewRow] = {
-      new Field[String, CustomerProductsViewRow](
-        _path,
-        "PRODUCT_NAME",
-        _.productName,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(productName = value),
-        OracleTypes.varchar2
-      )
-    }
-
-    override def price: OptField[MoneyT, CustomerProductsViewRow] = {
-      new OptField[MoneyT, CustomerProductsViewRow](
-        _path,
-        "PRICE",
-        _.price,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(price = value),
-        MoneyT.oracleType
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, CustomerProductsViewRow]] = java.util.List.of(this.customerId, this.customerName, this.billingAddress, this.productId, this.productName, this.price)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomerProductsViewFields, CustomerProductsViewRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: CustomerProductsViewFields = new CustomerProductsViewFields(java.util.Collections.emptyList())
 }

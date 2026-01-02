@@ -24,9 +24,8 @@ import java.util.Optional;
 public class ProductsRepoImpl implements ProductsRepo {
   @Override
   public DeleteBuilder<ProductsFields, ProductsRow> delete() {
-    return DeleteBuilder.of("[products]", ProductsFields.structure(), Dialect.SQLSERVER);
+    return DeleteBuilder.of("[products]", ProductsFields.structure, Dialect.SQLSERVER);
   }
-  ;
 
   @Override
   public Boolean deleteById(ProductsId productId, Connection c) {
@@ -38,7 +37,6 @@ public class ProductsRepoImpl implements ProductsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(ProductsId[] productIds, Connection c) {
@@ -54,7 +52,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductsRow insert(ProductsRow unsaved, Connection c) {
@@ -73,7 +70,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .updateReturning(ProductsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductsRow insert(ProductsRowUnsaved unsaved, Connection c) {
@@ -106,14 +102,12 @@ public class ProductsRepoImpl implements ProductsRepo {
     ;
     return q.updateReturning(ProductsRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<ProductsFields, ProductsRow> select() {
     return SelectBuilder.of(
-        "[products]", ProductsFields.structure(), ProductsRow._rowParser, Dialect.SQLSERVER);
+        "[products]", ProductsFields.structure, ProductsRow._rowParser, Dialect.SQLSERVER);
   }
-  ;
 
   @Override
   public List<ProductsRow> selectAll(Connection c) {
@@ -122,7 +116,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .query(ProductsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<ProductsRow> selectById(ProductsId productId, Connection c) {
@@ -136,7 +129,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .query(ProductsRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductsRow> selectByIds(ProductsId[] productIds, Connection c) {
@@ -154,7 +146,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .query(ProductsRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<ProductsId, ProductsRow> selectByIdsTracked(ProductsId[] productIds, Connection c) {
@@ -162,14 +153,12 @@ public class ProductsRepoImpl implements ProductsRepo {
     selectByIds(productIds, c).forEach(row -> ret.put(row.productId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<ProductsFields, ProductsRow> update() {
     return UpdateBuilder.of(
-        "[products]", ProductsFields.structure(), ProductsRow._rowParser, Dialect.SQLSERVER);
+        "[products]", ProductsFields.structure, ProductsRow._rowParser, Dialect.SQLSERVER);
   }
-  ;
 
   @Override
   public Boolean update(ProductsRow row, Connection c) {
@@ -189,24 +178,28 @@ public class ProductsRepoImpl implements ProductsRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public ProductsRow upsert(ProductsRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit("MERGE INTO [products] AS target\nUSING (VALUES ("),
+            Fragment.encode(ProductsId.sqlServerType, unsaved.productId()),
+            Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.nvarchar, unsaved.name()),
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.money, unsaved.price()),
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.nvarchar.opt(), unsaved.description()),
             Fragment.lit(
-                ")) AS source([name], [price], [description])\n"
+                ")) AS source([product_id], [name], [price], [description])\n"
                     + "ON target.[product_id] = source.[product_id]\n"
                     + "WHEN MATCHED THEN UPDATE SET [name] = source.[name],\n"
                     + "[price] = source.[price],\n"
                     + "[description] = source.[description]\n"
-                    + "WHEN NOT MATCHED THEN INSERT ([name], [price], [description]) VALUES ("),
+                    + "WHEN NOT MATCHED THEN INSERT ([product_id], [name], [price], [description])"
+                    + " VALUES ("),
+            Fragment.encode(ProductsId.sqlServerType, unsaved.productId()),
+            Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.nvarchar, unsaved.name()),
             Fragment.lit(", "),
             Fragment.encode(SqlServerTypes.money, unsaved.price()),
@@ -219,7 +212,6 @@ public class ProductsRepoImpl implements ProductsRepo {
         .updateReturning(ProductsRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductsRow> upsertBatch(Iterator<ProductsRow> unsaved, Connection c) {
@@ -239,5 +231,4 @@ public class ProductsRepoImpl implements ProductsRepo {
         .updateReturningEach(ProductsRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

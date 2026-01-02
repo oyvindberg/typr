@@ -7,6 +7,7 @@ package testdb.order_items
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -22,12 +23,20 @@ data class OrderItemsRow(
   /** Default: 1 */
   val quantity: Int,
   @JsonProperty("unit_price") val unitPrice: BigDecimal
-) {
+) : Tuple4<Int, Int, Int, BigDecimal> {
+  override fun _1(): Int = orderId
+
+  override fun _2(): Int = productId
+
+  override fun _3(): Int = quantity
+
+  override fun _4(): BigDecimal = unitPrice
+
   fun compositeId(): OrderItemsId = OrderItemsId(orderId, productId)
 
   fun id(): OrderItemsId = this.compositeId()
 
-  fun toUnsavedRow(quantity: Defaulted<Int>): OrderItemsRowUnsaved = OrderItemsRowUnsaved(orderId, productId, unitPrice, quantity)
+  fun toUnsavedRow(quantity: Defaulted<Int> = Defaulted.Provided(this.quantity)): OrderItemsRowUnsaved = OrderItemsRowUnsaved(orderId, productId, unitPrice, quantity)
 
   companion object {
     val _rowParser: RowParser<OrderItemsRow> = RowParsers.of(KotlinDbTypes.DuckDbTypes.integer, KotlinDbTypes.DuckDbTypes.integer, KotlinDbTypes.DuckDbTypes.integer, DuckDbTypes.numeric, { t0, t1, t2, t3 -> OrderItemsRow(t0, t1, t2, t3) }, { row -> arrayOf<Any?>(row.orderId, row.productId, row.quantity, row.unitPrice) })

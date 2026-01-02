@@ -10,6 +10,7 @@ import dev.typr.foundations.kotlin.Fragment
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import java.math.BigDecimal
 import java.sql.Connection
+import kotlin.collections.List
 import testdb.orders.OrdersId
 import testdb.products.ProductsId
 
@@ -20,5 +21,5 @@ class OrderItemsBulkInsertSqlRepoImpl() : OrderItemsBulkInsertSqlRepo {
     quantity: Int,
     unitPrice: BigDecimal,
     c: Connection
-  ): Int = Fragment.interpolate(Fragment.lit("-- Insert order items with composite key handling\n-- Tests: composite primary key in INSERT, foreign key types, RETURNING with composite key\n\nINSERT INTO order_items (order_id, product_id, quantity, unit_price)\nVALUES (\n    CAST("), Fragment.encode(OrdersId.duckDbType, orderId), Fragment.lit(" AS INTEGER),\n    CAST("), Fragment.encode(ProductsId.duckDbType, productId), Fragment.lit(" AS INTEGER),\n    CAST("), Fragment.encode(KotlinDbTypes.DuckDbTypes.integer, quantity), Fragment.lit(" AS INTEGER),\n    CAST("), Fragment.encode(DuckDbTypes.numeric, unitPrice), Fragment.lit(" AS DECIMAL)\n)\nRETURNING\n    order_id,\n    product_id,\n    quantity,\n    unit_price")).update().runUnchecked(c)
+  ): List<OrderItemsBulkInsertSqlRow> = Fragment.interpolate(Fragment.lit("-- Insert order items with composite key handling\n-- Tests: composite primary key in INSERT, foreign key types, RETURNING with composite key\n\nINSERT INTO order_items (order_id, product_id, quantity, unit_price)\nVALUES (\n    CAST("), Fragment.encode(OrdersId.duckDbType, orderId), Fragment.lit(" AS INTEGER),\n    CAST("), Fragment.encode(ProductsId.duckDbType, productId), Fragment.lit(" AS INTEGER),\n    CAST("), Fragment.encode(KotlinDbTypes.DuckDbTypes.integer, quantity), Fragment.lit(" AS INTEGER),\n    CAST("), Fragment.encode(DuckDbTypes.numeric, unitPrice), Fragment.lit(" AS DECIMAL)\n)\nRETURNING\n    order_id,\n    product_id,\n    quantity,\n    unit_price")).query(OrderItemsBulkInsertSqlRow._rowParser.all()).runUnchecked(c)
 }

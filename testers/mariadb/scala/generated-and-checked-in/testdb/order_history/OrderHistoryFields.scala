@@ -7,146 +7,144 @@ package testdb.order_history
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr8
 import java.time.LocalDateTime
 import testdb.orders.OrdersFields
 import testdb.orders.OrdersId
 import testdb.orders.OrdersRow
 
-trait OrderHistoryFields extends FieldsExpr0[OrderHistoryRow] {
-  def historyId: IdField[OrderHistoryId, OrderHistoryRow]
+class OrderHistoryFields(val `_path`: java.util.List[Path]) extends TupleExpr8[OrderHistoryId, OrdersId, String, String, String, String, Json, LocalDateTime] with RelationStructure[OrderHistoryFields, OrderHistoryRow]  with FieldsBase[OrderHistoryRow] {
+  def historyId: IdField[OrderHistoryId, OrderHistoryRow] = {
+    new IdField[OrderHistoryId, OrderHistoryRow](
+      _path,
+      "history_id",
+      _.historyId,
+      None,
+      None,
+      (row, value) => row.copy(historyId = value),
+      OrderHistoryId.dbType
+    )
+  }
 
-  def orderId: Field[OrdersId, OrderHistoryRow]
+  def orderId: Field[OrdersId, OrderHistoryRow] = {
+    new Field[OrdersId, OrderHistoryRow](
+      _path,
+      "order_id",
+      _.orderId,
+      None,
+      None,
+      (row, value) => row.copy(orderId = value),
+      OrdersId.dbType
+    )
+  }
 
-  def previousStatus: OptField[String, OrderHistoryRow]
+  def previousStatus: OptField[String, OrderHistoryRow] = {
+    new OptField[String, OrderHistoryRow](
+      _path,
+      "previous_status",
+      _.previousStatus,
+      None,
+      None,
+      (row, value) => row.copy(previousStatus = value),
+      MariaTypes.text
+    )
+  }
 
-  def newStatus: Field[String, OrderHistoryRow]
+  def newStatus: Field[String, OrderHistoryRow] = {
+    new Field[String, OrderHistoryRow](
+      _path,
+      "new_status",
+      _.newStatus,
+      None,
+      None,
+      (row, value) => row.copy(newStatus = value),
+      MariaTypes.text
+    )
+  }
 
-  def changedBy: OptField[String, OrderHistoryRow]
+  def changedBy: OptField[String, OrderHistoryRow] = {
+    new OptField[String, OrderHistoryRow](
+      _path,
+      "changed_by",
+      _.changedBy,
+      None,
+      None,
+      (row, value) => row.copy(changedBy = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def changeReason: OptField[String, OrderHistoryRow]
+  def changeReason: OptField[String, OrderHistoryRow] = {
+    new OptField[String, OrderHistoryRow](
+      _path,
+      "change_reason",
+      _.changeReason,
+      None,
+      None,
+      (row, value) => row.copy(changeReason = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def metadata: OptField[String, OrderHistoryRow]
+  def metadata: OptField[Json, OrderHistoryRow] = {
+    new OptField[Json, OrderHistoryRow](
+      _path,
+      "metadata",
+      _.metadata,
+      None,
+      None,
+      (row, value) => row.copy(metadata = value),
+      MariaTypes.json
+    )
+  }
 
-  def createdAt: Field[LocalDateTime, OrderHistoryRow]
+  def createdAt: Field[LocalDateTime, OrderHistoryRow] = {
+    new Field[LocalDateTime, OrderHistoryRow](
+      _path,
+      "created_at",
+      _.createdAt,
+      None,
+      None,
+      (row, value) => row.copy(createdAt = value),
+      MariaTypes.datetime
+    )
+  }
 
   def fkOrders: ForeignKey[OrdersFields, OrdersRow] = ForeignKey.of[OrdersFields, OrdersRow]("fk_oh_order").withColumnPair[OrdersId](orderId, _.orderId)
 
-  override def columns: java.util.List[FieldLike[?, OrderHistoryRow]]
+  override def columns: java.util.List[FieldLike[?, OrderHistoryRow]] = java.util.List.of(this.historyId.underlying, this.orderId.underlying, this.previousStatus.underlying, this.newStatus.underlying, this.changedBy.underlying, this.changeReason.underlying, this.metadata.underlying, this.createdAt.underlying)
 
   override def rowParser: RowParser[OrderHistoryRow] = OrderHistoryRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OrderHistoryFields, OrderHistoryRow] = new OrderHistoryFields(`_path`)
+
+  override def `_1`: SqlExpr[OrderHistoryId] = historyId
+
+  override def `_2`: SqlExpr[OrdersId] = orderId
+
+  override def `_3`: SqlExpr[String] = previousStatus
+
+  override def `_4`: SqlExpr[String] = newStatus
+
+  override def `_5`: SqlExpr[String] = changedBy
+
+  override def `_6`: SqlExpr[String] = changeReason
+
+  override def `_7`: SqlExpr[Json] = metadata
+
+  override def `_8`: SqlExpr[LocalDateTime] = createdAt
 }
 
 object OrderHistoryFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends OrderHistoryFields with RelationStructure[OrderHistoryFields, OrderHistoryRow] {
-
-    override def historyId: IdField[OrderHistoryId, OrderHistoryRow] = {
-      new IdField[OrderHistoryId, OrderHistoryRow](
-        _path,
-        "history_id",
-        _.historyId,
-        None,
-        None,
-        (row, value) => row.copy(historyId = value),
-        OrderHistoryId.pgType
-      )
-    }
-
-    override def orderId: Field[OrdersId, OrderHistoryRow] = {
-      new Field[OrdersId, OrderHistoryRow](
-        _path,
-        "order_id",
-        _.orderId,
-        None,
-        None,
-        (row, value) => row.copy(orderId = value),
-        OrdersId.pgType
-      )
-    }
-
-    override def previousStatus: OptField[String, OrderHistoryRow] = {
-      new OptField[String, OrderHistoryRow](
-        _path,
-        "previous_status",
-        _.previousStatus,
-        None,
-        None,
-        (row, value) => row.copy(previousStatus = value),
-        MariaTypes.text
-      )
-    }
-
-    override def newStatus: Field[String, OrderHistoryRow] = {
-      new Field[String, OrderHistoryRow](
-        _path,
-        "new_status",
-        _.newStatus,
-        None,
-        None,
-        (row, value) => row.copy(newStatus = value),
-        MariaTypes.text
-      )
-    }
-
-    override def changedBy: OptField[String, OrderHistoryRow] = {
-      new OptField[String, OrderHistoryRow](
-        _path,
-        "changed_by",
-        _.changedBy,
-        None,
-        None,
-        (row, value) => row.copy(changedBy = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def changeReason: OptField[String, OrderHistoryRow] = {
-      new OptField[String, OrderHistoryRow](
-        _path,
-        "change_reason",
-        _.changeReason,
-        None,
-        None,
-        (row, value) => row.copy(changeReason = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def metadata: OptField[String, OrderHistoryRow] = {
-      new OptField[String, OrderHistoryRow](
-        _path,
-        "metadata",
-        _.metadata,
-        None,
-        None,
-        (row, value) => row.copy(metadata = value),
-        MariaTypes.longtext
-      )
-    }
-
-    override def createdAt: Field[LocalDateTime, OrderHistoryRow] = {
-      new Field[LocalDateTime, OrderHistoryRow](
-        _path,
-        "created_at",
-        _.createdAt,
-        None,
-        None,
-        (row, value) => row.copy(createdAt = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, OrderHistoryRow]] = java.util.List.of(this.historyId.underlying, this.orderId.underlying, this.previousStatus.underlying, this.newStatus.underlying, this.changedBy.underlying, this.changeReason.underlying, this.metadata.underlying, this.createdAt.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OrderHistoryFields, OrderHistoryRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: OrderHistoryFields = new OrderHistoryFields(java.util.Collections.emptyList())
 }

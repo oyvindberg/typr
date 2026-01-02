@@ -7,112 +7,109 @@ package testdb.customer_orders_view
 
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.SqlServerTypes
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr6
 import java.time.LocalDateTime
 
-trait CustomerOrdersViewViewFields extends FieldsExpr0[CustomerOrdersViewViewRow] {
-  def customerId: Field[Int, CustomerOrdersViewViewRow]
+class CustomerOrdersViewViewFields(val `_path`: java.util.List[Path]) extends TupleExpr6[Int, String, String, Int, LocalDateTime, BigDecimal] with RelationStructure[CustomerOrdersViewViewFields, CustomerOrdersViewViewRow]  with FieldsBase[CustomerOrdersViewViewRow] {
+  def customerId: Field[Int, CustomerOrdersViewViewRow] = {
+    new Field[Int, CustomerOrdersViewViewRow](
+      _path,
+      "customer_id",
+      _.customerId,
+      None,
+      None,
+      (row, value) => row.copy(customerId = value),
+      ScalaDbTypes.SqlServerTypes.int_
+    )
+  }
 
-  def customerName: Field[String, CustomerOrdersViewViewRow]
+  def customerName: Field[String, CustomerOrdersViewViewRow] = {
+    new Field[String, CustomerOrdersViewViewRow](
+      _path,
+      "customer_name",
+      _.customerName,
+      None,
+      None,
+      (row, value) => row.copy(customerName = value),
+      SqlServerTypes.nvarchar
+    )
+  }
 
-  def customerEmail: Field[String, CustomerOrdersViewViewRow]
+  def customerEmail: Field[String, CustomerOrdersViewViewRow] = {
+    new Field[String, CustomerOrdersViewViewRow](
+      _path,
+      "customer_email",
+      _.customerEmail,
+      None,
+      None,
+      (row, value) => row.copy(customerEmail = value),
+      SqlServerTypes.nvarchar
+    )
+  }
 
-  def orderId: Field[Int, CustomerOrdersViewViewRow]
+  def orderId: Field[Int, CustomerOrdersViewViewRow] = {
+    new Field[Int, CustomerOrdersViewViewRow](
+      _path,
+      "order_id",
+      _.orderId,
+      None,
+      None,
+      (row, value) => row.copy(orderId = value),
+      ScalaDbTypes.SqlServerTypes.int_
+    )
+  }
 
-  def orderDate: OptField[LocalDateTime, CustomerOrdersViewViewRow]
+  def orderDate: OptField[LocalDateTime, CustomerOrdersViewViewRow] = {
+    new OptField[LocalDateTime, CustomerOrdersViewViewRow](
+      _path,
+      "order_date",
+      _.orderDate,
+      None,
+      None,
+      (row, value) => row.copy(orderDate = value),
+      SqlServerTypes.datetime2
+    )
+  }
 
-  def orderTotal: Field[BigDecimal, CustomerOrdersViewViewRow]
+  def orderTotal: Field[BigDecimal, CustomerOrdersViewViewRow] = {
+    new Field[BigDecimal, CustomerOrdersViewViewRow](
+      _path,
+      "order_total",
+      _.orderTotal,
+      None,
+      None,
+      (row, value) => row.copy(orderTotal = value),
+      ScalaDbTypes.SqlServerTypes.money
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, CustomerOrdersViewViewRow]]
+  override def columns: java.util.List[FieldLike[?, CustomerOrdersViewViewRow]] = java.util.List.of(this.customerId.underlying, this.customerName.underlying, this.customerEmail.underlying, this.orderId.underlying, this.orderDate.underlying, this.orderTotal.underlying)
 
   override def rowParser: RowParser[CustomerOrdersViewViewRow] = CustomerOrdersViewViewRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomerOrdersViewViewFields, CustomerOrdersViewViewRow] = new CustomerOrdersViewViewFields(`_path`)
+
+  override def `_1`: SqlExpr[Int] = customerId
+
+  override def `_2`: SqlExpr[String] = customerName
+
+  override def `_3`: SqlExpr[String] = customerEmail
+
+  override def `_4`: SqlExpr[Int] = orderId
+
+  override def `_5`: SqlExpr[LocalDateTime] = orderDate
+
+  override def `_6`: SqlExpr[BigDecimal] = orderTotal
 }
 
 object CustomerOrdersViewViewFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends CustomerOrdersViewViewFields with RelationStructure[CustomerOrdersViewViewFields, CustomerOrdersViewViewRow] {
-
-    override def customerId: Field[Int, CustomerOrdersViewViewRow] = {
-      new Field[Int, CustomerOrdersViewViewRow](
-        _path,
-        "customer_id",
-        _.customerId,
-        None,
-        None,
-        (row, value) => row.copy(customerId = value),
-        ScalaDbTypes.SqlServerTypes.int_
-      )
-    }
-
-    override def customerName: Field[String, CustomerOrdersViewViewRow] = {
-      new Field[String, CustomerOrdersViewViewRow](
-        _path,
-        "customer_name",
-        _.customerName,
-        None,
-        None,
-        (row, value) => row.copy(customerName = value),
-        SqlServerTypes.nvarchar
-      )
-    }
-
-    override def customerEmail: Field[String, CustomerOrdersViewViewRow] = {
-      new Field[String, CustomerOrdersViewViewRow](
-        _path,
-        "customer_email",
-        _.customerEmail,
-        None,
-        None,
-        (row, value) => row.copy(customerEmail = value),
-        SqlServerTypes.nvarchar
-      )
-    }
-
-    override def orderId: Field[Int, CustomerOrdersViewViewRow] = {
-      new Field[Int, CustomerOrdersViewViewRow](
-        _path,
-        "order_id",
-        _.orderId,
-        None,
-        None,
-        (row, value) => row.copy(orderId = value),
-        ScalaDbTypes.SqlServerTypes.int_
-      )
-    }
-
-    override def orderDate: OptField[LocalDateTime, CustomerOrdersViewViewRow] = {
-      new OptField[LocalDateTime, CustomerOrdersViewViewRow](
-        _path,
-        "order_date",
-        _.orderDate,
-        None,
-        None,
-        (row, value) => row.copy(orderDate = value),
-        SqlServerTypes.datetime2
-      )
-    }
-
-    override def orderTotal: Field[BigDecimal, CustomerOrdersViewViewRow] = {
-      new Field[BigDecimal, CustomerOrdersViewViewRow](
-        _path,
-        "order_total",
-        _.orderTotal,
-        None,
-        None,
-        (row, value) => row.copy(orderTotal = value),
-        ScalaDbTypes.SqlServerTypes.money
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, CustomerOrdersViewViewRow]] = java.util.List.of(this.customerId.underlying, this.customerName.underlying, this.customerEmail.underlying, this.orderId.underlying, this.orderDate.underlying, this.orderTotal.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[CustomerOrdersViewViewFields, CustomerOrdersViewViewRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: CustomerOrdersViewViewFields = new CustomerOrdersViewViewFields(java.util.Collections.emptyList())
 }

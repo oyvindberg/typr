@@ -1,16 +1,17 @@
 package dev.typr.foundations.scala
 
-import dev.typr.foundations.dsl.{DeleteBuilder => JavaDeleteBuilder}
 import dev.typr.foundations.Fragment
+import dev.typr.foundations.dsl
+
 import java.sql.Connection
-import _root_.scala.jdk.CollectionConverters._
-import _root_.scala.jdk.OptionConverters._
+import _root_.scala.jdk.CollectionConverters.*
+import _root_.scala.jdk.OptionConverters.*
 import scala.util.Using
 
-class DeleteBuilder[Fields, Row](private val javaBuilder: JavaDeleteBuilder[Fields, Row]) {
+class DeleteBuilder[Fields, Row](private val javaBuilder: dsl.DeleteBuilder[Fields, Row]) {
 
-  def where(predicate: Fields => dev.typr.foundations.dsl.SqlExpr[Boolean]): DeleteBuilder[Fields, Row] = {
-    new DeleteBuilder(javaBuilder.where((fields: Fields) => predicate(fields).underlying(Bijections.scalaBooleanToJavaBoolean)))
+  def where(predicate: Fields => SqlExpr[Boolean]): DeleteBuilder[Fields, Row] = {
+    new DeleteBuilder(javaBuilder.where((fields: Fields) => predicate(fields).underlying.underlying(Bijections.scalaBooleanToJavaBoolean)))
   }
 
   def execute(using connection: Connection): Int = {
@@ -43,8 +44,8 @@ object DeleteBuilder {
   def of[Fields, Row](
       tableName: String,
       structure: RelationStructure[Fields, Row],
-      dialect: dev.typr.foundations.dsl.Dialect
+      dialect: dsl.Dialect
   ): DeleteBuilder[Fields, Row] = {
-    new DeleteBuilder(JavaDeleteBuilder.of(tableName, structure, dialect))
+    new DeleteBuilder(dsl.DeleteBuilder.of(tableName, structure, dialect))
   }
 }

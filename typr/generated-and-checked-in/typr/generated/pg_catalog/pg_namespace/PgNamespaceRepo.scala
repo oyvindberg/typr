@@ -10,36 +10,36 @@ package typr.generated.pg_catalog.pg_namespace
 import java.sql.Connection
 
 trait PgNamespaceRepo {
-  def deleteById(oid: PgNamespaceId)(implicit c: Connection): Boolean
+  def deleteById(oid: PgNamespaceId)(using c: Connection): Boolean
 
-  def deleteByIds(oids: Array[PgNamespaceId])(implicit c: Connection): Int
+  def deleteByIds(oids: Array[PgNamespaceId])(using c: Connection): Int
 
-  def insert(unsaved: PgNamespaceRow)(implicit c: Connection): PgNamespaceRow
+  def insert(unsaved: PgNamespaceRow)(using c: Connection): PgNamespaceRow
 
   def insertStreaming(
     unsaved: Iterator[PgNamespaceRow],
     batchSize: Int = 10000
-  )(implicit c: Connection): Long
+  )(using c: Connection): Long
 
-  def selectAll(implicit c: Connection): List[PgNamespaceRow]
+  def selectAll(using c: Connection): List[PgNamespaceRow]
 
-  def selectById(oid: PgNamespaceId)(implicit c: Connection): Option[PgNamespaceRow]
+  def selectById(oid: PgNamespaceId)(using c: Connection): Option[PgNamespaceRow]
 
-  def selectByIds(oids: Array[PgNamespaceId])(implicit c: Connection): List[PgNamespaceRow]
+  def selectByIds(oids: Array[PgNamespaceId])(using c: Connection): List[PgNamespaceRow]
 
-  def selectByIdsTracked(oids: Array[PgNamespaceId])(implicit c: Connection): Map[PgNamespaceId, PgNamespaceRow]
+  def selectByIdsTracked(oids: Array[PgNamespaceId])(using c: Connection): Map[PgNamespaceId, PgNamespaceRow]
 
-  def selectByUniqueNspname(nspname: String)(implicit c: Connection): Option[PgNamespaceRow]
+  def selectByUniqueNspname(nspname: String)(using c: Connection): Option[PgNamespaceRow]
 
-  def update(row: PgNamespaceRow)(implicit c: Connection): Option[PgNamespaceRow]
+  def update(row: PgNamespaceRow)(using c: Connection): Option[PgNamespaceRow]
 
-  def upsert(unsaved: PgNamespaceRow)(implicit c: Connection): PgNamespaceRow
+  def upsert(unsaved: PgNamespaceRow)(using c: Connection): PgNamespaceRow
 
-  def upsertBatch(unsaved: Iterable[PgNamespaceRow])(implicit c: Connection): List[PgNamespaceRow]
+  def upsertBatch(unsaved: Iterable[PgNamespaceRow])(using c: Connection): List[PgNamespaceRow]
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   def upsertStreaming(
     unsaved: Iterator[PgNamespaceRow],
     batchSize: Int = 10000
-  )(implicit c: Connection): Int
+  )(using c: Connection): Int
 }

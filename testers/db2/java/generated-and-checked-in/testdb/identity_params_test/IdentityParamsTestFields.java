@@ -7,75 +7,80 @@ package testdb.identity_params_test;
 
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr2;
 import java.util.List;
 import java.util.Optional;
 
-public interface IdentityParamsTestFields extends FieldsExpr<IdentityParamsTestRow> {
-  record Impl(List<Path> _path)
-      implements IdentityParamsTestFields,
-          RelationStructure<IdentityParamsTestFields, IdentityParamsTestRow> {
-    @Override
-    public IdField<IdentityParamsTestId, IdentityParamsTestRow> id() {
-      return new IdField<IdentityParamsTestId, IdentityParamsTestRow>(
-          _path,
-          "ID",
-          IdentityParamsTestRow::id,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withId(value),
-          IdentityParamsTestId.pgType);
-    }
-    ;
+public class IdentityParamsTestFields
+    implements TupleExpr2<IdentityParamsTestId, String>,
+        RelationStructure<IdentityParamsTestFields, IdentityParamsTestRow>,
+        FieldsBase<IdentityParamsTestRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, IdentityParamsTestRow> name() {
-      return new Field<String, IdentityParamsTestRow>(
-          _path,
-          "NAME",
-          IdentityParamsTestRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          Db2Types.varchar);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, IdentityParamsTestRow>> columns() {
-      return java.util.List.of(this.id(), this.name());
-    }
-    ;
-
-    @Override
-    public RelationStructure<IdentityParamsTestFields, IdentityParamsTestRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public IdentityParamsTestFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static IdentityParamsTestFields structure =
+      new IdentityParamsTestFields(java.util.Collections.emptyList());
+
+  public IdField<IdentityParamsTestId, IdentityParamsTestRow> id() {
+    return new IdField<IdentityParamsTestId, IdentityParamsTestRow>(
+        _path,
+        "ID",
+        IdentityParamsTestRow::id,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withId(value),
+        IdentityParamsTestId.dbType);
   }
-  ;
 
-  IdField<IdentityParamsTestId, IdentityParamsTestRow> id();
-
-  Field<String, IdentityParamsTestRow> name();
+  public Field<String, IdentityParamsTestRow> name() {
+    return new Field<String, IdentityParamsTestRow>(
+        _path,
+        "NAME",
+        IdentityParamsTestRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        Db2Types.varchar);
+  }
 
   @Override
-  List<FieldLike<?, IdentityParamsTestRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<IdentityParamsTestRow> rowParser() {
+  public List<FieldLike<?, IdentityParamsTestRow>> columns() {
+    return java.util.List.of(this.id(), this.name());
+  }
+
+  @Override
+  public RowParser<IdentityParamsTestRow> rowParser() {
     return IdentityParamsTestRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<IdentityParamsTestFields, IdentityParamsTestRow> withPaths(
+      List<Path> _path) {
+    return new IdentityParamsTestFields(_path);
+  }
+
+  @Override
+  public SqlExpr<IdentityParamsTestId> _1() {
+    return id();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return name();
+  }
 }

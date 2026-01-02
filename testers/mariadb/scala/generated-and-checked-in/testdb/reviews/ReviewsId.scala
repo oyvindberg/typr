@@ -8,14 +8,14 @@ package testdb.reviews
 import com.fasterxml.jackson.annotation.JsonValue
 import dev.typr.foundations.MariaType
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.scala.Bijection
-import java.math.BigInteger
 
 /** Type for the primary key of table `reviews` */
-case class ReviewsId(@JsonValue value: BigInteger) extends scala.AnyVal
+case class ReviewsId(@JsonValue value: Uint8) extends scala.AnyVal
 
 object ReviewsId {
-  given bijection: Bijection[ReviewsId, BigInteger] = Bijection.apply[ReviewsId, BigInteger](_.value)(ReviewsId.apply)
+  given bijection: Bijection[ReviewsId, Uint8] = Bijection.apply[ReviewsId, Uint8](_.value)(ReviewsId.apply)
 
-  given pgType: MariaType[ReviewsId] = MariaTypes.bigintUnsigned.bimap(ReviewsId.apply, _.value)
+  given dbType: MariaType[ReviewsId] = MariaTypes.bigintUnsigned.bimap(ReviewsId.apply, _.value)
 }

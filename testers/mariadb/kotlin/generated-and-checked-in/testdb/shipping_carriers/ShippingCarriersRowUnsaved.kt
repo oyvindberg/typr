@@ -6,6 +6,7 @@
 package testdb.shipping_carriers
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Json
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 
@@ -22,7 +23,7 @@ data class ShippingCarriersRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("api_config") val apiConfig: Defaulted<String?> = UseDefault(),
+  @JsonProperty("api_config") val apiConfig: Defaulted<Json?> = UseDefault(),
   /** Default: 1
 
     */
@@ -30,7 +31,7 @@ data class ShippingCarriersRowUnsaved(
 ) {
   fun toRow(
     trackingUrlTemplateDefault: () -> String?,
-    apiConfigDefault: () -> String?,
+    apiConfigDefault: () -> Json?,
     isActiveDefault: () -> Boolean,
     carrierIdDefault: () -> ShippingCarriersId
   ): ShippingCarriersRow = ShippingCarriersRow(carrierId = carrierIdDefault(), code = code, name = name, trackingUrlTemplate = trackingUrlTemplate.getOrElse(trackingUrlTemplateDefault), apiConfig = apiConfig.getOrElse(apiConfigDefault), isActive = isActive.getOrElse(isActiveDefault))

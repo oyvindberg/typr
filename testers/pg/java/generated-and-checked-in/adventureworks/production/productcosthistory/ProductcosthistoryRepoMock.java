@@ -49,7 +49,7 @@ public record ProductcosthistoryRepoMock(
   @Override
   public DeleteBuilder<ProductcosthistoryFields, ProductcosthistoryRow> delete() {
     return new DeleteBuilderMock<>(
-        ProductcosthistoryFields.structure(),
+        ProductcosthistoryFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.compositeId(),
@@ -128,7 +128,7 @@ public record ProductcosthistoryRepoMock(
   @Override
   public SelectBuilder<ProductcosthistoryFields, ProductcosthistoryRow> select() {
     return new SelectBuilderMock<>(
-        ProductcosthistoryFields.structure(),
+        ProductcosthistoryFields.structure,
         () -> new ArrayList<>(map.values()),
         SelectParams.empty());
   }
@@ -176,7 +176,7 @@ public record ProductcosthistoryRepoMock(
   @Override
   public UpdateBuilder<ProductcosthistoryFields, ProductcosthistoryRow> update() {
     return new UpdateBuilderMock<>(
-        ProductcosthistoryFields.structure(),
+        ProductcosthistoryFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

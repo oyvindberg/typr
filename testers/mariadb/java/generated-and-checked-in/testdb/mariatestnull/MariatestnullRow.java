@@ -9,11 +9,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple41;
+import dev.typr.foundations.data.Json;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Uint2;
+import dev.typr.foundations.data.Uint4;
+import dev.typr.foundations.data.Uint8;
 import dev.typr.foundations.data.maria.Inet4;
 import dev.typr.foundations.data.maria.Inet6;
 import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -34,15 +39,15 @@ public record MariatestnullRow(
     /** Default: NULL */
     @JsonProperty("bigint_col") Optional<Long> bigintCol,
     /** Default: NULL */
-    @JsonProperty("tinyint_u_col") Optional<Short> tinyintUCol,
+    @JsonProperty("tinyint_u_col") Optional<Uint1> tinyintUCol,
     /** Default: NULL */
-    @JsonProperty("smallint_u_col") Optional<Integer> smallintUCol,
+    @JsonProperty("smallint_u_col") Optional<Uint2> smallintUCol,
     /** Default: NULL */
-    @JsonProperty("mediumint_u_col") Optional<Integer> mediumintUCol,
+    @JsonProperty("mediumint_u_col") Optional<Uint4> mediumintUCol,
     /** Default: NULL */
-    @JsonProperty("int_u_col") Optional<Long> intUCol,
+    @JsonProperty("int_u_col") Optional<Uint4> intUCol,
     /** Default: NULL */
-    @JsonProperty("bigint_u_col") Optional<BigInteger> bigintUCol,
+    @JsonProperty("bigint_u_col") Optional<Uint8> bigintUCol,
     /** Default: NULL */
     @JsonProperty("decimal_col") Optional<BigDecimal> decimalCol,
     /** Default: NULL */
@@ -98,15 +103,55 @@ public record MariatestnullRow(
     /** Default: NULL */
     @JsonProperty("year_col") Optional<Year> yearCol,
     /** Default: NULL */
-    @JsonProperty("enum_col") Optional<String> enumCol,
-    /** Default: NULL */
     @JsonProperty("set_col") Optional<MariaSet> setCol,
     /** Default: NULL */
-    @JsonProperty("json_col") Optional<String> jsonCol,
+    @JsonProperty("json_col") Optional<Json> jsonCol,
     /** Default: NULL */
     @JsonProperty("inet4_col") Optional<Inet4> inet4Col,
     /** Default: NULL */
-    @JsonProperty("inet6_col") Optional<Inet6> inet6Col) {
+    @JsonProperty("inet6_col") Optional<Inet6> inet6Col)
+    implements Tuple41<
+        Optional<Byte>,
+        Optional<Short>,
+        Optional<Integer>,
+        Optional<Integer>,
+        Optional<Long>,
+        Optional<Uint1>,
+        Optional<Uint2>,
+        Optional<Uint4>,
+        Optional<Uint4>,
+        Optional<Uint8>,
+        Optional<BigDecimal>,
+        Optional<BigDecimal>,
+        Optional<Float>,
+        Optional<Double>,
+        Optional<Boolean>,
+        Optional<byte[]>,
+        Optional<byte[]>,
+        Optional<String>,
+        Optional<String>,
+        Optional<String>,
+        Optional<String>,
+        Optional<String>,
+        Optional<String>,
+        Optional<byte[]>,
+        Optional<byte[]>,
+        Optional<byte[]>,
+        Optional<byte[]>,
+        Optional<byte[]>,
+        Optional<byte[]>,
+        Optional<LocalDate>,
+        Optional<LocalTime>,
+        Optional<LocalTime>,
+        Optional<LocalDateTime>,
+        Optional<LocalDateTime>,
+        Optional<LocalDateTime>,
+        Optional<LocalDateTime>,
+        Optional<Year>,
+        Optional<MariaSet>,
+        Optional<Json>,
+        Optional<Inet4>,
+        Optional<Inet6>> {
   /** Default: NULL */
   public MariatestnullRow withTinyintCol(Optional<Byte> tinyintCol) {
     return new MariatestnullRow(
@@ -147,7 +192,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -195,7 +239,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -243,7 +286,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -291,7 +333,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -339,7 +380,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -348,7 +388,7 @@ public record MariatestnullRow(
   ;
 
   /** Default: NULL */
-  public MariatestnullRow withTinyintUCol(Optional<Short> tinyintUCol) {
+  public MariatestnullRow withTinyintUCol(Optional<Uint1> tinyintUCol) {
     return new MariatestnullRow(
         tinyintCol,
         smallintCol,
@@ -387,7 +427,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -396,7 +435,7 @@ public record MariatestnullRow(
   ;
 
   /** Default: NULL */
-  public MariatestnullRow withSmallintUCol(Optional<Integer> smallintUCol) {
+  public MariatestnullRow withSmallintUCol(Optional<Uint2> smallintUCol) {
     return new MariatestnullRow(
         tinyintCol,
         smallintCol,
@@ -435,7 +474,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -444,7 +482,7 @@ public record MariatestnullRow(
   ;
 
   /** Default: NULL */
-  public MariatestnullRow withMediumintUCol(Optional<Integer> mediumintUCol) {
+  public MariatestnullRow withMediumintUCol(Optional<Uint4> mediumintUCol) {
     return new MariatestnullRow(
         tinyintCol,
         smallintCol,
@@ -483,7 +521,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -492,7 +529,7 @@ public record MariatestnullRow(
   ;
 
   /** Default: NULL */
-  public MariatestnullRow withIntUCol(Optional<Long> intUCol) {
+  public MariatestnullRow withIntUCol(Optional<Uint4> intUCol) {
     return new MariatestnullRow(
         tinyintCol,
         smallintCol,
@@ -531,7 +568,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -540,7 +576,7 @@ public record MariatestnullRow(
   ;
 
   /** Default: NULL */
-  public MariatestnullRow withBigintUCol(Optional<BigInteger> bigintUCol) {
+  public MariatestnullRow withBigintUCol(Optional<Uint8> bigintUCol) {
     return new MariatestnullRow(
         tinyintCol,
         smallintCol,
@@ -579,7 +615,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -627,7 +662,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -675,7 +709,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -723,7 +756,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -771,7 +803,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -819,7 +850,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -867,7 +897,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -915,7 +944,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -963,7 +991,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1011,7 +1038,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1059,7 +1085,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1107,7 +1132,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1155,7 +1179,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1203,7 +1226,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1251,7 +1273,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1299,7 +1320,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1347,7 +1367,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1395,7 +1414,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1443,7 +1461,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1491,7 +1508,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1539,7 +1555,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1587,7 +1602,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1635,7 +1649,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1683,7 +1696,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1731,7 +1743,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1779,7 +1790,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1827,7 +1837,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1875,55 +1884,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
-        setCol,
-        jsonCol,
-        inet4Col,
-        inet6Col);
-  }
-  ;
-
-  /** Default: NULL */
-  public MariatestnullRow withEnumCol(Optional<String> enumCol) {
-    return new MariatestnullRow(
-        tinyintCol,
-        smallintCol,
-        mediumintCol,
-        intCol,
-        bigintCol,
-        tinyintUCol,
-        smallintUCol,
-        mediumintUCol,
-        intUCol,
-        bigintUCol,
-        decimalCol,
-        numericCol,
-        floatCol,
-        doubleCol,
-        boolCol,
-        bitCol,
-        bit1Col,
-        charCol,
-        varcharCol,
-        tinytextCol,
-        textCol,
-        mediumtextCol,
-        longtextCol,
-        binaryCol,
-        varbinaryCol,
-        tinyblobCol,
-        blobCol,
-        mediumblobCol,
-        longblobCol,
-        dateCol,
-        timeCol,
-        timeFspCol,
-        datetimeCol,
-        datetimeFspCol,
-        timestampCol,
-        timestampFspCol,
-        yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1971,7 +1931,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -1980,7 +1939,7 @@ public record MariatestnullRow(
   ;
 
   /** Default: NULL */
-  public MariatestnullRow withJsonCol(Optional<String> jsonCol) {
+  public MariatestnullRow withJsonCol(Optional<Json> jsonCol) {
     return new MariatestnullRow(
         tinyintCol,
         smallintCol,
@@ -2019,7 +1978,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -2067,7 +2025,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -2115,7 +2072,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,
@@ -2162,9 +2118,8 @@ public record MariatestnullRow(
           MariaTypes.timestamp.opt(),
           MariaTypes.timestamp.opt(),
           MariaTypes.year.opt(),
-          MariaTypes.text.opt(),
           MariaTypes.set.opt(),
-          MariaTypes.longtext.opt(),
+          MariaTypes.json.opt(),
           MariaTypes.inet4.opt(),
           MariaTypes.inet6.opt(),
           MariatestnullRow::new,
@@ -2207,12 +2162,257 @@ public record MariatestnullRow(
                 row.timestampCol(),
                 row.timestampFspCol(),
                 row.yearCol(),
-                row.enumCol(),
                 row.setCol(),
                 row.jsonCol(),
                 row.inet4Col(),
                 row.inet6Col()
               });
+  ;
+
+  @Override
+  public Optional<Byte> _1() {
+    return tinyintCol;
+  }
+  ;
+
+  @Override
+  public Optional<Uint8> _10() {
+    return bigintUCol;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _11() {
+    return decimalCol;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _12() {
+    return numericCol;
+  }
+  ;
+
+  @Override
+  public Optional<Float> _13() {
+    return floatCol;
+  }
+  ;
+
+  @Override
+  public Optional<Double> _14() {
+    return doubleCol;
+  }
+  ;
+
+  @Override
+  public Optional<Boolean> _15() {
+    return boolCol;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _16() {
+    return bitCol;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _17() {
+    return bit1Col;
+  }
+  ;
+
+  @Override
+  public Optional<String> _18() {
+    return charCol;
+  }
+  ;
+
+  @Override
+  public Optional<String> _19() {
+    return varcharCol;
+  }
+  ;
+
+  @Override
+  public Optional<Short> _2() {
+    return smallintCol;
+  }
+  ;
+
+  @Override
+  public Optional<String> _20() {
+    return tinytextCol;
+  }
+  ;
+
+  @Override
+  public Optional<String> _21() {
+    return textCol;
+  }
+  ;
+
+  @Override
+  public Optional<String> _22() {
+    return mediumtextCol;
+  }
+  ;
+
+  @Override
+  public Optional<String> _23() {
+    return longtextCol;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _24() {
+    return binaryCol;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _25() {
+    return varbinaryCol;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _26() {
+    return tinyblobCol;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _27() {
+    return blobCol;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _28() {
+    return mediumblobCol;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _29() {
+    return longblobCol;
+  }
+  ;
+
+  @Override
+  public Optional<Integer> _3() {
+    return mediumintCol;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDate> _30() {
+    return dateCol;
+  }
+  ;
+
+  @Override
+  public Optional<LocalTime> _31() {
+    return timeCol;
+  }
+  ;
+
+  @Override
+  public Optional<LocalTime> _32() {
+    return timeFspCol;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _33() {
+    return datetimeCol;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _34() {
+    return datetimeFspCol;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _35() {
+    return timestampCol;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _36() {
+    return timestampFspCol;
+  }
+  ;
+
+  @Override
+  public Optional<Year> _37() {
+    return yearCol;
+  }
+  ;
+
+  @Override
+  public Optional<MariaSet> _38() {
+    return setCol;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _39() {
+    return jsonCol;
+  }
+  ;
+
+  @Override
+  public Optional<Integer> _4() {
+    return intCol;
+  }
+  ;
+
+  @Override
+  public Optional<Inet4> _40() {
+    return inet4Col;
+  }
+  ;
+
+  @Override
+  public Optional<Inet6> _41() {
+    return inet6Col;
+  }
+  ;
+
+  @Override
+  public Optional<Long> _5() {
+    return bigintCol;
+  }
+  ;
+
+  @Override
+  public Optional<Uint1> _6() {
+    return tinyintUCol;
+  }
+  ;
+
+  @Override
+  public Optional<Uint2> _7() {
+    return smallintUCol;
+  }
+  ;
+
+  @Override
+  public Optional<Uint4> _8() {
+    return mediumintUCol;
+  }
+  ;
+
+  @Override
+  public Optional<Uint4> _9() {
+    return intUCol;
+  }
   ;
 
   public MariatestnullRowUnsaved toUnsavedRow(
@@ -2221,11 +2421,11 @@ public record MariatestnullRow(
       Defaulted<Optional<Integer>> mediumintCol,
       Defaulted<Optional<Integer>> intCol,
       Defaulted<Optional<Long>> bigintCol,
-      Defaulted<Optional<Short>> tinyintUCol,
-      Defaulted<Optional<Integer>> smallintUCol,
-      Defaulted<Optional<Integer>> mediumintUCol,
-      Defaulted<Optional<Long>> intUCol,
-      Defaulted<Optional<BigInteger>> bigintUCol,
+      Defaulted<Optional<Uint1>> tinyintUCol,
+      Defaulted<Optional<Uint2>> smallintUCol,
+      Defaulted<Optional<Uint4>> mediumintUCol,
+      Defaulted<Optional<Uint4>> intUCol,
+      Defaulted<Optional<Uint8>> bigintUCol,
       Defaulted<Optional<BigDecimal>> decimalCol,
       Defaulted<Optional<BigDecimal>> numericCol,
       Defaulted<Optional<Float>> floatCol,
@@ -2253,9 +2453,8 @@ public record MariatestnullRow(
       Defaulted<Optional<LocalDateTime>> timestampCol,
       Defaulted<Optional<LocalDateTime>> timestampFspCol,
       Defaulted<Optional<Year>> yearCol,
-      Defaulted<Optional<String>> enumCol,
       Defaulted<Optional<MariaSet>> setCol,
-      Defaulted<Optional<String>> jsonCol,
+      Defaulted<Optional<Json>> jsonCol,
       Defaulted<Optional<Inet4>> inet4Col,
       Defaulted<Optional<Inet6>> inet6Col) {
     return new MariatestnullRowUnsaved(
@@ -2296,7 +2495,6 @@ public record MariatestnullRow(
         timestampCol,
         timestampFspCol,
         yearCol,
-        enumCol,
         setCol,
         jsonCol,
         inet4Col,

@@ -7,12 +7,15 @@ package testdb.db2test;
 
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.data.Xml;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr24;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,418 +23,467 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface Db2testFields extends FieldsExpr<Db2testRow> {
-  record Impl(List<Path> _path)
-      implements Db2testFields, RelationStructure<Db2testFields, Db2testRow> {
-    @Override
-    public Field<Short, Db2testRow> smallintCol() {
-      return new Field<Short, Db2testRow>(
-          _path,
-          "SMALLINT_COL",
-          Db2testRow::smallintCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withSmallintCol(value),
-          Db2Types.smallint);
-    }
-    ;
+public class Db2testFields
+    implements TupleExpr24<
+            Short,
+            Db2testId,
+            Long,
+            BigDecimal,
+            BigDecimal,
+            BigDecimal,
+            BigDecimal,
+            Float,
+            Double,
+            Boolean,
+            String,
+            String,
+            String,
+            String,
+            String,
+            byte[],
+            byte[],
+            byte[],
+            LocalDate,
+            LocalTime,
+            LocalDateTime,
+            LocalDateTime,
+            LocalDateTime,
+            Xml>,
+        RelationStructure<Db2testFields, Db2testRow>,
+        FieldsBase<Db2testRow> {
+  List<Path> _path;
 
-    @Override
-    public IdField<Db2testId, Db2testRow> intCol() {
-      return new IdField<Db2testId, Db2testRow>(
-          _path,
-          "INT_COL",
-          Db2testRow::intCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withIntCol(value),
-          Db2testId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<Long, Db2testRow> bigintCol() {
-      return new Field<Long, Db2testRow>(
-          _path,
-          "BIGINT_COL",
-          Db2testRow::bigintCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withBigintCol(value),
-          Db2Types.bigint);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, Db2testRow> decimalCol() {
-      return new Field<BigDecimal, Db2testRow>(
-          _path,
-          "DECIMAL_COL",
-          Db2testRow::decimalCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDecimalCol(value),
-          Db2Types.decimal);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, Db2testRow> numericCol() {
-      return new Field<BigDecimal, Db2testRow>(
-          _path,
-          "NUMERIC_COL",
-          Db2testRow::numericCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withNumericCol(value),
-          Db2Types.decimal);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, Db2testRow> decfloat16Col() {
-      return new Field<BigDecimal, Db2testRow>(
-          _path,
-          "DECFLOAT16_COL",
-          Db2testRow::decfloat16Col,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDecfloat16Col(value),
-          Db2Types.decfloat);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, Db2testRow> decfloat34Col() {
-      return new Field<BigDecimal, Db2testRow>(
-          _path,
-          "DECFLOAT34_COL",
-          Db2testRow::decfloat34Col,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDecfloat34Col(value),
-          Db2Types.decfloat);
-    }
-    ;
-
-    @Override
-    public Field<Float, Db2testRow> realCol() {
-      return new Field<Float, Db2testRow>(
-          _path,
-          "REAL_COL",
-          Db2testRow::realCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withRealCol(value),
-          Db2Types.real);
-    }
-    ;
-
-    @Override
-    public Field<Double, Db2testRow> doubleCol() {
-      return new Field<Double, Db2testRow>(
-          _path,
-          "DOUBLE_COL",
-          Db2testRow::doubleCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDoubleCol(value),
-          Db2Types.double_);
-    }
-    ;
-
-    @Override
-    public Field<Boolean, Db2testRow> boolCol() {
-      return new Field<Boolean, Db2testRow>(
-          _path,
-          "BOOL_COL",
-          Db2testRow::boolCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withBoolCol(value),
-          Db2Types.boolean_);
-    }
-    ;
-
-    @Override
-    public Field<String, Db2testRow> charCol() {
-      return new Field<String, Db2testRow>(
-          _path,
-          "CHAR_COL",
-          Db2testRow::charCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCharCol(value),
-          Db2Types.char_);
-    }
-    ;
-
-    @Override
-    public Field<String, Db2testRow> varcharCol() {
-      return new Field<String, Db2testRow>(
-          _path,
-          "VARCHAR_COL",
-          Db2testRow::varcharCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withVarcharCol(value),
-          Db2Types.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, Db2testRow> clobCol() {
-      return new Field<String, Db2testRow>(
-          _path,
-          "CLOB_COL",
-          Db2testRow::clobCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withClobCol(value),
-          Db2Types.clob);
-    }
-    ;
-
-    @Override
-    public Field<String, Db2testRow> graphicCol() {
-      return new Field<String, Db2testRow>(
-          _path,
-          "GRAPHIC_COL",
-          Db2testRow::graphicCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withGraphicCol(value),
-          Db2Types.graphic);
-    }
-    ;
-
-    @Override
-    public Field<String, Db2testRow> vargraphicCol() {
-      return new Field<String, Db2testRow>(
-          _path,
-          "VARGRAPHIC_COL",
-          Db2testRow::vargraphicCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withVargraphicCol(value),
-          Db2Types.vargraphic);
-    }
-    ;
-
-    @Override
-    public Field<byte[], Db2testRow> binaryCol() {
-      return new Field<byte[], Db2testRow>(
-          _path,
-          "BINARY_COL",
-          Db2testRow::binaryCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withBinaryCol(value),
-          Db2Types.binary);
-    }
-    ;
-
-    @Override
-    public Field<byte[], Db2testRow> varbinaryCol() {
-      return new Field<byte[], Db2testRow>(
-          _path,
-          "VARBINARY_COL",
-          Db2testRow::varbinaryCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withVarbinaryCol(value),
-          Db2Types.varbinary);
-    }
-    ;
-
-    @Override
-    public Field<byte[], Db2testRow> blobCol() {
-      return new Field<byte[], Db2testRow>(
-          _path,
-          "BLOB_COL",
-          Db2testRow::blobCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withBlobCol(value),
-          Db2Types.blob);
-    }
-    ;
-
-    @Override
-    public Field<LocalDate, Db2testRow> dateCol() {
-      return new Field<LocalDate, Db2testRow>(
-          _path,
-          "DATE_COL",
-          Db2testRow::dateCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDateCol(value),
-          Db2Types.date);
-    }
-    ;
-
-    @Override
-    public Field<LocalTime, Db2testRow> timeCol() {
-      return new Field<LocalTime, Db2testRow>(
-          _path,
-          "TIME_COL",
-          Db2testRow::timeCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTimeCol(value),
-          Db2Types.time);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, Db2testRow> timestampCol() {
-      return new Field<LocalDateTime, Db2testRow>(
-          _path,
-          "TIMESTAMP_COL",
-          Db2testRow::timestampCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTimestampCol(value),
-          Db2Types.timestamp);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, Db2testRow> timestamp6Col() {
-      return new Field<LocalDateTime, Db2testRow>(
-          _path,
-          "TIMESTAMP6_COL",
-          Db2testRow::timestamp6Col,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTimestamp6Col(value),
-          Db2Types.timestamp);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, Db2testRow> timestamp12Col() {
-      return new Field<LocalDateTime, Db2testRow>(
-          _path,
-          "TIMESTAMP12_COL",
-          Db2testRow::timestamp12Col,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTimestamp12Col(value),
-          Db2Types.timestamp);
-    }
-    ;
-
-    @Override
-    public Field<String, Db2testRow> xmlCol() {
-      return new Field<String, Db2testRow>(
-          _path,
-          "XML_COL",
-          Db2testRow::xmlCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withXmlCol(value),
-          Db2Types.xml);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, Db2testRow>> columns() {
-      return java.util.List.of(
-          this.smallintCol(),
-          this.intCol(),
-          this.bigintCol(),
-          this.decimalCol(),
-          this.numericCol(),
-          this.decfloat16Col(),
-          this.decfloat34Col(),
-          this.realCol(),
-          this.doubleCol(),
-          this.boolCol(),
-          this.charCol(),
-          this.varcharCol(),
-          this.clobCol(),
-          this.graphicCol(),
-          this.vargraphicCol(),
-          this.binaryCol(),
-          this.varbinaryCol(),
-          this.blobCol(),
-          this.dateCol(),
-          this.timeCol(),
-          this.timestampCol(),
-          this.timestamp6Col(),
-          this.timestamp12Col(),
-          this.xmlCol());
-    }
-    ;
-
-    @Override
-    public RelationStructure<Db2testFields, Db2testRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public Db2testFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static Db2testFields structure = new Db2testFields(java.util.Collections.emptyList());
+
+  public Field<Short, Db2testRow> smallintCol() {
+    return new Field<Short, Db2testRow>(
+        _path,
+        "SMALLINT_COL",
+        Db2testRow::smallintCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withSmallintCol(value),
+        Db2Types.smallint);
   }
-  ;
 
-  Field<Short, Db2testRow> smallintCol();
+  public IdField<Db2testId, Db2testRow> intCol() {
+    return new IdField<Db2testId, Db2testRow>(
+        _path,
+        "INT_COL",
+        Db2testRow::intCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withIntCol(value),
+        Db2testId.dbType);
+  }
 
-  IdField<Db2testId, Db2testRow> intCol();
+  public Field<Long, Db2testRow> bigintCol() {
+    return new Field<Long, Db2testRow>(
+        _path,
+        "BIGINT_COL",
+        Db2testRow::bigintCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withBigintCol(value),
+        Db2Types.bigint);
+  }
 
-  Field<Long, Db2testRow> bigintCol();
+  public Field<BigDecimal, Db2testRow> decimalCol() {
+    return new Field<BigDecimal, Db2testRow>(
+        _path,
+        "DECIMAL_COL",
+        Db2testRow::decimalCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDecimalCol(value),
+        Db2Types.decimal);
+  }
 
-  Field<BigDecimal, Db2testRow> decimalCol();
+  public Field<BigDecimal, Db2testRow> numericCol() {
+    return new Field<BigDecimal, Db2testRow>(
+        _path,
+        "NUMERIC_COL",
+        Db2testRow::numericCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withNumericCol(value),
+        Db2Types.decimal);
+  }
 
-  Field<BigDecimal, Db2testRow> numericCol();
+  public Field<BigDecimal, Db2testRow> decfloat16Col() {
+    return new Field<BigDecimal, Db2testRow>(
+        _path,
+        "DECFLOAT16_COL",
+        Db2testRow::decfloat16Col,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDecfloat16Col(value),
+        Db2Types.decfloat);
+  }
 
-  Field<BigDecimal, Db2testRow> decfloat16Col();
+  public Field<BigDecimal, Db2testRow> decfloat34Col() {
+    return new Field<BigDecimal, Db2testRow>(
+        _path,
+        "DECFLOAT34_COL",
+        Db2testRow::decfloat34Col,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDecfloat34Col(value),
+        Db2Types.decfloat);
+  }
 
-  Field<BigDecimal, Db2testRow> decfloat34Col();
+  public Field<Float, Db2testRow> realCol() {
+    return new Field<Float, Db2testRow>(
+        _path,
+        "REAL_COL",
+        Db2testRow::realCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withRealCol(value),
+        Db2Types.real);
+  }
 
-  Field<Float, Db2testRow> realCol();
+  public Field<Double, Db2testRow> doubleCol() {
+    return new Field<Double, Db2testRow>(
+        _path,
+        "DOUBLE_COL",
+        Db2testRow::doubleCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDoubleCol(value),
+        Db2Types.double_);
+  }
 
-  Field<Double, Db2testRow> doubleCol();
+  public Field<Boolean, Db2testRow> boolCol() {
+    return new Field<Boolean, Db2testRow>(
+        _path,
+        "BOOL_COL",
+        Db2testRow::boolCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withBoolCol(value),
+        Db2Types.boolean_);
+  }
 
-  Field<Boolean, Db2testRow> boolCol();
+  public Field<String, Db2testRow> charCol() {
+    return new Field<String, Db2testRow>(
+        _path,
+        "CHAR_COL",
+        Db2testRow::charCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCharCol(value),
+        Db2Types.char_);
+  }
 
-  Field<String, Db2testRow> charCol();
+  public Field<String, Db2testRow> varcharCol() {
+    return new Field<String, Db2testRow>(
+        _path,
+        "VARCHAR_COL",
+        Db2testRow::varcharCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withVarcharCol(value),
+        Db2Types.varchar);
+  }
 
-  Field<String, Db2testRow> varcharCol();
+  public Field<String, Db2testRow> clobCol() {
+    return new Field<String, Db2testRow>(
+        _path,
+        "CLOB_COL",
+        Db2testRow::clobCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withClobCol(value),
+        Db2Types.clob);
+  }
 
-  Field<String, Db2testRow> clobCol();
+  public Field<String, Db2testRow> graphicCol() {
+    return new Field<String, Db2testRow>(
+        _path,
+        "GRAPHIC_COL",
+        Db2testRow::graphicCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withGraphicCol(value),
+        Db2Types.graphic);
+  }
 
-  Field<String, Db2testRow> graphicCol();
+  public Field<String, Db2testRow> vargraphicCol() {
+    return new Field<String, Db2testRow>(
+        _path,
+        "VARGRAPHIC_COL",
+        Db2testRow::vargraphicCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withVargraphicCol(value),
+        Db2Types.vargraphic);
+  }
 
-  Field<String, Db2testRow> vargraphicCol();
+  public Field<byte[], Db2testRow> binaryCol() {
+    return new Field<byte[], Db2testRow>(
+        _path,
+        "BINARY_COL",
+        Db2testRow::binaryCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withBinaryCol(value),
+        Db2Types.binary);
+  }
 
-  Field<byte[], Db2testRow> binaryCol();
+  public Field<byte[], Db2testRow> varbinaryCol() {
+    return new Field<byte[], Db2testRow>(
+        _path,
+        "VARBINARY_COL",
+        Db2testRow::varbinaryCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withVarbinaryCol(value),
+        Db2Types.varbinary);
+  }
 
-  Field<byte[], Db2testRow> varbinaryCol();
+  public Field<byte[], Db2testRow> blobCol() {
+    return new Field<byte[], Db2testRow>(
+        _path,
+        "BLOB_COL",
+        Db2testRow::blobCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withBlobCol(value),
+        Db2Types.blob);
+  }
 
-  Field<byte[], Db2testRow> blobCol();
+  public Field<LocalDate, Db2testRow> dateCol() {
+    return new Field<LocalDate, Db2testRow>(
+        _path,
+        "DATE_COL",
+        Db2testRow::dateCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDateCol(value),
+        Db2Types.date);
+  }
 
-  Field<LocalDate, Db2testRow> dateCol();
+  public Field<LocalTime, Db2testRow> timeCol() {
+    return new Field<LocalTime, Db2testRow>(
+        _path,
+        "TIME_COL",
+        Db2testRow::timeCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTimeCol(value),
+        Db2Types.time);
+  }
 
-  Field<LocalTime, Db2testRow> timeCol();
+  public Field<LocalDateTime, Db2testRow> timestampCol() {
+    return new Field<LocalDateTime, Db2testRow>(
+        _path,
+        "TIMESTAMP_COL",
+        Db2testRow::timestampCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTimestampCol(value),
+        Db2Types.timestamp);
+  }
 
-  Field<LocalDateTime, Db2testRow> timestampCol();
+  public Field<LocalDateTime, Db2testRow> timestamp6Col() {
+    return new Field<LocalDateTime, Db2testRow>(
+        _path,
+        "TIMESTAMP6_COL",
+        Db2testRow::timestamp6Col,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTimestamp6Col(value),
+        Db2Types.timestamp);
+  }
 
-  Field<LocalDateTime, Db2testRow> timestamp6Col();
+  public Field<LocalDateTime, Db2testRow> timestamp12Col() {
+    return new Field<LocalDateTime, Db2testRow>(
+        _path,
+        "TIMESTAMP12_COL",
+        Db2testRow::timestamp12Col,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTimestamp12Col(value),
+        Db2Types.timestamp);
+  }
 
-  Field<LocalDateTime, Db2testRow> timestamp12Col();
-
-  Field<String, Db2testRow> xmlCol();
+  public Field<Xml, Db2testRow> xmlCol() {
+    return new Field<Xml, Db2testRow>(
+        _path,
+        "XML_COL",
+        Db2testRow::xmlCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withXmlCol(value),
+        Db2Types.xml);
+  }
 
   @Override
-  List<FieldLike<?, Db2testRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<Db2testRow> rowParser() {
+  public List<FieldLike<?, Db2testRow>> columns() {
+    return java.util.List.of(
+        this.smallintCol(),
+        this.intCol(),
+        this.bigintCol(),
+        this.decimalCol(),
+        this.numericCol(),
+        this.decfloat16Col(),
+        this.decfloat34Col(),
+        this.realCol(),
+        this.doubleCol(),
+        this.boolCol(),
+        this.charCol(),
+        this.varcharCol(),
+        this.clobCol(),
+        this.graphicCol(),
+        this.vargraphicCol(),
+        this.binaryCol(),
+        this.varbinaryCol(),
+        this.blobCol(),
+        this.dateCol(),
+        this.timeCol(),
+        this.timestampCol(),
+        this.timestamp6Col(),
+        this.timestamp12Col(),
+        this.xmlCol());
+  }
+
+  @Override
+  public RowParser<Db2testRow> rowParser() {
     return Db2testRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<Db2testFields, Db2testRow> withPaths(List<Path> _path) {
+    return new Db2testFields(_path);
+  }
+
+  @Override
+  public SqlExpr<Short> _1() {
+    return smallintCol();
+  }
+
+  @Override
+  public SqlExpr<Db2testId> _2() {
+    return intCol();
+  }
+
+  @Override
+  public SqlExpr<Long> _3() {
+    return bigintCol();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _4() {
+    return decimalCol();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _5() {
+    return numericCol();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _6() {
+    return decfloat16Col();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _7() {
+    return decfloat34Col();
+  }
+
+  @Override
+  public SqlExpr<Float> _8() {
+    return realCol();
+  }
+
+  @Override
+  public SqlExpr<Double> _9() {
+    return doubleCol();
+  }
+
+  @Override
+  public SqlExpr<Boolean> _10() {
+    return boolCol();
+  }
+
+  @Override
+  public SqlExpr<String> _11() {
+    return charCol();
+  }
+
+  @Override
+  public SqlExpr<String> _12() {
+    return varcharCol();
+  }
+
+  @Override
+  public SqlExpr<String> _13() {
+    return clobCol();
+  }
+
+  @Override
+  public SqlExpr<String> _14() {
+    return graphicCol();
+  }
+
+  @Override
+  public SqlExpr<String> _15() {
+    return vargraphicCol();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _16() {
+    return binaryCol();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _17() {
+    return varbinaryCol();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _18() {
+    return blobCol();
+  }
+
+  @Override
+  public SqlExpr<LocalDate> _19() {
+    return dateCol();
+  }
+
+  @Override
+  public SqlExpr<LocalTime> _20() {
+    return timeCol();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _21() {
+    return timestampCol();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _22() {
+    return timestamp6Col();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _23() {
+    return timestamp12Col();
+  }
+
+  @Override
+  public SqlExpr<Xml> _24() {
+    return xmlCol();
+  }
 }

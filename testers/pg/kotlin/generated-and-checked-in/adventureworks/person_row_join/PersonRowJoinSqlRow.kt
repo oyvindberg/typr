@@ -7,6 +7,7 @@ package adventureworks.person_row_join
 
 import adventureworks.person.businessentity.BusinessentityId
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple3
 import dev.typr.foundations.data.Record
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -18,8 +19,14 @@ data class PersonRowJoinSqlRow(
   val businessentityid: BusinessentityId,
   val email: Array<Record>?,
   val emails: Array<Record>?
-) {
+) : Tuple3<BusinessentityId, Array<Record>?, Array<Record>?> {
+  override fun _1(): BusinessentityId = businessentityid
+
+  override fun _2(): Array<Record>? = email
+
+  override fun _3(): Array<Record>? = emails
+
   companion object {
-    val _rowParser: RowParser<PersonRowJoinSqlRow> = RowParsers.of(BusinessentityId.pgType, PgTypes.recordArray.nullable(), PgTypes.recordArray.nullable(), { t0, t1, t2 -> PersonRowJoinSqlRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.businessentityid, row.email, row.emails) })
+    val _rowParser: RowParser<PersonRowJoinSqlRow> = RowParsers.of(BusinessentityId.dbType, PgTypes.recordArray.nullable(), PgTypes.recordArray.nullable(), { t0, t1, t2 -> PersonRowJoinSqlRow(t0, t1, t2) }, { row -> arrayOf<Any?>(row.businessentityid, row.email, row.emails) })
   }
 }

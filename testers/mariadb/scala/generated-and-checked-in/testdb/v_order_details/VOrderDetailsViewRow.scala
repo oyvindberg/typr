@@ -7,6 +7,7 @@ package testdb.v_order_details
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple14
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -81,8 +82,36 @@ case class VOrderDetailsViewRow(
    * Points to [[testdb.shipping_carriers.ShippingCarriersRow.name]]
    */
   @JsonProperty("carrier_name") carrierName: Option[String]
-)
+) extends Tuple14[OrdersId, String, String, String, BigDecimal, String, LocalDateTime, String, Option[String], Long, Option[BigDecimal], Option[String], Option[String], Option[String]] {
+  override def `_1`: OrdersId = orderId
+
+  override def `_2`: String = orderNumber
+
+  override def `_3`: String = orderStatus
+
+  override def `_4`: String = paymentStatus
+
+  override def `_5`: BigDecimal = totalAmount
+
+  override def `_6`: String = currencyCode
+
+  override def `_7`: LocalDateTime = orderedAt
+
+  override def `_8`: String = customerEmail
+
+  override def `_9`: Option[String] = customerName
+
+  override def `_10`: Long = itemCount
+
+  override def `_11`: Option[BigDecimal] = totalQuantity
+
+  override def `_12`: Option[String] = trackingNumber
+
+  override def `_13`: Option[String] = shippingStatus
+
+  override def `_14`: Option[String] = carrierName
+}
 
 object VOrderDetailsViewRow {
-  val `_rowParser`: RowParser[VOrderDetailsViewRow] = RowParsers.of(OrdersId.pgType, MariaTypes.varchar, MariaTypes.text, MariaTypes.text, ScalaDbTypes.MariaTypes.numeric, MariaTypes.char_, MariaTypes.datetime, MariaTypes.varchar, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.numeric.nullable, MariaTypes.varchar.nullable, MariaTypes.text.nullable, MariaTypes.varchar.nullable)(VOrderDetailsViewRow.apply)(row => Array[Any](row.orderId, row.orderNumber, row.orderStatus, row.paymentStatus, row.totalAmount, row.currencyCode, row.orderedAt, row.customerEmail, row.customerName, row.itemCount, row.totalQuantity, row.trackingNumber, row.shippingStatus, row.carrierName))
+  val `_rowParser`: RowParser[VOrderDetailsViewRow] = RowParsers.of(OrdersId.dbType, MariaTypes.varchar, MariaTypes.text, MariaTypes.text, ScalaDbTypes.MariaTypes.numeric, MariaTypes.char_, MariaTypes.datetime, MariaTypes.varchar, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.bigint, ScalaDbTypes.MariaTypes.numeric.nullable, MariaTypes.varchar.nullable, MariaTypes.text.nullable, MariaTypes.varchar.nullable)(VOrderDetailsViewRow.apply)(row => Array[Any](row.orderId, row.orderNumber, row.orderStatus, row.paymentStatus, row.totalAmount, row.currencyCode, row.orderedAt, row.customerEmail, row.customerName, row.itemCount, row.totalQuantity, row.trackingNumber, row.shippingStatus, row.carrierName))
 }

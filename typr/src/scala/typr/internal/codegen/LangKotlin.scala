@@ -72,10 +72,8 @@ case class LangKotlin(typeSupport: TypeSupport) extends Lang {
       case jvm.Body.Abstract     => code"for ($elemVar in $array) {}"
     }
 
-  override def arrayMap(array: jvm.Code, mapper: jvm.Code, targetClass: jvm.Code): jvm.Code = {
-    val arrayMapHelper = jvm.Type.Qualified("dev.typr.foundations.internal.arrayMap")
-    code"$arrayMapHelper.map($array, $mapper, $targetClass)"
-  }
+  override def arrayMap(array: jvm.Code, mapper: jvm.Code, targetClass: jvm.Code): jvm.Code =
+    code"${FoundationsTypes.internal.arrayMap}.map($array, $mapper, $targetClass)"
 
   override def ternary(condition: jvm.Code, thenExpr: jvm.Code, elseExpr: jvm.Code): jvm.Code =
     code"if ($condition) $thenExpr else $elseExpr"
@@ -355,8 +353,8 @@ case class LangKotlin(typeSupport: TypeSupport) extends Lang {
                |}""".stripMargin
       case jvm.StringInterpolate(_, _, _) =>
         // StringInterpolate should never reach LangKotlin
-        // DbLibTypo.SQL() should have already rewritten it to Fragment.interpolate() calls
-        sys.error("StringInterpolate should not reach LangKotlin. DbLibTypo.SQL() should have rewritten it to Fragment.interpolate() calls.")
+        // DbLibFoundations.SQL() should have already rewritten it to Fragment.interpolate() calls
+        sys.error("StringInterpolate should not reach LangKotlin. DbLibFoundations.SQL() should have rewritten it to Fragment.interpolate() calls.")
 
       case jvm.Given(annotations, tparams, name, implicitParams, tpe, body) =>
         val annotationsCode = renderAnnotations(annotations)

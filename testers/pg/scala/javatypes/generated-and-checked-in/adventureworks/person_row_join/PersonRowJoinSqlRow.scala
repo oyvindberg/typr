@@ -9,6 +9,7 @@ import adventureworks.person.businessentity.BusinessentityId
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple3
 import dev.typr.foundations.data.Record
 import java.util.Optional
 
@@ -18,8 +19,14 @@ case class PersonRowJoinSqlRow(
   businessentityid: BusinessentityId,
   email: Optional[Array[Record]],
   emails: Optional[Array[Record]]
-)
+) extends Tuple3[BusinessentityId, Optional[Array[Record]], Optional[Array[Record]]] {
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: Optional[Array[Record]] = email
+
+  override def `_3`: Optional[Array[Record]] = emails
+}
 
 object PersonRowJoinSqlRow {
-  val `_rowParser`: RowParser[PersonRowJoinSqlRow] = RowParsers.of(BusinessentityId.pgType, PgTypes.recordArray.opt(), PgTypes.recordArray.opt(), PersonRowJoinSqlRow.apply, row => Array[Any](row.businessentityid, row.email, row.emails))
+  val `_rowParser`: RowParser[PersonRowJoinSqlRow] = RowParsers.of(BusinessentityId.dbType, PgTypes.recordArray.opt(), PgTypes.recordArray.opt(), PersonRowJoinSqlRow.apply, row => Array[Any](row.businessentityid, row.email, row.emails))
 }

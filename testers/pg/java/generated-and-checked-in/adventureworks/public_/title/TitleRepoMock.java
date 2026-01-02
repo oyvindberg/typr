@@ -38,7 +38,7 @@ public record TitleRepoMock(HashMap<TitleId, TitleRow> map) implements TitleRepo
   @Override
   public DeleteBuilder<TitleFields, TitleRow> delete() {
     return new DeleteBuilderMock<>(
-        TitleFields.structure(),
+        TitleFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.code(),
@@ -94,7 +94,7 @@ public record TitleRepoMock(HashMap<TitleId, TitleRow> map) implements TitleRepo
   @Override
   public SelectBuilder<TitleFields, TitleRow> select() {
     return new SelectBuilderMock<>(
-        TitleFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        TitleFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -135,7 +135,7 @@ public record TitleRepoMock(HashMap<TitleId, TitleRow> map) implements TitleRepo
   @Override
   public UpdateBuilder<TitleFields, TitleRow> update() {
     return new UpdateBuilderMock<>(
-        TitleFields.structure(),
+        TitleFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

@@ -1,7 +1,7 @@
 package dev.typr.foundations.scala
 
-import _root_.scala.jdk.CollectionConverters.*
 import java.sql.{Connection, SQLException}
+import _root_.scala.jdk.CollectionConverters.*
 
 /** Scala wrapper for dev.typr.foundations.Operation with Scala-native return types.
   *

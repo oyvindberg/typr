@@ -6,6 +6,7 @@
 package testdb.payments;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.typr.foundations.data.Json;
 import dev.typr.foundations.data.maria.Inet6;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -30,7 +31,7 @@ public record PaymentsRowUnsaved(
     /** Default: 'pending' */
     Defaulted<String> status,
     /** Default: NULL */
-    @JsonProperty("processor_response") Defaulted<Optional<String>> processorResponse,
+    @JsonProperty("processor_response") Defaulted<Optional<Json>> processorResponse,
     /** Default: NULL */
     @JsonProperty("error_message") Defaulted<Optional<String>> errorMessage,
     /** Default: NULL */
@@ -164,7 +165,7 @@ public record PaymentsRowUnsaved(
   ;
 
   /** Default: NULL */
-  public PaymentsRowUnsaved withProcessorResponse(Defaulted<Optional<String>> processorResponse) {
+  public PaymentsRowUnsaved withProcessorResponse(Defaulted<Optional<Json>> processorResponse) {
     return new PaymentsRowUnsaved(
         orderId,
         methodId,
@@ -252,7 +253,7 @@ public record PaymentsRowUnsaved(
       java.util.function.Supplier<Optional<String>> transactionIdDefault,
       java.util.function.Supplier<String> currencyCodeDefault,
       java.util.function.Supplier<String> statusDefault,
-      java.util.function.Supplier<Optional<String>> processorResponseDefault,
+      java.util.function.Supplier<Optional<Json>> processorResponseDefault,
       java.util.function.Supplier<Optional<String>> errorMessageDefault,
       java.util.function.Supplier<Optional<Inet6>> ipAddressDefault,
       java.util.function.Supplier<LocalDateTime> createdAtDefault,

@@ -30,17 +30,16 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
   public DeleteBuilder<ProductcosthistoryFields, ProductcosthistoryRow> delete() {
     return DeleteBuilder.of(
         "\"production\".\"productcosthistory\"",
-        ProductcosthistoryFields.structure(),
+        ProductcosthistoryFields.structure,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(ProductcosthistoryId compositeId, Connection c) {
     return interpolate(
                 Fragment.lit(
                     "delete from \"production\".\"productcosthistory\" where \"productid\" = "),
-                Fragment.encode(ProductId.pgType, compositeId.productid()),
+                Fragment.encode(ProductId.dbType, compositeId.productid()),
                 Fragment.lit(" AND \"startdate\" = "),
                 Fragment.encode(PgTypes.timestamp, compositeId.startdate()),
                 Fragment.lit(""))
@@ -48,7 +47,6 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(ProductcosthistoryId[] compositeIds, Connection c) {
@@ -64,14 +62,13 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
                     + "from \"production\".\"productcosthistory\"\n"
                     + "where (\"productid\", \"startdate\")\n"
                     + "in (select * from unnest("),
-            Fragment.encode(ProductId.pgTypeArray, productid),
+            Fragment.encode(ProductId.dbTypeArray, productid),
             Fragment.lit(", "),
             Fragment.encode(PgTypes.timestampArray, startdate),
             Fragment.lit("))\n"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductcosthistoryRow insert(ProductcosthistoryRow unsaved, Connection c) {
@@ -80,7 +77,7 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
                 "insert into \"production\".\"productcosthistory\"(\"productid\", \"startdate\","
                     + " \"enddate\", \"standardcost\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(ProductId.pgType, unsaved.productid()),
+            Fragment.encode(ProductId.dbType, unsaved.productid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.timestamp, unsaved.startdate()),
             Fragment.lit("::timestamp, "),
@@ -96,7 +93,6 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
         .updateReturning(ProductcosthistoryRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public ProductcosthistoryRow insert(ProductcosthistoryRowUnsaved unsaved, Connection c) {
@@ -107,7 +103,7 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
     columns.add(Fragment.lit("\"productid\""));
     values.add(
         interpolate(
-            Fragment.encode(ProductId.pgType, unsaved.productid()), Fragment.lit("::int4")));
+            Fragment.encode(ProductId.dbType, unsaved.productid()), Fragment.lit("::int4")));
     columns.add(Fragment.lit("\"startdate\""));
     values.add(
         interpolate(
@@ -145,7 +141,6 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
     ;
     return q.updateReturning(ProductcosthistoryRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(
@@ -158,7 +153,6 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
         c,
         ProductcosthistoryRow.pgText);
   }
-  ;
 
   /** NOTE: this functionality requires PostgreSQL 16 or later! */
   @Override
@@ -172,17 +166,15 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
         c,
         ProductcosthistoryRowUnsaved.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<ProductcosthistoryFields, ProductcosthistoryRow> select() {
     return SelectBuilder.of(
         "\"production\".\"productcosthistory\"",
-        ProductcosthistoryFields.structure(),
+        ProductcosthistoryFields.structure,
         ProductcosthistoryRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<ProductcosthistoryRow> selectAll(Connection c) {
@@ -194,7 +186,6 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
         .query(ProductcosthistoryRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<ProductcosthistoryRow> selectById(
@@ -205,14 +196,13 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
                     + " \"modifieddate\"\n"
                     + "from \"production\".\"productcosthistory\"\n"
                     + "where \"productid\" = "),
-            Fragment.encode(ProductId.pgType, compositeId.productid()),
+            Fragment.encode(ProductId.dbType, compositeId.productid()),
             Fragment.lit(" AND \"startdate\" = "),
             Fragment.encode(PgTypes.timestamp, compositeId.startdate()),
             Fragment.lit(""))
         .query(ProductcosthistoryRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductcosthistoryRow> selectByIds(
@@ -230,14 +220,13 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
                     + "from \"production\".\"productcosthistory\"\n"
                     + "where (\"productid\", \"startdate\")\n"
                     + "in (select * from unnest("),
-            Fragment.encode(ProductId.pgTypeArray, productid),
+            Fragment.encode(ProductId.dbTypeArray, productid),
             Fragment.lit(", "),
             Fragment.encode(PgTypes.timestampArray, startdate),
             Fragment.lit("))\n"))
         .query(ProductcosthistoryRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<ProductcosthistoryId, ProductcosthistoryRow> selectByIdsTracked(
@@ -247,17 +236,15 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
     selectByIds(compositeIds, c).forEach(row -> ret.put(row.compositeId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<ProductcosthistoryFields, ProductcosthistoryRow> update() {
     return UpdateBuilder.of(
         "\"production\".\"productcosthistory\"",
-        ProductcosthistoryFields.structure(),
+        ProductcosthistoryFields.structure,
         ProductcosthistoryRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean update(ProductcosthistoryRow row, Connection c) {
@@ -271,7 +258,7 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
                 Fragment.lit("::numeric,\n\"modifieddate\" = "),
                 Fragment.encode(PgTypes.timestamp, row.modifieddate()),
                 Fragment.lit("::timestamp\nwhere \"productid\" = "),
-                Fragment.encode(ProductId.pgType, compositeId.productid()),
+                Fragment.encode(ProductId.dbType, compositeId.productid()),
                 Fragment.lit(" AND \"startdate\" = "),
                 Fragment.encode(PgTypes.timestamp, compositeId.startdate()),
                 Fragment.lit(""))
@@ -279,7 +266,6 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public ProductcosthistoryRow upsert(ProductcosthistoryRow unsaved, Connection c) {
@@ -288,7 +274,7 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
                 "insert into \"production\".\"productcosthistory\"(\"productid\", \"startdate\","
                     + " \"enddate\", \"standardcost\", \"modifieddate\")\n"
                     + "values ("),
-            Fragment.encode(ProductId.pgType, unsaved.productid()),
+            Fragment.encode(ProductId.dbType, unsaved.productid()),
             Fragment.lit("::int4, "),
             Fragment.encode(PgTypes.timestamp, unsaved.startdate()),
             Fragment.lit("::timestamp, "),
@@ -309,7 +295,6 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
         .updateReturning(ProductcosthistoryRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<ProductcosthistoryRow> upsertBatch(
@@ -329,7 +314,6 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
         .updateManyReturning(ProductcosthistoryRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -363,5 +347,4 @@ public class ProductcosthistoryRepoImpl implements ProductcosthistoryRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

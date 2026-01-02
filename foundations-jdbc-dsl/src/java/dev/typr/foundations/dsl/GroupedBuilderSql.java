@@ -3,6 +3,7 @@ package dev.typr.foundations.dsl;
 import dev.typr.foundations.DbType;
 import dev.typr.foundations.Fragment;
 import dev.typr.foundations.RowParser;
+import dev.typr.foundations.Tuple;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -51,7 +52,7 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
   }
 
   @Override
-  public <NewFields extends Tuples.TupleExpr<NewRow>, NewRow extends Tuples.Tuple>
+  public <NewFields extends TupleExpr<NewRow>, NewRow extends Tuple>
       SelectBuilder<NewFields, NewRow> select(Function<Fields, NewFields> projection) {
     return new GroupedSelectBuilderSql<>(source, groupByExprs, havingPredicates, projection);
   }
@@ -64,7 +65,7 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
 
   /** SelectBuilder implementation that renders GROUP BY queries. */
   static class GroupedSelectBuilderSql<
-          Fields, Row, NewFields extends Tuples.TupleExpr<NewRow>, NewRow extends Tuples.Tuple>
+          Fields, Row, NewFields extends TupleExpr<NewRow>, NewRow extends Tuple>
       extends SelectBuilderSql<NewFields, NewRow> {
 
     private final SelectBuilderSql<Fields, Row> source;
@@ -106,7 +107,7 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
     @Override
     public Structure<NewFields, NewRow> structure() {
       NewFields tupleExpr = projection.apply(source.structure().fields());
-      return new GroupedStructure<>(tupleExpr, tupleExpr.exprs());
+      return new GroupedStructure<>(tupleExpr, tupleExpr.children());
     }
 
     @Override
@@ -136,7 +137,7 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
       // Get projected expressions and group by expressions
       Fields fields = source.structure().fields();
       NewFields projectedFields = projection.apply(fields);
-      List<SqlExpr<?>> projectedExprs = projectedFields.exprs();
+      List<SqlExpr<?>> projectedExprs = projectedFields.children();
       List<SqlExpr<?>> groupByExprList = groupByExprs.apply(fields);
 
       // Evaluate having predicates
@@ -191,13 +192,9 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
 
     @Override
     public <Fields2, Row2>
-        SelectBuilder<
-                dev.typr.foundations.dsl.Tuple2<NewFields, Fields2>,
-                dev.typr.foundations.dsl.Tuple2<NewRow, Row2>>
-            joinOn(
-                SelectBuilder<Fields2, Row2> other,
-                Function<dev.typr.foundations.dsl.Tuple2<NewFields, Fields2>, SqlExpr<Boolean>>
-                    pred) {
+        SelectBuilder<Tuple.Tuple2<NewFields, Fields2>, Tuple.Tuple2<NewRow, Row2>> joinOn(
+            SelectBuilder<Fields2, Row2> other,
+            Function<Tuple.Tuple2<NewFields, Fields2>, SqlExpr<Boolean>> pred) {
       if (!(other instanceof SelectBuilderSql<Fields2, Row2> otherSql)) {
         throw new IllegalArgumentException("Can only join with SQL-based SelectBuilder");
       }
@@ -211,13 +208,10 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
 
     @Override
     public <Fields2, Row2>
-        SelectBuilder<
-                dev.typr.foundations.dsl.Tuple2<NewFields, Fields2>,
-                dev.typr.foundations.dsl.Tuple2<NewRow, Optional<Row2>>>
+        SelectBuilder<Tuple.Tuple2<NewFields, Fields2>, Tuple.Tuple2<NewRow, Optional<Row2>>>
             leftJoinOn(
                 SelectBuilder<Fields2, Row2> other,
-                Function<dev.typr.foundations.dsl.Tuple2<NewFields, Fields2>, SqlExpr<Boolean>>
-                    pred) {
+                Function<Tuple.Tuple2<NewFields, Fields2>, SqlExpr<Boolean>> pred) {
       if (!(other instanceof SelectBuilderSql<Fields2, Row2> otherSql)) {
         throw new IllegalArgumentException("Can only join with SQL-based SelectBuilder");
       }
@@ -230,13 +224,10 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
 
     @Override
     public <Fields2, Row2>
-        SelectBuilder<
-                dev.typr.foundations.dsl.Tuple2<NewFields, Fields2>,
-                dev.typr.foundations.dsl.Tuple2<NewRow, List<Row2>>>
+        SelectBuilder<Tuple.Tuple2<NewFields, Fields2>, Tuple.Tuple2<NewRow, List<Row2>>>
             multisetOn(
                 SelectBuilder<Fields2, Row2> other,
-                Function<dev.typr.foundations.dsl.Tuple2<NewFields, Fields2>, SqlExpr<Boolean>>
-                    pred) {
+                Function<Tuple.Tuple2<NewFields, Fields2>, SqlExpr<Boolean>> pred) {
       if (!(other instanceof SelectBuilderSql<Fields2, Row2> otherSql)) {
         throw new IllegalArgumentException("Can only use multiset with SQL-based SelectBuilder");
       }
@@ -252,7 +243,7 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
     }
 
     @Override
-    protected Tuple2<Fragment, RowParser<NewRow>> getSqlAndRowParser() {
+    protected Tuple.Tuple2<Fragment, RowParser<NewRow>> getSqlAndRowParser() {
       RenderCtx ctx = RenderCtx.from(source, dialect());
       AtomicInteger counter = new AtomicInteger(0);
 
@@ -269,7 +260,7 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
 
       // Get projected expressions
       NewFields projected = projection.apply(fields);
-      List<SqlExpr<?>> projectedExprs = projected.exprs();
+      List<SqlExpr<?>> projectedExprs = projected.children();
 
       // SELECT clause - projected expressions
       List<Fragment> selectFragments = new ArrayList<>();
@@ -353,15 +344,15 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
         }
       }
 
-      // OFFSET and LIMIT (from params on this builder)
+      // OFFSET and LIMIT (from params on this builder) - use dialect methods
       Fragment offsetClause = Fragment.empty();
       if (params.offset().isPresent()) {
-        offsetClause = Fragment.lit("\noffset " + params.offset().get());
+        offsetClause = Fragment.lit("\n" + dialect.offsetClause(params.offset().get()));
       }
 
       Fragment limitClause = Fragment.empty();
       if (params.limit().isPresent()) {
-        limitClause = Fragment.lit("\nlimit " + params.limit().get());
+        limitClause = Fragment.lit("\n" + dialect.limitClause(params.limit().get()));
       }
 
       Fragment sql =
@@ -378,7 +369,7 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
       // Build row parser
       RowParser<NewRow> rowParser = buildRowParser(projectedExprs);
 
-      return new Tuple2<>(sql, rowParser);
+      return Tuple.of(sql, rowParser);
     }
 
     private Fragment renderTableRef(TableState table, Dialect dialect, AtomicInteger counter) {
@@ -404,16 +395,20 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
             subquery =
                 subquery.append(Fragment.lit(" where ")).append(simple.whereFragment().get());
           }
+
           if (simple.orderByFragment().isPresent()) {
             subquery =
                 subquery.append(Fragment.lit(" order by ")).append(simple.orderByFragment().get());
           }
-          if (simple.offset().isPresent()) {
-            subquery = subquery.append(Fragment.lit(" offset " + simple.offset().get()));
-          }
-          if (simple.limit().isPresent()) {
-            subquery = subquery.append(Fragment.lit(" limit " + simple.limit().get()));
-          }
+
+          subquery =
+              dialect.appendPaginationClauses(
+                  subquery,
+                  simple.alias(),
+                  simple.orderByFragment().isPresent(),
+                  simple.limit(),
+                  simple.offset(),
+                  SelectBuilderSql.extractFields(simple.columns()));
 
           yield subquery.append(Fragment.lit(") ")).append(Fragment.lit(simple.alias()));
         }
@@ -573,7 +568,7 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
       return new RowParser<>(
           dbTypes,
           values -> createNestedTuple(values, projectedExprs, exprColumnCounts),
-          Tuples.Tuple::asArray);
+          Tuple::asArray);
     }
 
     @SuppressWarnings("unchecked")
@@ -591,16 +586,16 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
           for (int j = 0; j < count; j++) {
             subValues[j] = values[valueIndex++];
           }
-          tupleElements[i] = Tuples.createTuple(subValues);
+          tupleElements[i] = Tuple.createTuple(subValues);
         }
       }
 
-      return (NewRow) Tuples.createTuple(tupleElements);
+      return (NewRow) Tuple.createTuple(tupleElements);
     }
   }
 
   /** Minimal Structure for grouped queries. */
-  record GroupedStructure<NewFields extends Tuples.TupleExpr<NewRow>, NewRow extends Tuples.Tuple>(
+  record GroupedStructure<NewFields extends TupleExpr<NewRow>, NewRow extends Tuple>(
       NewFields fields, List<SqlExpr<?>> projectedExprs) implements Structure<NewFields, NewRow> {
 
     @Override
@@ -648,7 +643,7 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
    */
   @SuppressWarnings({"unchecked", "rawtypes"})
   public record SyntheticField<T>(
-      dev.typr.foundations.DbType<T> pgType, String column, String tableAlias)
+      dev.typr.foundations.DbType<T> dbType, String column, String tableAlias)
       implements SqlExpr.FieldLike<T, Object> {
 
     @Override
@@ -679,11 +674,6 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
     }
 
     @Override
-    public dev.typr.foundations.DbType<T> dbType() {
-      return pgType;
-    }
-
-    @Override
     public String name() {
       return column;
     }
@@ -691,6 +681,16 @@ public class GroupedBuilderSql<Fields, Row> implements GroupedBuilder<Fields, Ro
     @Override
     public Fragment render(RenderCtx ctx, AtomicInteger counter) {
       return Fragment.lit(tableAlias + "." + column);
+    }
+
+    @Override
+    public List<SqlExpr<?>> children() {
+      return List.of();
+    }
+
+    @Override
+    public boolean isNullable() {
+      return true; // Grouped results may include nullable aggregates
     }
   }
 }

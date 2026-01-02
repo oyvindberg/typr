@@ -48,7 +48,7 @@ public record IdentityTestRepoMock(
   @Override
   public DeleteBuilder<IdentityTestFields, IdentityTestRow> delete() {
     return new DeleteBuilderMock<>(
-        IdentityTestFields.structure(),
+        IdentityTestFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.name(),
@@ -126,7 +126,7 @@ public record IdentityTestRepoMock(
   @Override
   public SelectBuilder<IdentityTestFields, IdentityTestRow> select() {
     return new SelectBuilderMock<>(
-        IdentityTestFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        IdentityTestFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -168,7 +168,7 @@ public record IdentityTestRepoMock(
   @Override
   public UpdateBuilder<IdentityTestFields, IdentityTestRow> update() {
     return new UpdateBuilderMock<>(
-        IdentityTestFields.structure(),
+        IdentityTestFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

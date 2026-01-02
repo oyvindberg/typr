@@ -7,6 +7,7 @@ package testdb.orders
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -25,7 +26,7 @@ case class OrdersRow(
   @JsonProperty("total_amount") totalAmount: Option[BigDecimal],
   /** Default: 'pending' */
   status: Option[String]
-) {
+) extends Tuple5[OrdersId, Int, LocalDate, Option[BigDecimal], Option[String]] {
   def id: OrdersId = orderId
 
   def toUnsavedRow(
@@ -40,6 +41,16 @@ case class OrdersRow(
       status
     )
   }
+
+  override def `_1`: OrdersId = orderId
+
+  override def `_2`: Int = customerId
+
+  override def `_3`: LocalDate = orderDate
+
+  override def `_4`: Option[BigDecimal] = totalAmount
+
+  override def `_5`: Option[String] = status
 }
 
 object OrdersRow {

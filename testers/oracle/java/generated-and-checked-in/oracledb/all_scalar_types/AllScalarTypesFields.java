@@ -7,158 +7,170 @@ package oracledb.all_scalar_types;
 
 import dev.typr.foundations.OracleTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr7;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface AllScalarTypesFields extends FieldsExpr<AllScalarTypesRow> {
-  record Impl(List<Path> _path)
-      implements AllScalarTypesFields, RelationStructure<AllScalarTypesFields, AllScalarTypesRow> {
-    @Override
-    public IdField<AllScalarTypesId, AllScalarTypesRow> id() {
-      return new IdField<AllScalarTypesId, AllScalarTypesRow>(
-          _path,
-          "ID",
-          AllScalarTypesRow::id,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withId(value),
-          AllScalarTypesId.oracleType);
-    }
-    ;
+public class AllScalarTypesFields
+    implements TupleExpr7<
+            AllScalarTypesId, String, BigDecimal, LocalDateTime, LocalDateTime, String, String>,
+        RelationStructure<AllScalarTypesFields, AllScalarTypesRow>,
+        FieldsBase<AllScalarTypesRow> {
+  List<Path> _path;
 
-    @Override
-    public OptField<String, AllScalarTypesRow> colVarchar2() {
-      return new OptField<String, AllScalarTypesRow>(
-          _path,
-          "COL_VARCHAR2",
-          AllScalarTypesRow::colVarchar2,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColVarchar2(value),
-          OracleTypes.varchar2);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, AllScalarTypesRow> colNumber() {
-      return new OptField<BigDecimal, AllScalarTypesRow>(
-          _path,
-          "COL_NUMBER",
-          AllScalarTypesRow::colNumber,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColNumber(value),
-          OracleTypes.number);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, AllScalarTypesRow> colDate() {
-      return new OptField<LocalDateTime, AllScalarTypesRow>(
-          _path,
-          "COL_DATE",
-          AllScalarTypesRow::colDate,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColDate(value),
-          OracleTypes.date);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, AllScalarTypesRow> colTimestamp() {
-      return new OptField<LocalDateTime, AllScalarTypesRow>(
-          _path,
-          "COL_TIMESTAMP",
-          AllScalarTypesRow::colTimestamp,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColTimestamp(value),
-          OracleTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public OptField<String, AllScalarTypesRow> colClob() {
-      return new OptField<String, AllScalarTypesRow>(
-          _path,
-          "COL_CLOB",
-          AllScalarTypesRow::colClob,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColClob(value),
-          OracleTypes.clob);
-    }
-    ;
-
-    @Override
-    public Field<String, AllScalarTypesRow> colNotNull() {
-      return new Field<String, AllScalarTypesRow>(
-          _path,
-          "COL_NOT_NULL",
-          AllScalarTypesRow::colNotNull,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColNotNull(value),
-          OracleTypes.varchar2);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, AllScalarTypesRow>> columns() {
-      return java.util.List.of(
-          this.id(),
-          this.colVarchar2(),
-          this.colNumber(),
-          this.colDate(),
-          this.colTimestamp(),
-          this.colClob(),
-          this.colNotNull());
-    }
-    ;
-
-    @Override
-    public RelationStructure<AllScalarTypesFields, AllScalarTypesRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public AllScalarTypesFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static AllScalarTypesFields structure =
+      new AllScalarTypesFields(java.util.Collections.emptyList());
+
+  public IdField<AllScalarTypesId, AllScalarTypesRow> id() {
+    return new IdField<AllScalarTypesId, AllScalarTypesRow>(
+        _path,
+        "ID",
+        AllScalarTypesRow::id,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withId(value),
+        AllScalarTypesId.oracleType);
   }
-  ;
 
-  IdField<AllScalarTypesId, AllScalarTypesRow> id();
+  public OptField<String, AllScalarTypesRow> colVarchar2() {
+    return new OptField<String, AllScalarTypesRow>(
+        _path,
+        "COL_VARCHAR2",
+        AllScalarTypesRow::colVarchar2,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColVarchar2(value),
+        OracleTypes.varchar2);
+  }
 
-  OptField<String, AllScalarTypesRow> colVarchar2();
+  public OptField<BigDecimal, AllScalarTypesRow> colNumber() {
+    return new OptField<BigDecimal, AllScalarTypesRow>(
+        _path,
+        "COL_NUMBER",
+        AllScalarTypesRow::colNumber,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColNumber(value),
+        OracleTypes.number);
+  }
 
-  OptField<BigDecimal, AllScalarTypesRow> colNumber();
+  public OptField<LocalDateTime, AllScalarTypesRow> colDate() {
+    return new OptField<LocalDateTime, AllScalarTypesRow>(
+        _path,
+        "COL_DATE",
+        AllScalarTypesRow::colDate,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColDate(value),
+        OracleTypes.date);
+  }
 
-  OptField<LocalDateTime, AllScalarTypesRow> colDate();
+  public OptField<LocalDateTime, AllScalarTypesRow> colTimestamp() {
+    return new OptField<LocalDateTime, AllScalarTypesRow>(
+        _path,
+        "COL_TIMESTAMP",
+        AllScalarTypesRow::colTimestamp,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColTimestamp(value),
+        OracleTypes.timestamp);
+  }
 
-  OptField<LocalDateTime, AllScalarTypesRow> colTimestamp();
+  public OptField<String, AllScalarTypesRow> colClob() {
+    return new OptField<String, AllScalarTypesRow>(
+        _path,
+        "COL_CLOB",
+        AllScalarTypesRow::colClob,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColClob(value),
+        OracleTypes.clob);
+  }
 
-  OptField<String, AllScalarTypesRow> colClob();
-
-  Field<String, AllScalarTypesRow> colNotNull();
+  public Field<String, AllScalarTypesRow> colNotNull() {
+    return new Field<String, AllScalarTypesRow>(
+        _path,
+        "COL_NOT_NULL",
+        AllScalarTypesRow::colNotNull,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColNotNull(value),
+        OracleTypes.varchar2);
+  }
 
   @Override
-  List<FieldLike<?, AllScalarTypesRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<AllScalarTypesRow> rowParser() {
+  public List<FieldLike<?, AllScalarTypesRow>> columns() {
+    return java.util.List.of(
+        this.id(),
+        this.colVarchar2(),
+        this.colNumber(),
+        this.colDate(),
+        this.colTimestamp(),
+        this.colClob(),
+        this.colNotNull());
+  }
+
+  @Override
+  public RowParser<AllScalarTypesRow> rowParser() {
     return AllScalarTypesRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<AllScalarTypesFields, AllScalarTypesRow> withPaths(List<Path> _path) {
+    return new AllScalarTypesFields(_path);
+  }
+
+  @Override
+  public SqlExpr<AllScalarTypesId> _1() {
+    return id();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return colVarchar2();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _3() {
+    return colNumber();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _4() {
+    return colDate();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _5() {
+    return colTimestamp();
+  }
+
+  @Override
+  public SqlExpr<String> _6() {
+    return colClob();
+  }
+
+  @Override
+  public SqlExpr<String> _7() {
+    return colNotNull();
+  }
 }

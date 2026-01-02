@@ -7,84 +7,81 @@ package testdb.products
 
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.SqlServerTypes
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr4
 
-trait ProductsFields extends FieldsExpr0[ProductsRow] {
-  def productId: IdField[ProductsId, ProductsRow]
+class ProductsFields(val `_path`: java.util.List[Path]) extends TupleExpr4[ProductsId, String, BigDecimal, String] with RelationStructure[ProductsFields, ProductsRow]  with FieldsBase[ProductsRow] {
+  def productId: IdField[ProductsId, ProductsRow] = {
+    new IdField[ProductsId, ProductsRow](
+      _path,
+      "product_id",
+      _.productId,
+      None,
+      None,
+      (row, value) => row.copy(productId = value),
+      ProductsId.sqlServerType
+    )
+  }
 
-  def name: Field[String, ProductsRow]
+  def name: Field[String, ProductsRow] = {
+    new Field[String, ProductsRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      None,
+      (row, value) => row.copy(name = value),
+      SqlServerTypes.nvarchar
+    )
+  }
 
-  def price: Field[BigDecimal, ProductsRow]
+  def price: Field[BigDecimal, ProductsRow] = {
+    new Field[BigDecimal, ProductsRow](
+      _path,
+      "price",
+      _.price,
+      None,
+      None,
+      (row, value) => row.copy(price = value),
+      ScalaDbTypes.SqlServerTypes.money
+    )
+  }
 
-  def description: OptField[String, ProductsRow]
+  def description: OptField[String, ProductsRow] = {
+    new OptField[String, ProductsRow](
+      _path,
+      "description",
+      _.description,
+      None,
+      None,
+      (row, value) => row.copy(description = value),
+      SqlServerTypes.nvarchar
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, ProductsRow]]
+  override def columns: java.util.List[FieldLike[?, ProductsRow]] = java.util.List.of(this.productId.underlying, this.name.underlying, this.price.underlying, this.description.underlying)
 
   override def rowParser: RowParser[ProductsRow] = ProductsRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductsFields, ProductsRow] = new ProductsFields(`_path`)
+
+  override def `_1`: SqlExpr[ProductsId] = productId
+
+  override def `_2`: SqlExpr[String] = name
+
+  override def `_3`: SqlExpr[BigDecimal] = price
+
+  override def `_4`: SqlExpr[String] = description
 }
 
 object ProductsFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends ProductsFields with RelationStructure[ProductsFields, ProductsRow] {
-
-    override def productId: IdField[ProductsId, ProductsRow] = {
-      new IdField[ProductsId, ProductsRow](
-        _path,
-        "product_id",
-        _.productId,
-        None,
-        None,
-        (row, value) => row.copy(productId = value),
-        ProductsId.sqlServerType
-      )
-    }
-
-    override def name: Field[String, ProductsRow] = {
-      new Field[String, ProductsRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        None,
-        (row, value) => row.copy(name = value),
-        SqlServerTypes.nvarchar
-      )
-    }
-
-    override def price: Field[BigDecimal, ProductsRow] = {
-      new Field[BigDecimal, ProductsRow](
-        _path,
-        "price",
-        _.price,
-        None,
-        None,
-        (row, value) => row.copy(price = value),
-        ScalaDbTypes.SqlServerTypes.money
-      )
-    }
-
-    override def description: OptField[String, ProductsRow] = {
-      new OptField[String, ProductsRow](
-        _path,
-        "description",
-        _.description,
-        None,
-        None,
-        (row, value) => row.copy(description = value),
-        SqlServerTypes.nvarchar
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, ProductsRow]] = java.util.List.of(this.productId.underlying, this.name.underlying, this.price.underlying, this.description.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[ProductsFields, ProductsRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: ProductsFields = new ProductsFields(java.util.Collections.emptyList())
 }

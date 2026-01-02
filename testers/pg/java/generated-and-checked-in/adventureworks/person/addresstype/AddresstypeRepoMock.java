@@ -48,7 +48,7 @@ public record AddresstypeRepoMock(
   @Override
   public DeleteBuilder<AddresstypeFields, AddresstypeRow> delete() {
     return new DeleteBuilderMock<>(
-        AddresstypeFields.structure(),
+        AddresstypeFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.addresstypeid(),
@@ -126,7 +126,7 @@ public record AddresstypeRepoMock(
   @Override
   public SelectBuilder<AddresstypeFields, AddresstypeRow> select() {
     return new SelectBuilderMock<>(
-        AddresstypeFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        AddresstypeFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -169,7 +169,7 @@ public record AddresstypeRepoMock(
   @Override
   public UpdateBuilder<AddresstypeFields, AddresstypeRow> update() {
     return new UpdateBuilderMock<>(
-        AddresstypeFields.structure(),
+        AddresstypeFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

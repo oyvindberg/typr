@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple9;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,7 +43,17 @@ public record AddressRow(
     /** Default: uuid_generate_v1() */
     UUID rowguid,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple9<
+        AddressId,
+        String,
+        Optional</* max 60 chars */ String>,
+        String,
+        StateprovinceId,
+        String,
+        Optional<byte[]>,
+        UUID,
+        LocalDateTime> {
   /** Primary key for Address records. Default: nextval('person.address_addressid_seq'::regclass) */
   public AddressRow withAddressid(AddressId addressid) {
     return new AddressRow(
@@ -183,11 +194,11 @@ public record AddressRow(
 
   public static RowParser<AddressRow> _rowParser =
       RowParsers.of(
-          AddressId.pgType,
+          AddressId.dbType,
           PgTypes.text,
           PgTypes.text.opt(),
           PgTypes.text,
-          StateprovinceId.pgType,
+          StateprovinceId.dbType,
           PgTypes.text,
           PgTypes.bytea.opt(),
           PgTypes.uuid,
@@ -208,6 +219,60 @@ public record AddressRow(
   ;
 
   public static PgText<AddressRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public AddressId _1() {
+    return addressid;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return addressline1;
+  }
+  ;
+
+  @Override
+  public Optional</* max 60 chars */ String> _3() {
+    return addressline2;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return city;
+  }
+  ;
+
+  @Override
+  public StateprovinceId _5() {
+    return stateprovinceid;
+  }
+  ;
+
+  @Override
+  public String _6() {
+    return postalcode;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _7() {
+    return spatiallocation;
+  }
+  ;
+
+  @Override
+  public UUID _8() {
+    return rowguid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _9() {
+    return modifieddate;
+  }
+  ;
 
   public AddressId id() {
     return addressid;

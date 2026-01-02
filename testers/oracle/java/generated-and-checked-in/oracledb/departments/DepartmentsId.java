@@ -9,10 +9,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.OracleTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple2;
 
 /** Type for the composite primary key of table `DEPARTMENTS` */
 public record DepartmentsId(
-    @JsonProperty("DEPT_CODE") String deptCode, @JsonProperty("DEPT_REGION") String deptRegion) {
+    @JsonProperty("DEPT_CODE") String deptCode, @JsonProperty("DEPT_REGION") String deptRegion)
+    implements Tuple2<String, String> {
   public DepartmentsId withDeptCode(String deptCode) {
     return new DepartmentsId(deptCode, deptRegion);
   }
@@ -29,5 +31,17 @@ public record DepartmentsId(
           OracleTypes.varchar2,
           DepartmentsId::new,
           row -> new Object[] {row.deptCode(), row.deptRegion()});
+  ;
+
+  @Override
+  public String _1() {
+    return deptCode;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return deptRegion;
+  }
   ;
 }

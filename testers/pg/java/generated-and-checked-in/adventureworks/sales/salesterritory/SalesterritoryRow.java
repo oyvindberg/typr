@@ -12,6 +12,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple10;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -55,7 +56,18 @@ public record SalesterritoryRow(
     /** Default: uuid_generate_v1() */
     UUID rowguid,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple10<
+        SalesterritoryId,
+        Name,
+        CountryregionId,
+        String,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        BigDecimal,
+        UUID,
+        LocalDateTime> {
   /**
    * Primary key for SalesTerritory records. Default:
    * nextval('sales.salesterritory_territoryid_seq'::regclass)
@@ -236,9 +248,9 @@ public record SalesterritoryRow(
 
   public static RowParser<SalesterritoryRow> _rowParser =
       RowParsers.of(
-          SalesterritoryId.pgType,
-          Name.pgType,
-          CountryregionId.pgType,
+          SalesterritoryId.dbType,
+          Name.dbType,
+          CountryregionId.dbType,
           PgTypes.text,
           PgTypes.numeric,
           PgTypes.numeric,
@@ -263,6 +275,66 @@ public record SalesterritoryRow(
   ;
 
   public static PgText<SalesterritoryRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public SalesterritoryId _1() {
+    return territoryid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _10() {
+    return modifieddate;
+  }
+  ;
+
+  @Override
+  public Name _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public CountryregionId _3() {
+    return countryregioncode;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return group;
+  }
+  ;
+
+  @Override
+  public BigDecimal _5() {
+    return salesytd;
+  }
+  ;
+
+  @Override
+  public BigDecimal _6() {
+    return saleslastyear;
+  }
+  ;
+
+  @Override
+  public BigDecimal _7() {
+    return costytd;
+  }
+  ;
+
+  @Override
+  public BigDecimal _8() {
+    return costlastyear;
+  }
+  ;
+
+  @Override
+  public UUID _9() {
+    return rowguid;
+  }
+  ;
 
   public SalesterritoryId id() {
     return territoryid;

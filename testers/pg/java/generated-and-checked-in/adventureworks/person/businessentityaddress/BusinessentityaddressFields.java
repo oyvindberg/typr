@@ -16,176 +16,167 @@ import adventureworks.person.businessentity.BusinessentityId;
 import adventureworks.person.businessentity.BusinessentityRow;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
 import dev.typr.foundations.dsl.SqlExpr;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn.Part;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface BusinessentityaddressFields extends FieldsExpr<BusinessentityaddressRow> {
-  record Impl(List<Path> _path)
-      implements BusinessentityaddressFields,
-          RelationStructure<BusinessentityaddressFields, BusinessentityaddressRow> {
-    @Override
-    public IdField<BusinessentityId, BusinessentityaddressRow> businessentityid() {
-      return new IdField<BusinessentityId, BusinessentityaddressRow>(
-          _path,
-          "businessentityid",
-          BusinessentityaddressRow::businessentityid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withBusinessentityid(value),
-          BusinessentityId.pgType);
-    }
-    ;
+public class BusinessentityaddressFields
+    implements TupleExpr5<BusinessentityId, AddressId, AddresstypeId, UUID, LocalDateTime>,
+        RelationStructure<BusinessentityaddressFields, BusinessentityaddressRow>,
+        FieldsBase<BusinessentityaddressRow> {
+  List<Path> _path;
 
-    @Override
-    public IdField<AddressId, BusinessentityaddressRow> addressid() {
-      return new IdField<AddressId, BusinessentityaddressRow>(
-          _path,
-          "addressid",
-          BusinessentityaddressRow::addressid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withAddressid(value),
-          AddressId.pgType);
-    }
-    ;
-
-    @Override
-    public IdField<AddresstypeId, BusinessentityaddressRow> addresstypeid() {
-      return new IdField<AddresstypeId, BusinessentityaddressRow>(
-          _path,
-          "addresstypeid",
-          BusinessentityaddressRow::addresstypeid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withAddresstypeid(value),
-          AddresstypeId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<UUID, BusinessentityaddressRow> rowguid() {
-      return new Field<UUID, BusinessentityaddressRow>(
-          _path,
-          "rowguid",
-          BusinessentityaddressRow::rowguid,
-          Optional.empty(),
-          Optional.of("uuid"),
-          (row, value) -> row.withRowguid(value),
-          PgTypes.uuid);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, BusinessentityaddressRow> modifieddate() {
-      return new Field<LocalDateTime, BusinessentityaddressRow>(
-          _path,
-          "modifieddate",
-          BusinessentityaddressRow::modifieddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withModifieddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, BusinessentityaddressRow>> columns() {
-      return java.util.List.of(
-          this.businessentityid(),
-          this.addressid(),
-          this.addresstypeid(),
-          this.rowguid(),
-          this.modifieddate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<BusinessentityaddressFields, BusinessentityaddressRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public BusinessentityaddressFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static BusinessentityaddressFields structure =
+      new BusinessentityaddressFields(java.util.Collections.emptyList());
+
+  public IdField<BusinessentityId, BusinessentityaddressRow> businessentityid() {
+    return new IdField<BusinessentityId, BusinessentityaddressRow>(
+        _path,
+        "businessentityid",
+        BusinessentityaddressRow::businessentityid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withBusinessentityid(value),
+        BusinessentityId.dbType);
   }
-  ;
 
-  IdField<BusinessentityId, BusinessentityaddressRow> businessentityid();
+  public IdField<AddressId, BusinessentityaddressRow> addressid() {
+    return new IdField<AddressId, BusinessentityaddressRow>(
+        _path,
+        "addressid",
+        BusinessentityaddressRow::addressid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withAddressid(value),
+        AddressId.dbType);
+  }
 
-  IdField<AddressId, BusinessentityaddressRow> addressid();
+  public IdField<AddresstypeId, BusinessentityaddressRow> addresstypeid() {
+    return new IdField<AddresstypeId, BusinessentityaddressRow>(
+        _path,
+        "addresstypeid",
+        BusinessentityaddressRow::addresstypeid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withAddresstypeid(value),
+        AddresstypeId.dbType);
+  }
 
-  IdField<AddresstypeId, BusinessentityaddressRow> addresstypeid();
+  public Field<UUID, BusinessentityaddressRow> rowguid() {
+    return new Field<UUID, BusinessentityaddressRow>(
+        _path,
+        "rowguid",
+        BusinessentityaddressRow::rowguid,
+        Optional.empty(),
+        Optional.of("uuid"),
+        (row, value) -> row.withRowguid(value),
+        PgTypes.uuid);
+  }
 
-  Field<UUID, BusinessentityaddressRow> rowguid();
+  public Field<LocalDateTime, BusinessentityaddressRow> modifieddate() {
+    return new Field<LocalDateTime, BusinessentityaddressRow>(
+        _path,
+        "modifieddate",
+        BusinessentityaddressRow::modifieddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withModifieddate(value),
+        PgTypes.timestamp);
+  }
 
-  Field<LocalDateTime, BusinessentityaddressRow> modifieddate();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<AddresstypeFields, AddresstypeRow> fkAddresstype() {
+  public ForeignKey<AddresstypeFields, AddresstypeRow> fkAddresstype() {
     return ForeignKey.<AddresstypeFields, AddresstypeRow>of(
             "person.FK_BusinessEntityAddress_AddressType_AddressTypeID")
         .<AddresstypeId>withColumnPair(addresstypeid(), AddresstypeFields::addresstypeid);
   }
-  ;
 
-  default ForeignKey<AddressFields, AddressRow> fkAddress() {
+  public ForeignKey<AddressFields, AddressRow> fkAddress() {
     return ForeignKey.<AddressFields, AddressRow>of(
             "person.FK_BusinessEntityAddress_Address_AddressID")
         .<AddressId>withColumnPair(addressid(), AddressFields::addressid);
   }
-  ;
 
-  default ForeignKey<BusinessentityFields, BusinessentityRow> fkBusinessentity() {
+  public ForeignKey<BusinessentityFields, BusinessentityRow> fkBusinessentity() {
     return ForeignKey.<BusinessentityFields, BusinessentityRow>of(
             "person.FK_BusinessEntityAddress_BusinessEntity_BusinessEntityID")
         .<BusinessentityId>withColumnPair(
             businessentityid(), BusinessentityFields::businessentityid);
   }
-  ;
 
-  default SqlExpr<Boolean> compositeIdIs(BusinessentityaddressId compositeId) {
+  public SqlExpr<Boolean> compositeIdIs(BusinessentityaddressId compositeId) {
     return SqlExpr.all(
         businessentityid().isEqual(compositeId.businessentityid()),
         addressid().isEqual(compositeId.addressid()),
         addresstypeid().isEqual(compositeId.addresstypeid()));
   }
-  ;
 
-  default SqlExpr<Boolean> compositeIdIn(List<BusinessentityaddressId> compositeIds) {
-    return new CompositeIn(
-        List.of(
-            new Part<BusinessentityId, BusinessentityaddressId, BusinessentityaddressRow>(
-                businessentityid(),
-                BusinessentityaddressId::businessentityid,
-                BusinessentityId.pgType),
-            new Part<AddressId, BusinessentityaddressId, BusinessentityaddressRow>(
-                addressid(), BusinessentityaddressId::addressid, AddressId.pgType),
-            new Part<AddresstypeId, BusinessentityaddressId, BusinessentityaddressRow>(
-                addresstypeid(), BusinessentityaddressId::addresstypeid, AddresstypeId.pgType)),
-        compositeIds);
+  public SqlExpr<Boolean> compositeIdIn(List<BusinessentityaddressId> compositeIds) {
+    return TupleExpr.of(businessentityid(), addressid(), addresstypeid()).among(compositeIds);
   }
-  ;
 
   @Override
-  List<FieldLike<?, BusinessentityaddressRow>> columns();
+  public List<FieldLike<?, BusinessentityaddressRow>> columns() {
+    return java.util.List.of(
+        this.businessentityid(),
+        this.addressid(),
+        this.addresstypeid(),
+        this.rowguid(),
+        this.modifieddate());
+  }
 
   @Override
-  default RowParser<BusinessentityaddressRow> rowParser() {
+  public RowParser<BusinessentityaddressRow> rowParser() {
     return BusinessentityaddressRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<BusinessentityaddressFields, BusinessentityaddressRow> withPaths(
+      List<Path> _path) {
+    return new BusinessentityaddressFields(_path);
+  }
+
+  @Override
+  public SqlExpr<BusinessentityId> _1() {
+    return businessentityid();
+  }
+
+  @Override
+  public SqlExpr<AddressId> _2() {
+    return addressid();
+  }
+
+  @Override
+  public SqlExpr<AddresstypeId> _3() {
+    return addresstypeid();
+  }
+
+  @Override
+  public SqlExpr<UUID> _4() {
+    return rowguid();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _5() {
+    return modifieddate();
+  }
 }

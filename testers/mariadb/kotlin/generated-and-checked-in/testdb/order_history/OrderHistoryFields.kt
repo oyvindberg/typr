@@ -7,68 +7,67 @@ package testdb.order_history
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.ForeignKey
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr8
 import java.time.LocalDateTime
 import kotlin.collections.List
 import testdb.orders.OrdersFields
 import testdb.orders.OrdersId
 import testdb.orders.OrdersRow
 
-interface OrderHistoryFields : FieldsExpr<OrderHistoryRow> {
-  abstract fun changeReason(): OptField<String, OrderHistoryRow>
+data class OrderHistoryFields(val _path: List<Path>) : TupleExpr8<OrderHistoryId, OrdersId, String, String, String, String, Json, LocalDateTime>, RelationStructure<OrderHistoryFields, OrderHistoryRow>, FieldsBase<OrderHistoryRow> {
+  override fun _1(): SqlExpr<OrderHistoryId> = historyId()
 
-  abstract fun changedBy(): OptField<String, OrderHistoryRow>
+  override fun _2(): SqlExpr<OrdersId> = orderId()
 
-  abstract override fun columns(): List<FieldLike<*, OrderHistoryRow>>
+  override fun _3(): SqlExpr<String> = previousStatus()
 
-  abstract fun createdAt(): Field<LocalDateTime, OrderHistoryRow>
+  override fun _4(): SqlExpr<String> = newStatus()
+
+  override fun _5(): SqlExpr<String> = changedBy()
+
+  override fun _6(): SqlExpr<String> = changeReason()
+
+  override fun _7(): SqlExpr<Json> = metadata()
+
+  override fun _8(): SqlExpr<LocalDateTime> = createdAt()
+
+  override fun _path(): List<Path> = _path
+
+  fun changeReason(): OptField<String, OrderHistoryRow> = OptField<String, OrderHistoryRow>(_path, "change_reason", OrderHistoryRow::changeReason, null, null, { row, value -> row.copy(changeReason = value) }, MariaTypes.varchar)
+
+  fun changedBy(): OptField<String, OrderHistoryRow> = OptField<String, OrderHistoryRow>(_path, "changed_by", OrderHistoryRow::changedBy, null, null, { row, value -> row.copy(changedBy = value) }, MariaTypes.varchar)
+
+  override fun columns(): List<FieldLike<*, OrderHistoryRow>> = listOf(this.historyId().underlying, this.orderId().underlying, this.previousStatus().underlying, this.newStatus().underlying, this.changedBy().underlying, this.changeReason().underlying, this.metadata().underlying, this.createdAt().underlying)
+
+  fun createdAt(): Field<LocalDateTime, OrderHistoryRow> = Field<LocalDateTime, OrderHistoryRow>(_path, "created_at", OrderHistoryRow::createdAt, null, null, { row, value -> row.copy(createdAt = value) }, MariaTypes.datetime)
 
   fun fkOrders(): ForeignKey<OrdersFields, OrdersRow> = ForeignKey.of<OrdersFields, OrdersRow>("fk_oh_order").withColumnPair<OrdersId>(orderId(), OrdersFields::orderId)
 
-  abstract fun historyId(): IdField<OrderHistoryId, OrderHistoryRow>
+  fun historyId(): IdField<OrderHistoryId, OrderHistoryRow> = IdField<OrderHistoryId, OrderHistoryRow>(_path, "history_id", OrderHistoryRow::historyId, null, null, { row, value -> row.copy(historyId = value) }, OrderHistoryId.dbType)
 
-  abstract fun metadata(): OptField<String, OrderHistoryRow>
+  fun metadata(): OptField<Json, OrderHistoryRow> = OptField<Json, OrderHistoryRow>(_path, "metadata", OrderHistoryRow::metadata, null, null, { row, value -> row.copy(metadata = value) }, MariaTypes.json)
 
-  abstract fun newStatus(): Field<String, OrderHistoryRow>
+  fun newStatus(): Field<String, OrderHistoryRow> = Field<String, OrderHistoryRow>(_path, "new_status", OrderHistoryRow::newStatus, null, null, { row, value -> row.copy(newStatus = value) }, MariaTypes.text)
 
-  abstract fun orderId(): Field<OrdersId, OrderHistoryRow>
+  fun orderId(): Field<OrdersId, OrderHistoryRow> = Field<OrdersId, OrderHistoryRow>(_path, "order_id", OrderHistoryRow::orderId, null, null, { row, value -> row.copy(orderId = value) }, OrdersId.dbType)
 
-  abstract fun previousStatus(): OptField<String, OrderHistoryRow>
+  fun previousStatus(): OptField<String, OrderHistoryRow> = OptField<String, OrderHistoryRow>(_path, "previous_status", OrderHistoryRow::previousStatus, null, null, { row, value -> row.copy(previousStatus = value) }, MariaTypes.text)
 
   override fun rowParser(): RowParser<OrderHistoryRow> = OrderHistoryRow._rowParser.underlying
 
+  override fun withPaths(_path: List<Path>): RelationStructure<OrderHistoryFields, OrderHistoryRow> = OrderHistoryFields(_path)
+
   companion object {
-    data class Impl(val _path: List<Path>) : OrderHistoryFields, RelationStructure<OrderHistoryFields, OrderHistoryRow> {
-      override fun historyId(): IdField<OrderHistoryId, OrderHistoryRow> = IdField<OrderHistoryId, OrderHistoryRow>(_path, "history_id", OrderHistoryRow::historyId, null, null, { row, value -> row.copy(historyId = value) }, OrderHistoryId.pgType)
-
-      override fun orderId(): Field<OrdersId, OrderHistoryRow> = Field<OrdersId, OrderHistoryRow>(_path, "order_id", OrderHistoryRow::orderId, null, null, { row, value -> row.copy(orderId = value) }, OrdersId.pgType)
-
-      override fun previousStatus(): OptField<String, OrderHistoryRow> = OptField<String, OrderHistoryRow>(_path, "previous_status", OrderHistoryRow::previousStatus, null, null, { row, value -> row.copy(previousStatus = value) }, MariaTypes.text)
-
-      override fun newStatus(): Field<String, OrderHistoryRow> = Field<String, OrderHistoryRow>(_path, "new_status", OrderHistoryRow::newStatus, null, null, { row, value -> row.copy(newStatus = value) }, MariaTypes.text)
-
-      override fun changedBy(): OptField<String, OrderHistoryRow> = OptField<String, OrderHistoryRow>(_path, "changed_by", OrderHistoryRow::changedBy, null, null, { row, value -> row.copy(changedBy = value) }, MariaTypes.varchar)
-
-      override fun changeReason(): OptField<String, OrderHistoryRow> = OptField<String, OrderHistoryRow>(_path, "change_reason", OrderHistoryRow::changeReason, null, null, { row, value -> row.copy(changeReason = value) }, MariaTypes.varchar)
-
-      override fun metadata(): OptField<String, OrderHistoryRow> = OptField<String, OrderHistoryRow>(_path, "metadata", OrderHistoryRow::metadata, null, null, { row, value -> row.copy(metadata = value) }, MariaTypes.longtext)
-
-      override fun createdAt(): Field<LocalDateTime, OrderHistoryRow> = Field<LocalDateTime, OrderHistoryRow>(_path, "created_at", OrderHistoryRow::createdAt, null, null, { row, value -> row.copy(createdAt = value) }, MariaTypes.datetime)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, OrderHistoryRow>> = listOf(this.historyId().underlying, this.orderId().underlying, this.previousStatus().underlying, this.newStatus().underlying, this.changedBy().underlying, this.changeReason().underlying, this.metadata().underlying, this.createdAt().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<OrderHistoryFields, OrderHistoryRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: OrderHistoryFields = OrderHistoryFields(emptyList<Path>())
   }
 }

@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -27,7 +28,8 @@ public record ShiftRow(
     /** Shift end time. */
     LocalTime endtime,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple5<ShiftId, Name, LocalTime, LocalTime, LocalDateTime> {
   /**
    * Primary key for Shift records. Default: nextval('humanresources.shift_shiftid_seq'::regclass)
    */
@@ -62,8 +64,8 @@ public record ShiftRow(
 
   public static RowParser<ShiftRow> _rowParser =
       RowParsers.of(
-          ShiftId.pgType,
-          Name.pgType,
+          ShiftId.dbType,
+          Name.dbType,
           PgTypes.time,
           PgTypes.time,
           PgTypes.timestamp,
@@ -75,6 +77,36 @@ public record ShiftRow(
   ;
 
   public static PgText<ShiftRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public ShiftId _1() {
+    return shiftid;
+  }
+  ;
+
+  @Override
+  public Name _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public LocalTime _3() {
+    return starttime;
+  }
+  ;
+
+  @Override
+  public LocalTime _4() {
+    return endtime;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _5() {
+    return modifieddate;
+  }
+  ;
 
   public ShiftId id() {
     return shiftid;

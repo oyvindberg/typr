@@ -9,6 +9,7 @@ import adventureworks.userdefined.FirstName;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple2;
 import java.time.LocalDateTime;
 
 /** SQL file: update_person_returning.sql */
@@ -16,7 +17,8 @@ public record UpdatePersonReturningSqlRow(
     /** Points to {@link adventureworks.person.person.PersonRow#firstname()} */
     /* user-picked */ FirstName firstname,
     /** Points to {@link adventureworks.person.person.PersonRow#modifieddate()} */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple2</* user-picked */ FirstName, LocalDateTime> {
   /** Points to {@link adventureworks.person.person.PersonRow#firstname()} */
   public UpdatePersonReturningSqlRow withFirstname(/* user-picked */ FirstName firstname) {
     return new UpdatePersonReturningSqlRow(firstname, modifieddate);
@@ -31,9 +33,21 @@ public record UpdatePersonReturningSqlRow(
 
   public static RowParser<UpdatePersonReturningSqlRow> _rowParser =
       RowParsers.of(
-          FirstName.pgType,
+          FirstName.dbType,
           PgTypes.timestamp,
           UpdatePersonReturningSqlRow::new,
           row -> new Object[] {row.firstname(), row.modifieddate()});
+  ;
+
+  @Override
+  public /* user-picked */ FirstName _1() {
+    return firstname;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _2() {
+    return modifieddate;
+  }
   ;
 }

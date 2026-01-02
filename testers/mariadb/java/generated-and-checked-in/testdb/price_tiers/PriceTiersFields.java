@@ -7,124 +7,130 @@ package testdb.price_tiers;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.data.Uint4;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-public interface PriceTiersFields extends FieldsExpr<PriceTiersRow> {
-  record Impl(List<Path> _path)
-      implements PriceTiersFields, RelationStructure<PriceTiersFields, PriceTiersRow> {
-    @Override
-    public IdField<PriceTiersId, PriceTiersRow> tierId() {
-      return new IdField<PriceTiersId, PriceTiersRow>(
-          _path,
-          "tier_id",
-          PriceTiersRow::tierId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTierId(value),
-          PriceTiersId.pgType);
-    }
-    ;
+public class PriceTiersFields
+    implements TupleExpr5<PriceTiersId, String, Uint4, String, BigDecimal>,
+        RelationStructure<PriceTiersFields, PriceTiersRow>,
+        FieldsBase<PriceTiersRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, PriceTiersRow> name() {
-      return new Field<String, PriceTiersRow>(
-          _path,
-          "name",
-          PriceTiersRow::name,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withName(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<Long, PriceTiersRow> minQuantity() {
-      return new Field<Long, PriceTiersRow>(
-          _path,
-          "min_quantity",
-          PriceTiersRow::minQuantity,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withMinQuantity(value),
-          MariaTypes.intUnsigned);
-    }
-    ;
-
-    @Override
-    public Field<String, PriceTiersRow> discountType() {
-      return new Field<String, PriceTiersRow>(
-          _path,
-          "discount_type",
-          PriceTiersRow::discountType,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDiscountType(value),
-          MariaTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, PriceTiersRow> discountValue() {
-      return new Field<BigDecimal, PriceTiersRow>(
-          _path,
-          "discount_value",
-          PriceTiersRow::discountValue,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDiscountValue(value),
-          MariaTypes.numeric);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, PriceTiersRow>> columns() {
-      return java.util.List.of(
-          this.tierId(),
-          this.name(),
-          this.minQuantity(),
-          this.discountType(),
-          this.discountValue());
-    }
-    ;
-
-    @Override
-    public RelationStructure<PriceTiersFields, PriceTiersRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public PriceTiersFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static PriceTiersFields structure =
+      new PriceTiersFields(java.util.Collections.emptyList());
+
+  public IdField<PriceTiersId, PriceTiersRow> tierId() {
+    return new IdField<PriceTiersId, PriceTiersRow>(
+        _path,
+        "tier_id",
+        PriceTiersRow::tierId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTierId(value),
+        PriceTiersId.dbType);
   }
-  ;
 
-  IdField<PriceTiersId, PriceTiersRow> tierId();
+  public Field<String, PriceTiersRow> name() {
+    return new Field<String, PriceTiersRow>(
+        _path,
+        "name",
+        PriceTiersRow::name,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withName(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, PriceTiersRow> name();
+  public Field<Uint4, PriceTiersRow> minQuantity() {
+    return new Field<Uint4, PriceTiersRow>(
+        _path,
+        "min_quantity",
+        PriceTiersRow::minQuantity,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withMinQuantity(value),
+        MariaTypes.intUnsigned);
+  }
 
-  Field<Long, PriceTiersRow> minQuantity();
+  public Field<String, PriceTiersRow> discountType() {
+    return new Field<String, PriceTiersRow>(
+        _path,
+        "discount_type",
+        PriceTiersRow::discountType,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDiscountType(value),
+        MariaTypes.text);
+  }
 
-  Field<String, PriceTiersRow> discountType();
-
-  Field<BigDecimal, PriceTiersRow> discountValue();
+  public Field<BigDecimal, PriceTiersRow> discountValue() {
+    return new Field<BigDecimal, PriceTiersRow>(
+        _path,
+        "discount_value",
+        PriceTiersRow::discountValue,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDiscountValue(value),
+        MariaTypes.numeric);
+  }
 
   @Override
-  List<FieldLike<?, PriceTiersRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<PriceTiersRow> rowParser() {
+  public List<FieldLike<?, PriceTiersRow>> columns() {
+    return java.util.List.of(
+        this.tierId(), this.name(), this.minQuantity(), this.discountType(), this.discountValue());
+  }
+
+  @Override
+  public RowParser<PriceTiersRow> rowParser() {
     return PriceTiersRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<PriceTiersFields, PriceTiersRow> withPaths(List<Path> _path) {
+    return new PriceTiersFields(_path);
+  }
+
+  @Override
+  public SqlExpr<PriceTiersId> _1() {
+    return tierId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<Uint4> _3() {
+    return minQuantity();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return discountType();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _5() {
+    return discountValue();
+  }
 }

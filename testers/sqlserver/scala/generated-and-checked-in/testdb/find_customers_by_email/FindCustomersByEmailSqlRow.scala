@@ -7,6 +7,7 @@ package testdb.find_customers_by_email
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.Tuple.Tuple4
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -23,7 +24,15 @@ case class FindCustomersByEmailSqlRow(
   @JsonProperty("customer_email") customerEmail: String,
   /** Points to [[testdb.customers.CustomersRow.createdAt]] */
   @JsonProperty("created_at") createdAt: Option[LocalDateTime]
-)
+) extends Tuple4[CustomersId, String, String, Option[LocalDateTime]] {
+  override def `_1`: CustomersId = customerId
+
+  override def `_2`: String = customerName
+
+  override def `_3`: String = customerEmail
+
+  override def `_4`: Option[LocalDateTime] = createdAt
+}
 
 object FindCustomersByEmailSqlRow {
   val `_rowParser`: RowParser[FindCustomersByEmailSqlRow] = RowParsers.of(CustomersId.sqlServerType, SqlServerTypes.nvarchar, SqlServerTypes.nvarchar, SqlServerTypes.datetime2.nullable)(FindCustomersByEmailSqlRow.apply)(row => Array[Any](row.customerId, row.customerName, row.customerEmail, row.createdAt))

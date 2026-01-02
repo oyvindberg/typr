@@ -18,11 +18,10 @@ public class VCustomerSummaryViewRepoImpl implements VCustomerSummaryViewRepo {
   public SelectBuilder<VCustomerSummaryViewFields, VCustomerSummaryViewRow> select() {
     return SelectBuilder.of(
         "`v_customer_summary`",
-        VCustomerSummaryViewFields.structure(),
+        VCustomerSummaryViewFields.structure,
         VCustomerSummaryViewRow._rowParser,
         Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<VCustomerSummaryViewRow> selectAll(Connection c) {
@@ -34,5 +33,4 @@ public class VCustomerSummaryViewRepoImpl implements VCustomerSummaryViewRepo {
         .query(VCustomerSummaryViewRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

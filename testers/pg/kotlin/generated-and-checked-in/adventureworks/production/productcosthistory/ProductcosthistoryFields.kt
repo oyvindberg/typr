@@ -10,61 +10,57 @@ import adventureworks.production.product.ProductId
 import adventureworks.production.product.ProductRow
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
-import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.ForeignKey
 import dev.typr.foundations.kotlin.RelationStructure
-import dev.typr.foundations.kotlin.SqlExpr.CompositeIn
-import dev.typr.foundations.kotlin.SqlExpr.CompositeIn.Part
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr
+import dev.typr.foundations.kotlin.TupleExpr5
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import kotlin.collections.List
 
-interface ProductcosthistoryFields : FieldsExpr<ProductcosthistoryRow> {
-  abstract override fun columns(): List<FieldLike<*, ProductcosthistoryRow>>
+data class ProductcosthistoryFields(val _path: List<Path>) : TupleExpr5<ProductId, LocalDateTime, LocalDateTime, BigDecimal, LocalDateTime>, RelationStructure<ProductcosthistoryFields, ProductcosthistoryRow>, FieldsBase<ProductcosthistoryRow> {
+  override fun _1(): SqlExpr<ProductId> = productid()
 
-  fun compositeIdIn(compositeIds: List<ProductcosthistoryId>): SqlExpr<Boolean> = CompositeIn(listOf(Part<ProductId, ProductcosthistoryId, ProductcosthistoryRow>(productid(), ProductcosthistoryId::productid, ProductId.pgType), Part<LocalDateTime, ProductcosthistoryId, ProductcosthistoryRow>(startdate(), ProductcosthistoryId::startdate, PgTypes.timestamp)), compositeIds)
+  override fun _2(): SqlExpr<LocalDateTime> = startdate()
+
+  override fun _3(): SqlExpr<LocalDateTime> = enddate()
+
+  override fun _4(): SqlExpr<BigDecimal> = standardcost()
+
+  override fun _5(): SqlExpr<LocalDateTime> = modifieddate()
+
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, ProductcosthistoryRow>> = listOf(this.productid().underlying, this.startdate().underlying, this.enddate().underlying, this.standardcost().underlying, this.modifieddate().underlying)
+
+  fun compositeIdIn(compositeIds: List<ProductcosthistoryId>): SqlExpr<Boolean> = TupleExpr.of(productid(), startdate()).among(compositeIds)
 
   fun compositeIdIs(compositeId: ProductcosthistoryId): SqlExpr<Boolean> = SqlExpr.all(productid().isEqual(compositeId.productid), startdate().isEqual(compositeId.startdate))
 
-  abstract fun enddate(): OptField<LocalDateTime, ProductcosthistoryRow>
+  fun enddate(): OptField<LocalDateTime, ProductcosthistoryRow> = OptField<LocalDateTime, ProductcosthistoryRow>(_path, "enddate", ProductcosthistoryRow::enddate, null, "timestamp", { row, value -> row.copy(enddate = value) }, PgTypes.timestamp)
 
   fun fkProduct(): ForeignKey<ProductFields, ProductRow> = ForeignKey.of<ProductFields, ProductRow>("production.FK_ProductCostHistory_Product_ProductID").withColumnPair<ProductId>(productid(), ProductFields::productid)
 
-  abstract fun modifieddate(): Field<LocalDateTime, ProductcosthistoryRow>
+  fun modifieddate(): Field<LocalDateTime, ProductcosthistoryRow> = Field<LocalDateTime, ProductcosthistoryRow>(_path, "modifieddate", ProductcosthistoryRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
 
-  abstract fun productid(): IdField<ProductId, ProductcosthistoryRow>
+  fun productid(): IdField<ProductId, ProductcosthistoryRow> = IdField<ProductId, ProductcosthistoryRow>(_path, "productid", ProductcosthistoryRow::productid, null, "int4", { row, value -> row.copy(productid = value) }, ProductId.dbType)
 
   override fun rowParser(): RowParser<ProductcosthistoryRow> = ProductcosthistoryRow._rowParser.underlying
 
-  abstract fun standardcost(): Field<BigDecimal, ProductcosthistoryRow>
+  fun standardcost(): Field<BigDecimal, ProductcosthistoryRow> = Field<BigDecimal, ProductcosthistoryRow>(_path, "standardcost", ProductcosthistoryRow::standardcost, null, "numeric", { row, value -> row.copy(standardcost = value) }, PgTypes.numeric)
 
-  abstract fun startdate(): IdField<LocalDateTime, ProductcosthistoryRow>
+  fun startdate(): IdField<LocalDateTime, ProductcosthistoryRow> = IdField<LocalDateTime, ProductcosthistoryRow>(_path, "startdate", ProductcosthistoryRow::startdate, null, "timestamp", { row, value -> row.copy(startdate = value) }, PgTypes.timestamp)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<ProductcosthistoryFields, ProductcosthistoryRow> = ProductcosthistoryFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : ProductcosthistoryFields, RelationStructure<ProductcosthistoryFields, ProductcosthistoryRow> {
-      override fun productid(): IdField<ProductId, ProductcosthistoryRow> = IdField<ProductId, ProductcosthistoryRow>(_path, "productid", ProductcosthistoryRow::productid, null, "int4", { row, value -> row.copy(productid = value) }, ProductId.pgType)
-
-      override fun startdate(): IdField<LocalDateTime, ProductcosthistoryRow> = IdField<LocalDateTime, ProductcosthistoryRow>(_path, "startdate", ProductcosthistoryRow::startdate, null, "timestamp", { row, value -> row.copy(startdate = value) }, PgTypes.timestamp)
-
-      override fun enddate(): OptField<LocalDateTime, ProductcosthistoryRow> = OptField<LocalDateTime, ProductcosthistoryRow>(_path, "enddate", ProductcosthistoryRow::enddate, null, "timestamp", { row, value -> row.copy(enddate = value) }, PgTypes.timestamp)
-
-      override fun standardcost(): Field<BigDecimal, ProductcosthistoryRow> = Field<BigDecimal, ProductcosthistoryRow>(_path, "standardcost", ProductcosthistoryRow::standardcost, null, "numeric", { row, value -> row.copy(standardcost = value) }, PgTypes.numeric)
-
-      override fun modifieddate(): Field<LocalDateTime, ProductcosthistoryRow> = Field<LocalDateTime, ProductcosthistoryRow>(_path, "modifieddate", ProductcosthistoryRow::modifieddate, null, "timestamp", { row, value -> row.copy(modifieddate = value) }, PgTypes.timestamp)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, ProductcosthistoryRow>> = listOf(this.productid().underlying, this.startdate().underlying, this.enddate().underlying, this.standardcost().underlying, this.modifieddate().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<ProductcosthistoryFields, ProductcosthistoryRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: ProductcosthistoryFields = ProductcosthistoryFields(emptyList<Path>())
   }
 }

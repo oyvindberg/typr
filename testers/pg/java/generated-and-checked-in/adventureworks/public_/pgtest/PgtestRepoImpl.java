@@ -23,9 +23,8 @@ import java.util.List;
 public class PgtestRepoImpl implements PgtestRepo {
   @Override
   public DeleteBuilder<PgtestFields, PgtestRow> delete() {
-    return DeleteBuilder.of("\"public\".\"pgtest\"", PgtestFields.structure(), Dialect.POSTGRESQL);
+    return DeleteBuilder.of("\"public\".\"pgtest\"", PgtestFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public PgtestRow insert(PgtestRow unsaved, Connection c) {
@@ -87,9 +86,9 @@ public class PgtestRepoImpl implements PgtestRepo {
             Fragment.lit("::lseg, "),
             Fragment.encode(PgTypes.money, unsaved.money()),
             Fragment.lit("::money, "),
-            Fragment.encode(Mydomain.pgType, unsaved.mydomain()),
+            Fragment.encode(Mydomain.dbType, unsaved.mydomain()),
             Fragment.lit("::text, "),
-            Fragment.encode(Myenum.pgType, unsaved.myenum()),
+            Fragment.encode(Myenum.dbType, unsaved.myenum()),
             Fragment.lit("::public.myenum, "),
             Fragment.encode(PgTypes.name, unsaved.name()),
             Fragment.lit("::name, "),
@@ -155,9 +154,9 @@ public class PgtestRepoImpl implements PgtestRepo {
             Fragment.lit("::lseg[], "),
             Fragment.encode(PgTypes.moneyArray, unsaved.moneyes()),
             Fragment.lit("::money[], "),
-            Fragment.encode(Mydomain.pgTypeArray, unsaved.mydomaines()),
+            Fragment.encode(Mydomain.dbTypeArray, unsaved.mydomaines()),
             Fragment.lit("::mydomain[], "),
-            Fragment.encode(Myenum.pgTypeArray, unsaved.myenumes()),
+            Fragment.encode(Myenum.dbTypeArray, unsaved.myenumes()),
             Fragment.lit("::myenum[], "),
             Fragment.encode(PgTypes.nameArray, unsaved.namees()),
             Fragment.lit("::name[], "),
@@ -203,7 +202,6 @@ public class PgtestRepoImpl implements PgtestRepo {
         .updateReturning(PgtestRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<PgtestRow> unsaved, Integer batchSize, Connection c) {
@@ -225,17 +223,12 @@ public class PgtestRepoImpl implements PgtestRepo {
         c,
         PgtestRow.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<PgtestFields, PgtestRow> select() {
     return SelectBuilder.of(
-        "\"public\".\"pgtest\"",
-        PgtestFields.structure(),
-        PgtestRow._rowParser,
-        Dialect.POSTGRESQL);
+        "\"public\".\"pgtest\"", PgtestFields.structure, PgtestRow._rowParser, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<PgtestRow> selectAll(Connection c) {
@@ -258,15 +251,10 @@ public class PgtestRepoImpl implements PgtestRepo {
         .query(PgtestRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<PgtestFields, PgtestRow> update() {
     return UpdateBuilder.of(
-        "\"public\".\"pgtest\"",
-        PgtestFields.structure(),
-        PgtestRow._rowParser,
-        Dialect.POSTGRESQL);
+        "\"public\".\"pgtest\"", PgtestFields.structure, PgtestRow._rowParser, Dialect.POSTGRESQL);
   }
-  ;
 }

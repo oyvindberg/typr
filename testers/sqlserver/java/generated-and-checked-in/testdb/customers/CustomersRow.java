@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
 import dev.typr.foundations.SqlServerTypes;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
@@ -20,7 +21,8 @@ public record CustomersRow(
     String name,
     String email,
     /** Default: (getdate()) */
-    @JsonProperty("created_at") Optional<LocalDateTime> createdAt) {
+    @JsonProperty("created_at") Optional<LocalDateTime> createdAt)
+    implements Tuple4<CustomersId, String, String, Optional<LocalDateTime>> {
   /** IDENTITY(1, 1) */
   public CustomersRow withCustomerId(CustomersId customerId) {
     return new CustomersRow(customerId, name, email, createdAt);
@@ -51,6 +53,30 @@ public record CustomersRow(
           SqlServerTypes.datetime2.opt(),
           CustomersRow::new,
           row -> new Object[] {row.customerId(), row.name(), row.email(), row.createdAt()});
+  ;
+
+  @Override
+  public CustomersId _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return email;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _4() {
+    return createdAt;
+  }
   ;
 
   public CustomersId id() {

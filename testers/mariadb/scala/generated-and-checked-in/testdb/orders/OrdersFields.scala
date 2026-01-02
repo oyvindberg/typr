@@ -8,15 +8,17 @@ package testdb.orders
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.data.maria.Inet6
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.ForeignKey
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr22
 import java.time.LocalDateTime
 import testdb.customer_addresses.CustomerAddressesFields
 import testdb.customer_addresses.CustomerAddressesId
@@ -28,50 +30,270 @@ import testdb.promotions.PromotionsFields
 import testdb.promotions.PromotionsId
 import testdb.promotions.PromotionsRow
 
-trait OrdersFields extends FieldsExpr0[OrdersRow] {
-  def orderId: IdField[OrdersId, OrdersRow]
+class OrdersFields(val `_path`: java.util.List[Path]) extends TupleExpr22[OrdersId, String, CustomersId, String, String, CustomerAddressesId, CustomerAddressesId, BigDecimal, BigDecimal, BigDecimal, BigDecimal, BigDecimal, String, PromotionsId, String, String, Inet6, String, LocalDateTime, LocalDateTime, LocalDateTime, LocalDateTime] with RelationStructure[OrdersFields, OrdersRow]  with FieldsBase[OrdersRow] {
+  def orderId: IdField[OrdersId, OrdersRow] = {
+    new IdField[OrdersId, OrdersRow](
+      _path,
+      "order_id",
+      _.orderId,
+      None,
+      None,
+      (row, value) => row.copy(orderId = value),
+      OrdersId.dbType
+    )
+  }
 
-  def orderNumber: Field[String, OrdersRow]
+  def orderNumber: Field[String, OrdersRow] = {
+    new Field[String, OrdersRow](
+      _path,
+      "order_number",
+      _.orderNumber,
+      None,
+      None,
+      (row, value) => row.copy(orderNumber = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def customerId: Field[CustomersId, OrdersRow]
+  def customerId: Field[CustomersId, OrdersRow] = {
+    new Field[CustomersId, OrdersRow](
+      _path,
+      "customer_id",
+      _.customerId,
+      None,
+      None,
+      (row, value) => row.copy(customerId = value),
+      CustomersId.dbType
+    )
+  }
 
-  def orderStatus: Field[String, OrdersRow]
+  def orderStatus: Field[String, OrdersRow] = {
+    new Field[String, OrdersRow](
+      _path,
+      "order_status",
+      _.orderStatus,
+      None,
+      None,
+      (row, value) => row.copy(orderStatus = value),
+      MariaTypes.text
+    )
+  }
 
-  def paymentStatus: Field[String, OrdersRow]
+  def paymentStatus: Field[String, OrdersRow] = {
+    new Field[String, OrdersRow](
+      _path,
+      "payment_status",
+      _.paymentStatus,
+      None,
+      None,
+      (row, value) => row.copy(paymentStatus = value),
+      MariaTypes.text
+    )
+  }
 
-  def shippingAddressId: OptField[CustomerAddressesId, OrdersRow]
+  def shippingAddressId: OptField[CustomerAddressesId, OrdersRow] = {
+    new OptField[CustomerAddressesId, OrdersRow](
+      _path,
+      "shipping_address_id",
+      _.shippingAddressId,
+      None,
+      None,
+      (row, value) => row.copy(shippingAddressId = value),
+      CustomerAddressesId.dbType
+    )
+  }
 
-  def billingAddressId: OptField[CustomerAddressesId, OrdersRow]
+  def billingAddressId: OptField[CustomerAddressesId, OrdersRow] = {
+    new OptField[CustomerAddressesId, OrdersRow](
+      _path,
+      "billing_address_id",
+      _.billingAddressId,
+      None,
+      None,
+      (row, value) => row.copy(billingAddressId = value),
+      CustomerAddressesId.dbType
+    )
+  }
 
-  def subtotal: Field[BigDecimal, OrdersRow]
+  def subtotal: Field[BigDecimal, OrdersRow] = {
+    new Field[BigDecimal, OrdersRow](
+      _path,
+      "subtotal",
+      _.subtotal,
+      None,
+      None,
+      (row, value) => row.copy(subtotal = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def shippingCost: Field[BigDecimal, OrdersRow]
+  def shippingCost: Field[BigDecimal, OrdersRow] = {
+    new Field[BigDecimal, OrdersRow](
+      _path,
+      "shipping_cost",
+      _.shippingCost,
+      None,
+      None,
+      (row, value) => row.copy(shippingCost = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def taxAmount: Field[BigDecimal, OrdersRow]
+  def taxAmount: Field[BigDecimal, OrdersRow] = {
+    new Field[BigDecimal, OrdersRow](
+      _path,
+      "tax_amount",
+      _.taxAmount,
+      None,
+      None,
+      (row, value) => row.copy(taxAmount = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def discountAmount: Field[BigDecimal, OrdersRow]
+  def discountAmount: Field[BigDecimal, OrdersRow] = {
+    new Field[BigDecimal, OrdersRow](
+      _path,
+      "discount_amount",
+      _.discountAmount,
+      None,
+      None,
+      (row, value) => row.copy(discountAmount = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def totalAmount: Field[BigDecimal, OrdersRow]
+  def totalAmount: Field[BigDecimal, OrdersRow] = {
+    new Field[BigDecimal, OrdersRow](
+      _path,
+      "total_amount",
+      _.totalAmount,
+      None,
+      None,
+      (row, value) => row.copy(totalAmount = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def currencyCode: Field[String, OrdersRow]
+  def currencyCode: Field[String, OrdersRow] = {
+    new Field[String, OrdersRow](
+      _path,
+      "currency_code",
+      _.currencyCode,
+      None,
+      None,
+      (row, value) => row.copy(currencyCode = value),
+      MariaTypes.char_
+    )
+  }
 
-  def promotionId: OptField[PromotionsId, OrdersRow]
+  def promotionId: OptField[PromotionsId, OrdersRow] = {
+    new OptField[PromotionsId, OrdersRow](
+      _path,
+      "promotion_id",
+      _.promotionId,
+      None,
+      None,
+      (row, value) => row.copy(promotionId = value),
+      PromotionsId.dbType
+    )
+  }
 
-  def notes: OptField[String, OrdersRow]
+  def notes: OptField[String, OrdersRow] = {
+    new OptField[String, OrdersRow](
+      _path,
+      "notes",
+      _.notes,
+      None,
+      None,
+      (row, value) => row.copy(notes = value),
+      MariaTypes.text
+    )
+  }
 
-  def internalNotes: OptField[String, OrdersRow]
+  def internalNotes: OptField[String, OrdersRow] = {
+    new OptField[String, OrdersRow](
+      _path,
+      "internal_notes",
+      _.internalNotes,
+      None,
+      None,
+      (row, value) => row.copy(internalNotes = value),
+      MariaTypes.mediumtext
+    )
+  }
 
-  def ipAddress: OptField[Inet6, OrdersRow]
+  def ipAddress: OptField[Inet6, OrdersRow] = {
+    new OptField[Inet6, OrdersRow](
+      _path,
+      "ip_address",
+      _.ipAddress,
+      None,
+      None,
+      (row, value) => row.copy(ipAddress = value),
+      MariaTypes.inet6
+    )
+  }
 
-  def userAgent: OptField[String, OrdersRow]
+  def userAgent: OptField[String, OrdersRow] = {
+    new OptField[String, OrdersRow](
+      _path,
+      "user_agent",
+      _.userAgent,
+      None,
+      None,
+      (row, value) => row.copy(userAgent = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def orderedAt: Field[LocalDateTime, OrdersRow]
+  def orderedAt: Field[LocalDateTime, OrdersRow] = {
+    new Field[LocalDateTime, OrdersRow](
+      _path,
+      "ordered_at",
+      _.orderedAt,
+      None,
+      None,
+      (row, value) => row.copy(orderedAt = value),
+      MariaTypes.datetime
+    )
+  }
 
-  def confirmedAt: OptField[LocalDateTime, OrdersRow]
+  def confirmedAt: OptField[LocalDateTime, OrdersRow] = {
+    new OptField[LocalDateTime, OrdersRow](
+      _path,
+      "confirmed_at",
+      _.confirmedAt,
+      None,
+      None,
+      (row, value) => row.copy(confirmedAt = value),
+      MariaTypes.datetime
+    )
+  }
 
-  def shippedAt: OptField[LocalDateTime, OrdersRow]
+  def shippedAt: OptField[LocalDateTime, OrdersRow] = {
+    new OptField[LocalDateTime, OrdersRow](
+      _path,
+      "shipped_at",
+      _.shippedAt,
+      None,
+      None,
+      (row, value) => row.copy(shippedAt = value),
+      MariaTypes.datetime
+    )
+  }
 
-  def deliveredAt: OptField[LocalDateTime, OrdersRow]
+  def deliveredAt: OptField[LocalDateTime, OrdersRow] = {
+    new OptField[LocalDateTime, OrdersRow](
+      _path,
+      "delivered_at",
+      _.deliveredAt,
+      None,
+      None,
+      (row, value) => row.copy(deliveredAt = value),
+      MariaTypes.datetime
+    )
+  }
 
   def fkCustomerAddressesBillingAddressId: ForeignKey[CustomerAddressesFields, CustomerAddressesRow] = ForeignKey.of[CustomerAddressesFields, CustomerAddressesRow]("fk_order_billing_addr").withColumnPair[CustomerAddressesId](billingAddressId, _.addressId)
 
@@ -81,282 +303,57 @@ trait OrdersFields extends FieldsExpr0[OrdersRow] {
 
   def fkCustomerAddressesShippingAddressId: ForeignKey[CustomerAddressesFields, CustomerAddressesRow] = ForeignKey.of[CustomerAddressesFields, CustomerAddressesRow]("fk_order_shipping_addr").withColumnPair[CustomerAddressesId](shippingAddressId, _.addressId)
 
-  override def columns: java.util.List[FieldLike[?, OrdersRow]]
+  override def columns: java.util.List[FieldLike[?, OrdersRow]] = java.util.List.of(this.orderId.underlying, this.orderNumber.underlying, this.customerId.underlying, this.orderStatus.underlying, this.paymentStatus.underlying, this.shippingAddressId.underlying, this.billingAddressId.underlying, this.subtotal.underlying, this.shippingCost.underlying, this.taxAmount.underlying, this.discountAmount.underlying, this.totalAmount.underlying, this.currencyCode.underlying, this.promotionId.underlying, this.notes.underlying, this.internalNotes.underlying, this.ipAddress.underlying, this.userAgent.underlying, this.orderedAt.underlying, this.confirmedAt.underlying, this.shippedAt.underlying, this.deliveredAt.underlying)
 
   override def rowParser: RowParser[OrdersRow] = OrdersRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OrdersFields, OrdersRow] = new OrdersFields(`_path`)
+
+  override def `_1`: SqlExpr[OrdersId] = orderId
+
+  override def `_2`: SqlExpr[String] = orderNumber
+
+  override def `_3`: SqlExpr[CustomersId] = customerId
+
+  override def `_4`: SqlExpr[String] = orderStatus
+
+  override def `_5`: SqlExpr[String] = paymentStatus
+
+  override def `_6`: SqlExpr[CustomerAddressesId] = shippingAddressId
+
+  override def `_7`: SqlExpr[CustomerAddressesId] = billingAddressId
+
+  override def `_8`: SqlExpr[BigDecimal] = subtotal
+
+  override def `_9`: SqlExpr[BigDecimal] = shippingCost
+
+  override def `_10`: SqlExpr[BigDecimal] = taxAmount
+
+  override def `_11`: SqlExpr[BigDecimal] = discountAmount
+
+  override def `_12`: SqlExpr[BigDecimal] = totalAmount
+
+  override def `_13`: SqlExpr[String] = currencyCode
+
+  override def `_14`: SqlExpr[PromotionsId] = promotionId
+
+  override def `_15`: SqlExpr[String] = notes
+
+  override def `_16`: SqlExpr[String] = internalNotes
+
+  override def `_17`: SqlExpr[Inet6] = ipAddress
+
+  override def `_18`: SqlExpr[String] = userAgent
+
+  override def `_19`: SqlExpr[LocalDateTime] = orderedAt
+
+  override def `_20`: SqlExpr[LocalDateTime] = confirmedAt
+
+  override def `_21`: SqlExpr[LocalDateTime] = shippedAt
+
+  override def `_22`: SqlExpr[LocalDateTime] = deliveredAt
 }
 
 object OrdersFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends OrdersFields with RelationStructure[OrdersFields, OrdersRow] {
-
-    override def orderId: IdField[OrdersId, OrdersRow] = {
-      new IdField[OrdersId, OrdersRow](
-        _path,
-        "order_id",
-        _.orderId,
-        None,
-        None,
-        (row, value) => row.copy(orderId = value),
-        OrdersId.pgType
-      )
-    }
-
-    override def orderNumber: Field[String, OrdersRow] = {
-      new Field[String, OrdersRow](
-        _path,
-        "order_number",
-        _.orderNumber,
-        None,
-        None,
-        (row, value) => row.copy(orderNumber = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def customerId: Field[CustomersId, OrdersRow] = {
-      new Field[CustomersId, OrdersRow](
-        _path,
-        "customer_id",
-        _.customerId,
-        None,
-        None,
-        (row, value) => row.copy(customerId = value),
-        CustomersId.pgType
-      )
-    }
-
-    override def orderStatus: Field[String, OrdersRow] = {
-      new Field[String, OrdersRow](
-        _path,
-        "order_status",
-        _.orderStatus,
-        None,
-        None,
-        (row, value) => row.copy(orderStatus = value),
-        MariaTypes.text
-      )
-    }
-
-    override def paymentStatus: Field[String, OrdersRow] = {
-      new Field[String, OrdersRow](
-        _path,
-        "payment_status",
-        _.paymentStatus,
-        None,
-        None,
-        (row, value) => row.copy(paymentStatus = value),
-        MariaTypes.text
-      )
-    }
-
-    override def shippingAddressId: OptField[CustomerAddressesId, OrdersRow] = {
-      new OptField[CustomerAddressesId, OrdersRow](
-        _path,
-        "shipping_address_id",
-        _.shippingAddressId,
-        None,
-        None,
-        (row, value) => row.copy(shippingAddressId = value),
-        CustomerAddressesId.pgType
-      )
-    }
-
-    override def billingAddressId: OptField[CustomerAddressesId, OrdersRow] = {
-      new OptField[CustomerAddressesId, OrdersRow](
-        _path,
-        "billing_address_id",
-        _.billingAddressId,
-        None,
-        None,
-        (row, value) => row.copy(billingAddressId = value),
-        CustomerAddressesId.pgType
-      )
-    }
-
-    override def subtotal: Field[BigDecimal, OrdersRow] = {
-      new Field[BigDecimal, OrdersRow](
-        _path,
-        "subtotal",
-        _.subtotal,
-        None,
-        None,
-        (row, value) => row.copy(subtotal = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def shippingCost: Field[BigDecimal, OrdersRow] = {
-      new Field[BigDecimal, OrdersRow](
-        _path,
-        "shipping_cost",
-        _.shippingCost,
-        None,
-        None,
-        (row, value) => row.copy(shippingCost = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def taxAmount: Field[BigDecimal, OrdersRow] = {
-      new Field[BigDecimal, OrdersRow](
-        _path,
-        "tax_amount",
-        _.taxAmount,
-        None,
-        None,
-        (row, value) => row.copy(taxAmount = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def discountAmount: Field[BigDecimal, OrdersRow] = {
-      new Field[BigDecimal, OrdersRow](
-        _path,
-        "discount_amount",
-        _.discountAmount,
-        None,
-        None,
-        (row, value) => row.copy(discountAmount = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def totalAmount: Field[BigDecimal, OrdersRow] = {
-      new Field[BigDecimal, OrdersRow](
-        _path,
-        "total_amount",
-        _.totalAmount,
-        None,
-        None,
-        (row, value) => row.copy(totalAmount = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def currencyCode: Field[String, OrdersRow] = {
-      new Field[String, OrdersRow](
-        _path,
-        "currency_code",
-        _.currencyCode,
-        None,
-        None,
-        (row, value) => row.copy(currencyCode = value),
-        MariaTypes.char_
-      )
-    }
-
-    override def promotionId: OptField[PromotionsId, OrdersRow] = {
-      new OptField[PromotionsId, OrdersRow](
-        _path,
-        "promotion_id",
-        _.promotionId,
-        None,
-        None,
-        (row, value) => row.copy(promotionId = value),
-        PromotionsId.pgType
-      )
-    }
-
-    override def notes: OptField[String, OrdersRow] = {
-      new OptField[String, OrdersRow](
-        _path,
-        "notes",
-        _.notes,
-        None,
-        None,
-        (row, value) => row.copy(notes = value),
-        MariaTypes.text
-      )
-    }
-
-    override def internalNotes: OptField[String, OrdersRow] = {
-      new OptField[String, OrdersRow](
-        _path,
-        "internal_notes",
-        _.internalNotes,
-        None,
-        None,
-        (row, value) => row.copy(internalNotes = value),
-        MariaTypes.mediumtext
-      )
-    }
-
-    override def ipAddress: OptField[Inet6, OrdersRow] = {
-      new OptField[Inet6, OrdersRow](
-        _path,
-        "ip_address",
-        _.ipAddress,
-        None,
-        None,
-        (row, value) => row.copy(ipAddress = value),
-        MariaTypes.inet6
-      )
-    }
-
-    override def userAgent: OptField[String, OrdersRow] = {
-      new OptField[String, OrdersRow](
-        _path,
-        "user_agent",
-        _.userAgent,
-        None,
-        None,
-        (row, value) => row.copy(userAgent = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def orderedAt: Field[LocalDateTime, OrdersRow] = {
-      new Field[LocalDateTime, OrdersRow](
-        _path,
-        "ordered_at",
-        _.orderedAt,
-        None,
-        None,
-        (row, value) => row.copy(orderedAt = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def confirmedAt: OptField[LocalDateTime, OrdersRow] = {
-      new OptField[LocalDateTime, OrdersRow](
-        _path,
-        "confirmed_at",
-        _.confirmedAt,
-        None,
-        None,
-        (row, value) => row.copy(confirmedAt = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def shippedAt: OptField[LocalDateTime, OrdersRow] = {
-      new OptField[LocalDateTime, OrdersRow](
-        _path,
-        "shipped_at",
-        _.shippedAt,
-        None,
-        None,
-        (row, value) => row.copy(shippedAt = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def deliveredAt: OptField[LocalDateTime, OrdersRow] = {
-      new OptField[LocalDateTime, OrdersRow](
-        _path,
-        "delivered_at",
-        _.deliveredAt,
-        None,
-        None,
-        (row, value) => row.copy(deliveredAt = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, OrdersRow]] = java.util.List.of(this.orderId.underlying, this.orderNumber.underlying, this.customerId.underlying, this.orderStatus.underlying, this.paymentStatus.underlying, this.shippingAddressId.underlying, this.billingAddressId.underlying, this.subtotal.underlying, this.shippingCost.underlying, this.taxAmount.underlying, this.discountAmount.underlying, this.totalAmount.underlying, this.currencyCode.underlying, this.promotionId.underlying, this.notes.underlying, this.internalNotes.underlying, this.ipAddress.underlying, this.userAgent.underlying, this.orderedAt.underlying, this.confirmedAt.underlying, this.shippedAt.underlying, this.deliveredAt.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[OrdersFields, OrdersRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: OrdersFields = new OrdersFields(java.util.Collections.emptyList())
 }

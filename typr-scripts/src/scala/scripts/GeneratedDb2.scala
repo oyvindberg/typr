@@ -1,6 +1,6 @@
 package scripts
 
-import bleep.{FileWatching, cli}
+import bleep.FileWatching
 import ryddig.{Formatter, LogLevel, LogPatterns, Loggers}
 import typr.*
 import typr.internal.codegen.*
@@ -31,7 +31,7 @@ object GeneratedDb2 {
           username = "db2inst1",
           password = "password"
         )
-        val scriptsPath = buildDir.resolve("db2_sql")
+        val scriptsPath = buildDir.resolve("sql-scripts/db2")
         val selector = Selector.All
         val typoLogger = TypoLogger.Console
 
@@ -68,13 +68,7 @@ object GeneratedDb2 {
               .filter { case (_, synced) => synced != FileSync.Synced.Unchanged }
               .foreach { case (path, synced) => logger.withContext("path", path).warn(synced.toString) }
 
-            cli(
-              "add files to git",
-              buildDir,
-              List("git", "add", "-f", targetSources.toString),
-              logger = logger,
-              cli.Out.Raw
-            )
+            GitOps.gitAdd("add files to git", buildDir, List(targetSources.toString), logger)
           }
         }
 

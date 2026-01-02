@@ -7,6 +7,8 @@ package testdb.price_tiers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple5
+import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -26,17 +28,27 @@ data class PriceTiersRow(
   /** 
     * Default: 1
     */
-  @JsonProperty("min_quantity") val minQuantity: Long,
+  @JsonProperty("min_quantity") val minQuantity: Uint4,
   /**  */
   @JsonProperty("discount_type") val discountType: String,
   /**  */
   @JsonProperty("discount_value") val discountValue: BigDecimal
-) {
+) : Tuple5<PriceTiersId, String, Uint4, String, BigDecimal> {
+  override fun _1(): PriceTiersId = tierId
+
+  override fun _2(): String = name
+
+  override fun _3(): Uint4 = minQuantity
+
+  override fun _4(): String = discountType
+
+  override fun _5(): BigDecimal = discountValue
+
   fun id(): PriceTiersId = tierId
 
-  fun toUnsavedRow(minQuantity: Defaulted<Long> = Defaulted.Provided(this.minQuantity)): PriceTiersRowUnsaved = PriceTiersRowUnsaved(name, discountType, discountValue, minQuantity)
+  fun toUnsavedRow(minQuantity: Defaulted<Uint4> = Defaulted.Provided(this.minQuantity)): PriceTiersRowUnsaved = PriceTiersRowUnsaved(name, discountType, discountValue, minQuantity)
 
   companion object {
-    val _rowParser: RowParser<PriceTiersRow> = RowParsers.of(PriceTiersId.pgType, MariaTypes.varchar, KotlinDbTypes.MariaTypes.intUnsigned, MariaTypes.text, KotlinDbTypes.MariaTypes.numeric, { t0, t1, t2, t3, t4 -> PriceTiersRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.tierId, row.name, row.minQuantity, row.discountType, row.discountValue) })
+    val _rowParser: RowParser<PriceTiersRow> = RowParsers.of(PriceTiersId.dbType, MariaTypes.varchar, MariaTypes.intUnsigned, MariaTypes.text, KotlinDbTypes.MariaTypes.numeric, { t0, t1, t2, t3, t4 -> PriceTiersRow(t0, t1, t2, t3, t4) }, { row -> arrayOf<Any?>(row.tierId, row.name, row.minQuantity, row.discountType, row.discountValue) })
   }
 }

@@ -7,41 +7,39 @@ package testdb.customer_status
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.IdField
+import dev.typr.foundations.kotlin.TupleExpr3
 import kotlin.collections.List
 
-interface CustomerStatusFields : FieldsExpr<CustomerStatusRow> {
-  abstract override fun columns(): List<FieldLike<*, CustomerStatusRow>>
+data class CustomerStatusFields(val _path: List<Path>) : TupleExpr3<CustomerStatusId, String, Boolean>, RelationStructure<CustomerStatusFields, CustomerStatusRow>, FieldsBase<CustomerStatusRow> {
+  override fun _1(): SqlExpr<CustomerStatusId> = statusCode()
 
-  abstract fun description(): Field<String, CustomerStatusRow>
+  override fun _2(): SqlExpr<String> = description()
 
-  abstract fun isActive(): Field<Boolean, CustomerStatusRow>
+  override fun _3(): SqlExpr<Boolean> = isActive()
+
+  override fun _path(): List<Path> = _path
+
+  override fun columns(): List<FieldLike<*, CustomerStatusRow>> = listOf(this.statusCode().underlying, this.description().underlying, this.isActive().underlying)
+
+  fun description(): Field<String, CustomerStatusRow> = Field<String, CustomerStatusRow>(_path, "description", CustomerStatusRow::description, null, null, { row, value -> row.copy(description = value) }, MariaTypes.varchar)
+
+  fun isActive(): Field<Boolean, CustomerStatusRow> = Field<Boolean, CustomerStatusRow>(_path, "is_active", CustomerStatusRow::isActive, null, null, { row, value -> row.copy(isActive = value) }, KotlinDbTypes.MariaTypes.bool)
 
   override fun rowParser(): RowParser<CustomerStatusRow> = CustomerStatusRow._rowParser.underlying
 
-  abstract fun statusCode(): IdField<CustomerStatusId, CustomerStatusRow>
+  fun statusCode(): IdField<CustomerStatusId, CustomerStatusRow> = IdField<CustomerStatusId, CustomerStatusRow>(_path, "status_code", CustomerStatusRow::statusCode, null, null, { row, value -> row.copy(statusCode = value) }, CustomerStatusId.dbType)
+
+  override fun withPaths(_path: List<Path>): RelationStructure<CustomerStatusFields, CustomerStatusRow> = CustomerStatusFields(_path)
 
   companion object {
-    data class Impl(val _path: List<Path>) : CustomerStatusFields, RelationStructure<CustomerStatusFields, CustomerStatusRow> {
-      override fun statusCode(): IdField<CustomerStatusId, CustomerStatusRow> = IdField<CustomerStatusId, CustomerStatusRow>(_path, "status_code", CustomerStatusRow::statusCode, null, null, { row, value -> row.copy(statusCode = value) }, CustomerStatusId.pgType)
-
-      override fun description(): Field<String, CustomerStatusRow> = Field<String, CustomerStatusRow>(_path, "description", CustomerStatusRow::description, null, null, { row, value -> row.copy(description = value) }, MariaTypes.varchar)
-
-      override fun isActive(): Field<Boolean, CustomerStatusRow> = Field<Boolean, CustomerStatusRow>(_path, "is_active", CustomerStatusRow::isActive, null, null, { row, value -> row.copy(isActive = value) }, KotlinDbTypes.MariaTypes.bool)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, CustomerStatusRow>> = listOf(this.statusCode().underlying, this.description().underlying, this.isActive().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<CustomerStatusFields, CustomerStatusRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: CustomerStatusFields = CustomerStatusFields(emptyList<Path>())
   }
 }

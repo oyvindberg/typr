@@ -7,6 +7,8 @@ package testdb.orders_by_customer
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple8
+import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -16,14 +18,30 @@ import java.time.LocalDate
 case class OrdersByCustomerSqlRow(
   @JsonProperty("order_id") orderId: Int,
   @JsonProperty("order_date") orderDate: LocalDate,
-  @JsonProperty("total_amount") totalAmount: BigDecimal,
-  status: String,
+  @JsonProperty("total_amount") totalAmount: Option[BigDecimal],
+  status: Option[String],
   @JsonProperty("item_number") itemNumber: Int,
   @JsonProperty("product_name") productName: String,
   quantity: Int,
   @JsonProperty("unit_price") unitPrice: BigDecimal
-)
+) extends Tuple8[Int, LocalDate, Option[BigDecimal], Option[String], Int, String, Int, BigDecimal] {
+  override def `_1`: Int = orderId
+
+  override def `_2`: LocalDate = orderDate
+
+  override def `_3`: Option[BigDecimal] = totalAmount
+
+  override def `_4`: Option[String] = status
+
+  override def `_5`: Int = itemNumber
+
+  override def `_6`: String = productName
+
+  override def `_7`: Int = quantity
+
+  override def `_8`: BigDecimal = unitPrice
+}
 
 object OrdersByCustomerSqlRow {
-  val `_rowParser`: RowParser[OrdersByCustomerSqlRow] = RowParsers.of(ScalaDbTypes.Db2Types.integer, Db2Types.date, ScalaDbTypes.Db2Types.decimal, Db2Types.varchar, ScalaDbTypes.Db2Types.integer, Db2Types.varchar, ScalaDbTypes.Db2Types.integer, ScalaDbTypes.Db2Types.decimal)(OrdersByCustomerSqlRow.apply)(row => Array[Any](row.orderId, row.orderDate, row.totalAmount, row.status, row.itemNumber, row.productName, row.quantity, row.unitPrice))
+  val `_rowParser`: RowParser[OrdersByCustomerSqlRow] = RowParsers.of(ScalaDbTypes.Db2Types.integer, Db2Types.date, ScalaDbTypes.Db2Types.decimal.nullable, Db2Types.varchar.nullable, ScalaDbTypes.Db2Types.integer, Db2Types.varchar, ScalaDbTypes.Db2Types.integer, ScalaDbTypes.Db2Types.decimal)(OrdersByCustomerSqlRow.apply)(row => Array[Any](row.orderId, row.orderDate, row.totalAmount, row.status, row.itemNumber, row.productName, row.quantity, row.unitPrice))
 }

@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -29,7 +30,8 @@ public record AddresstypeRow(
     /** Default: uuid_generate_v1() */
     UUID rowguid,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple4<AddresstypeId, Name, UUID, LocalDateTime> {
   /**
    * Primary key for AddressType records. Default:
    * nextval('person.addresstype_addresstypeid_seq'::regclass)
@@ -59,8 +61,8 @@ public record AddresstypeRow(
 
   public static RowParser<AddresstypeRow> _rowParser =
       RowParsers.of(
-          AddresstypeId.pgType,
-          Name.pgType,
+          AddresstypeId.dbType,
+          Name.dbType,
           PgTypes.uuid,
           PgTypes.timestamp,
           AddresstypeRow::new,
@@ -68,6 +70,30 @@ public record AddresstypeRow(
   ;
 
   public static PgText<AddresstypeRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public AddresstypeId _1() {
+    return addresstypeid;
+  }
+  ;
+
+  @Override
+  public Name _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public UUID _3() {
+    return rowguid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _4() {
+    return modifieddate;
+  }
+  ;
 
   public AddresstypeId id() {
     return addresstypeid;

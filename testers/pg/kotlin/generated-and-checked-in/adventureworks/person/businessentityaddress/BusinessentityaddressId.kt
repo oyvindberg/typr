@@ -8,6 +8,7 @@ package adventureworks.person.businessentityaddress
 import adventureworks.person.address.AddressId
 import adventureworks.person.addresstype.AddresstypeId
 import adventureworks.person.businessentity.BusinessentityId
+import dev.typr.foundations.Tuple.Tuple3
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 
@@ -16,8 +17,14 @@ data class BusinessentityaddressId(
   val businessentityid: BusinessentityId,
   val addressid: AddressId,
   val addresstypeid: AddresstypeId
-) {
+) : Tuple3<BusinessentityId, AddressId, AddresstypeId> {
+  override fun _1(): BusinessentityId = businessentityid
+
+  override fun _2(): AddressId = addressid
+
+  override fun _3(): AddresstypeId = addresstypeid
+
   companion object {
-    val _rowParser: RowParser<BusinessentityaddressId> = RowParsers.of(BusinessentityId.pgType, AddressId.pgType, AddresstypeId.pgType, { t0, t1, t2 -> BusinessentityaddressId(t0, t1, t2) }, { row -> arrayOf<Any?>(row.businessentityid, row.addressid, row.addresstypeid) })
+    val _rowParser: RowParser<BusinessentityaddressId> = RowParsers.of(BusinessentityId.dbType, AddressId.dbType, AddresstypeId.dbType, { t0, t1, t2 -> BusinessentityaddressId(t0, t1, t2) }, { row -> arrayOf<Any?>(row.businessentityid, row.addressid, row.addresstypeid) })
   }
 }

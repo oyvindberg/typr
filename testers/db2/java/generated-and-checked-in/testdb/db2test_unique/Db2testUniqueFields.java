@@ -7,103 +7,111 @@ package testdb.db2test_unique;
 
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr4;
 import java.util.List;
 import java.util.Optional;
 
-public interface Db2testUniqueFields extends FieldsExpr<Db2testUniqueRow> {
-  record Impl(List<Path> _path)
-      implements Db2testUniqueFields, RelationStructure<Db2testUniqueFields, Db2testUniqueRow> {
-    @Override
-    public IdField<Db2testUniqueId, Db2testUniqueRow> id() {
-      return new IdField<Db2testUniqueId, Db2testUniqueRow>(
-          _path,
-          "ID",
-          Db2testUniqueRow::id,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withId(value),
-          Db2testUniqueId.pgType);
-    }
-    ;
+public class Db2testUniqueFields
+    implements TupleExpr4<Db2testUniqueId, String, String, String>,
+        RelationStructure<Db2testUniqueFields, Db2testUniqueRow>,
+        FieldsBase<Db2testUniqueRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, Db2testUniqueRow> email() {
-      return new Field<String, Db2testUniqueRow>(
-          _path,
-          "EMAIL",
-          Db2testUniqueRow::email,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withEmail(value),
-          Db2Types.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, Db2testUniqueRow> code() {
-      return new Field<String, Db2testUniqueRow>(
-          _path,
-          "CODE",
-          Db2testUniqueRow::code,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCode(value),
-          Db2Types.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, Db2testUniqueRow> category() {
-      return new Field<String, Db2testUniqueRow>(
-          _path,
-          "CATEGORY",
-          Db2testUniqueRow::category,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCategory(value),
-          Db2Types.varchar);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, Db2testUniqueRow>> columns() {
-      return java.util.List.of(this.id(), this.email(), this.code(), this.category());
-    }
-    ;
-
-    @Override
-    public RelationStructure<Db2testUniqueFields, Db2testUniqueRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public Db2testUniqueFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static Db2testUniqueFields structure =
+      new Db2testUniqueFields(java.util.Collections.emptyList());
+
+  public IdField<Db2testUniqueId, Db2testUniqueRow> id() {
+    return new IdField<Db2testUniqueId, Db2testUniqueRow>(
+        _path,
+        "ID",
+        Db2testUniqueRow::id,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withId(value),
+        Db2testUniqueId.dbType);
   }
-  ;
 
-  IdField<Db2testUniqueId, Db2testUniqueRow> id();
+  public Field<String, Db2testUniqueRow> email() {
+    return new Field<String, Db2testUniqueRow>(
+        _path,
+        "EMAIL",
+        Db2testUniqueRow::email,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withEmail(value),
+        Db2Types.varchar);
+  }
 
-  Field<String, Db2testUniqueRow> email();
+  public Field<String, Db2testUniqueRow> code() {
+    return new Field<String, Db2testUniqueRow>(
+        _path,
+        "CODE",
+        Db2testUniqueRow::code,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCode(value),
+        Db2Types.varchar);
+  }
 
-  Field<String, Db2testUniqueRow> code();
-
-  Field<String, Db2testUniqueRow> category();
+  public Field<String, Db2testUniqueRow> category() {
+    return new Field<String, Db2testUniqueRow>(
+        _path,
+        "CATEGORY",
+        Db2testUniqueRow::category,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCategory(value),
+        Db2Types.varchar);
+  }
 
   @Override
-  List<FieldLike<?, Db2testUniqueRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<Db2testUniqueRow> rowParser() {
+  public List<FieldLike<?, Db2testUniqueRow>> columns() {
+    return java.util.List.of(this.id(), this.email(), this.code(), this.category());
+  }
+
+  @Override
+  public RowParser<Db2testUniqueRow> rowParser() {
     return Db2testUniqueRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<Db2testUniqueFields, Db2testUniqueRow> withPaths(List<Path> _path) {
+    return new Db2testUniqueFields(_path);
+  }
+
+  @Override
+  public SqlExpr<Db2testUniqueId> _1() {
+    return id();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return email();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return code();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return category();
+  }
 }

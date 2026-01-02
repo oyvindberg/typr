@@ -6,6 +6,7 @@
 package testdb.product_search
 
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.data.Uint2
 import dev.typr.foundations.kotlin.Fragment
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.nullable
@@ -15,11 +16,11 @@ import kotlin.collections.List
 
 class ProductSearchSqlRepoImpl() : ProductSearchSqlRepo {
   override fun apply(
-    brandId: Int?,
+    brandId: Uint2?,
     minPrice: BigDecimal?,
     maxPrice: BigDecimal?,
     status: String?,
     limit: Long,
     c: Connection
-  ): List<ProductSearchSqlRow> = Fragment.interpolate(Fragment.lit("-- Search products with optional filters\nSELECT p.product_id,\n       p.sku,\n       p.name,\n       p.short_description,\n       p.base_price,\n       p.status,\n       b.name AS brand_name\nFROM products p\nLEFT JOIN brands b ON p.brand_id = b.brand_id\nWHERE ("), Fragment.encode(KotlinDbTypes.MariaTypes.smallintUnsigned.nullable(), brandId), Fragment.lit(" IS NULL OR p.brand_id = "), Fragment.encode(KotlinDbTypes.MariaTypes.smallintUnsigned.nullable(), brandId), Fragment.lit(")\n  AND ("), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), minPrice), Fragment.lit(" IS NULL OR p.base_price >= "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), minPrice), Fragment.lit(")\n  AND ("), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), maxPrice), Fragment.lit(" IS NULL OR p.base_price <= "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), maxPrice), Fragment.lit(")\n  AND ("), Fragment.encode(MariaTypes.text.nullable(), status), Fragment.lit(" IS NULL OR p.status = "), Fragment.encode(MariaTypes.text.nullable(), status), Fragment.lit(")\nORDER BY p.name\nLIMIT "), Fragment.encode(KotlinDbTypes.MariaTypes.bigint, limit), Fragment.lit("\n")).query(ProductSearchSqlRow._rowParser.all()).runUnchecked(c)
+  ): List<ProductSearchSqlRow> = Fragment.interpolate(Fragment.lit("-- Search products with optional filters\nSELECT p.product_id,\n       p.sku,\n       p.name,\n       p.short_description,\n       p.base_price,\n       p.status,\n       b.name AS brand_name\nFROM products p\nLEFT JOIN brands b ON p.brand_id = b.brand_id\nWHERE ("), Fragment.encode(MariaTypes.smallintUnsigned.nullable(), brandId), Fragment.lit(" IS NULL OR p.brand_id = "), Fragment.encode(MariaTypes.smallintUnsigned.nullable(), brandId), Fragment.lit(")\n  AND ("), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), minPrice), Fragment.lit(" IS NULL OR p.base_price >= "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), minPrice), Fragment.lit(")\n  AND ("), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), maxPrice), Fragment.lit(" IS NULL OR p.base_price <= "), Fragment.encode(KotlinDbTypes.MariaTypes.numeric.nullable(), maxPrice), Fragment.lit(")\n  AND ("), Fragment.encode(MariaTypes.text.nullable(), status), Fragment.lit(" IS NULL OR p.status = "), Fragment.encode(MariaTypes.text.nullable(), status), Fragment.lit(")\nORDER BY p.name\nLIMIT "), Fragment.encode(KotlinDbTypes.MariaTypes.bigint, limit), Fragment.lit("\n")).query(ProductSearchSqlRow._rowParser.all()).runUnchecked(c)
 }

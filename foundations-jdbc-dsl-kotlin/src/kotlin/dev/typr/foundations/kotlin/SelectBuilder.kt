@@ -2,10 +2,10 @@ package dev.typr.foundations.kotlin
 
 import dev.typr.foundations.dsl.SelectBuilder as JavaSelectBuilder
 import dev.typr.foundations.dsl.Structure
-import dev.typr.foundations.dsl.SqlExpr
+import dev.typr.foundations.dsl.SqlExpr as JavaSqlExpr
 import dev.typr.foundations.dsl.SortOrder
 import dev.typr.foundations.dsl.RenderCtx
-import dev.typr.foundations.dsl.Tuple2
+import dev.typr.foundations.Tuple.Tuple2
 import dev.typr.foundations.dsl.Dialect
 import dev.typr.foundations.Fragment
 import java.sql.Connection
@@ -26,16 +26,17 @@ class SelectBuilder<Fields, Row> internal constructor(
     /**
      * Add a where clause to the query.
      * Consecutive calls to where will be combined with AND.
+     * The lambda has SqlExprExtensions as receiver, making extensions like like(), and(), or() available.
      */
-    fun where(predicate: (Fields) -> SqlExpr<Boolean>): SelectBuilder<Fields, Row> {
-        return SelectBuilder(javaBuilder.where(predicate))
+    fun where(predicate: SqlExprExtensions.(Fields) -> SqlExpr<Boolean>): SelectBuilder<Fields, Row> {
+        return SelectBuilder(javaBuilder.where { fields -> SqlExprExtensionsInstance.predicate(fields).underlying })
     }
 
     /**
      * Conditionally add a where clause based on a nullable value.
      */
-    fun <T> maybeWhere(value: T?, predicate: (Fields, T) -> SqlExpr<Boolean>): SelectBuilder<Fields, Row> {
-        return SelectBuilder(javaBuilder.maybeWhere(Optional.ofNullable(value), predicate))
+    fun <T> maybeWhere(value: T?, predicate: SqlExprExtensions.(Fields, T) -> SqlExpr<Boolean>): SelectBuilder<Fields, Row> {
+        return SelectBuilder(javaBuilder.maybeWhere(Optional.ofNullable(value)) { fields, v -> SqlExprExtensionsInstance.predicate(fields, v).underlying })
     }
 
     /**
@@ -50,7 +51,7 @@ class SelectBuilder<Fields, Row> internal constructor(
      * Add a seek predicate for cursor-based pagination.
      */
     fun <T> seek(orderFunc: (Fields) -> SortOrder<T>, value: SqlExpr.Const<T>): SelectBuilder<Fields, Row> {
-        return SelectBuilder(javaBuilder.seek(orderFunc, value))
+        return SelectBuilder(javaBuilder.seek(orderFunc, value.underlying))
     }
 
     /**
@@ -63,9 +64,9 @@ class SelectBuilder<Fields, Row> internal constructor(
     ): SelectBuilder<Fields, Row> {
         return SelectBuilder(javaBuilder.maybeSeek(orderFunc, Optional.ofNullable(maybeValue)) { value ->
             val sortOrder = orderFunc(javaBuilder.structure().fields())
-            val fieldLike = sortOrder.expr() as? dev.typr.foundations.dsl.SqlExpr.FieldLike<T, *>
-            val pgType = fieldLike?.pgType() ?: throw IllegalArgumentException("Cannot extract DbType from SortOrder expression")
-            dev.typr.foundations.dsl.SqlExpr.ConstReq(value, pgType)
+            val fieldLike = sortOrder.expr() as? JavaSqlExpr.FieldLike<T, *>
+            val dbType = fieldLike?.dbType() ?: throw IllegalArgumentException("Cannot extract DbType from SortOrder expression")
+            JavaSqlExpr.ConstReq(value, dbType)
         })
     }
 
@@ -78,7 +79,9 @@ class SelectBuilder<Fields, Row> internal constructor(
         maybeValue: T?,
         asConst: (T) -> SqlExpr.Const<T>
     ): SelectBuilder<Fields, Row> {
-        return SelectBuilder(javaBuilder.maybeSeek(orderFunc, Optional.ofNullable(maybeValue), asConst))
+        return SelectBuilder(javaBuilder.maybeSeek(orderFunc, Optional.ofNullable(maybeValue)) { value ->
+            asConst(value).underlying
+        })
     }
 
     /**
@@ -117,6 +120,12 @@ class SelectBuilder<Fields, Row> internal constructor(
     }
 
     /**
+     * Convert this SelectBuilder to a Subquery expression for use in IN clauses.
+     */
+    fun subquery(): SqlExpr.Subquery<Fields, Row> =
+        SqlExpr.Subquery(javaBuilder.subquery())
+
+    /**
      * Join using a foreign key relationship.
      */
     fun <Fields2, Row2> joinFk(
@@ -140,7 +149,7 @@ class SelectBuilder<Fields, Row> internal constructor(
         other: SelectBuilder<Fields2, Row2>,
         pred: (Tuple2<Fields, Fields2>) -> SqlExpr<Boolean>
     ): SelectBuilder<Tuple2<Fields, Fields2>, Tuple2<Row, Row2>> {
-        return SelectBuilder(javaBuilder.joinOn(other.javaBuilder, pred))
+        return SelectBuilder(javaBuilder.joinOn(other.javaBuilder) { t -> pred(t).underlying })
     }
 
     /**
@@ -151,7 +160,7 @@ class SelectBuilder<Fields, Row> internal constructor(
         pred: (Tuple2<Fields, Fields2>) -> SqlExpr<Boolean>
     ): LeftJoinSelectBuilder<Fields, Fields2, Row, Row2> {
         val javaResult: JavaSelectBuilder<Tuple2<Fields, Fields2>, Tuple2<Row, Optional<Row2>>> =
-            javaBuilder.leftJoinOn(other.javaBuilder, pred)
+            javaBuilder.leftJoinOn(other.javaBuilder) { t -> pred(t).underlying }
         return LeftJoinSelectBuilder(javaResult)
     }
 
@@ -162,14 +171,14 @@ class SelectBuilder<Fields, Row> internal constructor(
         other: SelectBuilder<Fields2, Row2>,
         pred: (Tuple2<Fields, Fields2>) -> SqlExpr<Boolean>
     ): MultisetSelectBuilder<Fields, Fields2, Row, Row2> {
-        return MultisetSelectBuilder(javaBuilder.multisetOn(other.javaBuilder, pred))
+        return MultisetSelectBuilder(javaBuilder.multisetOn(other.javaBuilder) { t -> pred(t).underlying })
     }
 
     /**
      * Group by a single key.
      */
     fun <G> groupBy(groupKey: (Fields) -> SqlExpr<G>): dev.typr.foundations.dsl.GroupedBuilder<Fields, Row> {
-        return javaBuilder.groupBy(groupKey)
+        return javaBuilder.groupBy { fields -> groupKey(fields).underlying }
     }
 
     /**
@@ -179,7 +188,7 @@ class SelectBuilder<Fields, Row> internal constructor(
         key1: (Fields) -> SqlExpr<G1>,
         key2: (Fields) -> SqlExpr<G2>
     ): dev.typr.foundations.dsl.GroupedBuilder<Fields, Row> {
-        return javaBuilder.groupBy(key1, key2)
+        return javaBuilder.groupBy({ fields -> key1(fields).underlying }, { fields -> key2(fields).underlying })
     }
 
     /**
@@ -190,85 +199,34 @@ class SelectBuilder<Fields, Row> internal constructor(
         key2: (Fields) -> SqlExpr<G2>,
         key3: (Fields) -> SqlExpr<G3>
     ): dev.typr.foundations.dsl.GroupedBuilder<Fields, Row> {
-        return javaBuilder.groupBy(key1, key2, key3)
+        return javaBuilder.groupBy({ fields -> key1(fields).underlying }, { fields -> key2(fields).underlying }, { fields -> key3(fields).underlying })
     }
 
     /**
      * Group by a list of expressions.
      */
     fun groupByExpr(groupKeys: (Fields) -> List<SqlExpr<*>>): dev.typr.foundations.dsl.GroupedBuilder<Fields, Row> {
-        return javaBuilder.groupByExpr { fields -> groupKeys(fields) }
+        return javaBuilder.groupByExpr { fields -> groupKeys(fields).map { it.underlying } }
     }
 
     /**
-     * Project to 1 column.
+     * Project to a tuple expression.
+     * Use with tupleWith() methods on SqlExpr:
+     * ```kotlin
+     * // Project to 1 column
+     * builder.map { p -> p.name().tupleWith() }
+     *
+     * // Project to 2 columns
+     * builder.map { p -> p.name().tupleWith(p.age()) }
+     *
+     * // Project to multiple columns
+     * builder.map { p -> p.name().tupleWith(p.age(), p.email()) }
+     * ```
      */
-    fun <T0> map(f0: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T0, *>): SelectBuilder<dev.typr.foundations.dsl.Tuples.TupleExpr1<T0>, dev.typr.foundations.dsl.Tuples.Tuple1<T0>> {
-        return SelectBuilder(javaBuilder.map { fields -> f0(fields).underlying })
-    }
-
-    /**
-     * Project to 2 columns.
-     */
-    fun <T0, T1> map(
-        f0: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T0, *>,
-        f1: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T1, *>
-    ): SelectBuilder<dev.typr.foundations.dsl.Tuples.TupleExpr2<T0, T1>, dev.typr.foundations.dsl.Tuples.Tuple2<T0, T1>> {
-        return SelectBuilder(javaBuilder.map(
-            { fields -> f0(fields).underlying },
-            { fields -> f1(fields).underlying }
-        ))
-    }
-
-    /**
-     * Project to 3 columns.
-     */
-    fun <T0, T1, T2> map(
-        f0: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T0, *>,
-        f1: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T1, *>,
-        f2: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T2, *>
-    ): SelectBuilder<dev.typr.foundations.dsl.Tuples.TupleExpr3<T0, T1, T2>, dev.typr.foundations.dsl.Tuples.Tuple3<T0, T1, T2>> {
-        return SelectBuilder(javaBuilder.map(
-            { fields -> f0(fields).underlying },
-            { fields -> f1(fields).underlying },
-            { fields -> f2(fields).underlying }
-        ))
-    }
-
-    /**
-     * Project to 4 columns.
-     */
-    fun <T0, T1, T2, T3> map(
-        f0: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T0, *>,
-        f1: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T1, *>,
-        f2: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T2, *>,
-        f3: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T3, *>
-    ): SelectBuilder<dev.typr.foundations.dsl.Tuples.TupleExpr4<T0, T1, T2, T3>, dev.typr.foundations.dsl.Tuples.Tuple4<T0, T1, T2, T3>> {
-        return SelectBuilder(javaBuilder.map(
-            { fields -> f0(fields).underlying },
-            { fields -> f1(fields).underlying },
-            { fields -> f2(fields).underlying },
-            { fields -> f3(fields).underlying }
-        ))
-    }
-
-    /**
-     * Project to 5 columns.
-     */
-    fun <T0, T1, T2, T3, T4> map(
-        f0: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T0, *>,
-        f1: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T1, *>,
-        f2: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T2, *>,
-        f3: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T3, *>,
-        f4: (Fields) -> dev.typr.foundations.kotlin.SqlExpr.FieldLike<T4, *>
-    ): SelectBuilder<dev.typr.foundations.dsl.Tuples.TupleExpr5<T0, T1, T2, T3, T4>, dev.typr.foundations.dsl.Tuples.Tuple5<T0, T1, T2, T3, T4>> {
-        return SelectBuilder(javaBuilder.map(
-            { fields -> f0(fields).underlying },
-            { fields -> f1(fields).underlying },
-            { fields -> f2(fields).underlying },
-            { fields -> f3(fields).underlying },
-            { fields -> f4(fields).underlying }
-        ))
+    fun <NewRow : dev.typr.foundations.Tuple> map(
+        f: (Fields) -> TupleExpr<NewRow>
+    ): SelectBuilder<dev.typr.foundations.dsl.TupleExpr<NewRow>, NewRow> {
+        return SelectBuilder(javaBuilder.map { fields -> f(fields).underlying })
     }
 
     /**
@@ -288,14 +246,14 @@ class SelectBuilder<Fields, Row> internal constructor(
         /**
          * Inner join with the given predicate.
          */
-        fun on(pred: (Tuple2<Fields, Fields2>) -> SqlExpr<Boolean>): SelectBuilder<Tuple2<Fields, Fields2>, Tuple2<Row, Row2>> {
+        fun on(pred: (Tuple2<Fields, Fields2>) -> dev.typr.foundations.kotlin.SqlExpr<Boolean>): SelectBuilder<Tuple2<Fields, Fields2>, Tuple2<Row, Row2>> {
             return parent.joinOn(other, pred)
         }
 
         /**
          * Left join with the given predicate.
          */
-        fun leftOn(pred: (Tuple2<Fields, Fields2>) -> SqlExpr<Boolean>): LeftJoinSelectBuilder<Fields, Fields2, Row, Row2> {
+        fun leftOn(pred: (Tuple2<Fields, Fields2>) -> dev.typr.foundations.kotlin.SqlExpr<Boolean>): LeftJoinSelectBuilder<Fields, Fields2, Row, Row2> {
             return parent.leftJoinOn(other, pred)
         }
     }
@@ -324,12 +282,12 @@ class MultisetSelectBuilder<Fields1, Fields2, Row1, Row2> internal constructor(
 
     fun renderCtx(): RenderCtx = javaBuilder.renderCtx()
 
-    fun where(predicate: (Tuple2<Fields1, Fields2>) -> SqlExpr<Boolean>): MultisetSelectBuilder<Fields1, Fields2, Row1, Row2> {
-        return MultisetSelectBuilder(javaBuilder.where(predicate))
+    fun where(predicate: SqlExprExtensions.(Tuple2<Fields1, Fields2>) -> SqlExpr<Boolean>): MultisetSelectBuilder<Fields1, Fields2, Row1, Row2> {
+        return MultisetSelectBuilder(javaBuilder.where { t -> SqlExprExtensionsInstance.predicate(t).underlying })
     }
 
-    fun <T> maybeWhere(value: T?, predicate: (Tuple2<Fields1, Fields2>, T) -> SqlExpr<Boolean>): MultisetSelectBuilder<Fields1, Fields2, Row1, Row2> {
-        return MultisetSelectBuilder(javaBuilder.maybeWhere(Optional.ofNullable(value), predicate))
+    fun <T> maybeWhere(value: T?, predicate: SqlExprExtensions.(Tuple2<Fields1, Fields2>, T) -> SqlExpr<Boolean>): MultisetSelectBuilder<Fields1, Fields2, Row1, Row2> {
+        return MultisetSelectBuilder(javaBuilder.maybeWhere(Optional.ofNullable(value)) { t, v -> SqlExprExtensionsInstance.predicate(t, v).underlying })
     }
 
     fun <T> orderBy(orderFunc: (Tuple2<Fields1, Fields2>) -> SortOrder<T>): MultisetSelectBuilder<Fields1, Fields2, Row1, Row2> {
@@ -368,12 +326,12 @@ class LeftJoinSelectBuilder<Fields1, Fields2, Row1, Row2>(
 
     fun renderCtx(): RenderCtx = javaBuilder.renderCtx()
 
-    fun where(predicate: (Tuple2<Fields1, Fields2>) -> SqlExpr<Boolean>): LeftJoinSelectBuilder<Fields1, Fields2, Row1, Row2> {
-        return LeftJoinSelectBuilder(javaBuilder.where(predicate))
+    fun where(predicate: SqlExprExtensions.(Tuple2<Fields1, Fields2>) -> SqlExpr<Boolean>): LeftJoinSelectBuilder<Fields1, Fields2, Row1, Row2> {
+        return LeftJoinSelectBuilder(javaBuilder.where { t -> SqlExprExtensionsInstance.predicate(t).underlying })
     }
 
-    fun <T> maybeWhere(value: T?, predicate: (Tuple2<Fields1, Fields2>, T) -> SqlExpr<Boolean>): LeftJoinSelectBuilder<Fields1, Fields2, Row1, Row2> {
-        return LeftJoinSelectBuilder(javaBuilder.maybeWhere(Optional.ofNullable(value), predicate))
+    fun <T> maybeWhere(value: T?, predicate: SqlExprExtensions.(Tuple2<Fields1, Fields2>, T) -> SqlExpr<Boolean>): LeftJoinSelectBuilder<Fields1, Fields2, Row1, Row2> {
+        return LeftJoinSelectBuilder(javaBuilder.maybeWhere(Optional.ofNullable(value)) { t, v -> SqlExprExtensionsInstance.predicate(t, v).underlying })
     }
 
     fun <T> orderBy(orderFunc: (Tuple2<Fields1, Fields2>) -> SortOrder<T>): LeftJoinSelectBuilder<Fields1, Fields2, Row1, Row2> {

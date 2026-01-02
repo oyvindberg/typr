@@ -9,12 +9,17 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple2
 
 /** Type for the composite primary key of table `EMPLOYEES` */
 case class EmployeesId(
   @JsonProperty("EMP_NUMBER") empNumber: java.math.BigDecimal,
   @JsonProperty("EMP_SUFFIX") empSuffix: String
-)
+) extends Tuple2[java.math.BigDecimal, String] {
+  override def `_1`: java.math.BigDecimal = empNumber
+
+  override def `_2`: String = empSuffix
+}
 
 object EmployeesId {
   val `_rowParser`: RowParser[EmployeesId] = RowParsers.of(OracleTypes.number, OracleTypes.varchar2, EmployeesId.apply, row => Array[Any](row.empNumber, row.empSuffix))

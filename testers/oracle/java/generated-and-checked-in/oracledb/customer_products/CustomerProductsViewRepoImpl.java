@@ -18,11 +18,10 @@ public class CustomerProductsViewRepoImpl implements CustomerProductsViewRepo {
   public SelectBuilder<CustomerProductsViewFields, CustomerProductsViewRow> select() {
     return SelectBuilder.of(
         "\"CUSTOMER_PRODUCTS\"",
-        CustomerProductsViewFields.structure(),
+        CustomerProductsViewFields.structure,
         CustomerProductsViewRow._rowParser,
         Dialect.ORACLE);
   }
-  ;
 
   @Override
   public List<CustomerProductsViewRow> selectAll(Connection c) {
@@ -34,5 +33,4 @@ public class CustomerProductsViewRepoImpl implements CustomerProductsViewRepo {
         .query(CustomerProductsViewRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 }

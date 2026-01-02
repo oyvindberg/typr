@@ -49,7 +49,7 @@ class OracleDSLTest {
 
             val query = productsRepo.select()
                 .where { p ->
-                    p.sku().`in`(arrayOf("ORDER-1", "ORDER-2", "ORDER-3"), OracleTypes.varchar2)
+                    p.sku().among("ORDER-1", "ORDER-2", "ORDER-3")
                 }
                 .orderBy { p -> p.sku().asc() }
 
@@ -108,7 +108,7 @@ class OracleDSLTest {
             // Single-column map returns Tuple1
             val query = productsRepo.select()
                 .where { p -> p.sku().isEqual("MAP-001") }
-                .map { p -> p.name() }
+                .map { p -> p.name().tupleWith() }
 
             val results = query.toList(c)
             assertFalse(results.isEmpty())

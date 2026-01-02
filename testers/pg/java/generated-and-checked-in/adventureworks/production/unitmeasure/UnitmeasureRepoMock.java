@@ -48,7 +48,7 @@ public record UnitmeasureRepoMock(
   @Override
   public DeleteBuilder<UnitmeasureFields, UnitmeasureRow> delete() {
     return new DeleteBuilderMock<>(
-        UnitmeasureFields.structure(),
+        UnitmeasureFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.unitmeasurecode(),
@@ -126,7 +126,7 @@ public record UnitmeasureRepoMock(
   @Override
   public SelectBuilder<UnitmeasureFields, UnitmeasureRow> select() {
     return new SelectBuilderMock<>(
-        UnitmeasureFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        UnitmeasureFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -169,7 +169,7 @@ public record UnitmeasureRepoMock(
   @Override
   public UpdateBuilder<UnitmeasureFields, UnitmeasureRow> update() {
     return new UpdateBuilderMock<>(
-        UnitmeasureFields.structure(),
+        UnitmeasureFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

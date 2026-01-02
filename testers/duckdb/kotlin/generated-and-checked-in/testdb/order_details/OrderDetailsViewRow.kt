@@ -7,6 +7,7 @@ package testdb.order_details
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -23,7 +24,21 @@ data class OrderDetailsViewRow(
   val quantity: Int?,
   @JsonProperty("unit_price") val unitPrice: BigDecimal?,
   @JsonProperty("line_total") val lineTotal: BigDecimal?
-) {
+) : Tuple7<Int?, LocalDate?, String?, String?, Int?, BigDecimal?, BigDecimal?> {
+  override fun _1(): Int? = orderId
+
+  override fun _2(): LocalDate? = orderDate
+
+  override fun _3(): String? = customerName
+
+  override fun _4(): String? = productName
+
+  override fun _5(): Int? = quantity
+
+  override fun _6(): BigDecimal? = unitPrice
+
+  override fun _7(): BigDecimal? = lineTotal
+
   companion object {
     val _rowParser: RowParser<OrderDetailsViewRow> = RowParsers.of(KotlinDbTypes.DuckDbTypes.integer.nullable(), DuckDbTypes.date.nullable(), DuckDbTypes.varchar.nullable(), DuckDbTypes.varchar.nullable(), KotlinDbTypes.DuckDbTypes.integer.nullable(), DuckDbTypes.numeric.nullable(), DuckDbTypes.numeric.nullable(), { t0, t1, t2, t3, t4, t5, t6 -> OrderDetailsViewRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.orderId, row.orderDate, row.customerName, row.productName, row.quantity, row.unitPrice, row.lineTotal) })
   }

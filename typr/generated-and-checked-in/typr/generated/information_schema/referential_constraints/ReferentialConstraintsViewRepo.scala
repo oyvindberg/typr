@@ -10,5 +10,5 @@ package typr.generated.information_schema.referential_constraints
 import java.sql.Connection
 
 trait ReferentialConstraintsViewRepo {
-  def selectAll(implicit c: Connection): List[ReferentialConstraintsViewRow]
+  def selectAll(using c: Connection): List[ReferentialConstraintsViewRow]
 }

@@ -8,11 +8,12 @@ package testdb.categories;
 import com.fasterxml.jackson.annotation.JsonValue;
 import dev.typr.foundations.MariaType;
 import dev.typr.foundations.MariaTypes;
+import dev.typr.foundations.data.Uint4;
 import dev.typr.foundations.dsl.Bijection;
 
 /** Type for the primary key of table `categories` */
-public record CategoriesId(@JsonValue Integer value) {
-  public CategoriesId withValue(Integer value) {
+public record CategoriesId(@JsonValue Uint4 value) {
+  public CategoriesId withValue(Uint4 value) {
     return new CategoriesId(value);
   }
   ;
@@ -23,9 +24,9 @@ public record CategoriesId(@JsonValue Integer value) {
   }
   ;
 
-  public static Bijection<CategoriesId, Integer> bijection =
+  public static Bijection<CategoriesId, Uint4> bijection =
       Bijection.of(CategoriesId::value, CategoriesId::new);
 
-  public static MariaType<CategoriesId> pgType =
+  public static MariaType<CategoriesId> dbType =
       MariaTypes.mediumintUnsigned.bimap(CategoriesId::new, CategoriesId::value);
 }

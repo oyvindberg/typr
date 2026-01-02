@@ -7,56 +7,54 @@ package oracledb.customer_products
 
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RelationStructure
+import dev.typr.foundations.kotlin.SqlExpr
 import dev.typr.foundations.kotlin.SqlExpr.Field
 import dev.typr.foundations.kotlin.SqlExpr.OptField
+import dev.typr.foundations.kotlin.TupleExpr6
 import java.math.BigDecimal
 import kotlin.collections.List
 import oracledb.AddressT
 import oracledb.MoneyT
 
-interface CustomerProductsViewFields : FieldsExpr<CustomerProductsViewRow> {
-  abstract fun billingAddress(): OptField<AddressT, CustomerProductsViewRow>
+data class CustomerProductsViewFields(val _path: List<Path>) : TupleExpr6<BigDecimal, String, AddressT, BigDecimal, String, MoneyT>, RelationStructure<CustomerProductsViewFields, CustomerProductsViewRow>, FieldsBase<CustomerProductsViewRow> {
+  override fun _1(): SqlExpr<BigDecimal> = customerId()
 
-  abstract override fun columns(): List<FieldLike<*, CustomerProductsViewRow>>
+  override fun _2(): SqlExpr<String> = customerName()
 
-  abstract fun customerId(): Field<BigDecimal, CustomerProductsViewRow>
+  override fun _3(): SqlExpr<AddressT> = billingAddress()
 
-  abstract fun customerName(): Field<String, CustomerProductsViewRow>
+  override fun _4(): SqlExpr<BigDecimal> = productId()
 
-  abstract fun price(): OptField<MoneyT, CustomerProductsViewRow>
+  override fun _5(): SqlExpr<String> = productName()
 
-  abstract fun productId(): Field<BigDecimal, CustomerProductsViewRow>
+  override fun _6(): SqlExpr<MoneyT> = price()
 
-  abstract fun productName(): Field<String, CustomerProductsViewRow>
+  override fun _path(): List<Path> = _path
+
+  fun billingAddress(): OptField<AddressT, CustomerProductsViewRow> = OptField<AddressT, CustomerProductsViewRow>(_path, "BILLING_ADDRESS", CustomerProductsViewRow::billingAddress, null, null, { row, value -> row.copy(billingAddress = value) }, AddressT.oracleType)
+
+  override fun columns(): List<FieldLike<*, CustomerProductsViewRow>> = listOf(this.customerId().underlying, this.customerName().underlying, this.billingAddress().underlying, this.productId().underlying, this.productName().underlying, this.price().underlying)
+
+  fun customerId(): Field<BigDecimal, CustomerProductsViewRow> = Field<BigDecimal, CustomerProductsViewRow>(_path, "CUSTOMER_ID", CustomerProductsViewRow::customerId, null, null, { row, value -> row.copy(customerId = value) }, KotlinDbTypes.OracleTypes.number)
+
+  fun customerName(): Field<String, CustomerProductsViewRow> = Field<String, CustomerProductsViewRow>(_path, "CUSTOMER_NAME", CustomerProductsViewRow::customerName, null, null, { row, value -> row.copy(customerName = value) }, OracleTypes.varchar2)
+
+  fun price(): OptField<MoneyT, CustomerProductsViewRow> = OptField<MoneyT, CustomerProductsViewRow>(_path, "PRICE", CustomerProductsViewRow::price, null, null, { row, value -> row.copy(price = value) }, MoneyT.oracleType)
+
+  fun productId(): Field<BigDecimal, CustomerProductsViewRow> = Field<BigDecimal, CustomerProductsViewRow>(_path, "PRODUCT_ID", CustomerProductsViewRow::productId, null, null, { row, value -> row.copy(productId = value) }, KotlinDbTypes.OracleTypes.number)
+
+  fun productName(): Field<String, CustomerProductsViewRow> = Field<String, CustomerProductsViewRow>(_path, "PRODUCT_NAME", CustomerProductsViewRow::productName, null, null, { row, value -> row.copy(productName = value) }, OracleTypes.varchar2)
 
   override fun rowParser(): RowParser<CustomerProductsViewRow> = CustomerProductsViewRow._rowParser.underlying
 
+  override fun withPaths(_path: List<Path>): RelationStructure<CustomerProductsViewFields, CustomerProductsViewRow> = CustomerProductsViewFields(_path)
+
   companion object {
-    data class Impl(val _path: List<Path>) : CustomerProductsViewFields, RelationStructure<CustomerProductsViewFields, CustomerProductsViewRow> {
-      override fun customerId(): Field<BigDecimal, CustomerProductsViewRow> = Field<BigDecimal, CustomerProductsViewRow>(_path, "CUSTOMER_ID", CustomerProductsViewRow::customerId, null, null, { row, value -> row.copy(customerId = value) }, KotlinDbTypes.OracleTypes.number)
-
-      override fun customerName(): Field<String, CustomerProductsViewRow> = Field<String, CustomerProductsViewRow>(_path, "CUSTOMER_NAME", CustomerProductsViewRow::customerName, null, null, { row, value -> row.copy(customerName = value) }, OracleTypes.varchar2)
-
-      override fun billingAddress(): OptField<AddressT, CustomerProductsViewRow> = OptField<AddressT, CustomerProductsViewRow>(_path, "BILLING_ADDRESS", CustomerProductsViewRow::billingAddress, null, null, { row, value -> row.copy(billingAddress = value) }, AddressT.oracleType)
-
-      override fun productId(): Field<BigDecimal, CustomerProductsViewRow> = Field<BigDecimal, CustomerProductsViewRow>(_path, "PRODUCT_ID", CustomerProductsViewRow::productId, null, null, { row, value -> row.copy(productId = value) }, KotlinDbTypes.OracleTypes.number)
-
-      override fun productName(): Field<String, CustomerProductsViewRow> = Field<String, CustomerProductsViewRow>(_path, "PRODUCT_NAME", CustomerProductsViewRow::productName, null, null, { row, value -> row.copy(productName = value) }, OracleTypes.varchar2)
-
-      override fun price(): OptField<MoneyT, CustomerProductsViewRow> = OptField<MoneyT, CustomerProductsViewRow>(_path, "PRICE", CustomerProductsViewRow::price, null, null, { row, value -> row.copy(price = value) }, MoneyT.oracleType)
-
-      override fun _path(): List<Path> = _path
-
-      override fun columns(): List<FieldLike<*, CustomerProductsViewRow>> = listOf(this.customerId().underlying, this.customerName().underlying, this.billingAddress().underlying, this.productId().underlying, this.productName().underlying, this.price().underlying)
-
-      override fun withPaths(_path: List<Path>): RelationStructure<CustomerProductsViewFields, CustomerProductsViewRow> = Impl(_path)
-    }
-
-    val structure: Impl = Impl(emptyList<dev.typr.foundations.dsl.Path>())
+    val structure: CustomerProductsViewFields = CustomerProductsViewFields(emptyList<Path>())
   }
 }

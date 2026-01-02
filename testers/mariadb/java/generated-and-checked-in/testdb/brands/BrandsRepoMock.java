@@ -46,7 +46,7 @@ public record BrandsRepoMock(
   @Override
   public DeleteBuilder<BrandsFields, BrandsRow> delete() {
     return new DeleteBuilderMock<>(
-        BrandsFields.structure(),
+        BrandsFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.brandId(),
@@ -95,7 +95,7 @@ public record BrandsRepoMock(
   @Override
   public SelectBuilder<BrandsFields, BrandsRow> select() {
     return new SelectBuilderMock<>(
-        BrandsFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        BrandsFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -142,7 +142,7 @@ public record BrandsRepoMock(
   @Override
   public UpdateBuilder<BrandsFields, BrandsRow> update() {
     return new UpdateBuilderMock<>(
-        BrandsFields.structure(),
+        BrandsFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

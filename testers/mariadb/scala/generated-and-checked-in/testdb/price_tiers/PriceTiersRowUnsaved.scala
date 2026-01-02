@@ -6,6 +6,7 @@
 package testdb.price_tiers
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.typr.foundations.data.Uint4
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 
@@ -20,10 +21,10 @@ case class PriceTiersRowUnsaved(
   /** Default: 1
 
    */
-  @JsonProperty("min_quantity") minQuantity: Defaulted[Long] = new UseDefault()
+  @JsonProperty("min_quantity") minQuantity: Defaulted[Uint4] = new UseDefault()
 ) {
   def toRow(
-    minQuantityDefault: => Long,
+    minQuantityDefault: => Uint4,
     tierIdDefault: => PriceTiersId
   ): PriceTiersRow = {
     new PriceTiersRow(

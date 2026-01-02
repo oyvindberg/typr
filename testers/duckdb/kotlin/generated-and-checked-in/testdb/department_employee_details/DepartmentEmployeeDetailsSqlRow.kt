@@ -7,6 +7,7 @@ package testdb.department_employee_details
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple10
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -36,7 +37,27 @@ data class DepartmentEmployeeDetailsSqlRow(
   @JsonProperty("hire_date") val hireDate: LocalDate?,
   /** Points to [testdb.employees.EmployeesRow.hireDate] */
   @JsonProperty("years_of_service") val yearsOfService: Int?
-) {
+) : Tuple10<String, String, String, BigDecimal?, Int?, String?, String?, BigDecimal?, LocalDate?, Int?> {
+  override fun _1(): String = deptCode
+
+  override fun _10(): Int? = yearsOfService
+
+  override fun _2(): String = deptRegion
+
+  override fun _3(): String = deptName
+
+  override fun _4(): BigDecimal? = budget
+
+  override fun _5(): Int? = empNumber
+
+  override fun _6(): String? = empSuffix
+
+  override fun _7(): String? = empName
+
+  override fun _8(): BigDecimal? = salary
+
+  override fun _9(): LocalDate? = hireDate
+
   companion object {
     val _rowParser: RowParser<DepartmentEmployeeDetailsSqlRow> = RowParsers.of(DuckDbTypes.varchar, DuckDbTypes.varchar, DuckDbTypes.varchar, DuckDbTypes.numeric.nullable(), KotlinDbTypes.DuckDbTypes.integer.nullable(), DuckDbTypes.varchar.nullable(), DuckDbTypes.varchar.nullable(), DuckDbTypes.numeric.nullable(), DuckDbTypes.date.nullable(), KotlinDbTypes.DuckDbTypes.integer.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9 -> DepartmentEmployeeDetailsSqlRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) }, { row -> arrayOf<Any?>(row.deptCode, row.deptRegion, row.deptName, row.budget, row.empNumber, row.empSuffix, row.empName, row.salary, row.hireDate, row.yearsOfService) })
   }

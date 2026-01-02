@@ -1,6 +1,7 @@
 package dev.typr.foundations.dsl;
 
 import dev.typr.foundations.Fragment;
+import dev.typr.foundations.Tuple;
 import dev.typr.foundations.dsl.internal.RowComparator;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -65,9 +66,10 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
   }
 
   @Override
-  public <Fields2, Row2> SelectBuilder<Tuple2<Fields, Fields2>, Tuple2<Row, Row2>> joinOn(
-      SelectBuilder<Fields2, Row2> other,
-      Function<Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
+  public <Fields2, Row2>
+      SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Row2>> joinOn(
+          SelectBuilder<Fields2, Row2> other,
+          Function<Tuple.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
 
     if (!(other instanceof SelectBuilderMock<Fields2, Row2> otherMock)) {
       throw new IllegalArgumentException("Cannot mix mock and SQL repos");
@@ -76,18 +78,18 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
     SelectBuilderMock<Fields, Row> self = this.withPath(Path.of("left"));
     SelectBuilderMock<Fields2, Row2> right = otherMock.withPath(Path.of("right"));
 
-    Structure<Tuple2<Fields, Fields2>, Tuple2<Row, Row2>> newStructure =
+    Structure<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Row2>> newStructure =
         self.structure.join(right.structure);
 
-    Supplier<List<Tuple2<Row, Row2>>> newRowsSupplier =
+    Supplier<List<Tuple.Tuple2<Row, Row2>>> newRowsSupplier =
         () -> {
-          List<Tuple2<Row, Row2>> result = new ArrayList<>();
+          List<Tuple.Tuple2<Row, Row2>> result = new ArrayList<>();
           List<Row> leftRows = self.toList(null);
           List<Row2> rightRows = right.toList(null);
 
           for (Row left : leftRows) {
             for (Row2 rightRow : rightRows) {
-              Tuple2<Row, Row2> tuple = Tuple2.of(left, rightRow);
+              Tuple.Tuple2<Row, Row2> tuple = Tuple.of(left, rightRow);
               Boolean matches =
                   newStructure.untypedEval(pred.apply(newStructure.fields()), tuple).orElse(false);
               if (matches) {
@@ -103,9 +105,9 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
 
   @Override
   public <Fields2, Row2>
-      SelectBuilder<Tuple2<Fields, Fields2>, Tuple2<Row, Optional<Row2>>> leftJoinOn(
+      SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Optional<Row2>>> leftJoinOn(
           SelectBuilder<Fields2, Row2> other,
-          Function<Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
+          Function<Tuple.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
 
     if (!(other instanceof SelectBuilderMock<Fields2, Row2> otherMock)) {
       throw new IllegalArgumentException("Cannot mix mock and SQL repos");
@@ -114,12 +116,12 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
     SelectBuilderMock<Fields, Row> self = this.withPath(Path.of("left"));
     SelectBuilderMock<Fields2, Row2> right = otherMock.withPath(Path.of("right"));
 
-    Structure<Tuple2<Fields, Fields2>, Tuple2<Row, Optional<Row2>>> newStructure =
+    Structure<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Optional<Row2>>> newStructure =
         self.structure.leftJoin(right.structure);
 
-    Supplier<List<Tuple2<Row, Optional<Row2>>>> newRowsSupplier =
+    Supplier<List<Tuple.Tuple2<Row, Optional<Row2>>>> newRowsSupplier =
         () -> {
-          List<Tuple2<Row, Optional<Row2>>> result = new ArrayList<>();
+          List<Tuple.Tuple2<Row, Optional<Row2>>> result = new ArrayList<>();
           List<Row> leftRows = self.toList(null);
           List<Row2> rightRows = right.toList(null);
 
@@ -127,9 +129,9 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
             Optional<Row2> matchedRight = Optional.empty();
 
             for (Row2 rightRow : rightRows) {
-              Structure<Tuple2<Fields, Fields2>, Tuple2<Row, Row2>> tempStructure =
+              Structure<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Row2>> tempStructure =
                   self.structure.join(((SelectBuilderMock<Fields2, Row2>) right).structure);
-              Tuple2<Row, Row2> tempTuple = Tuple2.of(left, rightRow);
+              Tuple.Tuple2<Row, Row2> tempTuple = Tuple.of(left, rightRow);
               Boolean matches =
                   tempStructure
                       .untypedEval(pred.apply(tempStructure.fields()), tempTuple)
@@ -140,7 +142,7 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
               }
             }
 
-            result.add(Tuple2.of(left, matchedRight));
+            result.add(Tuple.of(left, matchedRight));
           }
           return result;
         };
@@ -193,20 +195,23 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
   }
 
   @Override
-  public <NewFields extends Tuples.TupleExpr<NewRow>, NewRow extends Tuples.Tuple>
-      SelectBuilder<NewFields, NewRow> mapExpr(Function<Fields, NewFields> projection) {
+  public <NewFields extends TupleExpr<NewRow>, NewRow extends Tuple>
+      SelectBuilder<NewFields, NewRow> map(Function<Fields, NewFields> projection) {
     NewFields tupleExpr = projection.apply(structure.fields());
-    List<SqlExpr<?>> projectedExprs = tupleExpr.exprs();
+    List<SqlExpr<?>> projectedExprs = tupleExpr.children();
 
     // Create a structure for the projected results
     ProjectedMockStructure<NewFields, NewRow> projectedStructure =
         new ProjectedMockStructure<>(tupleExpr, projectedExprs);
 
     // Create supplier that evaluates the projection for each row
+    // Important: Apply params (filters, etc.) before projection to properly handle subqueries
     Supplier<List<NewRow>> projectedRowsSupplier =
         () -> {
           List<NewRow> result = new ArrayList<>();
-          for (Row row : allRowsSupplier.get()) {
+          // Apply params to filter/sort/limit before projection
+          List<Row> filteredRows = applyParams(structure, allRowsSupplier.get(), params);
+          for (Row row : filteredRows) {
             // Evaluate each expression against the row
             Object[] values = new Object[projectedExprs.size()];
             for (int i = 0; i < projectedExprs.size(); i++) {
@@ -215,7 +220,7 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
               values[i] = value.orElse(null);
             }
             @SuppressWarnings("unchecked")
-            NewRow tuple = (NewRow) Tuples.createTuple(values);
+            NewRow tuple = (NewRow) Tuple.createTuple(values);
             result.add(tuple);
           }
           return result;
@@ -225,8 +230,7 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
   }
 
   /** Structure implementation for projected results. */
-  record ProjectedMockStructure<
-          NewFields extends Tuples.TupleExpr<NewRow>, NewRow extends Tuples.Tuple>(
+  record ProjectedMockStructure<NewFields extends TupleExpr<NewRow>, NewRow extends Tuple>(
       NewFields fields, List<SqlExpr<?>> projectedExprs, List<Path> path)
       implements Structure<NewFields, NewRow> {
 
@@ -290,9 +294,10 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
   }
 
   @Override
-  public <Fields2, Row2> SelectBuilder<Tuple2<Fields, Fields2>, Tuple2<Row, List<Row2>>> multisetOn(
-      SelectBuilder<Fields2, Row2> other,
-      Function<Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
+  public <Fields2, Row2>
+      SelectBuilder<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, List<Row2>>> multisetOn(
+          SelectBuilder<Fields2, Row2> other,
+          Function<Tuple.Tuple2<Fields, Fields2>, SqlExpr<Boolean>> pred) {
 
     if (!(other instanceof SelectBuilderMock<Fields2, Row2> otherMock)) {
       throw new IllegalArgumentException("Cannot mix mock and SQL repos");
@@ -302,7 +307,7 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
     SelectBuilderMock<Fields2, Row2> child = otherMock.withPath(Path.of("child"));
 
     // Create the combined structure for evaluating the predicate
-    Structure<Tuple2<Fields, Fields2>, Tuple2<Row, Row2>> joinStructure =
+    Structure<Tuple.Tuple2<Fields, Fields2>, Tuple.Tuple2<Row, Row2>> joinStructure =
         self.structure.join(child.structure);
 
     // Create a multiset structure
@@ -310,9 +315,9 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
         new MultisetMockStructure<>(self.structure, child.structure);
 
     // Create supplier that for each parent row, collects matching child rows
-    Supplier<List<Tuple2<Row, List<Row2>>>> resultSupplier =
+    Supplier<List<Tuple.Tuple2<Row, List<Row2>>>> resultSupplier =
         () -> {
-          List<Tuple2<Row, List<Row2>>> result = new ArrayList<>();
+          List<Tuple.Tuple2<Row, List<Row2>>> result = new ArrayList<>();
           List<Row> parentRows = self.toList(null);
           List<Row2> childRows = child.toList(null);
 
@@ -320,7 +325,7 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
             // Collect all matching child rows
             List<Row2> matchingChildren = new ArrayList<>();
             for (Row2 childRow : childRows) {
-              Tuple2<Row, Row2> tuple = Tuple2.of(parentRow, childRow);
+              Tuple.Tuple2<Row, Row2> tuple = Tuple.of(parentRow, childRow);
               Boolean matches =
                   joinStructure
                       .untypedEval(pred.apply(joinStructure.fields()), tuple)
@@ -330,7 +335,7 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
               }
             }
 
-            result.add(Tuple2.of(parentRow, matchingChildren));
+            result.add(Tuple.of(parentRow, matchingChildren));
           }
           return result;
         };
@@ -348,7 +353,7 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
       Structure<Fields1, Row1> parentStructure,
       Structure<Fields2, Row2> childStructure,
       List<Path> path)
-      implements Structure<Tuple2<Fields1, Fields2>, Tuple2<Row1, List<Row2>>> {
+      implements Structure<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, List<Row2>>> {
 
     MultisetMockStructure(
         Structure<Fields1, Row1> parentStructure, Structure<Fields2, Row2> childStructure) {
@@ -356,8 +361,8 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
     }
 
     @Override
-    public Tuple2<Fields1, Fields2> fields() {
-      return Tuple2.of(parentStructure.fields(), childStructure.fields());
+    public Tuple.Tuple2<Fields1, Fields2> fields() {
+      return Tuple.of(parentStructure.fields(), childStructure.fields());
     }
 
     @Override
@@ -372,7 +377,8 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
     }
 
     @Override
-    public Structure<Tuple2<Fields1, Fields2>, Tuple2<Row1, List<Row2>>> withPath(Path newPath) {
+    public Structure<Tuple.Tuple2<Fields1, Fields2>, Tuple.Tuple2<Row1, List<Row2>>> withPath(
+        Path newPath) {
       List<Path> newPaths = new ArrayList<>();
       newPaths.add(newPath);
       newPaths.addAll(path);
@@ -382,7 +388,7 @@ public class SelectBuilderMock<Fields, Row> implements SelectBuilder<Fields, Row
 
     @Override
     public <T> Optional<T> untypedGetFieldValue(
-        SqlExpr.FieldLike<T, ?> field, Tuple2<Row1, List<Row2>> row) {
+        SqlExpr.FieldLike<T, ?> field, Tuple.Tuple2<Row1, List<Row2>> row) {
       // Try to get from parent structure
       return parentStructure.untypedGetFieldValue(field, row._1());
     }

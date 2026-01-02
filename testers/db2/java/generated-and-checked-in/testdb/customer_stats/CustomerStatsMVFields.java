@@ -7,106 +7,112 @@ package testdb.customer_stats;
 
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr4;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-public interface CustomerStatsMVFields extends FieldsExpr<CustomerStatsMVRow> {
-  record Impl(List<Path> _path)
-      implements CustomerStatsMVFields,
-          RelationStructure<CustomerStatsMVFields, CustomerStatsMVRow> {
-    @Override
-    public Field<Integer, CustomerStatsMVRow> customerId() {
-      return new Field<Integer, CustomerStatsMVRow>(
-          _path,
-          "CUSTOMER_ID",
-          CustomerStatsMVRow::customerId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerId(value),
-          Db2Types.integer);
-    }
-    ;
+public class CustomerStatsMVFields
+    implements TupleExpr4<Integer, String, Integer, BigDecimal>,
+        RelationStructure<CustomerStatsMVFields, CustomerStatsMVRow>,
+        FieldsBase<CustomerStatsMVRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, CustomerStatsMVRow> customerName() {
-      return new Field<String, CustomerStatsMVRow>(
-          _path,
-          "CUSTOMER_NAME",
-          CustomerStatsMVRow::customerName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerName(value),
-          Db2Types.varchar);
-    }
-    ;
-
-    @Override
-    public Field<Integer, CustomerStatsMVRow> totalOrders() {
-      return new Field<Integer, CustomerStatsMVRow>(
-          _path,
-          "TOTAL_ORDERS",
-          CustomerStatsMVRow::totalOrders,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTotalOrders(value),
-          Db2Types.integer);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, CustomerStatsMVRow> totalRevenue() {
-      return new Field<BigDecimal, CustomerStatsMVRow>(
-          _path,
-          "TOTAL_REVENUE",
-          CustomerStatsMVRow::totalRevenue,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTotalRevenue(value),
-          Db2Types.decimal);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, CustomerStatsMVRow>> columns() {
-      return java.util.List.of(
-          this.customerId(), this.customerName(), this.totalOrders(), this.totalRevenue());
-    }
-    ;
-
-    @Override
-    public RelationStructure<CustomerStatsMVFields, CustomerStatsMVRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public CustomerStatsMVFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static CustomerStatsMVFields structure =
+      new CustomerStatsMVFields(java.util.Collections.emptyList());
+
+  public Field<Integer, CustomerStatsMVRow> customerId() {
+    return new Field<Integer, CustomerStatsMVRow>(
+        _path,
+        "CUSTOMER_ID",
+        CustomerStatsMVRow::customerId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerId(value),
+        Db2Types.integer);
   }
-  ;
 
-  Field<Integer, CustomerStatsMVRow> customerId();
+  public Field<String, CustomerStatsMVRow> customerName() {
+    return new Field<String, CustomerStatsMVRow>(
+        _path,
+        "CUSTOMER_NAME",
+        CustomerStatsMVRow::customerName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerName(value),
+        Db2Types.varchar);
+  }
 
-  Field<String, CustomerStatsMVRow> customerName();
+  public Field<Integer, CustomerStatsMVRow> totalOrders() {
+    return new Field<Integer, CustomerStatsMVRow>(
+        _path,
+        "TOTAL_ORDERS",
+        CustomerStatsMVRow::totalOrders,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTotalOrders(value),
+        Db2Types.integer);
+  }
 
-  Field<Integer, CustomerStatsMVRow> totalOrders();
-
-  Field<BigDecimal, CustomerStatsMVRow> totalRevenue();
+  public Field<BigDecimal, CustomerStatsMVRow> totalRevenue() {
+    return new Field<BigDecimal, CustomerStatsMVRow>(
+        _path,
+        "TOTAL_REVENUE",
+        CustomerStatsMVRow::totalRevenue,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTotalRevenue(value),
+        Db2Types.decimal);
+  }
 
   @Override
-  List<FieldLike<?, CustomerStatsMVRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<CustomerStatsMVRow> rowParser() {
+  public List<FieldLike<?, CustomerStatsMVRow>> columns() {
+    return java.util.List.of(
+        this.customerId(), this.customerName(), this.totalOrders(), this.totalRevenue());
+  }
+
+  @Override
+  public RowParser<CustomerStatsMVRow> rowParser() {
     return CustomerStatsMVRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<CustomerStatsMVFields, CustomerStatsMVRow> withPaths(List<Path> _path) {
+    return new CustomerStatsMVFields(_path);
+  }
+
+  @Override
+  public SqlExpr<Integer> _1() {
+    return customerId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return customerName();
+  }
+
+  @Override
+  public SqlExpr<Integer> _3() {
+    return totalOrders();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _4() {
+    return totalRevenue();
+  }
 }

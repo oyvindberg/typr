@@ -8,69 +8,66 @@ package adventureworks.production.unitmeasure
 import adventureworks.public.Name
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.IdField
+import dev.typr.foundations.scala.TupleExpr3
 import java.time.LocalDateTime
 
-trait UnitmeasureFields extends FieldsExpr0[UnitmeasureRow] {
-  def unitmeasurecode: IdField[UnitmeasureId, UnitmeasureRow]
+class UnitmeasureFields(val `_path`: java.util.List[Path]) extends TupleExpr3[UnitmeasureId, Name, LocalDateTime] with RelationStructure[UnitmeasureFields, UnitmeasureRow]  with FieldsBase[UnitmeasureRow] {
+  def unitmeasurecode: IdField[UnitmeasureId, UnitmeasureRow] = {
+    new IdField[UnitmeasureId, UnitmeasureRow](
+      _path,
+      "unitmeasurecode",
+      _.unitmeasurecode,
+      None,
+      Some("bpchar"),
+      (row, value) => row.copy(unitmeasurecode = value),
+      UnitmeasureId.dbType
+    )
+  }
 
-  def name: Field[Name, UnitmeasureRow]
+  def name: Field[Name, UnitmeasureRow] = {
+    new Field[Name, UnitmeasureRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      Some("varchar"),
+      (row, value) => row.copy(name = value),
+      Name.dbType
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, UnitmeasureRow]
+  def modifieddate: Field[LocalDateTime, UnitmeasureRow] = {
+    new Field[LocalDateTime, UnitmeasureRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      None,
+      Some("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, UnitmeasureRow]]
+  override def columns: java.util.List[FieldLike[?, UnitmeasureRow]] = java.util.List.of(this.unitmeasurecode.underlying, this.name.underlying, this.modifieddate.underlying)
 
   override def rowParser: RowParser[UnitmeasureRow] = UnitmeasureRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[UnitmeasureFields, UnitmeasureRow] = new UnitmeasureFields(`_path`)
+
+  override def `_1`: SqlExpr[UnitmeasureId] = unitmeasurecode
+
+  override def `_2`: SqlExpr[Name] = name
+
+  override def `_3`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object UnitmeasureFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends UnitmeasureFields with RelationStructure[UnitmeasureFields, UnitmeasureRow] {
-
-    override def unitmeasurecode: IdField[UnitmeasureId, UnitmeasureRow] = {
-      new IdField[UnitmeasureId, UnitmeasureRow](
-        _path,
-        "unitmeasurecode",
-        _.unitmeasurecode,
-        None,
-        Some("bpchar"),
-        (row, value) => row.copy(unitmeasurecode = value),
-        UnitmeasureId.pgType
-      )
-    }
-
-    override def name: Field[Name, UnitmeasureRow] = {
-      new Field[Name, UnitmeasureRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        Some("varchar"),
-        (row, value) => row.copy(name = value),
-        Name.pgType
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, UnitmeasureRow] = {
-      new Field[LocalDateTime, UnitmeasureRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        None,
-        Some("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, UnitmeasureRow]] = java.util.List.of(this.unitmeasurecode.underlying, this.name.underlying, this.modifieddate.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[UnitmeasureFields, UnitmeasureRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: UnitmeasureFields = new UnitmeasureFields(java.util.Collections.emptyList())
 }

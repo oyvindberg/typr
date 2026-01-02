@@ -7,6 +7,7 @@ package testdb.orders_with_customer_details
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.Tuple.Tuple6
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -30,7 +31,19 @@ data class OrdersWithCustomerDetailsSqlRow(
   @JsonProperty("customer_name") val customerName: String,
   /** Points to [testdb.customers.CustomersRow.email] */
   @JsonProperty("customer_email") val customerEmail: String
-) {
+) : Tuple6<OrdersId, LocalDateTime?, BigDecimal, CustomersId, String, String> {
+  override fun _1(): OrdersId = orderId
+
+  override fun _2(): LocalDateTime? = orderDate
+
+  override fun _3(): BigDecimal = totalAmount
+
+  override fun _4(): CustomersId = customerId
+
+  override fun _5(): String = customerName
+
+  override fun _6(): String = customerEmail
+
   companion object {
     val _rowParser: RowParser<OrdersWithCustomerDetailsSqlRow> = RowParsers.of(OrdersId.sqlServerType, SqlServerTypes.datetime2.nullable(), KotlinDbTypes.SqlServerTypes.money, CustomersId.sqlServerType, SqlServerTypes.nvarchar, SqlServerTypes.nvarchar, { t0, t1, t2, t3, t4, t5 -> OrdersWithCustomerDetailsSqlRow(t0, t1, t2, t3, t4, t5) }, { row -> arrayOf<Any?>(row.orderId, row.orderDate, row.totalAmount, row.customerId, row.customerName, row.customerEmail) })
   }

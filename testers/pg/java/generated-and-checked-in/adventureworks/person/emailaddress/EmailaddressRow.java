@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,7 +37,9 @@ public record EmailaddressRow(
     /** Default: uuid_generate_v1() */
     UUID rowguid,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple5<
+        BusinessentityId, Integer, Optional</* max 50 chars */ String>, UUID, LocalDateTime> {
   /**
    * Primary key. Person associated with this email address. Foreign key to Person.BusinessEntityID
    * Points to {@link adventureworks.person.person.PersonRow#businessentityid()}
@@ -80,7 +83,7 @@ public record EmailaddressRow(
 
   public static RowParser<EmailaddressRow> _rowParser =
       RowParsers.of(
-          BusinessentityId.pgType,
+          BusinessentityId.dbType,
           PgTypes.int4,
           PgTypes.text.opt(),
           PgTypes.uuid,
@@ -111,6 +114,36 @@ public record EmailaddressRow(
   ;
 
   public static PgText<EmailaddressRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public BusinessentityId _1() {
+    return businessentityid;
+  }
+  ;
+
+  @Override
+  public Integer _2() {
+    return emailaddressid;
+  }
+  ;
+
+  @Override
+  public Optional</* max 50 chars */ String> _3() {
+    return emailaddress;
+  }
+  ;
+
+  @Override
+  public UUID _4() {
+    return rowguid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _5() {
+    return modifieddate;
+  }
+  ;
 
   public EmailaddressId compositeId() {
     return new EmailaddressId(businessentityid, emailaddressid);

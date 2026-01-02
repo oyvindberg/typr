@@ -5,6 +5,7 @@
  */
 package testdb
 
+import dev.typr.foundations.data.Xml
 import java.math.BigDecimal
 import java.sql.Connection
 import java.time.LocalDate
@@ -19,6 +20,7 @@ import testdb.customers.CustomersRepoImpl
 import testdb.customers.CustomersRow
 import testdb.customers.CustomersRowUnsaved
 import testdb.customtypes.Defaulted
+import testdb.customtypes.Defaulted.UseDefault
 import testdb.db2test.Db2testId
 import testdb.db2test.Db2testRepoImpl
 import testdb.db2test.Db2testRow
@@ -55,16 +57,16 @@ data class TestInsert(val random: Random) {
   fun CheckConstraintTest(
     age: Int,
     status: String,
-    id: CheckConstraintTestId,
-    price: BigDecimal?,
+    id: CheckConstraintTestId = CheckConstraintTestId(random.nextInt()),
+    price: BigDecimal? = null,
     c: Connection
   ): CheckConstraintTestRow = (CheckConstraintTestRepoImpl()).insert(CheckConstraintTestRow(id = id, age = age, status = status, price = price), c)
 
   fun Customers(
     name: String,
     email: String,
-    customerId: Defaulted<CustomersId>,
-    createdAt: Defaulted<LocalDateTime?>,
+    customerId: Defaulted<CustomersId> = UseDefault(),
+    createdAt: Defaulted<LocalDateTime?> = UseDefault(),
     c: Connection
   ): CustomersRow = (CustomersRepoImpl()).insert(CustomersRowUnsaved(name = name, email = email, customerId = customerId, createdAt = createdAt), c)
 
@@ -77,22 +79,22 @@ data class TestInsert(val random: Random) {
     binaryCol: ByteArray,
     varbinaryCol: ByteArray,
     blobCol: ByteArray,
-    dateCol: LocalDate,
-    timeCol: LocalTime,
-    timestampCol: LocalDateTime,
-    timestamp6Col: LocalDateTime,
-    timestamp12Col: LocalDateTime,
-    xmlCol: String,
-    smallintCol: Short,
-    intCol: Db2testId,
-    bigintCol: Long,
-    decimalCol: BigDecimal,
-    numericCol: BigDecimal,
-    decfloat16Col: BigDecimal,
-    decfloat34Col: BigDecimal,
-    realCol: Float,
-    doubleCol: Double,
-    boolCol: Boolean,
+    smallintCol: Short = random.nextInt(Short.MAX_VALUE.toInt()).toShort(),
+    intCol: Db2testId = Db2testId(random.nextInt()),
+    bigintCol: Long = random.nextLong(),
+    decimalCol: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
+    numericCol: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
+    decfloat16Col: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
+    decfloat34Col: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
+    realCol: Float = random.nextFloat(),
+    doubleCol: Double = random.nextDouble(),
+    boolCol: Boolean = random.nextBoolean(),
+    dateCol: LocalDate = LocalDate.ofEpochDay(random.nextInt(30000).toLong()),
+    timeCol: LocalTime = LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong()),
+    timestampCol: LocalDateTime = LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
+    timestamp6Col: LocalDateTime = LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
+    timestamp12Col: LocalDateTime = LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
+    xmlCol: Xml = Xml("<root/>"),
     c: Connection
   ): Db2testRow = (Db2testRepoImpl()).insert(Db2testRow(smallintCol = smallintCol, intCol = intCol, bigintCol = bigintCol, decimalCol = decimalCol, numericCol = numericCol, decfloat16Col = decfloat16Col, decfloat34Col = decfloat34Col, realCol = realCol, doubleCol = doubleCol, boolCol = boolCol, charCol = charCol, varcharCol = varcharCol, clobCol = clobCol, graphicCol = graphicCol, vargraphicCol = vargraphicCol, binaryCol = binaryCol, varbinaryCol = varbinaryCol, blobCol = blobCol, dateCol = dateCol, timeCol = timeCol, timestampCol = timestampCol, timestamp6Col = timestamp6Col, timestamp12Col = timestamp12Col, xmlCol = xmlCol), c)
 
@@ -103,7 +105,7 @@ data class TestInsert(val random: Random) {
 
   fun Db2testIdentityDefault(
     name: String,
-    id: Defaulted<Db2testIdentityDefaultId>,
+    id: Defaulted<Db2testIdentityDefaultId> = UseDefault(),
     c: Connection
   ): Db2testIdentityDefaultRow = (Db2testIdentityDefaultRepoImpl()).insert(Db2testIdentityDefaultRowUnsaved(name = name, id = id), c)
 
@@ -115,36 +117,36 @@ data class TestInsert(val random: Random) {
   ): Db2testUniqueRow = (Db2testUniqueRepoImpl()).insert(Db2testUniqueRowUnsaved(email = email, code = code, category = category), c)
 
   fun Db2testnull(
-    smallintCol: Short?,
-    intCol: Int?,
-    bigintCol: Long?,
-    decimalCol: BigDecimal?,
-    numericCol: BigDecimal?,
-    decfloat16Col: BigDecimal?,
-    decfloat34Col: BigDecimal?,
-    realCol: Float?,
-    doubleCol: Double?,
-    boolCol: Boolean?,
-    charCol: String?,
-    varcharCol: String?,
-    clobCol: String?,
-    graphicCol: String?,
-    vargraphicCol: String?,
-    binaryCol: ByteArray?,
-    varbinaryCol: ByteArray?,
-    blobCol: ByteArray?,
-    dateCol: LocalDate?,
-    timeCol: LocalTime?,
-    timestampCol: LocalDateTime?,
-    timestamp6Col: LocalDateTime?,
-    timestamp12Col: LocalDateTime?,
-    xmlCol: /* XML */ String?,
+    smallintCol: Short? = if (random.nextBoolean()) null else random.nextInt(Short.MAX_VALUE.toInt()).toShort(),
+    intCol: Int? = if (random.nextBoolean()) null else random.nextInt(),
+    bigintCol: Long? = if (random.nextBoolean()) null else random.nextLong(),
+    decimalCol: BigDecimal? = if (random.nextBoolean()) null else BigDecimal.valueOf(random.nextDouble()),
+    numericCol: BigDecimal? = if (random.nextBoolean()) null else BigDecimal.valueOf(random.nextDouble()),
+    decfloat16Col: BigDecimal? = if (random.nextBoolean()) null else BigDecimal.valueOf(random.nextDouble()),
+    decfloat34Col: BigDecimal? = if (random.nextBoolean()) null else BigDecimal.valueOf(random.nextDouble()),
+    realCol: Float? = if (random.nextBoolean()) null else random.nextFloat(),
+    doubleCol: Double? = if (random.nextBoolean()) null else random.nextDouble(),
+    boolCol: Boolean? = if (random.nextBoolean()) null else random.nextBoolean(),
+    charCol: String? = null,
+    varcharCol: String? = null,
+    clobCol: String? = null,
+    graphicCol: String? = null,
+    vargraphicCol: String? = null,
+    binaryCol: ByteArray? = null,
+    varbinaryCol: ByteArray? = null,
+    blobCol: ByteArray? = null,
+    dateCol: LocalDate? = if (random.nextBoolean()) null else LocalDate.ofEpochDay(random.nextInt(30000).toLong()),
+    timeCol: LocalTime? = if (random.nextBoolean()) null else LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong()),
+    timestampCol: LocalDateTime? = if (random.nextBoolean()) null else LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
+    timestamp6Col: LocalDateTime? = if (random.nextBoolean()) null else LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
+    timestamp12Col: LocalDateTime? = if (random.nextBoolean()) null else LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
+    xmlCol: Xml? = if (random.nextBoolean()) null else Xml("<root/>"),
     c: Connection
   ): Db2testnullRow = (Db2testnullRepoImpl()).insert(Db2testnullRow(smallintCol = smallintCol, intCol = intCol, bigintCol = bigintCol, decimalCol = decimalCol, numericCol = numericCol, decfloat16Col = decfloat16Col, decfloat34Col = decfloat34Col, realCol = realCol, doubleCol = doubleCol, boolCol = boolCol, charCol = charCol, varcharCol = varcharCol, clobCol = clobCol, graphicCol = graphicCol, vargraphicCol = vargraphicCol, binaryCol = binaryCol, varbinaryCol = varbinaryCol, blobCol = blobCol, dateCol = dateCol, timeCol = timeCol, timestampCol = timestampCol, timestamp6Col = timestamp6Col, timestamp12Col = timestamp12Col, xmlCol = xmlCol), c)
 
   fun DistinctTypeTest(
     email: EmailAddress,
-    balance: MoneyAmount?,
+    balance: MoneyAmount? = null,
     c: Connection
   ): DistinctTypeTestRow = (DistinctTypeTestRepoImpl()).insert(DistinctTypeTestRowUnsaved(email = email, balance = balance), c)
 
@@ -155,26 +157,26 @@ data class TestInsert(val random: Random) {
 
   fun NullabilityTest(
     requiredCol: String,
-    id: Int,
-    optionalCol: String?,
-    defaultedCol: Defaulted<String?>,
+    id: Int = random.nextInt(),
+    optionalCol: String? = null,
+    defaultedCol: Defaulted<String?> = UseDefault(),
     c: Connection
   ): NullabilityTestRow = (NullabilityTestRepoImpl()).insert(NullabilityTestRowUnsaved(id = id, requiredCol = requiredCol, optionalCol = optionalCol, defaultedCol = defaultedCol), c)
 
   fun OrderItems(
     orderId: OrdersId,
     productName: String,
-    itemNumber: Int,
-    quantity: Int,
-    unitPrice: BigDecimal,
+    itemNumber: Int = random.nextInt(),
+    quantity: Int = random.nextInt(),
+    unitPrice: BigDecimal = BigDecimal.valueOf(random.nextDouble()),
     c: Connection
   ): OrderItemsRow = (OrderItemsRepoImpl()).insert(OrderItemsRow(orderId = orderId, itemNumber = itemNumber, productName = productName, quantity = quantity, unitPrice = unitPrice), c)
 
   fun Orders(
     customerId: CustomersId,
-    totalAmount: BigDecimal?,
-    orderDate: Defaulted<LocalDate>,
-    status: Defaulted<String?>,
+    totalAmount: BigDecimal? = if (random.nextBoolean()) null else BigDecimal.valueOf(random.nextDouble()),
+    orderDate: Defaulted<LocalDate> = UseDefault(),
+    status: Defaulted<String?> = UseDefault(),
     c: Connection
   ): OrdersRow = (OrdersRepoImpl()).insert(OrdersRowUnsaved(customerId = customerId, totalAmount = totalAmount, orderDate = orderDate, status = status), c)
 }

@@ -18,477 +18,526 @@ import adventureworks.public_.Flag;
 import adventureworks.public_.Name;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr25;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface ProductFields extends FieldsExpr<ProductRow> {
-  record Impl(List<Path> _path)
-      implements ProductFields, RelationStructure<ProductFields, ProductRow> {
-    @Override
-    public IdField<ProductId, ProductRow> productid() {
-      return new IdField<ProductId, ProductRow>(
-          _path,
-          "productid",
-          ProductRow::productid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withProductid(value),
-          ProductId.pgType);
-    }
-    ;
+public class ProductFields
+    implements TupleExpr25<
+            ProductId,
+            Name,
+            String,
+            Flag,
+            Flag, /* max 15 chars */
+            String,
+            Short,
+            Short,
+            BigDecimal,
+            BigDecimal, /* max 5 chars */
+            String,
+            UnitmeasureId,
+            UnitmeasureId,
+            BigDecimal,
+            Integer, /* bpchar, max 2 chars */
+            String, /* bpchar, max 2 chars */
+            String, /* bpchar, max 2 chars */
+            String,
+            ProductsubcategoryId,
+            ProductmodelId,
+            LocalDateTime,
+            LocalDateTime,
+            LocalDateTime,
+            UUID,
+            LocalDateTime>,
+        RelationStructure<ProductFields, ProductRow>,
+        FieldsBase<ProductRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<Name, ProductRow> name() {
-      return new Field<Name, ProductRow>(
-          _path,
-          "name",
-          ProductRow::name,
-          Optional.empty(),
-          Optional.of("varchar"),
-          (row, value) -> row.withName(value),
-          Name.pgType);
-    }
-    ;
-
-    @Override
-    public Field<String, ProductRow> productnumber() {
-      return new Field<String, ProductRow>(
-          _path,
-          "productnumber",
-          ProductRow::productnumber,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withProductnumber(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<Flag, ProductRow> makeflag() {
-      return new Field<Flag, ProductRow>(
-          _path,
-          "makeflag",
-          ProductRow::makeflag,
-          Optional.empty(),
-          Optional.of("bool"),
-          (row, value) -> row.withMakeflag(value),
-          Flag.pgType);
-    }
-    ;
-
-    @Override
-    public Field<Flag, ProductRow> finishedgoodsflag() {
-      return new Field<Flag, ProductRow>(
-          _path,
-          "finishedgoodsflag",
-          ProductRow::finishedgoodsflag,
-          Optional.empty(),
-          Optional.of("bool"),
-          (row, value) -> row.withFinishedgoodsflag(value),
-          Flag.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<String, ProductRow> color() {
-      return new OptField<String, ProductRow>(
-          _path,
-          "color",
-          ProductRow::color,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withColor(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<Short, ProductRow> safetystocklevel() {
-      return new Field<Short, ProductRow>(
-          _path,
-          "safetystocklevel",
-          ProductRow::safetystocklevel,
-          Optional.empty(),
-          Optional.of("int2"),
-          (row, value) -> row.withSafetystocklevel(value),
-          PgTypes.int2);
-    }
-    ;
-
-    @Override
-    public Field<Short, ProductRow> reorderpoint() {
-      return new Field<Short, ProductRow>(
-          _path,
-          "reorderpoint",
-          ProductRow::reorderpoint,
-          Optional.empty(),
-          Optional.of("int2"),
-          (row, value) -> row.withReorderpoint(value),
-          PgTypes.int2);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, ProductRow> standardcost() {
-      return new Field<BigDecimal, ProductRow>(
-          _path,
-          "standardcost",
-          ProductRow::standardcost,
-          Optional.empty(),
-          Optional.of("numeric"),
-          (row, value) -> row.withStandardcost(value),
-          PgTypes.numeric);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, ProductRow> listprice() {
-      return new Field<BigDecimal, ProductRow>(
-          _path,
-          "listprice",
-          ProductRow::listprice,
-          Optional.empty(),
-          Optional.of("numeric"),
-          (row, value) -> row.withListprice(value),
-          PgTypes.numeric);
-    }
-    ;
-
-    @Override
-    public OptField<String, ProductRow> size() {
-      return new OptField<String, ProductRow>(
-          _path,
-          "size",
-          ProductRow::size,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withSize(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public OptField<UnitmeasureId, ProductRow> sizeunitmeasurecode() {
-      return new OptField<UnitmeasureId, ProductRow>(
-          _path,
-          "sizeunitmeasurecode",
-          ProductRow::sizeunitmeasurecode,
-          Optional.empty(),
-          Optional.of("bpchar"),
-          (row, value) -> row.withSizeunitmeasurecode(value),
-          UnitmeasureId.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<UnitmeasureId, ProductRow> weightunitmeasurecode() {
-      return new OptField<UnitmeasureId, ProductRow>(
-          _path,
-          "weightunitmeasurecode",
-          ProductRow::weightunitmeasurecode,
-          Optional.empty(),
-          Optional.of("bpchar"),
-          (row, value) -> row.withWeightunitmeasurecode(value),
-          UnitmeasureId.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, ProductRow> weight() {
-      return new OptField<BigDecimal, ProductRow>(
-          _path,
-          "weight",
-          ProductRow::weight,
-          Optional.empty(),
-          Optional.of("numeric"),
-          (row, value) -> row.withWeight(value),
-          PgTypes.numeric);
-    }
-    ;
-
-    @Override
-    public Field<Integer, ProductRow> daystomanufacture() {
-      return new Field<Integer, ProductRow>(
-          _path,
-          "daystomanufacture",
-          ProductRow::daystomanufacture,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withDaystomanufacture(value),
-          PgTypes.int4);
-    }
-    ;
-
-    @Override
-    public OptField<String, ProductRow> productline() {
-      return new OptField<String, ProductRow>(
-          _path,
-          "productline",
-          ProductRow::productline,
-          Optional.empty(),
-          Optional.of("bpchar"),
-          (row, value) -> row.withProductline(value),
-          PgTypes.bpchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, ProductRow> class_() {
-      return new OptField<String, ProductRow>(
-          _path,
-          "class",
-          ProductRow::class_,
-          Optional.empty(),
-          Optional.of("bpchar"),
-          (row, value) -> row.withClass(value),
-          PgTypes.bpchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, ProductRow> style() {
-      return new OptField<String, ProductRow>(
-          _path,
-          "style",
-          ProductRow::style,
-          Optional.empty(),
-          Optional.of("bpchar"),
-          (row, value) -> row.withStyle(value),
-          PgTypes.bpchar);
-    }
-    ;
-
-    @Override
-    public OptField<ProductsubcategoryId, ProductRow> productsubcategoryid() {
-      return new OptField<ProductsubcategoryId, ProductRow>(
-          _path,
-          "productsubcategoryid",
-          ProductRow::productsubcategoryid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withProductsubcategoryid(value),
-          ProductsubcategoryId.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<ProductmodelId, ProductRow> productmodelid() {
-      return new OptField<ProductmodelId, ProductRow>(
-          _path,
-          "productmodelid",
-          ProductRow::productmodelid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withProductmodelid(value),
-          ProductmodelId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, ProductRow> sellstartdate() {
-      return new Field<LocalDateTime, ProductRow>(
-          _path,
-          "sellstartdate",
-          ProductRow::sellstartdate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withSellstartdate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, ProductRow> sellenddate() {
-      return new OptField<LocalDateTime, ProductRow>(
-          _path,
-          "sellenddate",
-          ProductRow::sellenddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withSellenddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, ProductRow> discontinueddate() {
-      return new OptField<LocalDateTime, ProductRow>(
-          _path,
-          "discontinueddate",
-          ProductRow::discontinueddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withDiscontinueddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public Field<UUID, ProductRow> rowguid() {
-      return new Field<UUID, ProductRow>(
-          _path,
-          "rowguid",
-          ProductRow::rowguid,
-          Optional.empty(),
-          Optional.of("uuid"),
-          (row, value) -> row.withRowguid(value),
-          PgTypes.uuid);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, ProductRow> modifieddate() {
-      return new Field<LocalDateTime, ProductRow>(
-          _path,
-          "modifieddate",
-          ProductRow::modifieddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withModifieddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, ProductRow>> columns() {
-      return java.util.List.of(
-          this.productid(),
-          this.name(),
-          this.productnumber(),
-          this.makeflag(),
-          this.finishedgoodsflag(),
-          this.color(),
-          this.safetystocklevel(),
-          this.reorderpoint(),
-          this.standardcost(),
-          this.listprice(),
-          this.size(),
-          this.sizeunitmeasurecode(),
-          this.weightunitmeasurecode(),
-          this.weight(),
-          this.daystomanufacture(),
-          this.productline(),
-          this.class_(),
-          this.style(),
-          this.productsubcategoryid(),
-          this.productmodelid(),
-          this.sellstartdate(),
-          this.sellenddate(),
-          this.discontinueddate(),
-          this.rowguid(),
-          this.modifieddate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<ProductFields, ProductRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public ProductFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static ProductFields structure = new ProductFields(java.util.Collections.emptyList());
+
+  public IdField<ProductId, ProductRow> productid() {
+    return new IdField<ProductId, ProductRow>(
+        _path,
+        "productid",
+        ProductRow::productid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withProductid(value),
+        ProductId.dbType);
   }
-  ;
 
-  IdField<ProductId, ProductRow> productid();
+  public Field<Name, ProductRow> name() {
+    return new Field<Name, ProductRow>(
+        _path,
+        "name",
+        ProductRow::name,
+        Optional.empty(),
+        Optional.of("varchar"),
+        (row, value) -> row.withName(value),
+        Name.dbType);
+  }
 
-  Field<Name, ProductRow> name();
+  public Field<String, ProductRow> productnumber() {
+    return new Field<String, ProductRow>(
+        _path,
+        "productnumber",
+        ProductRow::productnumber,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withProductnumber(value),
+        PgTypes.text);
+  }
 
-  Field<String, ProductRow> productnumber();
+  public Field<Flag, ProductRow> makeflag() {
+    return new Field<Flag, ProductRow>(
+        _path,
+        "makeflag",
+        ProductRow::makeflag,
+        Optional.empty(),
+        Optional.of("bool"),
+        (row, value) -> row.withMakeflag(value),
+        Flag.dbType);
+  }
 
-  Field<Flag, ProductRow> makeflag();
+  public Field<Flag, ProductRow> finishedgoodsflag() {
+    return new Field<Flag, ProductRow>(
+        _path,
+        "finishedgoodsflag",
+        ProductRow::finishedgoodsflag,
+        Optional.empty(),
+        Optional.of("bool"),
+        (row, value) -> row.withFinishedgoodsflag(value),
+        Flag.dbType);
+  }
 
-  Field<Flag, ProductRow> finishedgoodsflag();
+  public OptField<String, ProductRow> color() {
+    return new OptField<String, ProductRow>(
+        _path,
+        "color",
+        ProductRow::color,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withColor(value),
+        PgTypes.text);
+  }
 
-  OptField</* max 15 chars */ String, ProductRow> color();
+  public Field<Short, ProductRow> safetystocklevel() {
+    return new Field<Short, ProductRow>(
+        _path,
+        "safetystocklevel",
+        ProductRow::safetystocklevel,
+        Optional.empty(),
+        Optional.of("int2"),
+        (row, value) -> row.withSafetystocklevel(value),
+        PgTypes.int2);
+  }
 
-  Field<Short, ProductRow> safetystocklevel();
+  public Field<Short, ProductRow> reorderpoint() {
+    return new Field<Short, ProductRow>(
+        _path,
+        "reorderpoint",
+        ProductRow::reorderpoint,
+        Optional.empty(),
+        Optional.of("int2"),
+        (row, value) -> row.withReorderpoint(value),
+        PgTypes.int2);
+  }
 
-  Field<Short, ProductRow> reorderpoint();
+  public Field<BigDecimal, ProductRow> standardcost() {
+    return new Field<BigDecimal, ProductRow>(
+        _path,
+        "standardcost",
+        ProductRow::standardcost,
+        Optional.empty(),
+        Optional.of("numeric"),
+        (row, value) -> row.withStandardcost(value),
+        PgTypes.numeric);
+  }
 
-  Field<BigDecimal, ProductRow> standardcost();
+  public Field<BigDecimal, ProductRow> listprice() {
+    return new Field<BigDecimal, ProductRow>(
+        _path,
+        "listprice",
+        ProductRow::listprice,
+        Optional.empty(),
+        Optional.of("numeric"),
+        (row, value) -> row.withListprice(value),
+        PgTypes.numeric);
+  }
 
-  Field<BigDecimal, ProductRow> listprice();
+  public OptField<String, ProductRow> size() {
+    return new OptField<String, ProductRow>(
+        _path,
+        "size",
+        ProductRow::size,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withSize(value),
+        PgTypes.text);
+  }
 
-  OptField</* max 5 chars */ String, ProductRow> size();
+  public OptField<UnitmeasureId, ProductRow> sizeunitmeasurecode() {
+    return new OptField<UnitmeasureId, ProductRow>(
+        _path,
+        "sizeunitmeasurecode",
+        ProductRow::sizeunitmeasurecode,
+        Optional.empty(),
+        Optional.of("bpchar"),
+        (row, value) -> row.withSizeunitmeasurecode(value),
+        UnitmeasureId.dbType);
+  }
 
-  OptField<UnitmeasureId, ProductRow> sizeunitmeasurecode();
+  public OptField<UnitmeasureId, ProductRow> weightunitmeasurecode() {
+    return new OptField<UnitmeasureId, ProductRow>(
+        _path,
+        "weightunitmeasurecode",
+        ProductRow::weightunitmeasurecode,
+        Optional.empty(),
+        Optional.of("bpchar"),
+        (row, value) -> row.withWeightunitmeasurecode(value),
+        UnitmeasureId.dbType);
+  }
 
-  OptField<UnitmeasureId, ProductRow> weightunitmeasurecode();
+  public OptField<BigDecimal, ProductRow> weight() {
+    return new OptField<BigDecimal, ProductRow>(
+        _path,
+        "weight",
+        ProductRow::weight,
+        Optional.empty(),
+        Optional.of("numeric"),
+        (row, value) -> row.withWeight(value),
+        PgTypes.numeric);
+  }
 
-  OptField<BigDecimal, ProductRow> weight();
+  public Field<Integer, ProductRow> daystomanufacture() {
+    return new Field<Integer, ProductRow>(
+        _path,
+        "daystomanufacture",
+        ProductRow::daystomanufacture,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withDaystomanufacture(value),
+        PgTypes.int4);
+  }
 
-  Field<Integer, ProductRow> daystomanufacture();
+  public OptField<String, ProductRow> productline() {
+    return new OptField<String, ProductRow>(
+        _path,
+        "productline",
+        ProductRow::productline,
+        Optional.empty(),
+        Optional.of("bpchar"),
+        (row, value) -> row.withProductline(value),
+        PgTypes.bpchar);
+  }
 
-  OptField</* bpchar, max 2 chars */ String, ProductRow> productline();
+  public OptField<String, ProductRow> class_() {
+    return new OptField<String, ProductRow>(
+        _path,
+        "class",
+        ProductRow::class_,
+        Optional.empty(),
+        Optional.of("bpchar"),
+        (row, value) -> row.withClass(value),
+        PgTypes.bpchar);
+  }
 
-  OptField</* bpchar, max 2 chars */ String, ProductRow> class_();
+  public OptField<String, ProductRow> style() {
+    return new OptField<String, ProductRow>(
+        _path,
+        "style",
+        ProductRow::style,
+        Optional.empty(),
+        Optional.of("bpchar"),
+        (row, value) -> row.withStyle(value),
+        PgTypes.bpchar);
+  }
 
-  OptField</* bpchar, max 2 chars */ String, ProductRow> style();
+  public OptField<ProductsubcategoryId, ProductRow> productsubcategoryid() {
+    return new OptField<ProductsubcategoryId, ProductRow>(
+        _path,
+        "productsubcategoryid",
+        ProductRow::productsubcategoryid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withProductsubcategoryid(value),
+        ProductsubcategoryId.dbType);
+  }
 
-  OptField<ProductsubcategoryId, ProductRow> productsubcategoryid();
+  public OptField<ProductmodelId, ProductRow> productmodelid() {
+    return new OptField<ProductmodelId, ProductRow>(
+        _path,
+        "productmodelid",
+        ProductRow::productmodelid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withProductmodelid(value),
+        ProductmodelId.dbType);
+  }
 
-  OptField<ProductmodelId, ProductRow> productmodelid();
+  public Field<LocalDateTime, ProductRow> sellstartdate() {
+    return new Field<LocalDateTime, ProductRow>(
+        _path,
+        "sellstartdate",
+        ProductRow::sellstartdate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withSellstartdate(value),
+        PgTypes.timestamp);
+  }
 
-  Field<LocalDateTime, ProductRow> sellstartdate();
+  public OptField<LocalDateTime, ProductRow> sellenddate() {
+    return new OptField<LocalDateTime, ProductRow>(
+        _path,
+        "sellenddate",
+        ProductRow::sellenddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withSellenddate(value),
+        PgTypes.timestamp);
+  }
 
-  OptField<LocalDateTime, ProductRow> sellenddate();
+  public OptField<LocalDateTime, ProductRow> discontinueddate() {
+    return new OptField<LocalDateTime, ProductRow>(
+        _path,
+        "discontinueddate",
+        ProductRow::discontinueddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withDiscontinueddate(value),
+        PgTypes.timestamp);
+  }
 
-  OptField<LocalDateTime, ProductRow> discontinueddate();
+  public Field<UUID, ProductRow> rowguid() {
+    return new Field<UUID, ProductRow>(
+        _path,
+        "rowguid",
+        ProductRow::rowguid,
+        Optional.empty(),
+        Optional.of("uuid"),
+        (row, value) -> row.withRowguid(value),
+        PgTypes.uuid);
+  }
 
-  Field<UUID, ProductRow> rowguid();
+  public Field<LocalDateTime, ProductRow> modifieddate() {
+    return new Field<LocalDateTime, ProductRow>(
+        _path,
+        "modifieddate",
+        ProductRow::modifieddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withModifieddate(value),
+        PgTypes.timestamp);
+  }
 
-  Field<LocalDateTime, ProductRow> modifieddate();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<ProductmodelFields, ProductmodelRow> fkProductmodel() {
+  public ForeignKey<ProductmodelFields, ProductmodelRow> fkProductmodel() {
     return ForeignKey.<ProductmodelFields, ProductmodelRow>of(
             "production.FK_Product_ProductModel_ProductModelID")
         .<ProductmodelId>withColumnPair(productmodelid(), ProductmodelFields::productmodelid);
   }
-  ;
 
-  default ForeignKey<ProductsubcategoryFields, ProductsubcategoryRow> fkProductsubcategory() {
+  public ForeignKey<ProductsubcategoryFields, ProductsubcategoryRow> fkProductsubcategory() {
     return ForeignKey.<ProductsubcategoryFields, ProductsubcategoryRow>of(
             "production.FK_Product_ProductSubcategory_ProductSubcategoryID")
         .<ProductsubcategoryId>withColumnPair(
             productsubcategoryid(), ProductsubcategoryFields::productsubcategoryid);
   }
-  ;
 
-  default ForeignKey<UnitmeasureFields, UnitmeasureRow> fkUnitmeasureSizeunitmeasurecode() {
+  public ForeignKey<UnitmeasureFields, UnitmeasureRow> fkUnitmeasureSizeunitmeasurecode() {
     return ForeignKey.<UnitmeasureFields, UnitmeasureRow>of(
             "production.FK_Product_UnitMeasure_SizeUnitMeasureCode")
         .<UnitmeasureId>withColumnPair(sizeunitmeasurecode(), UnitmeasureFields::unitmeasurecode);
   }
-  ;
 
-  default ForeignKey<UnitmeasureFields, UnitmeasureRow> fkUnitmeasureWeightunitmeasurecode() {
+  public ForeignKey<UnitmeasureFields, UnitmeasureRow> fkUnitmeasureWeightunitmeasurecode() {
     return ForeignKey.<UnitmeasureFields, UnitmeasureRow>of(
             "production.FK_Product_UnitMeasure_WeightUnitMeasureCode")
         .<UnitmeasureId>withColumnPair(weightunitmeasurecode(), UnitmeasureFields::unitmeasurecode);
   }
-  ;
 
   @Override
-  List<FieldLike<?, ProductRow>> columns();
+  public List<FieldLike<?, ProductRow>> columns() {
+    return java.util.List.of(
+        this.productid(),
+        this.name(),
+        this.productnumber(),
+        this.makeflag(),
+        this.finishedgoodsflag(),
+        this.color(),
+        this.safetystocklevel(),
+        this.reorderpoint(),
+        this.standardcost(),
+        this.listprice(),
+        this.size(),
+        this.sizeunitmeasurecode(),
+        this.weightunitmeasurecode(),
+        this.weight(),
+        this.daystomanufacture(),
+        this.productline(),
+        this.class_(),
+        this.style(),
+        this.productsubcategoryid(),
+        this.productmodelid(),
+        this.sellstartdate(),
+        this.sellenddate(),
+        this.discontinueddate(),
+        this.rowguid(),
+        this.modifieddate());
+  }
 
   @Override
-  default RowParser<ProductRow> rowParser() {
+  public RowParser<ProductRow> rowParser() {
     return ProductRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<ProductFields, ProductRow> withPaths(List<Path> _path) {
+    return new ProductFields(_path);
+  }
+
+  @Override
+  public SqlExpr<ProductId> _1() {
+    return productid();
+  }
+
+  @Override
+  public SqlExpr<Name> _2() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return productnumber();
+  }
+
+  @Override
+  public SqlExpr<Flag> _4() {
+    return makeflag();
+  }
+
+  @Override
+  public SqlExpr<Flag> _5() {
+    return finishedgoodsflag();
+  }
+
+  @Override
+  public SqlExpr</* max 15 chars */ String> _6() {
+    return color();
+  }
+
+  @Override
+  public SqlExpr<Short> _7() {
+    return safetystocklevel();
+  }
+
+  @Override
+  public SqlExpr<Short> _8() {
+    return reorderpoint();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _9() {
+    return standardcost();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _10() {
+    return listprice();
+  }
+
+  @Override
+  public SqlExpr</* max 5 chars */ String> _11() {
+    return size();
+  }
+
+  @Override
+  public SqlExpr<UnitmeasureId> _12() {
+    return sizeunitmeasurecode();
+  }
+
+  @Override
+  public SqlExpr<UnitmeasureId> _13() {
+    return weightunitmeasurecode();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _14() {
+    return weight();
+  }
+
+  @Override
+  public SqlExpr<Integer> _15() {
+    return daystomanufacture();
+  }
+
+  @Override
+  public SqlExpr</* bpchar, max 2 chars */ String> _16() {
+    return productline();
+  }
+
+  @Override
+  public SqlExpr</* bpchar, max 2 chars */ String> _17() {
+    return class_();
+  }
+
+  @Override
+  public SqlExpr</* bpchar, max 2 chars */ String> _18() {
+    return style();
+  }
+
+  @Override
+  public SqlExpr<ProductsubcategoryId> _19() {
+    return productsubcategoryid();
+  }
+
+  @Override
+  public SqlExpr<ProductmodelId> _20() {
+    return productmodelid();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _21() {
+    return sellstartdate();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _22() {
+    return sellenddate();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _23() {
+    return discontinueddate();
+  }
+
+  @Override
+  public SqlExpr<UUID> _24() {
+    return rowguid();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _25() {
+    return modifieddate();
+  }
 }

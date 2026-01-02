@@ -10,6 +10,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple3;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -26,7 +27,8 @@ public record BusinessentityRow(
     /** Default: uuid_generate_v1() */
     UUID rowguid,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple3<BusinessentityId, UUID, LocalDateTime> {
   /**
    * Primary key for all customers, vendors, and employees. Default:
    * nextval('person.businessentity_businessentityid_seq'::regclass)
@@ -50,7 +52,7 @@ public record BusinessentityRow(
 
   public static RowParser<BusinessentityRow> _rowParser =
       RowParsers.of(
-          BusinessentityId.pgType,
+          BusinessentityId.dbType,
           PgTypes.uuid,
           PgTypes.timestamp,
           BusinessentityRow::new,
@@ -58,6 +60,24 @@ public record BusinessentityRow(
   ;
 
   public static PgText<BusinessentityRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public BusinessentityId _1() {
+    return businessentityid;
+  }
+  ;
+
+  @Override
+  public UUID _2() {
+    return rowguid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _3() {
+    return modifieddate;
+  }
+  ;
 
   public BusinessentityId id() {
     return businessentityid;

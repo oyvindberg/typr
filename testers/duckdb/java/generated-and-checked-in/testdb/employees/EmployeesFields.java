@@ -7,178 +7,178 @@ package testdb.employees;
 
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
 import dev.typr.foundations.dsl.SqlExpr;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn;
-import dev.typr.foundations.dsl.SqlExpr.CompositeIn.Part;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr7;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface EmployeesFields extends FieldsExpr<EmployeesRow> {
-  record Impl(List<Path> _path)
-      implements EmployeesFields, RelationStructure<EmployeesFields, EmployeesRow> {
-    @Override
-    public IdField<Integer, EmployeesRow> empNumber() {
-      return new IdField<Integer, EmployeesRow>(
-          _path,
-          "emp_number",
-          EmployeesRow::empNumber,
-          Optional.empty(),
-          Optional.of("INTEGER"),
-          (row, value) -> row.withEmpNumber(value),
-          DuckDbTypes.integer);
-    }
-    ;
+public class EmployeesFields
+    implements TupleExpr7<Integer, String, String, String, String, BigDecimal, LocalDate>,
+        RelationStructure<EmployeesFields, EmployeesRow>,
+        FieldsBase<EmployeesRow> {
+  List<Path> _path;
 
-    @Override
-    public IdField<String, EmployeesRow> empSuffix() {
-      return new IdField<String, EmployeesRow>(
-          _path,
-          "emp_suffix",
-          EmployeesRow::empSuffix,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withEmpSuffix(value),
-          DuckDbTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, EmployeesRow> deptCode() {
-      return new Field<String, EmployeesRow>(
-          _path,
-          "dept_code",
-          EmployeesRow::deptCode,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDeptCode(value),
-          DuckDbTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, EmployeesRow> deptRegion() {
-      return new Field<String, EmployeesRow>(
-          _path,
-          "dept_region",
-          EmployeesRow::deptRegion,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withDeptRegion(value),
-          DuckDbTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, EmployeesRow> empName() {
-      return new Field<String, EmployeesRow>(
-          _path,
-          "emp_name",
-          EmployeesRow::empName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withEmpName(value),
-          DuckDbTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<BigDecimal, EmployeesRow> salary() {
-      return new OptField<BigDecimal, EmployeesRow>(
-          _path,
-          "salary",
-          EmployeesRow::salary,
-          Optional.empty(),
-          Optional.of("DECIMAL(10,2)"),
-          (row, value) -> row.withSalary(value),
-          DuckDbTypes.numeric);
-    }
-    ;
-
-    @Override
-    public Field<LocalDate, EmployeesRow> hireDate() {
-      return new Field<LocalDate, EmployeesRow>(
-          _path,
-          "hire_date",
-          EmployeesRow::hireDate,
-          Optional.empty(),
-          Optional.of("DATE"),
-          (row, value) -> row.withHireDate(value),
-          DuckDbTypes.date);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, EmployeesRow>> columns() {
-      return java.util.List.of(
-          this.empNumber(),
-          this.empSuffix(),
-          this.deptCode(),
-          this.deptRegion(),
-          this.empName(),
-          this.salary(),
-          this.hireDate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<EmployeesFields, EmployeesRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public EmployeesFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static EmployeesFields structure = new EmployeesFields(java.util.Collections.emptyList());
+
+  public IdField<Integer, EmployeesRow> empNumber() {
+    return new IdField<Integer, EmployeesRow>(
+        _path,
+        "emp_number",
+        EmployeesRow::empNumber,
+        Optional.empty(),
+        Optional.of("INTEGER"),
+        (row, value) -> row.withEmpNumber(value),
+        DuckDbTypes.integer);
   }
-  ;
 
-  IdField<Integer, EmployeesRow> empNumber();
+  public IdField<String, EmployeesRow> empSuffix() {
+    return new IdField<String, EmployeesRow>(
+        _path,
+        "emp_suffix",
+        EmployeesRow::empSuffix,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withEmpSuffix(value),
+        DuckDbTypes.varchar);
+  }
 
-  IdField<String, EmployeesRow> empSuffix();
+  public Field<String, EmployeesRow> deptCode() {
+    return new Field<String, EmployeesRow>(
+        _path,
+        "dept_code",
+        EmployeesRow::deptCode,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDeptCode(value),
+        DuckDbTypes.varchar);
+  }
 
-  Field<String, EmployeesRow> deptCode();
+  public Field<String, EmployeesRow> deptRegion() {
+    return new Field<String, EmployeesRow>(
+        _path,
+        "dept_region",
+        EmployeesRow::deptRegion,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withDeptRegion(value),
+        DuckDbTypes.varchar);
+  }
 
-  Field<String, EmployeesRow> deptRegion();
+  public Field<String, EmployeesRow> empName() {
+    return new Field<String, EmployeesRow>(
+        _path,
+        "emp_name",
+        EmployeesRow::empName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withEmpName(value),
+        DuckDbTypes.varchar);
+  }
 
-  Field<String, EmployeesRow> empName();
+  public OptField<BigDecimal, EmployeesRow> salary() {
+    return new OptField<BigDecimal, EmployeesRow>(
+        _path,
+        "salary",
+        EmployeesRow::salary,
+        Optional.empty(),
+        Optional.of("DECIMAL(10,2)"),
+        (row, value) -> row.withSalary(value),
+        DuckDbTypes.numeric);
+  }
 
-  OptField<BigDecimal, EmployeesRow> salary();
+  public Field<LocalDate, EmployeesRow> hireDate() {
+    return new Field<LocalDate, EmployeesRow>(
+        _path,
+        "hire_date",
+        EmployeesRow::hireDate,
+        Optional.empty(),
+        Optional.of("DATE"),
+        (row, value) -> row.withHireDate(value),
+        DuckDbTypes.date);
+  }
 
-  Field<LocalDate, EmployeesRow> hireDate();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default SqlExpr<Boolean> compositeIdIs(EmployeesId compositeId) {
+  public SqlExpr<Boolean> compositeIdIs(EmployeesId compositeId) {
     return SqlExpr.all(
         empNumber().isEqual(compositeId.empNumber()), empSuffix().isEqual(compositeId.empSuffix()));
   }
-  ;
 
-  default SqlExpr<Boolean> compositeIdIn(List<EmployeesId> compositeIds) {
-    return new CompositeIn(
-        List.of(
-            new Part<Integer, EmployeesId, EmployeesRow>(
-                empNumber(), EmployeesId::empNumber, DuckDbTypes.integer),
-            new Part<String, EmployeesId, EmployeesRow>(
-                empSuffix(), EmployeesId::empSuffix, DuckDbTypes.varchar)),
-        compositeIds);
+  public SqlExpr<Boolean> compositeIdIn(List<EmployeesId> compositeIds) {
+    return TupleExpr.of(empNumber(), empSuffix()).among(compositeIds);
   }
-  ;
 
   @Override
-  List<FieldLike<?, EmployeesRow>> columns();
+  public List<FieldLike<?, EmployeesRow>> columns() {
+    return java.util.List.of(
+        this.empNumber(),
+        this.empSuffix(),
+        this.deptCode(),
+        this.deptRegion(),
+        this.empName(),
+        this.salary(),
+        this.hireDate());
+  }
 
   @Override
-  default RowParser<EmployeesRow> rowParser() {
+  public RowParser<EmployeesRow> rowParser() {
     return EmployeesRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<EmployeesFields, EmployeesRow> withPaths(List<Path> _path) {
+    return new EmployeesFields(_path);
+  }
+
+  @Override
+  public SqlExpr<Integer> _1() {
+    return empNumber();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return empSuffix();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return deptCode();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return deptRegion();
+  }
+
+  @Override
+  public SqlExpr<String> _5() {
+    return empName();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _6() {
+    return salary();
+  }
+
+  @Override
+  public SqlExpr<LocalDate> _7() {
+    return hireDate();
+  }
 }

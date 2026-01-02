@@ -41,11 +41,11 @@ data class BusinessentityaddressRowUnsaved(
 
   companion object {
     val pgText: PgText<BusinessentityaddressRowUnsaved> =
-      PgText.instance({ row, sb -> BusinessentityId.pgType.text().unsafeEncode(row.businessentityid, sb)
+      PgText.instance({ row, sb -> BusinessentityId.dbType.text().unsafeEncode(row.businessentityid, sb)
       sb.append(PgText.DELIMETER)
-      AddressId.pgType.text().unsafeEncode(row.addressid, sb)
+      AddressId.dbType.text().unsafeEncode(row.addressid, sb)
       sb.append(PgText.DELIMETER)
-      AddresstypeId.pgType.text().unsafeEncode(row.addresstypeid, sb)
+      AddresstypeId.dbType.text().unsafeEncode(row.addresstypeid, sb)
       sb.append(PgText.DELIMETER)
       Defaulted.pgText(PgTypes.uuid.text()).unsafeEncode(row.rowguid, sb)
       sb.append(PgText.DELIMETER)

@@ -48,7 +48,7 @@ public record ProductcategoryRepoMock(
   @Override
   public DeleteBuilder<ProductcategoryFields, ProductcategoryRow> delete() {
     return new DeleteBuilderMock<>(
-        ProductcategoryFields.structure(),
+        ProductcategoryFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.productcategoryid(),
@@ -127,9 +127,7 @@ public record ProductcategoryRepoMock(
   @Override
   public SelectBuilder<ProductcategoryFields, ProductcategoryRow> select() {
     return new SelectBuilderMock<>(
-        ProductcategoryFields.structure(),
-        () -> new ArrayList<>(map.values()),
-        SelectParams.empty());
+        ProductcategoryFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -175,7 +173,7 @@ public record ProductcategoryRepoMock(
   @Override
   public UpdateBuilder<ProductcategoryFields, ProductcategoryRow> update() {
     return new UpdateBuilderMock<>(
-        ProductcategoryFields.structure(),
+        ProductcategoryFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

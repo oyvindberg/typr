@@ -7,225 +7,222 @@ package testdb.v_order_details
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr14
 import java.time.LocalDateTime
 import testdb.orders.OrdersId
 
-trait VOrderDetailsViewFields extends FieldsExpr0[VOrderDetailsViewRow] {
-  def orderId: Field[OrdersId, VOrderDetailsViewRow]
+class VOrderDetailsViewFields(val `_path`: java.util.List[Path]) extends TupleExpr14[OrdersId, String, String, String, BigDecimal, String, LocalDateTime, String, String, Long, BigDecimal, String, String, String] with RelationStructure[VOrderDetailsViewFields, VOrderDetailsViewRow]  with FieldsBase[VOrderDetailsViewRow] {
+  def orderId: Field[OrdersId, VOrderDetailsViewRow] = {
+    new Field[OrdersId, VOrderDetailsViewRow](
+      _path,
+      "order_id",
+      _.orderId,
+      None,
+      None,
+      (row, value) => row.copy(orderId = value),
+      OrdersId.dbType
+    )
+  }
 
-  def orderNumber: Field[String, VOrderDetailsViewRow]
+  def orderNumber: Field[String, VOrderDetailsViewRow] = {
+    new Field[String, VOrderDetailsViewRow](
+      _path,
+      "order_number",
+      _.orderNumber,
+      None,
+      None,
+      (row, value) => row.copy(orderNumber = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def orderStatus: Field[String, VOrderDetailsViewRow]
+  def orderStatus: Field[String, VOrderDetailsViewRow] = {
+    new Field[String, VOrderDetailsViewRow](
+      _path,
+      "order_status",
+      _.orderStatus,
+      None,
+      None,
+      (row, value) => row.copy(orderStatus = value),
+      MariaTypes.text
+    )
+  }
 
-  def paymentStatus: Field[String, VOrderDetailsViewRow]
+  def paymentStatus: Field[String, VOrderDetailsViewRow] = {
+    new Field[String, VOrderDetailsViewRow](
+      _path,
+      "payment_status",
+      _.paymentStatus,
+      None,
+      None,
+      (row, value) => row.copy(paymentStatus = value),
+      MariaTypes.text
+    )
+  }
 
-  def totalAmount: Field[BigDecimal, VOrderDetailsViewRow]
+  def totalAmount: Field[BigDecimal, VOrderDetailsViewRow] = {
+    new Field[BigDecimal, VOrderDetailsViewRow](
+      _path,
+      "total_amount",
+      _.totalAmount,
+      None,
+      None,
+      (row, value) => row.copy(totalAmount = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def currencyCode: Field[String, VOrderDetailsViewRow]
+  def currencyCode: Field[String, VOrderDetailsViewRow] = {
+    new Field[String, VOrderDetailsViewRow](
+      _path,
+      "currency_code",
+      _.currencyCode,
+      None,
+      None,
+      (row, value) => row.copy(currencyCode = value),
+      MariaTypes.char_
+    )
+  }
 
-  def orderedAt: Field[LocalDateTime, VOrderDetailsViewRow]
+  def orderedAt: Field[LocalDateTime, VOrderDetailsViewRow] = {
+    new Field[LocalDateTime, VOrderDetailsViewRow](
+      _path,
+      "ordered_at",
+      _.orderedAt,
+      None,
+      None,
+      (row, value) => row.copy(orderedAt = value),
+      MariaTypes.datetime
+    )
+  }
 
-  def customerEmail: Field[String, VOrderDetailsViewRow]
+  def customerEmail: Field[String, VOrderDetailsViewRow] = {
+    new Field[String, VOrderDetailsViewRow](
+      _path,
+      "customer_email",
+      _.customerEmail,
+      None,
+      None,
+      (row, value) => row.copy(customerEmail = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def customerName: OptField[String, VOrderDetailsViewRow]
+  def customerName: OptField[String, VOrderDetailsViewRow] = {
+    new OptField[String, VOrderDetailsViewRow](
+      _path,
+      "customer_name",
+      _.customerName,
+      None,
+      None,
+      (row, value) => row.copy(customerName = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def itemCount: Field[Long, VOrderDetailsViewRow]
+  def itemCount: Field[Long, VOrderDetailsViewRow] = {
+    new Field[Long, VOrderDetailsViewRow](
+      _path,
+      "item_count",
+      _.itemCount,
+      None,
+      None,
+      (row, value) => row.copy(itemCount = value),
+      ScalaDbTypes.MariaTypes.bigint
+    )
+  }
 
-  def totalQuantity: OptField[BigDecimal, VOrderDetailsViewRow]
+  def totalQuantity: OptField[BigDecimal, VOrderDetailsViewRow] = {
+    new OptField[BigDecimal, VOrderDetailsViewRow](
+      _path,
+      "total_quantity",
+      _.totalQuantity,
+      None,
+      None,
+      (row, value) => row.copy(totalQuantity = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def trackingNumber: OptField[String, VOrderDetailsViewRow]
+  def trackingNumber: OptField[String, VOrderDetailsViewRow] = {
+    new OptField[String, VOrderDetailsViewRow](
+      _path,
+      "tracking_number",
+      _.trackingNumber,
+      None,
+      None,
+      (row, value) => row.copy(trackingNumber = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def shippingStatus: OptField[String, VOrderDetailsViewRow]
+  def shippingStatus: OptField[String, VOrderDetailsViewRow] = {
+    new OptField[String, VOrderDetailsViewRow](
+      _path,
+      "shipping_status",
+      _.shippingStatus,
+      None,
+      None,
+      (row, value) => row.copy(shippingStatus = value),
+      MariaTypes.text
+    )
+  }
 
-  def carrierName: OptField[String, VOrderDetailsViewRow]
+  def carrierName: OptField[String, VOrderDetailsViewRow] = {
+    new OptField[String, VOrderDetailsViewRow](
+      _path,
+      "carrier_name",
+      _.carrierName,
+      None,
+      None,
+      (row, value) => row.copy(carrierName = value),
+      MariaTypes.varchar
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, VOrderDetailsViewRow]]
+  override def columns: java.util.List[FieldLike[?, VOrderDetailsViewRow]] = java.util.List.of(this.orderId.underlying, this.orderNumber.underlying, this.orderStatus.underlying, this.paymentStatus.underlying, this.totalAmount.underlying, this.currencyCode.underlying, this.orderedAt.underlying, this.customerEmail.underlying, this.customerName.underlying, this.itemCount.underlying, this.totalQuantity.underlying, this.trackingNumber.underlying, this.shippingStatus.underlying, this.carrierName.underlying)
 
   override def rowParser: RowParser[VOrderDetailsViewRow] = VOrderDetailsViewRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[VOrderDetailsViewFields, VOrderDetailsViewRow] = new VOrderDetailsViewFields(`_path`)
+
+  override def `_1`: SqlExpr[OrdersId] = orderId
+
+  override def `_2`: SqlExpr[String] = orderNumber
+
+  override def `_3`: SqlExpr[String] = orderStatus
+
+  override def `_4`: SqlExpr[String] = paymentStatus
+
+  override def `_5`: SqlExpr[BigDecimal] = totalAmount
+
+  override def `_6`: SqlExpr[String] = currencyCode
+
+  override def `_7`: SqlExpr[LocalDateTime] = orderedAt
+
+  override def `_8`: SqlExpr[String] = customerEmail
+
+  override def `_9`: SqlExpr[String] = customerName
+
+  override def `_10`: SqlExpr[Long] = itemCount
+
+  override def `_11`: SqlExpr[BigDecimal] = totalQuantity
+
+  override def `_12`: SqlExpr[String] = trackingNumber
+
+  override def `_13`: SqlExpr[String] = shippingStatus
+
+  override def `_14`: SqlExpr[String] = carrierName
 }
 
 object VOrderDetailsViewFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends VOrderDetailsViewFields with RelationStructure[VOrderDetailsViewFields, VOrderDetailsViewRow] {
-
-    override def orderId: Field[OrdersId, VOrderDetailsViewRow] = {
-      new Field[OrdersId, VOrderDetailsViewRow](
-        _path,
-        "order_id",
-        _.orderId,
-        None,
-        None,
-        (row, value) => row.copy(orderId = value),
-        OrdersId.pgType
-      )
-    }
-
-    override def orderNumber: Field[String, VOrderDetailsViewRow] = {
-      new Field[String, VOrderDetailsViewRow](
-        _path,
-        "order_number",
-        _.orderNumber,
-        None,
-        None,
-        (row, value) => row.copy(orderNumber = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def orderStatus: Field[String, VOrderDetailsViewRow] = {
-      new Field[String, VOrderDetailsViewRow](
-        _path,
-        "order_status",
-        _.orderStatus,
-        None,
-        None,
-        (row, value) => row.copy(orderStatus = value),
-        MariaTypes.text
-      )
-    }
-
-    override def paymentStatus: Field[String, VOrderDetailsViewRow] = {
-      new Field[String, VOrderDetailsViewRow](
-        _path,
-        "payment_status",
-        _.paymentStatus,
-        None,
-        None,
-        (row, value) => row.copy(paymentStatus = value),
-        MariaTypes.text
-      )
-    }
-
-    override def totalAmount: Field[BigDecimal, VOrderDetailsViewRow] = {
-      new Field[BigDecimal, VOrderDetailsViewRow](
-        _path,
-        "total_amount",
-        _.totalAmount,
-        None,
-        None,
-        (row, value) => row.copy(totalAmount = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def currencyCode: Field[String, VOrderDetailsViewRow] = {
-      new Field[String, VOrderDetailsViewRow](
-        _path,
-        "currency_code",
-        _.currencyCode,
-        None,
-        None,
-        (row, value) => row.copy(currencyCode = value),
-        MariaTypes.char_
-      )
-    }
-
-    override def orderedAt: Field[LocalDateTime, VOrderDetailsViewRow] = {
-      new Field[LocalDateTime, VOrderDetailsViewRow](
-        _path,
-        "ordered_at",
-        _.orderedAt,
-        None,
-        None,
-        (row, value) => row.copy(orderedAt = value),
-        MariaTypes.datetime
-      )
-    }
-
-    override def customerEmail: Field[String, VOrderDetailsViewRow] = {
-      new Field[String, VOrderDetailsViewRow](
-        _path,
-        "customer_email",
-        _.customerEmail,
-        None,
-        None,
-        (row, value) => row.copy(customerEmail = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def customerName: OptField[String, VOrderDetailsViewRow] = {
-      new OptField[String, VOrderDetailsViewRow](
-        _path,
-        "customer_name",
-        _.customerName,
-        None,
-        None,
-        (row, value) => row.copy(customerName = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def itemCount: Field[Long, VOrderDetailsViewRow] = {
-      new Field[Long, VOrderDetailsViewRow](
-        _path,
-        "item_count",
-        _.itemCount,
-        None,
-        None,
-        (row, value) => row.copy(itemCount = value),
-        ScalaDbTypes.MariaTypes.bigint
-      )
-    }
-
-    override def totalQuantity: OptField[BigDecimal, VOrderDetailsViewRow] = {
-      new OptField[BigDecimal, VOrderDetailsViewRow](
-        _path,
-        "total_quantity",
-        _.totalQuantity,
-        None,
-        None,
-        (row, value) => row.copy(totalQuantity = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def trackingNumber: OptField[String, VOrderDetailsViewRow] = {
-      new OptField[String, VOrderDetailsViewRow](
-        _path,
-        "tracking_number",
-        _.trackingNumber,
-        None,
-        None,
-        (row, value) => row.copy(trackingNumber = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def shippingStatus: OptField[String, VOrderDetailsViewRow] = {
-      new OptField[String, VOrderDetailsViewRow](
-        _path,
-        "shipping_status",
-        _.shippingStatus,
-        None,
-        None,
-        (row, value) => row.copy(shippingStatus = value),
-        MariaTypes.text
-      )
-    }
-
-    override def carrierName: OptField[String, VOrderDetailsViewRow] = {
-      new OptField[String, VOrderDetailsViewRow](
-        _path,
-        "carrier_name",
-        _.carrierName,
-        None,
-        None,
-        (row, value) => row.copy(carrierName = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, VOrderDetailsViewRow]] = java.util.List.of(this.orderId.underlying, this.orderNumber.underlying, this.orderStatus.underlying, this.paymentStatus.underlying, this.totalAmount.underlying, this.currencyCode.underlying, this.orderedAt.underlying, this.customerEmail.underlying, this.customerName.underlying, this.itemCount.underlying, this.totalQuantity.underlying, this.trackingNumber.underlying, this.shippingStatus.underlying, this.carrierName.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[VOrderDetailsViewFields, VOrderDetailsViewRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: VOrderDetailsViewFields = new VOrderDetailsViewFields(java.util.Collections.emptyList())
 }

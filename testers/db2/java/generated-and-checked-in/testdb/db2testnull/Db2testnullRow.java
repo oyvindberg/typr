@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple24;
+import dev.typr.foundations.data.Xml;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,7 +42,32 @@ public record Db2testnullRow(
     @JsonProperty("TIMESTAMP_COL") Optional<LocalDateTime> timestampCol,
     @JsonProperty("TIMESTAMP6_COL") Optional<LocalDateTime> timestamp6Col,
     @JsonProperty("TIMESTAMP12_COL") Optional<LocalDateTime> timestamp12Col,
-    @JsonProperty("XML_COL") Optional</* XML */ String> xmlCol) {
+    @JsonProperty("XML_COL") Optional<Xml> xmlCol)
+    implements Tuple24<
+        Optional<Short>,
+        Optional<Integer>,
+        Optional<Long>,
+        Optional<BigDecimal>,
+        Optional<BigDecimal>,
+        Optional<BigDecimal>,
+        Optional<BigDecimal>,
+        Optional<Float>,
+        Optional<Double>,
+        Optional<Boolean>,
+        Optional<String>,
+        Optional<String>,
+        Optional<String>,
+        Optional<String>,
+        Optional<String>,
+        Optional<byte[]>,
+        Optional<byte[]>,
+        Optional<byte[]>,
+        Optional<LocalDate>,
+        Optional<LocalTime>,
+        Optional<LocalDateTime>,
+        Optional<LocalDateTime>,
+        Optional<LocalDateTime>,
+        Optional<Xml>> {
   public Db2testnullRow withSmallintCol(Optional<Short> smallintCol) {
     return new Db2testnullRow(
         smallintCol,
@@ -708,7 +735,7 @@ public record Db2testnullRow(
   }
   ;
 
-  public Db2testnullRow withXmlCol(Optional</* XML */ String> xmlCol) {
+  public Db2testnullRow withXmlCol(Optional<Xml> xmlCol) {
     return new Db2testnullRow(
         smallintCol,
         intCol,
@@ -791,5 +818,149 @@ public record Db2testnullRow(
                 row.timestamp12Col(),
                 row.xmlCol()
               });
+  ;
+
+  @Override
+  public Optional<Short> _1() {
+    return smallintCol;
+  }
+  ;
+
+  @Override
+  public Optional<Boolean> _10() {
+    return boolCol;
+  }
+  ;
+
+  @Override
+  public Optional<String> _11() {
+    return charCol;
+  }
+  ;
+
+  @Override
+  public Optional<String> _12() {
+    return varcharCol;
+  }
+  ;
+
+  @Override
+  public Optional<String> _13() {
+    return clobCol;
+  }
+  ;
+
+  @Override
+  public Optional<String> _14() {
+    return graphicCol;
+  }
+  ;
+
+  @Override
+  public Optional<String> _15() {
+    return vargraphicCol;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _16() {
+    return binaryCol;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _17() {
+    return varbinaryCol;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _18() {
+    return blobCol;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDate> _19() {
+    return dateCol;
+  }
+  ;
+
+  @Override
+  public Optional<Integer> _2() {
+    return intCol;
+  }
+  ;
+
+  @Override
+  public Optional<LocalTime> _20() {
+    return timeCol;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _21() {
+    return timestampCol;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _22() {
+    return timestamp6Col;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _23() {
+    return timestamp12Col;
+  }
+  ;
+
+  @Override
+  public Optional<Xml> _24() {
+    return xmlCol;
+  }
+  ;
+
+  @Override
+  public Optional<Long> _3() {
+    return bigintCol;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _4() {
+    return decimalCol;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _5() {
+    return numericCol;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _6() {
+    return decfloat16Col;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _7() {
+    return decfloat34Col;
+  }
+  ;
+
+  @Override
+  public Optional<Float> _8() {
+    return realCol;
+  }
+  ;
+
+  @Override
+  public Optional<Double> _9() {
+    return doubleCol;
+  }
   ;
 }

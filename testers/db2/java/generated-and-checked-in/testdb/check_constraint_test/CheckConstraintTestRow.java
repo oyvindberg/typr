@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -22,7 +23,8 @@ public record CheckConstraintTestRow(
      */
     @JsonProperty("STATUS") String status,
     /** Constraint CHK_PRICE affecting columns PRICE: PRICE >= 0 */
-    @JsonProperty("PRICE") Optional<BigDecimal> price) {
+    @JsonProperty("PRICE") Optional<BigDecimal> price)
+    implements Tuple4<CheckConstraintTestId, Integer, String, Optional<BigDecimal>> {
   public CheckConstraintTestRow withId(CheckConstraintTestId id) {
     return new CheckConstraintTestRow(id, age, status, price);
   }
@@ -48,11 +50,35 @@ public record CheckConstraintTestRow(
 
   public static RowParser<CheckConstraintTestRow> _rowParser =
       RowParsers.of(
-          CheckConstraintTestId.pgType,
+          CheckConstraintTestId.dbType,
           Db2Types.integer,
           Db2Types.varchar,
           Db2Types.decimal.opt(),
           CheckConstraintTestRow::new,
           row -> new Object[] {row.id(), row.age(), row.status(), row.price()});
+  ;
+
+  @Override
+  public CheckConstraintTestId _1() {
+    return id;
+  }
+  ;
+
+  @Override
+  public Integer _2() {
+    return age;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return status;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _4() {
+    return price;
+  }
   ;
 }

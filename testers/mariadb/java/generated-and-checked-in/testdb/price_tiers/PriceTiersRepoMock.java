@@ -48,7 +48,7 @@ public record PriceTiersRepoMock(
   @Override
   public DeleteBuilder<PriceTiersFields, PriceTiersRow> delete() {
     return new DeleteBuilderMock<>(
-        PriceTiersFields.structure(),
+        PriceTiersFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.tierId(),
@@ -97,7 +97,7 @@ public record PriceTiersRepoMock(
   @Override
   public SelectBuilder<PriceTiersFields, PriceTiersRow> select() {
     return new SelectBuilderMock<>(
-        PriceTiersFields.structure(), () -> new ArrayList<>(map.values()), SelectParams.empty());
+        PriceTiersFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -138,7 +138,7 @@ public record PriceTiersRepoMock(
   @Override
   public UpdateBuilder<PriceTiersFields, PriceTiersRow> update() {
     return new UpdateBuilderMock<>(
-        PriceTiersFields.structure(),
+        PriceTiersFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

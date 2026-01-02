@@ -16,5 +16,5 @@ trait InsertOrderWithItemsSqlRepo {
     orderDate: Option[LocalDate],
     totalAmount: Option[BigDecimal],
     status: Option[String]
-  )(using c: Connection): Int
+  )(using c: Connection): List[InsertOrderWithItemsSqlRow]
 }

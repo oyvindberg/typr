@@ -24,27 +24,25 @@ import java.util.Optional;
 public class AuditLogRepoImpl implements AuditLogRepo {
   @Override
   public DeleteBuilder<AuditLogFields, AuditLogRow> delete() {
-    return DeleteBuilder.of("`audit_log`", AuditLogFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`audit_log`", AuditLogFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(AuditLogId logId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `audit_log` where `log_id` = "),
-                Fragment.encode(AuditLogId.pgType, logId),
+                Fragment.encode(AuditLogId.dbType, logId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(AuditLogId[] logIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : logIds) {
-      fragments.add(Fragment.encode(AuditLogId.pgType, id));
+      fragments.add(Fragment.encode(AuditLogId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -54,7 +52,6 @@ public class AuditLogRepoImpl implements AuditLogRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public AuditLogRow insert(AuditLogRow unsaved, Connection c) {
@@ -69,9 +66,9 @@ public class AuditLogRepoImpl implements AuditLogRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text, unsaved.action()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.oldValues()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.oldValues()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.newValues()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.newValues()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar.opt(), unsaved.changedBy()),
             Fragment.lit(", "),
@@ -87,7 +84,6 @@ public class AuditLogRepoImpl implements AuditLogRepo {
         .updateReturning(AuditLogRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public AuditLogRow insert(AuditLogRowUnsaved unsaved, Connection c) {
@@ -110,7 +106,7 @@ public class AuditLogRepoImpl implements AuditLogRepo {
             value -> {
               columns.add(Fragment.lit("`old_values`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(MariaTypes.json.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -120,7 +116,7 @@ public class AuditLogRepoImpl implements AuditLogRepo {
             value -> {
               columns.add(Fragment.lit("`new_values`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.longtext.opt(), value), Fragment.lit("")));
+                  interpolate(Fragment.encode(MariaTypes.json.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -177,14 +173,12 @@ public class AuditLogRepoImpl implements AuditLogRepo {
     ;
     return q.updateReturning(AuditLogRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<AuditLogFields, AuditLogRow> select() {
     return SelectBuilder.of(
-        "`audit_log`", AuditLogFields.structure(), AuditLogRow._rowParser, Dialect.MARIADB);
+        "`audit_log`", AuditLogFields.structure, AuditLogRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<AuditLogRow> selectAll(Connection c) {
@@ -196,7 +190,6 @@ public class AuditLogRepoImpl implements AuditLogRepo {
         .query(AuditLogRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<AuditLogRow> selectById(AuditLogId logId, Connection c) {
@@ -206,18 +199,17 @@ public class AuditLogRepoImpl implements AuditLogRepo {
                     + " `changed_by`, `changed_at`, `client_ip`, `session_id`\n"
                     + "from `audit_log`\n"
                     + "where `log_id` = "),
-            Fragment.encode(AuditLogId.pgType, logId),
+            Fragment.encode(AuditLogId.dbType, logId),
             Fragment.lit(""))
         .query(AuditLogRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<AuditLogRow> selectByIds(AuditLogId[] logIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : logIds) {
-      fragments.add(Fragment.encode(AuditLogId.pgType, id));
+      fragments.add(Fragment.encode(AuditLogId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -230,7 +222,6 @@ public class AuditLogRepoImpl implements AuditLogRepo {
         .query(AuditLogRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<AuditLogId, AuditLogRow> selectByIdsTracked(AuditLogId[] logIds, Connection c) {
@@ -238,14 +229,12 @@ public class AuditLogRepoImpl implements AuditLogRepo {
     selectByIds(logIds, c).forEach(row -> ret.put(row.logId(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<AuditLogFields, AuditLogRow> update() {
     return UpdateBuilder.of(
-        "`audit_log`", AuditLogFields.structure(), AuditLogRow._rowParser, Dialect.MARIADB);
+        "`audit_log`", AuditLogFields.structure, AuditLogRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(AuditLogRow row, Connection c) {
@@ -259,9 +248,9 @@ public class AuditLogRepoImpl implements AuditLogRepo {
                 Fragment.lit(",\n`action` = "),
                 Fragment.encode(MariaTypes.text, row.action()),
                 Fragment.lit(",\n`old_values` = "),
-                Fragment.encode(MariaTypes.longtext.opt(), row.oldValues()),
+                Fragment.encode(MariaTypes.json.opt(), row.oldValues()),
                 Fragment.lit(",\n`new_values` = "),
-                Fragment.encode(MariaTypes.longtext.opt(), row.newValues()),
+                Fragment.encode(MariaTypes.json.opt(), row.newValues()),
                 Fragment.lit(",\n`changed_by` = "),
                 Fragment.encode(MariaTypes.varchar.opt(), row.changedBy()),
                 Fragment.lit(",\n`changed_at` = "),
@@ -271,30 +260,32 @@ public class AuditLogRepoImpl implements AuditLogRepo {
                 Fragment.lit(",\n`session_id` = "),
                 Fragment.encode(MariaTypes.varbinary.opt(), row.sessionId()),
                 Fragment.lit("\nwhere `log_id` = "),
-                Fragment.encode(AuditLogId.pgType, logId),
+                Fragment.encode(AuditLogId.dbType, logId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public AuditLogRow upsert(AuditLogRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `audit_log`(`table_name`, `record_id`, `action`, `old_values`,"
-                    + " `new_values`, `changed_by`, `changed_at`, `client_ip`, `session_id`)\n"
+                "INSERT INTO `audit_log`(`log_id`, `table_name`, `record_id`, `action`,"
+                    + " `old_values`, `new_values`, `changed_by`, `changed_at`, `client_ip`,"
+                    + " `session_id`)\n"
                     + "VALUES ("),
+            Fragment.encode(AuditLogId.dbType, unsaved.logId()),
+            Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.tableName()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.recordId()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text, unsaved.action()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.oldValues()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.oldValues()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.longtext.opt(), unsaved.newValues()),
+            Fragment.encode(MariaTypes.json.opt(), unsaved.newValues()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar.opt(), unsaved.changedBy()),
             Fragment.lit(", "),
@@ -319,7 +310,6 @@ public class AuditLogRepoImpl implements AuditLogRepo {
         .updateReturning(AuditLogRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<AuditLogRow> upsertBatch(Iterator<AuditLogRow> unsaved, Connection c) {
@@ -343,5 +333,4 @@ public class AuditLogRepoImpl implements AuditLogRepo {
         .updateReturningEach(AuditLogRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple18;
+import dev.typr.foundations.data.Json;
 import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -37,7 +39,7 @@ public record ProductsRow(
     /** Default: NULL */
     @JsonProperty("weight_kg") Optional<BigDecimal> weightKg,
     /** length, width, height in cm Default: NULL */
-    @JsonProperty("dimensions_json") Optional<String> dimensionsJson,
+    @JsonProperty("dimensions_json") Optional<Json> dimensionsJson,
     /** Default: 'draft' */
     String status,
     /** Default: 'standard' */
@@ -45,15 +47,34 @@ public record ProductsRow(
     /** Default: NULL */
     Optional<MariaSet> tags,
     /** Default: NULL */
-    Optional<String> attributes,
+    Optional<Json> attributes,
     /** Default: NULL */
-    @JsonProperty("seo_metadata") Optional<String> seoMetadata,
+    @JsonProperty("seo_metadata") Optional<Json> seoMetadata,
     /** Default: current_timestamp(6) */
     @JsonProperty("created_at") LocalDateTime createdAt,
     /** Default: current_timestamp(6) */
     @JsonProperty("updated_at") LocalDateTime updatedAt,
     /** Default: NULL */
-    @JsonProperty("published_at") Optional<LocalDateTime> publishedAt) {
+    @JsonProperty("published_at") Optional<LocalDateTime> publishedAt)
+    implements Tuple18<
+        ProductsId,
+        String,
+        Optional<BrandsId>,
+        String,
+        Optional<String>,
+        Optional<String>,
+        BigDecimal,
+        Optional<BigDecimal>,
+        Optional<BigDecimal>,
+        Optional<Json>,
+        String,
+        String,
+        Optional<MariaSet>,
+        Optional<Json>,
+        Optional<Json>,
+        LocalDateTime,
+        LocalDateTime,
+        Optional<LocalDateTime>> {
   /** AUTO_INCREMENT */
   public ProductsRow withProductId(ProductsId productId) {
     return new ProductsRow(
@@ -271,7 +292,7 @@ public record ProductsRow(
   ;
 
   /** length, width, height in cm Default: NULL */
-  public ProductsRow withDimensionsJson(Optional<String> dimensionsJson) {
+  public ProductsRow withDimensionsJson(Optional<Json> dimensionsJson) {
     return new ProductsRow(
         productId,
         sku,
@@ -367,7 +388,7 @@ public record ProductsRow(
   ;
 
   /** Default: NULL */
-  public ProductsRow withAttributes(Optional<String> attributes) {
+  public ProductsRow withAttributes(Optional<Json> attributes) {
     return new ProductsRow(
         productId,
         sku,
@@ -391,7 +412,7 @@ public record ProductsRow(
   ;
 
   /** Default: NULL */
-  public ProductsRow withSeoMetadata(Optional<String> seoMetadata) {
+  public ProductsRow withSeoMetadata(Optional<Json> seoMetadata) {
     return new ProductsRow(
         productId,
         sku,
@@ -488,21 +509,21 @@ public record ProductsRow(
 
   public static RowParser<ProductsRow> _rowParser =
       RowParsers.of(
-          ProductsId.pgType,
+          ProductsId.dbType,
           MariaTypes.varchar,
-          BrandsId.pgType.opt(),
+          BrandsId.dbType.opt(),
           MariaTypes.varchar,
           MariaTypes.varchar.opt(),
           MariaTypes.longtext.opt(),
           MariaTypes.numeric,
           MariaTypes.numeric.opt(),
           MariaTypes.numeric.opt(),
-          MariaTypes.longtext.opt(),
+          MariaTypes.json.opt(),
           MariaTypes.text,
           MariaTypes.text,
           MariaTypes.set.opt(),
-          MariaTypes.longtext.opt(),
-          MariaTypes.longtext.opt(),
+          MariaTypes.json.opt(),
+          MariaTypes.json.opt(),
           MariaTypes.datetime,
           MariaTypes.datetime,
           MariaTypes.datetime.opt(),
@@ -530,6 +551,114 @@ public record ProductsRow(
               });
   ;
 
+  @Override
+  public ProductsId _1() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _10() {
+    return dimensionsJson;
+  }
+  ;
+
+  @Override
+  public String _11() {
+    return status;
+  }
+  ;
+
+  @Override
+  public String _12() {
+    return taxClass;
+  }
+  ;
+
+  @Override
+  public Optional<MariaSet> _13() {
+    return tags;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _14() {
+    return attributes;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _15() {
+    return seoMetadata;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _16() {
+    return createdAt;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _17() {
+    return updatedAt;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _18() {
+    return publishedAt;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return sku;
+  }
+  ;
+
+  @Override
+  public Optional<BrandsId> _3() {
+    return brandId;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return name;
+  }
+  ;
+
+  @Override
+  public Optional<String> _5() {
+    return shortDescription;
+  }
+  ;
+
+  @Override
+  public Optional<String> _6() {
+    return fullDescription;
+  }
+  ;
+
+  @Override
+  public BigDecimal _7() {
+    return basePrice;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _8() {
+    return costPrice;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _9() {
+    return weightKg;
+  }
+  ;
+
   public ProductsId id() {
     return productId;
   }
@@ -541,12 +670,12 @@ public record ProductsRow(
       Defaulted<Optional<String>> fullDescription,
       Defaulted<Optional<BigDecimal>> costPrice,
       Defaulted<Optional<BigDecimal>> weightKg,
-      Defaulted<Optional<String>> dimensionsJson,
+      Defaulted<Optional<Json>> dimensionsJson,
       Defaulted<String> status,
       Defaulted<String> taxClass,
       Defaulted<Optional<MariaSet>> tags,
-      Defaulted<Optional<String>> attributes,
-      Defaulted<Optional<String>> seoMetadata,
+      Defaulted<Optional<Json>> attributes,
+      Defaulted<Optional<Json>> seoMetadata,
       Defaulted<LocalDateTime> createdAt,
       Defaulted<LocalDateTime> updatedAt,
       Defaulted<Optional<LocalDateTime>> publishedAt) {

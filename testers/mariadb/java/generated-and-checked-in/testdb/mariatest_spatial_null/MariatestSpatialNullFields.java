@@ -7,12 +7,14 @@ package testdb.mariatest_spatial_null;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr9;
 import java.util.List;
 import java.util.Optional;
 import org.mariadb.jdbc.type.Geometry;
@@ -24,180 +26,199 @@ import org.mariadb.jdbc.type.MultiPolygon;
 import org.mariadb.jdbc.type.Point;
 import org.mariadb.jdbc.type.Polygon;
 
-public interface MariatestSpatialNullFields extends FieldsExpr<MariatestSpatialNullRow> {
-  record Impl(List<Path> _path)
-      implements MariatestSpatialNullFields,
-          RelationStructure<MariatestSpatialNullFields, MariatestSpatialNullRow> {
-    @Override
-    public IdField<MariatestSpatialNullId, MariatestSpatialNullRow> id() {
-      return new IdField<MariatestSpatialNullId, MariatestSpatialNullRow>(
-          _path,
-          "id",
-          MariatestSpatialNullRow::id,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withId(value),
-          MariatestSpatialNullId.pgType);
-    }
-    ;
+public class MariatestSpatialNullFields
+    implements TupleExpr9<
+            MariatestSpatialNullId,
+            Geometry,
+            Point,
+            LineString,
+            Polygon,
+            MultiPoint,
+            MultiLineString,
+            MultiPolygon,
+            GeometryCollection>,
+        RelationStructure<MariatestSpatialNullFields, MariatestSpatialNullRow>,
+        FieldsBase<MariatestSpatialNullRow> {
+  List<Path> _path;
 
-    @Override
-    public OptField<Geometry, MariatestSpatialNullRow> geometryCol() {
-      return new OptField<Geometry, MariatestSpatialNullRow>(
-          _path,
-          "geometry_col",
-          MariatestSpatialNullRow::geometryCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withGeometryCol(value),
-          MariaTypes.geometry);
-    }
-    ;
-
-    @Override
-    public OptField<Point, MariatestSpatialNullRow> pointCol() {
-      return new OptField<Point, MariatestSpatialNullRow>(
-          _path,
-          "point_col",
-          MariatestSpatialNullRow::pointCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPointCol(value),
-          MariaTypes.point);
-    }
-    ;
-
-    @Override
-    public OptField<LineString, MariatestSpatialNullRow> linestringCol() {
-      return new OptField<LineString, MariatestSpatialNullRow>(
-          _path,
-          "linestring_col",
-          MariatestSpatialNullRow::linestringCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withLinestringCol(value),
-          MariaTypes.linestring);
-    }
-    ;
-
-    @Override
-    public OptField<Polygon, MariatestSpatialNullRow> polygonCol() {
-      return new OptField<Polygon, MariatestSpatialNullRow>(
-          _path,
-          "polygon_col",
-          MariatestSpatialNullRow::polygonCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPolygonCol(value),
-          MariaTypes.polygon);
-    }
-    ;
-
-    @Override
-    public OptField<MultiPoint, MariatestSpatialNullRow> multipointCol() {
-      return new OptField<MultiPoint, MariatestSpatialNullRow>(
-          _path,
-          "multipoint_col",
-          MariatestSpatialNullRow::multipointCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withMultipointCol(value),
-          MariaTypes.multipoint);
-    }
-    ;
-
-    @Override
-    public OptField<MultiLineString, MariatestSpatialNullRow> multilinestringCol() {
-      return new OptField<MultiLineString, MariatestSpatialNullRow>(
-          _path,
-          "multilinestring_col",
-          MariatestSpatialNullRow::multilinestringCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withMultilinestringCol(value),
-          MariaTypes.multilinestring);
-    }
-    ;
-
-    @Override
-    public OptField<MultiPolygon, MariatestSpatialNullRow> multipolygonCol() {
-      return new OptField<MultiPolygon, MariatestSpatialNullRow>(
-          _path,
-          "multipolygon_col",
-          MariatestSpatialNullRow::multipolygonCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withMultipolygonCol(value),
-          MariaTypes.multipolygon);
-    }
-    ;
-
-    @Override
-    public OptField<GeometryCollection, MariatestSpatialNullRow> geometrycollectionCol() {
-      return new OptField<GeometryCollection, MariatestSpatialNullRow>(
-          _path,
-          "geometrycollection_col",
-          MariatestSpatialNullRow::geometrycollectionCol,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withGeometrycollectionCol(value),
-          MariaTypes.geometrycollection);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, MariatestSpatialNullRow>> columns() {
-      return java.util.List.of(
-          this.id(),
-          this.geometryCol(),
-          this.pointCol(),
-          this.linestringCol(),
-          this.polygonCol(),
-          this.multipointCol(),
-          this.multilinestringCol(),
-          this.multipolygonCol(),
-          this.geometrycollectionCol());
-    }
-    ;
-
-    @Override
-    public RelationStructure<MariatestSpatialNullFields, MariatestSpatialNullRow> withPaths(
-        List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public MariatestSpatialNullFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static MariatestSpatialNullFields structure =
+      new MariatestSpatialNullFields(java.util.Collections.emptyList());
+
+  public IdField<MariatestSpatialNullId, MariatestSpatialNullRow> id() {
+    return new IdField<MariatestSpatialNullId, MariatestSpatialNullRow>(
+        _path,
+        "id",
+        MariatestSpatialNullRow::id,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withId(value),
+        MariatestSpatialNullId.dbType);
   }
-  ;
 
-  IdField<MariatestSpatialNullId, MariatestSpatialNullRow> id();
+  public OptField<Geometry, MariatestSpatialNullRow> geometryCol() {
+    return new OptField<Geometry, MariatestSpatialNullRow>(
+        _path,
+        "geometry_col",
+        MariatestSpatialNullRow::geometryCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withGeometryCol(value),
+        MariaTypes.geometry);
+  }
 
-  OptField<Geometry, MariatestSpatialNullRow> geometryCol();
+  public OptField<Point, MariatestSpatialNullRow> pointCol() {
+    return new OptField<Point, MariatestSpatialNullRow>(
+        _path,
+        "point_col",
+        MariatestSpatialNullRow::pointCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPointCol(value),
+        MariaTypes.point);
+  }
 
-  OptField<Point, MariatestSpatialNullRow> pointCol();
+  public OptField<LineString, MariatestSpatialNullRow> linestringCol() {
+    return new OptField<LineString, MariatestSpatialNullRow>(
+        _path,
+        "linestring_col",
+        MariatestSpatialNullRow::linestringCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withLinestringCol(value),
+        MariaTypes.linestring);
+  }
 
-  OptField<LineString, MariatestSpatialNullRow> linestringCol();
+  public OptField<Polygon, MariatestSpatialNullRow> polygonCol() {
+    return new OptField<Polygon, MariatestSpatialNullRow>(
+        _path,
+        "polygon_col",
+        MariatestSpatialNullRow::polygonCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPolygonCol(value),
+        MariaTypes.polygon);
+  }
 
-  OptField<Polygon, MariatestSpatialNullRow> polygonCol();
+  public OptField<MultiPoint, MariatestSpatialNullRow> multipointCol() {
+    return new OptField<MultiPoint, MariatestSpatialNullRow>(
+        _path,
+        "multipoint_col",
+        MariatestSpatialNullRow::multipointCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withMultipointCol(value),
+        MariaTypes.multipoint);
+  }
 
-  OptField<MultiPoint, MariatestSpatialNullRow> multipointCol();
+  public OptField<MultiLineString, MariatestSpatialNullRow> multilinestringCol() {
+    return new OptField<MultiLineString, MariatestSpatialNullRow>(
+        _path,
+        "multilinestring_col",
+        MariatestSpatialNullRow::multilinestringCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withMultilinestringCol(value),
+        MariaTypes.multilinestring);
+  }
 
-  OptField<MultiLineString, MariatestSpatialNullRow> multilinestringCol();
+  public OptField<MultiPolygon, MariatestSpatialNullRow> multipolygonCol() {
+    return new OptField<MultiPolygon, MariatestSpatialNullRow>(
+        _path,
+        "multipolygon_col",
+        MariatestSpatialNullRow::multipolygonCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withMultipolygonCol(value),
+        MariaTypes.multipolygon);
+  }
 
-  OptField<MultiPolygon, MariatestSpatialNullRow> multipolygonCol();
-
-  OptField<GeometryCollection, MariatestSpatialNullRow> geometrycollectionCol();
+  public OptField<GeometryCollection, MariatestSpatialNullRow> geometrycollectionCol() {
+    return new OptField<GeometryCollection, MariatestSpatialNullRow>(
+        _path,
+        "geometrycollection_col",
+        MariatestSpatialNullRow::geometrycollectionCol,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withGeometrycollectionCol(value),
+        MariaTypes.geometrycollection);
+  }
 
   @Override
-  List<FieldLike<?, MariatestSpatialNullRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<MariatestSpatialNullRow> rowParser() {
+  public List<FieldLike<?, MariatestSpatialNullRow>> columns() {
+    return java.util.List.of(
+        this.id(),
+        this.geometryCol(),
+        this.pointCol(),
+        this.linestringCol(),
+        this.polygonCol(),
+        this.multipointCol(),
+        this.multilinestringCol(),
+        this.multipolygonCol(),
+        this.geometrycollectionCol());
+  }
+
+  @Override
+  public RowParser<MariatestSpatialNullRow> rowParser() {
     return MariatestSpatialNullRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<MariatestSpatialNullFields, MariatestSpatialNullRow> withPaths(
+      List<Path> _path) {
+    return new MariatestSpatialNullFields(_path);
+  }
+
+  @Override
+  public SqlExpr<MariatestSpatialNullId> _1() {
+    return id();
+  }
+
+  @Override
+  public SqlExpr<Geometry> _2() {
+    return geometryCol();
+  }
+
+  @Override
+  public SqlExpr<Point> _3() {
+    return pointCol();
+  }
+
+  @Override
+  public SqlExpr<LineString> _4() {
+    return linestringCol();
+  }
+
+  @Override
+  public SqlExpr<Polygon> _5() {
+    return polygonCol();
+  }
+
+  @Override
+  public SqlExpr<MultiPoint> _6() {
+    return multipointCol();
+  }
+
+  @Override
+  public SqlExpr<MultiLineString> _7() {
+    return multilinestringCol();
+  }
+
+  @Override
+  public SqlExpr<MultiPolygon> _8() {
+    return multipolygonCol();
+  }
+
+  @Override
+  public SqlExpr<GeometryCollection> _9() {
+    return geometrycollectionCol();
+  }
 }

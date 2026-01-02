@@ -2,7 +2,6 @@ package dev.typr.foundations.kotlin
 
 import dev.typr.foundations.dsl.DeleteBuilder as JavaDeleteBuilder
 import dev.typr.foundations.dsl.Structure
-import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.Dialect
 import dev.typr.foundations.Fragment
 import java.sql.Connection
@@ -20,7 +19,7 @@ class DeleteBuilder<Fields, Row> internal constructor(
      * Consecutive calls will be combined with AND.
      */
     fun where(predicate: (Fields) -> SqlExpr<Boolean>): DeleteBuilder<Fields, Row> {
-        return DeleteBuilder(javaBuilder.where(predicate))
+        return DeleteBuilder(javaBuilder.where { fields -> predicate(fields).underlying })
     }
 
     /**

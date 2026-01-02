@@ -6,7 +6,7 @@ package analysis
   *
   * Contract:
   *   - Unqualified names (no `.`) must be one of these primitives (case-insensitive)
-  *   - Qualified names (contains `.`) must be types that provide their own `pgType`/`mariaType` field
+  *   - Qualified names (contains `.`) must be types that provide their own `dbType` field
   */
 sealed abstract class WellKnownPrimitive(val name: String)
 

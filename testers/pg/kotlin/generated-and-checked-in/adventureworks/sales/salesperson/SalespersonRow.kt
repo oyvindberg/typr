@@ -10,6 +10,7 @@ import adventureworks.person.businessentity.BusinessentityId
 import adventureworks.sales.salesterritory.SalesterritoryId
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple9
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
@@ -58,7 +59,25 @@ data class SalespersonRow(
   val rowguid: UUID,
   /** Default: now() */
   val modifieddate: LocalDateTime
-) {
+) : Tuple9<BusinessentityId, SalesterritoryId?, BigDecimal?, BigDecimal, BigDecimal, BigDecimal, BigDecimal, UUID, LocalDateTime> {
+  override fun _1(): BusinessentityId = businessentityid
+
+  override fun _2(): SalesterritoryId? = territoryid
+
+  override fun _3(): BigDecimal? = salesquota
+
+  override fun _4(): BigDecimal = bonus
+
+  override fun _5(): BigDecimal = commissionpct
+
+  override fun _6(): BigDecimal = salesytd
+
+  override fun _7(): BigDecimal = saleslastyear
+
+  override fun _8(): UUID = rowguid
+
+  override fun _9(): LocalDateTime = modifieddate
+
   fun id(): BusinessentityId = businessentityid
 
   fun toUnsavedRow(
@@ -71,7 +90,7 @@ data class SalespersonRow(
   ): SalespersonRowUnsaved = SalespersonRowUnsaved(businessentityid, territoryid, salesquota, bonus, commissionpct, salesytd, saleslastyear, rowguid, modifieddate)
 
   companion object {
-    val _rowParser: RowParser<SalespersonRow> = RowParsers.of(BusinessentityId.pgType, SalesterritoryId.pgType.nullable(), PgTypes.numeric.nullable(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> SalespersonRow(t0, t1, t2, t3, t4, t5, t6, t7, t8) }, { row -> arrayOf<Any?>(row.businessentityid, row.territoryid, row.salesquota, row.bonus, row.commissionpct, row.salesytd, row.saleslastyear, row.rowguid, row.modifieddate) })
+    val _rowParser: RowParser<SalespersonRow> = RowParsers.of(BusinessentityId.dbType, SalesterritoryId.dbType.nullable(), PgTypes.numeric.nullable(), PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.numeric, PgTypes.uuid, PgTypes.timestamp, { t0, t1, t2, t3, t4, t5, t6, t7, t8 -> SalespersonRow(t0, t1, t2, t3, t4, t5, t6, t7, t8) }, { row -> arrayOf<Any?>(row.businessentityid, row.territoryid, row.salesquota, row.bonus, row.commissionpct, row.salesytd, row.saleslastyear, row.rowguid, row.modifieddate) })
 
     val pgText: PgText<SalespersonRow> =
       PgText.from(_rowParser.underlying)

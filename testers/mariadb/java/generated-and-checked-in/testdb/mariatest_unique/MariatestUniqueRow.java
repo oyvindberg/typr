@@ -8,6 +8,7 @@ package testdb.mariatest_unique;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 
 /** Table: mariatest_unique Primary key: id */
 public record MariatestUniqueRow(
@@ -18,7 +19,8 @@ public record MariatestUniqueRow(
     /** */
     String code,
     /** */
-    String category) {
+    String category)
+    implements Tuple4<MariatestUniqueId, String, String, String> {
   /** AUTO_INCREMENT */
   public MariatestUniqueRow withId(MariatestUniqueId id) {
     return new MariatestUniqueRow(id, email, code, category);
@@ -45,12 +47,36 @@ public record MariatestUniqueRow(
 
   public static RowParser<MariatestUniqueRow> _rowParser =
       RowParsers.of(
-          MariatestUniqueId.pgType,
+          MariatestUniqueId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariatestUniqueRow::new,
           row -> new Object[] {row.id(), row.email(), row.code(), row.category()});
+  ;
+
+  @Override
+  public MariatestUniqueId _1() {
+    return id;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return email;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return code;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return category;
+  }
   ;
 
   public MariatestUniqueRowUnsaved toUnsavedRow() {

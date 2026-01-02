@@ -11,6 +11,7 @@ import dev.typr.foundations.PgText;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -27,7 +28,8 @@ public record PasswordRow(
     /** Default: uuid_generate_v1() */
     UUID rowguid,
     /** Default: now() */
-    LocalDateTime modifieddate) {
+    LocalDateTime modifieddate)
+    implements Tuple5<BusinessentityId, String, String, UUID, LocalDateTime> {
   /** Points to {@link adventureworks.person.person.PersonRow#businessentityid()} */
   public PasswordRow withBusinessentityid(BusinessentityId businessentityid) {
     return new PasswordRow(businessentityid, passwordhash, passwordsalt, rowguid, modifieddate);
@@ -60,7 +62,7 @@ public record PasswordRow(
 
   public static RowParser<PasswordRow> _rowParser =
       RowParsers.of(
-          BusinessentityId.pgType,
+          BusinessentityId.dbType,
           PgTypes.text,
           PgTypes.text,
           PgTypes.uuid,
@@ -77,6 +79,36 @@ public record PasswordRow(
   ;
 
   public static PgText<PasswordRow> pgText = PgText.from(_rowParser);
+
+  @Override
+  public BusinessentityId _1() {
+    return businessentityid;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return passwordhash;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return passwordsalt;
+  }
+  ;
+
+  @Override
+  public UUID _4() {
+    return rowguid;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _5() {
+    return modifieddate;
+  }
+  ;
 
   public BusinessentityId id() {
     return businessentityid;

@@ -8,106 +8,114 @@ package adventureworks.person.addresstype;
 import adventureworks.public_.Name;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr4;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface AddresstypeFields extends FieldsExpr<AddresstypeRow> {
-  record Impl(List<Path> _path)
-      implements AddresstypeFields, RelationStructure<AddresstypeFields, AddresstypeRow> {
-    @Override
-    public IdField<AddresstypeId, AddresstypeRow> addresstypeid() {
-      return new IdField<AddresstypeId, AddresstypeRow>(
-          _path,
-          "addresstypeid",
-          AddresstypeRow::addresstypeid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withAddresstypeid(value),
-          AddresstypeId.pgType);
-    }
-    ;
+public class AddresstypeFields
+    implements TupleExpr4<AddresstypeId, Name, UUID, LocalDateTime>,
+        RelationStructure<AddresstypeFields, AddresstypeRow>,
+        FieldsBase<AddresstypeRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<Name, AddresstypeRow> name() {
-      return new Field<Name, AddresstypeRow>(
-          _path,
-          "name",
-          AddresstypeRow::name,
-          Optional.empty(),
-          Optional.of("varchar"),
-          (row, value) -> row.withName(value),
-          Name.pgType);
-    }
-    ;
-
-    @Override
-    public Field<UUID, AddresstypeRow> rowguid() {
-      return new Field<UUID, AddresstypeRow>(
-          _path,
-          "rowguid",
-          AddresstypeRow::rowguid,
-          Optional.empty(),
-          Optional.of("uuid"),
-          (row, value) -> row.withRowguid(value),
-          PgTypes.uuid);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, AddresstypeRow> modifieddate() {
-      return new Field<LocalDateTime, AddresstypeRow>(
-          _path,
-          "modifieddate",
-          AddresstypeRow::modifieddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withModifieddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, AddresstypeRow>> columns() {
-      return java.util.List.of(
-          this.addresstypeid(), this.name(), this.rowguid(), this.modifieddate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<AddresstypeFields, AddresstypeRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public AddresstypeFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static AddresstypeFields structure =
+      new AddresstypeFields(java.util.Collections.emptyList());
+
+  public IdField<AddresstypeId, AddresstypeRow> addresstypeid() {
+    return new IdField<AddresstypeId, AddresstypeRow>(
+        _path,
+        "addresstypeid",
+        AddresstypeRow::addresstypeid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withAddresstypeid(value),
+        AddresstypeId.dbType);
   }
-  ;
 
-  IdField<AddresstypeId, AddresstypeRow> addresstypeid();
+  public Field<Name, AddresstypeRow> name() {
+    return new Field<Name, AddresstypeRow>(
+        _path,
+        "name",
+        AddresstypeRow::name,
+        Optional.empty(),
+        Optional.of("varchar"),
+        (row, value) -> row.withName(value),
+        Name.dbType);
+  }
 
-  Field<Name, AddresstypeRow> name();
+  public Field<UUID, AddresstypeRow> rowguid() {
+    return new Field<UUID, AddresstypeRow>(
+        _path,
+        "rowguid",
+        AddresstypeRow::rowguid,
+        Optional.empty(),
+        Optional.of("uuid"),
+        (row, value) -> row.withRowguid(value),
+        PgTypes.uuid);
+  }
 
-  Field<UUID, AddresstypeRow> rowguid();
-
-  Field<LocalDateTime, AddresstypeRow> modifieddate();
+  public Field<LocalDateTime, AddresstypeRow> modifieddate() {
+    return new Field<LocalDateTime, AddresstypeRow>(
+        _path,
+        "modifieddate",
+        AddresstypeRow::modifieddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withModifieddate(value),
+        PgTypes.timestamp);
+  }
 
   @Override
-  List<FieldLike<?, AddresstypeRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<AddresstypeRow> rowParser() {
+  public List<FieldLike<?, AddresstypeRow>> columns() {
+    return java.util.List.of(
+        this.addresstypeid(), this.name(), this.rowguid(), this.modifieddate());
+  }
+
+  @Override
+  public RowParser<AddresstypeRow> rowParser() {
     return AddresstypeRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<AddresstypeFields, AddresstypeRow> withPaths(List<Path> _path) {
+    return new AddresstypeFields(_path);
+  }
+
+  @Override
+  public SqlExpr<AddresstypeId> _1() {
+    return addresstypeid();
+  }
+
+  @Override
+  public SqlExpr<Name> _2() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<UUID> _3() {
+    return rowguid();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _4() {
+    return modifieddate();
+  }
 }

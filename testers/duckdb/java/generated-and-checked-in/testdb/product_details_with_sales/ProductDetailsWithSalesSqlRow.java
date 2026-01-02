@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple9;
 import dev.typr.foundations.data.Json;
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -33,7 +34,17 @@ public record ProductDetailsWithSalesSqlRow(
     /** Points to {@link testdb.order_items.OrderItemsRow#unitPrice()} */
     @JsonProperty("total_revenue") Optional<Double> totalRevenue,
     /** Points to {@link testdb.order_items.OrderItemsRow#orderId()} */
-    Optional<String> popularity) {
+    Optional<String> popularity)
+    implements Tuple9<
+        ProductsId,
+        String,
+        String,
+        BigDecimal,
+        Optional<Json>,
+        Optional<Long>,
+        Optional<Long>,
+        Optional<Double>,
+        Optional<String>> {
   /** Points to {@link testdb.products.ProductsRow#productId()} */
   public ProductDetailsWithSalesSqlRow withProductId(ProductsId productId) {
     return new ProductDetailsWithSalesSqlRow(
@@ -193,5 +204,59 @@ public record ProductDetailsWithSalesSqlRow(
                 row.totalRevenue(),
                 row.popularity()
               });
+  ;
+
+  @Override
+  public ProductsId _1() {
+    return productId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return sku;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return name;
+  }
+  ;
+
+  @Override
+  public BigDecimal _4() {
+    return price;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _5() {
+    return metadata;
+  }
+  ;
+
+  @Override
+  public Optional<Long> _6() {
+    return timesOrdered;
+  }
+  ;
+
+  @Override
+  public Optional<Long> _7() {
+    return totalQuantitySold;
+  }
+  ;
+
+  @Override
+  public Optional<Double> _8() {
+    return totalRevenue;
+  }
+  ;
+
+  @Override
+  public Optional<String> _9() {
+    return popularity;
+  }
   ;
 }

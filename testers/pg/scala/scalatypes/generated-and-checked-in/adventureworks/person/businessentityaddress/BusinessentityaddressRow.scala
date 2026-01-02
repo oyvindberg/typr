@@ -11,6 +11,7 @@ import adventureworks.person.addresstype.AddresstypeId
 import adventureworks.person.businessentity.BusinessentityId
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple5
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import java.time.LocalDateTime
@@ -37,7 +38,7 @@ case class BusinessentityaddressRow(
   rowguid: UUID,
   /** Default: now() */
   modifieddate: LocalDateTime
-) {
+) extends Tuple5[BusinessentityId, AddressId, AddresstypeId, UUID, LocalDateTime] {
   def compositeId: BusinessentityaddressId = new BusinessentityaddressId(businessentityid, addressid, addresstypeid)
 
   def id: BusinessentityaddressId = this.compositeId
@@ -54,10 +55,20 @@ case class BusinessentityaddressRow(
       modifieddate
     )
   }
+
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: AddressId = addressid
+
+  override def `_3`: AddresstypeId = addresstypeid
+
+  override def `_4`: UUID = rowguid
+
+  override def `_5`: LocalDateTime = modifieddate
 }
 
 object BusinessentityaddressRow {
-  val `_rowParser`: RowParser[BusinessentityaddressRow] = RowParsers.of(BusinessentityId.pgType, AddressId.pgType, AddresstypeId.pgType, PgTypes.uuid, PgTypes.timestamp)(BusinessentityaddressRow.apply)(row => Array[Any](row.businessentityid, row.addressid, row.addresstypeid, row.rowguid, row.modifieddate))
+  val `_rowParser`: RowParser[BusinessentityaddressRow] = RowParsers.of(BusinessentityId.dbType, AddressId.dbType, AddresstypeId.dbType, PgTypes.uuid, PgTypes.timestamp)(BusinessentityaddressRow.apply)(row => Array[Any](row.businessentityid, row.addressid, row.addresstypeid, row.rowguid, row.modifieddate))
 
   def apply(
     compositeId: BusinessentityaddressId,

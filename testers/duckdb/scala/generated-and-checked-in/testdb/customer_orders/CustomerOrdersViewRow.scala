@@ -7,6 +7,7 @@ package testdb.customer_orders
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.DuckDbTypes
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -22,7 +23,21 @@ case class CustomerOrdersViewRow(
   @JsonProperty("order_date") orderDate: Option[LocalDate],
   @JsonProperty("total_amount") totalAmount: Option[BigDecimal],
   status: Option[String]
-)
+) extends Tuple7[Option[Int], Option[String], Option[String], Option[Int], Option[LocalDate], Option[BigDecimal], Option[String]] {
+  override def `_1`: Option[Int] = customerId
+
+  override def `_2`: Option[String] = customerName
+
+  override def `_3`: Option[String] = email
+
+  override def `_4`: Option[Int] = orderId
+
+  override def `_5`: Option[LocalDate] = orderDate
+
+  override def `_6`: Option[BigDecimal] = totalAmount
+
+  override def `_7`: Option[String] = status
+}
 
 object CustomerOrdersViewRow {
   val `_rowParser`: RowParser[CustomerOrdersViewRow] = RowParsers.of(ScalaDbTypes.DuckDbTypes.integer.nullable, DuckDbTypes.varchar.nullable, DuckDbTypes.varchar.nullable, ScalaDbTypes.DuckDbTypes.integer.nullable, DuckDbTypes.date.nullable, ScalaDbTypes.DuckDbTypes.numeric.nullable, DuckDbTypes.varchar.nullable)(CustomerOrdersViewRow.apply)(row => Array[Any](row.customerId, row.customerName, row.email, row.orderId, row.orderDate, row.totalAmount, row.status))

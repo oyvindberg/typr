@@ -12,6 +12,7 @@ import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple15
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Optional
@@ -74,7 +75,7 @@ case class EmployeeRow(
    * Default: '/'::character varying
    */
   organizationnode: Optional[String]
-) {
+) extends Tuple15[BusinessentityId, String, String, String, LocalDate, String, String, LocalDate, Flag, java.lang.Short, java.lang.Short, Flag, UUID, LocalDateTime, Optional[String]] {
   def id: BusinessentityId = businessentityid
 
   def toUnsavedRow(
@@ -104,10 +105,40 @@ case class EmployeeRow(
       organizationnode
     )
   }
+
+  override def `_1`: BusinessentityId = businessentityid
+
+  override def `_2`: String = nationalidnumber
+
+  override def `_3`: String = loginid
+
+  override def `_4`: String = jobtitle
+
+  override def `_5`: LocalDate = birthdate
+
+  override def `_6`: String = maritalstatus
+
+  override def `_7`: String = gender
+
+  override def `_8`: LocalDate = hiredate
+
+  override def `_9`: Flag = salariedflag
+
+  override def `_10`: java.lang.Short = vacationhours
+
+  override def `_11`: java.lang.Short = sickleavehours
+
+  override def `_12`: Flag = currentflag
+
+  override def `_13`: UUID = rowguid
+
+  override def `_14`: LocalDateTime = modifieddate
+
+  override def `_15`: Optional[String] = organizationnode
 }
 
 object EmployeeRow {
-  val `_rowParser`: RowParser[EmployeeRow] = RowParsers.of(BusinessentityId.pgType, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.date, PgTypes.bpchar, PgTypes.bpchar, PgTypes.date, Flag.pgType, PgTypes.int2, PgTypes.int2, Flag.pgType, PgTypes.uuid, PgTypes.timestamp, PgTypes.text.opt(), EmployeeRow.apply, row => Array[Any](row.businessentityid, row.nationalidnumber, row.loginid, row.jobtitle, row.birthdate, row.maritalstatus, row.gender, row.hiredate, row.salariedflag, row.vacationhours, row.sickleavehours, row.currentflag, row.rowguid, row.modifieddate, row.organizationnode))
+  val `_rowParser`: RowParser[EmployeeRow] = RowParsers.of(BusinessentityId.dbType, PgTypes.text, PgTypes.text, PgTypes.text, PgTypes.date, PgTypes.bpchar, PgTypes.bpchar, PgTypes.date, Flag.dbType, PgTypes.int2, PgTypes.int2, Flag.dbType, PgTypes.uuid, PgTypes.timestamp, PgTypes.text.opt(), EmployeeRow.apply, row => Array[Any](row.businessentityid, row.nationalidnumber, row.loginid, row.jobtitle, row.birthdate, row.maritalstatus, row.gender, row.hiredate, row.salariedflag, row.vacationhours, row.sickleavehours, row.currentflag, row.rowguid, row.modifieddate, row.organizationnode))
 
   given pgText: PgText[EmployeeRow] = PgText.from(`_rowParser`)
 }

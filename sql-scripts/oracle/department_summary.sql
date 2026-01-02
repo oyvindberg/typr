@@ -1,0 +1,11 @@
+-- Get department summary with employee count
+SELECT
+    d.dept_code,
+    d.dept_region,
+    d.dept_name,
+    d.budget,
+    COUNT(e.emp_number) as employee_count
+FROM departments d
+LEFT JOIN employees e ON d.dept_code = e.dept_code AND d.dept_region = e.dept_region
+GROUP BY d.dept_code, d.dept_region, d.dept_name, d.budget
+ORDER BY d.dept_code, d.dept_region

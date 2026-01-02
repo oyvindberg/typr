@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.OracleTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import oracledb.AddressT;
@@ -23,7 +24,8 @@ public record CustomersRow(
     @JsonProperty("BILLING_ADDRESS") AddressT billingAddress,
     @JsonProperty("CREDIT_LIMIT") Optional<MoneyT> creditLimit,
     /** Default: SYSTIMESTAMP */
-    @JsonProperty("CREATED_AT") LocalDateTime createdAt) {
+    @JsonProperty("CREATED_AT") LocalDateTime createdAt)
+    implements Tuple5<CustomersId, String, AddressT, Optional<MoneyT>, LocalDateTime> {
   /** Default: "TYPR"."ISEQ$$_72843".nextval */
   public CustomersRow withCustomerId(CustomersId customerId) {
     return new CustomersRow(customerId, name, billingAddress, creditLimit, createdAt);
@@ -67,6 +69,36 @@ public record CustomersRow(
                 row.creditLimit(),
                 row.createdAt()
               });
+  ;
+
+  @Override
+  public CustomersId _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public AddressT _3() {
+    return billingAddress;
+  }
+  ;
+
+  @Override
+  public Optional<MoneyT> _4() {
+    return creditLimit;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _5() {
+    return createdAt;
+  }
   ;
 
   public CustomersId id() {

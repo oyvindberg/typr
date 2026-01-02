@@ -7,6 +7,8 @@ package testdb.products
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple18
+import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
@@ -54,7 +56,7 @@ case class ProductsRow(
   /** length, width, height in cm
    * Default: NULL
    */
-  @JsonProperty("dimensions_json") dimensionsJson: Option[String],
+  @JsonProperty("dimensions_json") dimensionsJson: Option[Json],
   /** 
    * Default: 'draft'
    */
@@ -70,11 +72,11 @@ case class ProductsRow(
   /** 
    * Default: NULL
    */
-  attributes: Option[String],
+  attributes: Option[Json],
   /** 
    * Default: NULL
    */
-  @JsonProperty("seo_metadata") seoMetadata: Option[String],
+  @JsonProperty("seo_metadata") seoMetadata: Option[Json],
   /** 
    * Default: current_timestamp(6)
    */
@@ -87,7 +89,7 @@ case class ProductsRow(
    * Default: NULL
    */
   @JsonProperty("published_at") publishedAt: Option[LocalDateTime]
-) {
+) extends Tuple18[ProductsId, String, Option[BrandsId], String, Option[String], Option[String], BigDecimal, Option[BigDecimal], Option[BigDecimal], Option[Json], String, String, Option[MariaSet], Option[Json], Option[Json], LocalDateTime, LocalDateTime, Option[LocalDateTime]] {
   def id: ProductsId = productId
 
   def toUnsavedRow(
@@ -96,12 +98,12 @@ case class ProductsRow(
     fullDescription: Defaulted[Option[String]] = Defaulted.Provided(this.fullDescription),
     costPrice: Defaulted[Option[BigDecimal]] = Defaulted.Provided(this.costPrice),
     weightKg: Defaulted[Option[BigDecimal]] = Defaulted.Provided(this.weightKg),
-    dimensionsJson: Defaulted[Option[String]] = Defaulted.Provided(this.dimensionsJson),
+    dimensionsJson: Defaulted[Option[Json]] = Defaulted.Provided(this.dimensionsJson),
     status: Defaulted[String] = Defaulted.Provided(this.status),
     taxClass: Defaulted[String] = Defaulted.Provided(this.taxClass),
     tags: Defaulted[Option[MariaSet]] = Defaulted.Provided(this.tags),
-    attributes: Defaulted[Option[String]] = Defaulted.Provided(this.attributes),
-    seoMetadata: Defaulted[Option[String]] = Defaulted.Provided(this.seoMetadata),
+    attributes: Defaulted[Option[Json]] = Defaulted.Provided(this.attributes),
+    seoMetadata: Defaulted[Option[Json]] = Defaulted.Provided(this.seoMetadata),
     createdAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.createdAt),
     updatedAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.updatedAt),
     publishedAt: Defaulted[Option[LocalDateTime]] = Defaulted.Provided(this.publishedAt)
@@ -126,8 +128,44 @@ case class ProductsRow(
       publishedAt
     )
   }
+
+  override def `_1`: ProductsId = productId
+
+  override def `_2`: String = sku
+
+  override def `_3`: Option[BrandsId] = brandId
+
+  override def `_4`: String = name
+
+  override def `_5`: Option[String] = shortDescription
+
+  override def `_6`: Option[String] = fullDescription
+
+  override def `_7`: BigDecimal = basePrice
+
+  override def `_8`: Option[BigDecimal] = costPrice
+
+  override def `_9`: Option[BigDecimal] = weightKg
+
+  override def `_10`: Option[Json] = dimensionsJson
+
+  override def `_11`: String = status
+
+  override def `_12`: String = taxClass
+
+  override def `_13`: Option[MariaSet] = tags
+
+  override def `_14`: Option[Json] = attributes
+
+  override def `_15`: Option[Json] = seoMetadata
+
+  override def `_16`: LocalDateTime = createdAt
+
+  override def `_17`: LocalDateTime = updatedAt
+
+  override def `_18`: Option[LocalDateTime] = publishedAt
 }
 
 object ProductsRow {
-  val `_rowParser`: RowParser[ProductsRow] = RowParsers.of(ProductsId.pgType, MariaTypes.varchar, BrandsId.pgType.nullable, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.longtext.nullable, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, MariaTypes.longtext.nullable, MariaTypes.text, MariaTypes.text, MariaTypes.set.nullable, MariaTypes.longtext.nullable, MariaTypes.longtext.nullable, MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable)(ProductsRow.apply)(row => Array[Any](row.productId, row.sku, row.brandId, row.name, row.shortDescription, row.fullDescription, row.basePrice, row.costPrice, row.weightKg, row.dimensionsJson, row.status, row.taxClass, row.tags, row.attributes, row.seoMetadata, row.createdAt, row.updatedAt, row.publishedAt))
+  val `_rowParser`: RowParser[ProductsRow] = RowParsers.of(ProductsId.dbType, MariaTypes.varchar, BrandsId.dbType.nullable, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.longtext.nullable, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, MariaTypes.json.nullable, MariaTypes.text, MariaTypes.text, MariaTypes.set.nullable, MariaTypes.json.nullable, MariaTypes.json.nullable, MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable)(ProductsRow.apply)(row => Array[Any](row.productId, row.sku, row.brandId, row.name, row.shortDescription, row.fullDescription, row.basePrice, row.costPrice, row.weightKg, row.dimensionsJson, row.status, row.taxClass, row.tags, row.attributes, row.seoMetadata, row.createdAt, row.updatedAt, row.publishedAt))
 }

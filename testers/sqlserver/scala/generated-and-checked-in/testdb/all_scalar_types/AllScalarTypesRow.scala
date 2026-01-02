@@ -9,6 +9,11 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.microsoft.sqlserver.jdbc.Geography
 import com.microsoft.sqlserver.jdbc.Geometry
 import dev.typr.foundations.SqlServerTypes
+import dev.typr.foundations.Tuple.Tuple38
+import dev.typr.foundations.data.HierarchyId
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Xml
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -26,7 +31,7 @@ import testdb.customtypes.Defaulted
 case class AllScalarTypesRow(
   /** IDENTITY(1, 1) */
   id: AllScalarTypesId,
-  @JsonProperty("col_tinyint") colTinyint: Option[Short],
+  @JsonProperty("col_tinyint") colTinyint: Option[Uint1],
   @JsonProperty("col_smallint") colSmallint: Option[Short],
   @JsonProperty("col_int") colInt: Option[Int],
   @JsonProperty("col_bigint") colBigint: Option[Long],
@@ -56,16 +61,16 @@ case class AllScalarTypesRow(
   @JsonProperty("col_datetime2") colDatetime2: Option[LocalDateTime],
   @JsonProperty("col_datetimeoffset") colDatetimeoffset: Option[OffsetDateTime],
   @JsonProperty("col_uniqueidentifier") colUniqueidentifier: Option[UUID],
-  @JsonProperty("col_xml") colXml: Option[/* XML */ String],
-  @JsonProperty("col_json") colJson: Option[String],
+  @JsonProperty("col_xml") colXml: Option[Xml],
+  @JsonProperty("col_json") colJson: Option[Json],
   /** ROWVERSION */
   @JsonProperty("col_rowversion") colRowversion: Array[Byte],
-  @JsonProperty("col_hierarchyid") colHierarchyid: Option[/* HIERARCHYID */ String],
+  @JsonProperty("col_hierarchyid") colHierarchyid: Option[HierarchyId],
   @JsonProperty("col_geography") colGeography: Option[Geography],
   @JsonProperty("col_geometry") colGeometry: Option[Geometry],
   /** Default: ('default_value') */
   @JsonProperty("col_not_null") colNotNull: String
-) {
+) extends Tuple38[AllScalarTypesId, Option[Uint1], Option[Short], Option[Int], Option[Long], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[Float], Option[Double], Option[Boolean], Option[String], Option[String], Option[String], Option[String], Option[String], Option[String], Option[String], Option[String], Option[Array[Byte]], Option[Array[Byte]], Option[Array[Byte]], Option[Array[Byte]], Option[LocalDate], Option[LocalTime], Option[LocalDateTime], Option[LocalDateTime], Option[LocalDateTime], Option[OffsetDateTime], Option[UUID], Option[Xml], Option[Json], Array[Byte], Option[HierarchyId], Option[Geography], Option[Geometry], String] {
   def toUnsavedRow(colNotNull: Defaulted[String] = Defaulted.Provided(this.colNotNull)): AllScalarTypesRowUnsaved = {
     new AllScalarTypesRowUnsaved(
       colTinyint,
@@ -106,8 +111,84 @@ case class AllScalarTypesRow(
       colNotNull
     )
   }
+
+  override def `_1`: AllScalarTypesId = id
+
+  override def `_2`: Option[Uint1] = colTinyint
+
+  override def `_3`: Option[Short] = colSmallint
+
+  override def `_4`: Option[Int] = colInt
+
+  override def `_5`: Option[Long] = colBigint
+
+  override def `_6`: Option[BigDecimal] = colDecimal
+
+  override def `_7`: Option[BigDecimal] = colNumeric
+
+  override def `_8`: Option[BigDecimal] = colMoney
+
+  override def `_9`: Option[BigDecimal] = colSmallmoney
+
+  override def `_10`: Option[Float] = colReal
+
+  override def `_11`: Option[Double] = colFloat
+
+  override def `_12`: Option[Boolean] = colBit
+
+  override def `_13`: Option[String] = colChar
+
+  override def `_14`: Option[String] = colVarchar
+
+  override def `_15`: Option[String] = colVarcharMax
+
+  override def `_16`: Option[String] = colText
+
+  override def `_17`: Option[String] = colNchar
+
+  override def `_18`: Option[String] = colNvarchar
+
+  override def `_19`: Option[String] = colNvarcharMax
+
+  override def `_20`: Option[String] = colNtext
+
+  override def `_21`: Option[Array[Byte]] = colBinary
+
+  override def `_22`: Option[Array[Byte]] = colVarbinary
+
+  override def `_23`: Option[Array[Byte]] = colVarbinaryMax
+
+  override def `_24`: Option[Array[Byte]] = colImage
+
+  override def `_25`: Option[LocalDate] = colDate
+
+  override def `_26`: Option[LocalTime] = colTime
+
+  override def `_27`: Option[LocalDateTime] = colDatetime
+
+  override def `_28`: Option[LocalDateTime] = colSmalldatetime
+
+  override def `_29`: Option[LocalDateTime] = colDatetime2
+
+  override def `_30`: Option[OffsetDateTime] = colDatetimeoffset
+
+  override def `_31`: Option[UUID] = colUniqueidentifier
+
+  override def `_32`: Option[Xml] = colXml
+
+  override def `_33`: Option[Json] = colJson
+
+  override def `_34`: Array[Byte] = colRowversion
+
+  override def `_35`: Option[HierarchyId] = colHierarchyid
+
+  override def `_36`: Option[Geography] = colGeography
+
+  override def `_37`: Option[Geometry] = colGeometry
+
+  override def `_38`: String = colNotNull
 }
 
 object AllScalarTypesRow {
-  val `_rowParser`: RowParser[AllScalarTypesRow] = RowParsers.of(AllScalarTypesId.sqlServerType, ScalaDbTypes.SqlServerTypes.tinyint.nullable, ScalaDbTypes.SqlServerTypes.smallint.nullable, ScalaDbTypes.SqlServerTypes.int_.nullable, ScalaDbTypes.SqlServerTypes.bigint.nullable, ScalaDbTypes.SqlServerTypes.decimal.nullable, ScalaDbTypes.SqlServerTypes.decimal.nullable, ScalaDbTypes.SqlServerTypes.money.nullable, ScalaDbTypes.SqlServerTypes.smallmoney.nullable, ScalaDbTypes.SqlServerTypes.real.nullable, ScalaDbTypes.SqlServerTypes.float_.nullable, ScalaDbTypes.SqlServerTypes.bit.nullable, SqlServerTypes.char_.nullable, SqlServerTypes.varchar.nullable, SqlServerTypes.varchar.nullable, SqlServerTypes.text.nullable, SqlServerTypes.nchar.nullable, SqlServerTypes.nvarchar.nullable, SqlServerTypes.nvarchar.nullable, SqlServerTypes.ntext.nullable, SqlServerTypes.binary.nullable, SqlServerTypes.varbinary.nullable, SqlServerTypes.varbinary.nullable, SqlServerTypes.image.nullable, SqlServerTypes.date.nullable, SqlServerTypes.time.nullable, SqlServerTypes.datetime.nullable, SqlServerTypes.smalldatetime.nullable, SqlServerTypes.datetime2.nullable, SqlServerTypes.datetimeoffset.nullable, SqlServerTypes.uniqueidentifier.nullable, SqlServerTypes.xml.nullable, SqlServerTypes.nvarchar.nullable, SqlServerTypes.rowversion, SqlServerTypes.hierarchyid.nullable, SqlServerTypes.geography.nullable, SqlServerTypes.geometry.nullable, SqlServerTypes.nvarchar)(AllScalarTypesRow.apply)(row => Array[Any](row.id, row.colTinyint, row.colSmallint, row.colInt, row.colBigint, row.colDecimal, row.colNumeric, row.colMoney, row.colSmallmoney, row.colReal, row.colFloat, row.colBit, row.colChar, row.colVarchar, row.colVarcharMax, row.colText, row.colNchar, row.colNvarchar, row.colNvarcharMax, row.colNtext, row.colBinary, row.colVarbinary, row.colVarbinaryMax, row.colImage, row.colDate, row.colTime, row.colDatetime, row.colSmalldatetime, row.colDatetime2, row.colDatetimeoffset, row.colUniqueidentifier, row.colXml, row.colJson, row.colRowversion, row.colHierarchyid, row.colGeography, row.colGeometry, row.colNotNull))
+  val `_rowParser`: RowParser[AllScalarTypesRow] = RowParsers.of(AllScalarTypesId.sqlServerType, SqlServerTypes.tinyint.nullable, ScalaDbTypes.SqlServerTypes.smallint.nullable, ScalaDbTypes.SqlServerTypes.int_.nullable, ScalaDbTypes.SqlServerTypes.bigint.nullable, ScalaDbTypes.SqlServerTypes.decimal.nullable, ScalaDbTypes.SqlServerTypes.decimal.nullable, ScalaDbTypes.SqlServerTypes.money.nullable, ScalaDbTypes.SqlServerTypes.smallmoney.nullable, ScalaDbTypes.SqlServerTypes.real.nullable, ScalaDbTypes.SqlServerTypes.float_.nullable, ScalaDbTypes.SqlServerTypes.bit.nullable, SqlServerTypes.char_.nullable, SqlServerTypes.varchar.nullable, SqlServerTypes.varchar.nullable, SqlServerTypes.text.nullable, SqlServerTypes.nchar.nullable, SqlServerTypes.nvarchar.nullable, SqlServerTypes.nvarchar.nullable, SqlServerTypes.ntext.nullable, SqlServerTypes.binary.nullable, SqlServerTypes.varbinary.nullable, SqlServerTypes.varbinary.nullable, SqlServerTypes.image.nullable, SqlServerTypes.date.nullable, SqlServerTypes.time.nullable, SqlServerTypes.datetime.nullable, SqlServerTypes.smalldatetime.nullable, SqlServerTypes.datetime2.nullable, SqlServerTypes.datetimeoffset.nullable, SqlServerTypes.uniqueidentifier.nullable, SqlServerTypes.xml.nullable, SqlServerTypes.json.nullable, SqlServerTypes.rowversion, SqlServerTypes.hierarchyid.nullable, SqlServerTypes.geography.nullable, SqlServerTypes.geometry.nullable, SqlServerTypes.nvarchar)(AllScalarTypesRow.apply)(row => Array[Any](row.id, row.colTinyint, row.colSmallint, row.colInt, row.colBigint, row.colDecimal, row.colNumeric, row.colMoney, row.colSmallmoney, row.colReal, row.colFloat, row.colBit, row.colChar, row.colVarchar, row.colVarcharMax, row.colText, row.colNchar, row.colNvarchar, row.colNvarcharMax, row.colNtext, row.colBinary, row.colVarbinary, row.colVarbinaryMax, row.colImage, row.colDate, row.colTime, row.colDatetime, row.colSmalldatetime, row.colDatetime2, row.colDatetimeoffset, row.colUniqueidentifier, row.colXml, row.colJson, row.colRowversion, row.colHierarchyid, row.colGeography, row.colGeometry, row.colNotNull))
 }

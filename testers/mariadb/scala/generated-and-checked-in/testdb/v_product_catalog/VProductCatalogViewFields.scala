@@ -8,182 +8,179 @@ package testdb.v_product_catalog
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.data.maria.MariaSet
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.scala.RelationStructure
 import dev.typr.foundations.scala.ScalaDbTypes
+import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.OptField
+import dev.typr.foundations.scala.TupleExpr11
 import testdb.products.ProductsId
 
-trait VProductCatalogViewFields extends FieldsExpr0[VProductCatalogViewRow] {
-  def productId: Field[ProductsId, VProductCatalogViewRow]
+class VProductCatalogViewFields(val `_path`: java.util.List[Path]) extends TupleExpr11[ProductsId, String, String, String, BigDecimal, String, MariaSet, String, BigDecimal, BigDecimal, Long] with RelationStructure[VProductCatalogViewFields, VProductCatalogViewRow]  with FieldsBase[VProductCatalogViewRow] {
+  def productId: Field[ProductsId, VProductCatalogViewRow] = {
+    new Field[ProductsId, VProductCatalogViewRow](
+      _path,
+      "product_id",
+      _.productId,
+      None,
+      None,
+      (row, value) => row.copy(productId = value),
+      ProductsId.dbType
+    )
+  }
 
-  def sku: Field[String, VProductCatalogViewRow]
+  def sku: Field[String, VProductCatalogViewRow] = {
+    new Field[String, VProductCatalogViewRow](
+      _path,
+      "sku",
+      _.sku,
+      None,
+      None,
+      (row, value) => row.copy(sku = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def name: Field[String, VProductCatalogViewRow]
+  def name: Field[String, VProductCatalogViewRow] = {
+    new Field[String, VProductCatalogViewRow](
+      _path,
+      "name",
+      _.name,
+      None,
+      None,
+      (row, value) => row.copy(name = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def shortDescription: OptField[String, VProductCatalogViewRow]
+  def shortDescription: OptField[String, VProductCatalogViewRow] = {
+    new OptField[String, VProductCatalogViewRow](
+      _path,
+      "short_description",
+      _.shortDescription,
+      None,
+      None,
+      (row, value) => row.copy(shortDescription = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def basePrice: Field[BigDecimal, VProductCatalogViewRow]
+  def basePrice: Field[BigDecimal, VProductCatalogViewRow] = {
+    new Field[BigDecimal, VProductCatalogViewRow](
+      _path,
+      "base_price",
+      _.basePrice,
+      None,
+      None,
+      (row, value) => row.copy(basePrice = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def status: Field[String, VProductCatalogViewRow]
+  def status: Field[String, VProductCatalogViewRow] = {
+    new Field[String, VProductCatalogViewRow](
+      _path,
+      "status",
+      _.status,
+      None,
+      None,
+      (row, value) => row.copy(status = value),
+      MariaTypes.text
+    )
+  }
 
-  def tags: OptField[MariaSet, VProductCatalogViewRow]
+  def tags: OptField[MariaSet, VProductCatalogViewRow] = {
+    new OptField[MariaSet, VProductCatalogViewRow](
+      _path,
+      "tags",
+      _.tags,
+      None,
+      None,
+      (row, value) => row.copy(tags = value),
+      MariaTypes.set
+    )
+  }
 
-  def brandName: OptField[String, VProductCatalogViewRow]
+  def brandName: OptField[String, VProductCatalogViewRow] = {
+    new OptField[String, VProductCatalogViewRow](
+      _path,
+      "brand_name",
+      _.brandName,
+      None,
+      None,
+      (row, value) => row.copy(brandName = value),
+      MariaTypes.varchar
+    )
+  }
 
-  def availableQuantity: Field[BigDecimal, VProductCatalogViewRow]
+  def availableQuantity: Field[BigDecimal, VProductCatalogViewRow] = {
+    new Field[BigDecimal, VProductCatalogViewRow](
+      _path,
+      "available_quantity",
+      _.availableQuantity,
+      None,
+      None,
+      (row, value) => row.copy(availableQuantity = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def avgRating: Field[BigDecimal, VProductCatalogViewRow]
+  def avgRating: Field[BigDecimal, VProductCatalogViewRow] = {
+    new Field[BigDecimal, VProductCatalogViewRow](
+      _path,
+      "avg_rating",
+      _.avgRating,
+      None,
+      None,
+      (row, value) => row.copy(avgRating = value),
+      ScalaDbTypes.MariaTypes.numeric
+    )
+  }
 
-  def reviewCount: Field[Long, VProductCatalogViewRow]
+  def reviewCount: Field[Long, VProductCatalogViewRow] = {
+    new Field[Long, VProductCatalogViewRow](
+      _path,
+      "review_count",
+      _.reviewCount,
+      None,
+      None,
+      (row, value) => row.copy(reviewCount = value),
+      ScalaDbTypes.MariaTypes.bigint
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, VProductCatalogViewRow]]
+  override def columns: java.util.List[FieldLike[?, VProductCatalogViewRow]] = java.util.List.of(this.productId.underlying, this.sku.underlying, this.name.underlying, this.shortDescription.underlying, this.basePrice.underlying, this.status.underlying, this.tags.underlying, this.brandName.underlying, this.availableQuantity.underlying, this.avgRating.underlying, this.reviewCount.underlying)
 
   override def rowParser: RowParser[VProductCatalogViewRow] = VProductCatalogViewRow._rowParser.underlying
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[VProductCatalogViewFields, VProductCatalogViewRow] = new VProductCatalogViewFields(`_path`)
+
+  override def `_1`: SqlExpr[ProductsId] = productId
+
+  override def `_2`: SqlExpr[String] = sku
+
+  override def `_3`: SqlExpr[String] = name
+
+  override def `_4`: SqlExpr[String] = shortDescription
+
+  override def `_5`: SqlExpr[BigDecimal] = basePrice
+
+  override def `_6`: SqlExpr[String] = status
+
+  override def `_7`: SqlExpr[MariaSet] = tags
+
+  override def `_8`: SqlExpr[String] = brandName
+
+  override def `_9`: SqlExpr[BigDecimal] = availableQuantity
+
+  override def `_10`: SqlExpr[BigDecimal] = avgRating
+
+  override def `_11`: SqlExpr[Long] = reviewCount
 }
 
 object VProductCatalogViewFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends VProductCatalogViewFields with RelationStructure[VProductCatalogViewFields, VProductCatalogViewRow] {
-
-    override def productId: Field[ProductsId, VProductCatalogViewRow] = {
-      new Field[ProductsId, VProductCatalogViewRow](
-        _path,
-        "product_id",
-        _.productId,
-        None,
-        None,
-        (row, value) => row.copy(productId = value),
-        ProductsId.pgType
-      )
-    }
-
-    override def sku: Field[String, VProductCatalogViewRow] = {
-      new Field[String, VProductCatalogViewRow](
-        _path,
-        "sku",
-        _.sku,
-        None,
-        None,
-        (row, value) => row.copy(sku = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def name: Field[String, VProductCatalogViewRow] = {
-      new Field[String, VProductCatalogViewRow](
-        _path,
-        "name",
-        _.name,
-        None,
-        None,
-        (row, value) => row.copy(name = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def shortDescription: OptField[String, VProductCatalogViewRow] = {
-      new OptField[String, VProductCatalogViewRow](
-        _path,
-        "short_description",
-        _.shortDescription,
-        None,
-        None,
-        (row, value) => row.copy(shortDescription = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def basePrice: Field[BigDecimal, VProductCatalogViewRow] = {
-      new Field[BigDecimal, VProductCatalogViewRow](
-        _path,
-        "base_price",
-        _.basePrice,
-        None,
-        None,
-        (row, value) => row.copy(basePrice = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def status: Field[String, VProductCatalogViewRow] = {
-      new Field[String, VProductCatalogViewRow](
-        _path,
-        "status",
-        _.status,
-        None,
-        None,
-        (row, value) => row.copy(status = value),
-        MariaTypes.text
-      )
-    }
-
-    override def tags: OptField[MariaSet, VProductCatalogViewRow] = {
-      new OptField[MariaSet, VProductCatalogViewRow](
-        _path,
-        "tags",
-        _.tags,
-        None,
-        None,
-        (row, value) => row.copy(tags = value),
-        MariaTypes.set
-      )
-    }
-
-    override def brandName: OptField[String, VProductCatalogViewRow] = {
-      new OptField[String, VProductCatalogViewRow](
-        _path,
-        "brand_name",
-        _.brandName,
-        None,
-        None,
-        (row, value) => row.copy(brandName = value),
-        MariaTypes.varchar
-      )
-    }
-
-    override def availableQuantity: Field[BigDecimal, VProductCatalogViewRow] = {
-      new Field[BigDecimal, VProductCatalogViewRow](
-        _path,
-        "available_quantity",
-        _.availableQuantity,
-        None,
-        None,
-        (row, value) => row.copy(availableQuantity = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def avgRating: Field[BigDecimal, VProductCatalogViewRow] = {
-      new Field[BigDecimal, VProductCatalogViewRow](
-        _path,
-        "avg_rating",
-        _.avgRating,
-        None,
-        None,
-        (row, value) => row.copy(avgRating = value),
-        ScalaDbTypes.MariaTypes.numeric
-      )
-    }
-
-    override def reviewCount: Field[Long, VProductCatalogViewRow] = {
-      new Field[Long, VProductCatalogViewRow](
-        _path,
-        "review_count",
-        _.reviewCount,
-        None,
-        None,
-        (row, value) => row.copy(reviewCount = value),
-        ScalaDbTypes.MariaTypes.bigint
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, VProductCatalogViewRow]] = java.util.List.of(this.productId.underlying, this.sku.underlying, this.name.underlying, this.shortDescription.underlying, this.basePrice.underlying, this.status.underlying, this.tags.underlying, this.brandName.underlying, this.availableQuantity.underlying, this.avgRating.underlying, this.reviewCount.underlying)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[VProductCatalogViewFields, VProductCatalogViewRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: VProductCatalogViewFields = new VProductCatalogViewFields(java.util.Collections.emptyList())
 }

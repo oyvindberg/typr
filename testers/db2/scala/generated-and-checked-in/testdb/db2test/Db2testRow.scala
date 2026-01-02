@@ -7,6 +7,8 @@ package testdb.db2test
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.Db2Types
+import dev.typr.foundations.Tuple.Tuple24
+import dev.typr.foundations.data.Xml
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
@@ -41,11 +43,59 @@ case class Db2testRow(
   @JsonProperty("TIMESTAMP_COL") timestampCol: LocalDateTime,
   @JsonProperty("TIMESTAMP6_COL") timestamp6Col: LocalDateTime,
   @JsonProperty("TIMESTAMP12_COL") timestamp12Col: LocalDateTime,
-  @JsonProperty("XML_COL") xmlCol: String
-) {
+  @JsonProperty("XML_COL") xmlCol: Xml
+) extends Tuple24[Short, Db2testId, Long, BigDecimal, BigDecimal, BigDecimal, BigDecimal, Float, Double, Boolean, String, String, String, String, String, Array[Byte], Array[Byte], Array[Byte], LocalDate, LocalTime, LocalDateTime, LocalDateTime, LocalDateTime, Xml] {
   def id: Db2testId = intCol
+
+  override def `_1`: Short = smallintCol
+
+  override def `_2`: Db2testId = intCol
+
+  override def `_3`: Long = bigintCol
+
+  override def `_4`: BigDecimal = decimalCol
+
+  override def `_5`: BigDecimal = numericCol
+
+  override def `_6`: BigDecimal = decfloat16Col
+
+  override def `_7`: BigDecimal = decfloat34Col
+
+  override def `_8`: Float = realCol
+
+  override def `_9`: Double = doubleCol
+
+  override def `_10`: Boolean = boolCol
+
+  override def `_11`: String = charCol
+
+  override def `_12`: String = varcharCol
+
+  override def `_13`: String = clobCol
+
+  override def `_14`: String = graphicCol
+
+  override def `_15`: String = vargraphicCol
+
+  override def `_16`: Array[Byte] = binaryCol
+
+  override def `_17`: Array[Byte] = varbinaryCol
+
+  override def `_18`: Array[Byte] = blobCol
+
+  override def `_19`: LocalDate = dateCol
+
+  override def `_20`: LocalTime = timeCol
+
+  override def `_21`: LocalDateTime = timestampCol
+
+  override def `_22`: LocalDateTime = timestamp6Col
+
+  override def `_23`: LocalDateTime = timestamp12Col
+
+  override def `_24`: Xml = xmlCol
 }
 
 object Db2testRow {
-  val `_rowParser`: RowParser[Db2testRow] = RowParsers.of(ScalaDbTypes.Db2Types.smallint, Db2testId.pgType, ScalaDbTypes.Db2Types.bigint, ScalaDbTypes.Db2Types.decimal, ScalaDbTypes.Db2Types.decimal, ScalaDbTypes.Db2Types.decfloat, ScalaDbTypes.Db2Types.decfloat, ScalaDbTypes.Db2Types.real, ScalaDbTypes.Db2Types.double_, ScalaDbTypes.Db2Types.boolean_, Db2Types.char_, Db2Types.varchar, Db2Types.clob, Db2Types.graphic, Db2Types.vargraphic, Db2Types.binary, Db2Types.varbinary, Db2Types.blob, Db2Types.date, Db2Types.time, Db2Types.timestamp, Db2Types.timestamp, Db2Types.timestamp, Db2Types.xml)(Db2testRow.apply)(row => Array[Any](row.smallintCol, row.intCol, row.bigintCol, row.decimalCol, row.numericCol, row.decfloat16Col, row.decfloat34Col, row.realCol, row.doubleCol, row.boolCol, row.charCol, row.varcharCol, row.clobCol, row.graphicCol, row.vargraphicCol, row.binaryCol, row.varbinaryCol, row.blobCol, row.dateCol, row.timeCol, row.timestampCol, row.timestamp6Col, row.timestamp12Col, row.xmlCol))
+  val `_rowParser`: RowParser[Db2testRow] = RowParsers.of(ScalaDbTypes.Db2Types.smallint, Db2testId.dbType, ScalaDbTypes.Db2Types.bigint, ScalaDbTypes.Db2Types.decimal, ScalaDbTypes.Db2Types.decimal, ScalaDbTypes.Db2Types.decfloat, ScalaDbTypes.Db2Types.decfloat, ScalaDbTypes.Db2Types.real, ScalaDbTypes.Db2Types.double_, ScalaDbTypes.Db2Types.boolean_, Db2Types.char_, Db2Types.varchar, Db2Types.clob, Db2Types.graphic, Db2Types.vargraphic, Db2Types.binary, Db2Types.varbinary, Db2Types.blob, Db2Types.date, Db2Types.time, Db2Types.timestamp, Db2Types.timestamp, Db2Types.timestamp, Db2Types.xml)(Db2testRow.apply)(row => Array[Any](row.smallintCol, row.intCol, row.bigintCol, row.decimalCol, row.numericCol, row.decfloat16Col, row.decfloat34Col, row.realCol, row.doubleCol, row.boolCol, row.charCol, row.varcharCol, row.clobCol, row.graphicCol, row.vargraphicCol, row.binaryCol, row.varbinaryCol, row.blobCol, row.dateCol, row.timeCol, row.timestampCol, row.timestamp6Col, row.timestamp12Col, row.xmlCol))
 }

@@ -9,10 +9,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.DuckDbTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple2;
 
 /** Type for the composite primary key of table `order_items` */
 public record OrderItemsId(
-    @JsonProperty("order_id") Integer orderId, @JsonProperty("product_id") Integer productId) {
+    @JsonProperty("order_id") Integer orderId, @JsonProperty("product_id") Integer productId)
+    implements Tuple2<Integer, Integer> {
   public OrderItemsId withOrderId(Integer orderId) {
     return new OrderItemsId(orderId, productId);
   }
@@ -29,5 +31,17 @@ public record OrderItemsId(
           DuckDbTypes.integer,
           OrderItemsId::new,
           row -> new Object[] {row.orderId(), row.productId()});
+  ;
+
+  @Override
+  public Integer _1() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public Integer _2() {
+    return productId;
+  }
   ;
 }

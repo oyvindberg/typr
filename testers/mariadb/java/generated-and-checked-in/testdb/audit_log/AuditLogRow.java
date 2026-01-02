@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple10;
+import dev.typr.foundations.data.Json;
 import dev.typr.foundations.data.maria.Inet6;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -25,9 +27,9 @@ public record AuditLogRow(
     /** */
     String action,
     /** Default: NULL */
-    @JsonProperty("old_values") Optional<String> oldValues,
+    @JsonProperty("old_values") Optional<Json> oldValues,
     /** Default: NULL */
-    @JsonProperty("new_values") Optional<String> newValues,
+    @JsonProperty("new_values") Optional<Json> newValues,
     /** Default: NULL */
     @JsonProperty("changed_by") Optional<String> changedBy,
     /** Default: current_timestamp(6) */
@@ -35,7 +37,18 @@ public record AuditLogRow(
     /** Default: NULL */
     @JsonProperty("client_ip") Optional<Inet6> clientIp,
     /** Default: NULL */
-    @JsonProperty("session_id") Optional<byte[]> sessionId) {
+    @JsonProperty("session_id") Optional<byte[]> sessionId)
+    implements Tuple10<
+        AuditLogId,
+        String,
+        String,
+        String,
+        Optional<Json>,
+        Optional<Json>,
+        Optional<String>,
+        LocalDateTime,
+        Optional<Inet6>,
+        Optional<byte[]>> {
   /** AUTO_INCREMENT */
   public AuditLogRow withLogId(AuditLogId logId) {
     return new AuditLogRow(
@@ -69,7 +82,7 @@ public record AuditLogRow(
   ;
 
   /** Default: NULL */
-  public AuditLogRow withOldValues(Optional<String> oldValues) {
+  public AuditLogRow withOldValues(Optional<Json> oldValues) {
     return new AuditLogRow(
         logId, tableName, recordId, action, oldValues, newValues, changedBy, changedAt, clientIp,
         sessionId);
@@ -77,7 +90,7 @@ public record AuditLogRow(
   ;
 
   /** Default: NULL */
-  public AuditLogRow withNewValues(Optional<String> newValues) {
+  public AuditLogRow withNewValues(Optional<Json> newValues) {
     return new AuditLogRow(
         logId, tableName, recordId, action, oldValues, newValues, changedBy, changedAt, clientIp,
         sessionId);
@@ -118,12 +131,12 @@ public record AuditLogRow(
 
   public static RowParser<AuditLogRow> _rowParser =
       RowParsers.of(
-          AuditLogId.pgType,
+          AuditLogId.dbType,
           MariaTypes.varchar,
           MariaTypes.varchar,
           MariaTypes.text,
-          MariaTypes.longtext.opt(),
-          MariaTypes.longtext.opt(),
+          MariaTypes.json.opt(),
+          MariaTypes.json.opt(),
           MariaTypes.varchar.opt(),
           MariaTypes.datetime,
           MariaTypes.inet6.opt(),
@@ -144,14 +157,74 @@ public record AuditLogRow(
               });
   ;
 
+  @Override
+  public AuditLogId _1() {
+    return logId;
+  }
+  ;
+
+  @Override
+  public Optional<byte[]> _10() {
+    return sessionId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return tableName;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return recordId;
+  }
+  ;
+
+  @Override
+  public String _4() {
+    return action;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _5() {
+    return oldValues;
+  }
+  ;
+
+  @Override
+  public Optional<Json> _6() {
+    return newValues;
+  }
+  ;
+
+  @Override
+  public Optional<String> _7() {
+    return changedBy;
+  }
+  ;
+
+  @Override
+  public LocalDateTime _8() {
+    return changedAt;
+  }
+  ;
+
+  @Override
+  public Optional<Inet6> _9() {
+    return clientIp;
+  }
+  ;
+
   public AuditLogId id() {
     return logId;
   }
   ;
 
   public AuditLogRowUnsaved toUnsavedRow(
-      Defaulted<Optional<String>> oldValues,
-      Defaulted<Optional<String>> newValues,
+      Defaulted<Optional<Json>> oldValues,
+      Defaulted<Optional<Json>> newValues,
       Defaulted<Optional<String>> changedBy,
       Defaulted<LocalDateTime> changedAt,
       Defaulted<Optional<Inet6>> clientIp,

@@ -7,6 +7,7 @@ package oracledb.customer_products
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
+import dev.typr.foundations.Tuple.Tuple6
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -22,7 +23,19 @@ case class CustomerProductsViewRow(
   @JsonProperty("PRODUCT_ID") productId: BigDecimal,
   @JsonProperty("PRODUCT_NAME") productName: String,
   @JsonProperty("PRICE") price: Option[MoneyT]
-)
+) extends Tuple6[BigDecimal, String, Option[AddressT], BigDecimal, String, Option[MoneyT]] {
+  override def `_1`: BigDecimal = customerId
+
+  override def `_2`: String = customerName
+
+  override def `_3`: Option[AddressT] = billingAddress
+
+  override def `_4`: BigDecimal = productId
+
+  override def `_5`: String = productName
+
+  override def `_6`: Option[MoneyT] = price
+}
 
 object CustomerProductsViewRow {
   val `_rowParser`: RowParser[CustomerProductsViewRow] = RowParsers.of(ScalaDbTypes.OracleTypes.number, OracleTypes.varchar2, AddressT.oracleType.nullable, ScalaDbTypes.OracleTypes.number, OracleTypes.varchar2, MoneyT.oracleType.nullable)(CustomerProductsViewRow.apply)(row => Array[Any](row.customerId, row.customerName, row.billingAddress, row.productId, row.productName, row.price))

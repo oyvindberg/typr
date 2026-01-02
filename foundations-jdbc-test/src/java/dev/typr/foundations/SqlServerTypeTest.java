@@ -63,9 +63,12 @@ public class SqlServerTypeTest {
   List<SqlServerTypeAndExample<?>> All =
       List.of(
           // ==================== Integer Types ====================
-          new SqlServerTypeAndExample<>(SqlServerTypes.tinyint, (short) 127),
-          new SqlServerTypeAndExample<>(SqlServerTypes.tinyint, (short) 0),
-          new SqlServerTypeAndExample<>(SqlServerTypes.tinyint, (short) 255),
+          new SqlServerTypeAndExample<>(
+              SqlServerTypes.tinyint, new dev.typr.foundations.data.Uint1((short) 127)),
+          new SqlServerTypeAndExample<>(
+              SqlServerTypes.tinyint, new dev.typr.foundations.data.Uint1((short) 0)),
+          new SqlServerTypeAndExample<>(
+              SqlServerTypes.tinyint, new dev.typr.foundations.data.Uint1((short) 255)),
           new SqlServerTypeAndExample<>(SqlServerTypes.smallint, (short) 32767),
           new SqlServerTypeAndExample<>(SqlServerTypes.smallint, Short.MIN_VALUE),
           new SqlServerTypeAndExample<>(SqlServerTypes.smallint, Short.MAX_VALUE),
@@ -165,10 +168,36 @@ public class SqlServerTypeTest {
               UUID.fromString("550e8400-e29b-41d4-a716-446655440000")),
           new SqlServerTypeAndExample<>(SqlServerTypes.uniqueidentifier, UUID.randomUUID())
               .noIdentity(),
-          new SqlServerTypeAndExample<>(SqlServerTypes.xml, "<root><item>value</item></root>")
+          new SqlServerTypeAndExample<>(
+                  SqlServerTypes.xml,
+                  new dev.typr.foundations.data.Xml("<root><item>value</item></root>"))
               .noIdentity()
               .noJsonDbRoundtrip(),
-          new SqlServerTypeAndExample<>(SqlServerTypes.hierarchyid, "/1/2/3/").noIdentity(),
+          // HIERARCHYID - can't use identity check (= operator) and JSON DB doesn't work
+          // because our Java encoder produces different bytes than SQL Server's encoder.
+          // JDBC roundtrip works when SQL Server parses the path string.
+          new SqlServerTypeAndExample<>(
+                  SqlServerTypes.hierarchyid, dev.typr.foundations.data.HierarchyId.parse("/"))
+              .noIdentity()
+              .noJsonDbRoundtrip(),
+          new SqlServerTypeAndExample<>(
+                  SqlServerTypes.hierarchyid, dev.typr.foundations.data.HierarchyId.parse("/1/"))
+              .noIdentity()
+              .noJsonDbRoundtrip(),
+          new SqlServerTypeAndExample<>(
+                  SqlServerTypes.hierarchyid, dev.typr.foundations.data.HierarchyId.parse("/1/2/"))
+              .noIdentity()
+              .noJsonDbRoundtrip(),
+          new SqlServerTypeAndExample<>(
+                  SqlServerTypes.hierarchyid,
+                  dev.typr.foundations.data.HierarchyId.parse("/1/2/3/"))
+              .noIdentity()
+              .noJsonDbRoundtrip(),
+          new SqlServerTypeAndExample<>(
+                  SqlServerTypes.hierarchyid,
+                  dev.typr.foundations.data.HierarchyId.parse("/1/1/1/1/"))
+              .noIdentity()
+              .noJsonDbRoundtrip(),
 
           // ==================== Spatial Types ====================
           // Spatial types cannot use = operator, and FOR JSON cannot serialize CLR objects

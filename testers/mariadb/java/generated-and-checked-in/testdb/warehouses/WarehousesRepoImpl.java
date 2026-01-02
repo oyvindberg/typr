@@ -24,27 +24,25 @@ import java.util.Optional;
 public class WarehousesRepoImpl implements WarehousesRepo {
   @Override
   public DeleteBuilder<WarehousesFields, WarehousesRow> delete() {
-    return DeleteBuilder.of("`warehouses`", WarehousesFields.structure(), Dialect.MARIADB);
+    return DeleteBuilder.of("`warehouses`", WarehousesFields.structure, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean deleteById(WarehousesId warehouseId, Connection c) {
     return interpolate(
                 Fragment.lit("delete from `warehouses` where `warehouse_id` = "),
-                Fragment.encode(WarehousesId.pgType, warehouseId),
+                Fragment.encode(WarehousesId.dbType, warehouseId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(WarehousesId[] warehouseIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : warehouseIds) {
-      fragments.add(Fragment.encode(WarehousesId.pgType, id));
+      fragments.add(Fragment.encode(WarehousesId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -54,7 +52,6 @@ public class WarehousesRepoImpl implements WarehousesRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public WarehousesRow insert(WarehousesRow unsaved, Connection c) {
@@ -88,7 +85,6 @@ public class WarehousesRepoImpl implements WarehousesRepo {
         .updateReturning(WarehousesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public WarehousesRow insert(WarehousesRowUnsaved unsaved, Connection c) {
@@ -168,14 +164,12 @@ public class WarehousesRepoImpl implements WarehousesRepo {
     ;
     return q.updateReturning(WarehousesRow._rowParser.exactlyOne()).runUnchecked(c);
   }
-  ;
 
   @Override
   public SelectBuilder<WarehousesFields, WarehousesRow> select() {
     return SelectBuilder.of(
-        "`warehouses`", WarehousesFields.structure(), WarehousesRow._rowParser, Dialect.MARIADB);
+        "`warehouses`", WarehousesFields.structure, WarehousesRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public List<WarehousesRow> selectAll(Connection c) {
@@ -187,7 +181,6 @@ public class WarehousesRepoImpl implements WarehousesRepo {
         .query(WarehousesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<WarehousesRow> selectById(WarehousesId warehouseId, Connection c) {
@@ -197,18 +190,17 @@ public class WarehousesRepoImpl implements WarehousesRepo {
                     + " `timezone`, `is_active`, `contact_email`, `contact_phone`\n"
                     + "from `warehouses`\n"
                     + "where `warehouse_id` = "),
-            Fragment.encode(WarehousesId.pgType, warehouseId),
+            Fragment.encode(WarehousesId.dbType, warehouseId),
             Fragment.lit(""))
         .query(WarehousesRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<WarehousesRow> selectByIds(WarehousesId[] warehouseIds, Connection c) {
     ArrayList<Fragment> fragments = new ArrayList<>();
     for (var id : warehouseIds) {
-      fragments.add(Fragment.encode(WarehousesId.pgType, id));
+      fragments.add(Fragment.encode(WarehousesId.dbType, id));
     }
     ;
     return Fragment.interpolate(
@@ -221,7 +213,6 @@ public class WarehousesRepoImpl implements WarehousesRepo {
         .query(WarehousesRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<WarehousesId, WarehousesRow> selectByIdsTracked(
@@ -230,7 +221,6 @@ public class WarehousesRepoImpl implements WarehousesRepo {
     selectByIds(warehouseIds, c).forEach(row -> ret.put(row.warehouseId(), row));
     return ret;
   }
-  ;
 
   @Override
   public Optional<WarehousesRow> selectByUniqueCode(String code, Connection c) {
@@ -245,14 +235,12 @@ public class WarehousesRepoImpl implements WarehousesRepo {
         .query(WarehousesRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public UpdateBuilder<WarehousesFields, WarehousesRow> update() {
     return UpdateBuilder.of(
-        "`warehouses`", WarehousesFields.structure(), WarehousesRow._rowParser, Dialect.MARIADB);
+        "`warehouses`", WarehousesFields.structure, WarehousesRow._rowParser, Dialect.MARIADB);
   }
-  ;
 
   @Override
   public Boolean update(WarehousesRow row, Connection c) {
@@ -278,21 +266,23 @@ public class WarehousesRepoImpl implements WarehousesRepo {
                 Fragment.lit(",\n`contact_phone` = "),
                 Fragment.encode(MariaTypes.varchar.opt(), row.contactPhone()),
                 Fragment.lit("\nwhere `warehouse_id` = "),
-                Fragment.encode(WarehousesId.pgType, warehouseId),
+                Fragment.encode(WarehousesId.dbType, warehouseId),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public WarehousesRow upsert(WarehousesRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit(
-                "INSERT INTO `warehouses`(`code`, `name`, `address`, `location`, `service_area`,"
-                    + " `timezone`, `is_active`, `contact_email`, `contact_phone`)\n"
+                "INSERT INTO `warehouses`(`warehouse_id`, `code`, `name`, `address`, `location`,"
+                    + " `service_area`, `timezone`, `is_active`, `contact_email`,"
+                    + " `contact_phone`)\n"
                     + "VALUES ("),
+            Fragment.encode(WarehousesId.dbType, unsaved.warehouseId()),
+            Fragment.lit(", "),
             Fragment.encode(MariaTypes.char_, unsaved.code()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.varchar, unsaved.name()),
@@ -326,7 +316,6 @@ public class WarehousesRepoImpl implements WarehousesRepo {
         .updateReturning(WarehousesRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<WarehousesRow> upsertBatch(Iterator<WarehousesRow> unsaved, Connection c) {
@@ -350,5 +339,4 @@ public class WarehousesRepoImpl implements WarehousesRepo {
         .updateReturningEach(WarehousesRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 }

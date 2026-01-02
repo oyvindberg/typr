@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple5;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -26,7 +27,8 @@ public record OrdersRow(
     /** Total monetary value of the order */
     @JsonProperty("TOTAL_AMOUNT") Optional<BigDecimal> totalAmount,
     /** Default: 'pending' */
-    @JsonProperty("STATUS") Optional<String> status) {
+    @JsonProperty("STATUS") Optional<String> status)
+    implements Tuple5<OrdersId, CustomersId, LocalDate, Optional<BigDecimal>, Optional<String>> {
   /** Unique order identifier Identity ALWAYS */
   public OrdersRow withOrderId(OrdersId orderId) {
     return new OrdersRow(orderId, customerId, orderDate, totalAmount, status);
@@ -59,8 +61,8 @@ public record OrdersRow(
 
   public static RowParser<OrdersRow> _rowParser =
       RowParsers.of(
-          OrdersId.pgType,
-          CustomersId.pgType,
+          OrdersId.dbType,
+          CustomersId.dbType,
           Db2Types.date,
           Db2Types.decimal.opt(),
           Db2Types.varchar.opt(),
@@ -69,6 +71,36 @@ public record OrdersRow(
               new Object[] {
                 row.orderId(), row.customerId(), row.orderDate(), row.totalAmount(), row.status()
               });
+  ;
+
+  @Override
+  public OrdersId _1() {
+    return orderId;
+  }
+  ;
+
+  @Override
+  public CustomersId _2() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public LocalDate _3() {
+    return orderDate;
+  }
+  ;
+
+  @Override
+  public Optional<BigDecimal> _4() {
+    return totalAmount;
+  }
+  ;
+
+  @Override
+  public Optional<String> _5() {
+    return status;
+  }
   ;
 
   public OrdersId id() {

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.Db2Types;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
@@ -25,7 +26,8 @@ public record CustomersRow(
     /** Email address used for contact and login */
     @JsonProperty("EMAIL") String email,
     /** Default: CURRENT TIMESTAMP */
-    @JsonProperty("CREATED_AT") Optional<LocalDateTime> createdAt) {
+    @JsonProperty("CREATED_AT") Optional<LocalDateTime> createdAt)
+    implements Tuple4<CustomersId, String, String, Optional<LocalDateTime>> {
   /** Unique identifier for the customer Identity BY DEFAULT */
   public CustomersRow withCustomerId(CustomersId customerId) {
     return new CustomersRow(customerId, name, email, createdAt);
@@ -52,12 +54,36 @@ public record CustomersRow(
 
   public static RowParser<CustomersRow> _rowParser =
       RowParsers.of(
-          CustomersId.pgType,
+          CustomersId.dbType,
           Db2Types.varchar,
           Db2Types.varchar,
           Db2Types.timestamp.opt(),
           CustomersRow::new,
           row -> new Object[] {row.customerId(), row.name(), row.email(), row.createdAt()});
+  ;
+
+  @Override
+  public CustomersId _1() {
+    return customerId;
+  }
+  ;
+
+  @Override
+  public String _2() {
+    return name;
+  }
+  ;
+
+  @Override
+  public String _3() {
+    return email;
+  }
+  ;
+
+  @Override
+  public Optional<LocalDateTime> _4() {
+    return createdAt;
+  }
   ;
 
   public CustomersId id() {

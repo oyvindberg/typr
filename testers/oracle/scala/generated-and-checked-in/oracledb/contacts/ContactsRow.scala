@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.OracleTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.RowParsers
+import dev.typr.foundations.Tuple.Tuple4
 import java.util.Optional
 import oracledb.EmailTableT
 import oracledb.TagVarrayT
@@ -23,7 +24,7 @@ case class ContactsRow(
   @JsonProperty("NAME") name: String,
   @JsonProperty("EMAILS") emails: Optional[EmailTableT],
   @JsonProperty("TAGS") tags: Optional[TagVarrayT]
-) {
+) extends Tuple4[ContactsId, String, Optional[EmailTableT], Optional[TagVarrayT]] {
   def id: ContactsId = contactId
 
   def toUnsavedRow(contactId: Defaulted[ContactsId]): ContactsRowUnsaved = {
@@ -34,6 +35,14 @@ case class ContactsRow(
       contactId
     )
   }
+
+  override def `_1`: ContactsId = contactId
+
+  override def `_2`: String = name
+
+  override def `_3`: Optional[EmailTableT] = emails
+
+  override def `_4`: Optional[TagVarrayT] = tags
 }
 
 object ContactsRow {

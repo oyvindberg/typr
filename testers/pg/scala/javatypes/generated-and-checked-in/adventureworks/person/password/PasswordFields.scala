@@ -10,102 +10,99 @@ import adventureworks.person.person.PersonFields
 import adventureworks.person.person.PersonRow
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.ForeignKey
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
+import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
 
-trait PasswordFields extends FieldsExpr0[PasswordRow] {
-  def businessentityid: IdField[BusinessentityId, PasswordRow]
+class PasswordFields(val `_path`: java.util.List[Path]) extends TupleExpr5[BusinessentityId, String, String, UUID, LocalDateTime] with RelationStructure[PasswordFields, PasswordRow]  with FieldsBase[PasswordRow] {
+  def businessentityid: IdField[BusinessentityId, PasswordRow] = {
+    new IdField[BusinessentityId, PasswordRow](
+      _path,
+      "businessentityid",
+      _.businessentityid,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(businessentityid = value),
+      BusinessentityId.dbType
+    )
+  }
 
-  def passwordhash: Field[String, PasswordRow]
+  def passwordhash: Field[String, PasswordRow] = {
+    new Field[String, PasswordRow](
+      _path,
+      "passwordhash",
+      _.passwordhash,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(passwordhash = value),
+      PgTypes.text
+    )
+  }
 
-  def passwordsalt: Field[String, PasswordRow]
+  def passwordsalt: Field[String, PasswordRow] = {
+    new Field[String, PasswordRow](
+      _path,
+      "passwordsalt",
+      _.passwordsalt,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(passwordsalt = value),
+      PgTypes.text
+    )
+  }
 
-  def rowguid: Field[UUID, PasswordRow]
+  def rowguid: Field[UUID, PasswordRow] = {
+    new Field[UUID, PasswordRow](
+      _path,
+      "rowguid",
+      _.rowguid,
+      Optional.empty(),
+      Optional.of("uuid"),
+      (row, value) => row.copy(rowguid = value),
+      PgTypes.uuid
+    )
+  }
 
-  def modifieddate: Field[LocalDateTime, PasswordRow]
+  def modifieddate: Field[LocalDateTime, PasswordRow] = {
+    new Field[LocalDateTime, PasswordRow](
+      _path,
+      "modifieddate",
+      _.modifieddate,
+      Optional.empty(),
+      Optional.of("timestamp"),
+      (row, value) => row.copy(modifieddate = value),
+      PgTypes.timestamp
+    )
+  }
 
   def fkPerson: ForeignKey[PersonFields, PersonRow] = ForeignKey.of[PersonFields, PersonRow]("person.FK_Password_Person_BusinessEntityID").withColumnPair[BusinessentityId](businessentityid, _.businessentityid)
 
-  override def columns: java.util.List[FieldLike[?, PasswordRow]]
+  override def columns: java.util.List[FieldLike[?, PasswordRow]] = java.util.List.of(this.businessentityid, this.passwordhash, this.passwordsalt, this.rowguid, this.modifieddate)
 
   override def rowParser: RowParser[PasswordRow] = PasswordRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[PasswordFields, PasswordRow] = new PasswordFields(`_path`)
+
+  override def `_1`: SqlExpr[BusinessentityId] = businessentityid
+
+  override def `_2`: SqlExpr[String] = passwordhash
+
+  override def `_3`: SqlExpr[String] = passwordsalt
+
+  override def `_4`: SqlExpr[UUID] = rowguid
+
+  override def `_5`: SqlExpr[LocalDateTime] = modifieddate
 }
 
 object PasswordFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends PasswordFields with RelationStructure[PasswordFields, PasswordRow] {
-
-    override def businessentityid: IdField[BusinessentityId, PasswordRow] = {
-      new IdField[BusinessentityId, PasswordRow](
-        _path,
-        "businessentityid",
-        _.businessentityid,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(businessentityid = value),
-        BusinessentityId.pgType
-      )
-    }
-
-    override def passwordhash: Field[String, PasswordRow] = {
-      new Field[String, PasswordRow](
-        _path,
-        "passwordhash",
-        _.passwordhash,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(passwordhash = value),
-        PgTypes.text
-      )
-    }
-
-    override def passwordsalt: Field[String, PasswordRow] = {
-      new Field[String, PasswordRow](
-        _path,
-        "passwordsalt",
-        _.passwordsalt,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(passwordsalt = value),
-        PgTypes.text
-      )
-    }
-
-    override def rowguid: Field[UUID, PasswordRow] = {
-      new Field[UUID, PasswordRow](
-        _path,
-        "rowguid",
-        _.rowguid,
-        Optional.empty(),
-        Optional.of("uuid"),
-        (row, value) => row.copy(rowguid = value),
-        PgTypes.uuid
-      )
-    }
-
-    override def modifieddate: Field[LocalDateTime, PasswordRow] = {
-      new Field[LocalDateTime, PasswordRow](
-        _path,
-        "modifieddate",
-        _.modifieddate,
-        Optional.empty(),
-        Optional.of("timestamp"),
-        (row, value) => row.copy(modifieddate = value),
-        PgTypes.timestamp
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, PasswordRow]] = java.util.List.of(this.businessentityid, this.passwordhash, this.passwordsalt, this.rowguid, this.modifieddate)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[PasswordFields, PasswordRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: PasswordFields = new PasswordFields(java.util.Collections.emptyList())
 }

@@ -23,8 +23,10 @@ projects:
     platform:
       name: jvm
     sourcegen:
-      main: scripts.GeneratedRowParsers
-      project: typr-scripts
+    - main: scripts.GeneratedRowParsers
+      project: typr-scripts-sourcegen
+    - main: scripts.GeneratedTuples
+      project: typr-scripts-sourcegen
   foundations-jdbc-dsl:
     dependsOn: foundations-jdbc
     java:
@@ -33,7 +35,34 @@ projects:
       name: jvm
     sourcegen:
       main: scripts.GeneratedTuples
-      project: typr-scripts
+      project: typr-scripts-sourcegen
+  # cannot build this, its just here for codegen
+  foundations-jdbc-dsl-kotlin:
+    dependsOn:
+    - foundations-jdbc-dsl
+    platform:
+      name: jvm
+    sourcegen:
+    - main: scripts.GeneratedRowParsers
+      project: typr-scripts-sourcegen
+    - main: scripts.GeneratedTuples
+      project: typr-scripts-sourcegen
+  foundations-jdbc-dsl-scala:
+    dependencies:
+      configuration: provided
+      module: org.postgresql:postgresql:42.7.3
+    dependsOn:
+    - foundations-jdbc-dsl
+    - foundations-jdbc-scala
+    extends: template-scala-3
+    sourcegen:
+    - main: scripts.GeneratedRowParsers
+      project: typr-scripts-sourcegen
+    - main: scripts.GeneratedTuples
+      project: typr-scripts-sourcegen
+  foundations-jdbc-scala:
+    dependsOn: foundations-jdbc
+    extends: template-scala-3
   foundations-jdbc-test:
     dependencies:
     - com.ibm.db2:jcc:11.5.9.0
@@ -50,36 +79,39 @@ projects:
       options: -proc:none
     platform:
       name: jvm
-  foundations-jdbc-dsl-kotlin:
+  testers/db2/java:
     dependencies:
-    - configuration: provided
-      module: org.postgresql:postgresql:42.7.3
-    dependsOn:
-    - foundations-jdbc-dsl
-    - foundations-jdbc-kotlin
+    - com.fasterxml.jackson.core:jackson-annotations:2.17.2
+    - com.fasterxml.jackson.core:jackson-databind:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
+    - com.ibm.db2:jcc:11.5.9.0
+    - com.novocode:junit-interface:0.11
+    - junit:junit:4.13.2
+    dependsOn: foundations-jdbc-dsl
+    isTestProject: true
+    java:
+      options: -proc:none
     platform:
       name: jvm
-    sourcegen:
-      main: scripts.GeneratedRowParsers
-      project: typr-scripts
-  foundations-jdbc-dsl-scala:
+    sources:
+    - ./generated-and-checked-in
+    - ./src/java
+  testers/db2/scala:
     dependencies:
-    - configuration: provided
-      module: org.postgresql:postgresql:42.7.3
-    dependsOn:
-    - foundations-jdbc-dsl
-    - foundations-jdbc-scala
-    extends: template-scala-3-newest
-    sourcegen:
-      main: scripts.GeneratedRowParsers
-      project: typr-scripts
-  foundations-jdbc-kotlin:
-    dependsOn: foundations-jdbc
-    platform:
-      name: jvm
-  foundations-jdbc-scala:
-    dependsOn: foundations-jdbc
-    extends: template-scala-3-newest
+    - com.fasterxml.jackson.core:jackson-annotations:2.17.2
+    - com.fasterxml.jackson.core:jackson-databind:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
+    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
+    - com.ibm.db2:jcc:11.5.9.0
+    - com.novocode:junit-interface:0.11
+    - junit:junit:4.13.2
+    dependsOn: foundations-jdbc-dsl-scala
+    extends: template-scala-3
+    isTestProject: true
+    sources:
+    - ./generated-and-checked-in
+    - ./src/scala
   testers/duckdb/java:
     dependencies:
     - com.fasterxml.jackson.core:jackson-annotations:2.17.2
@@ -96,23 +128,6 @@ projects:
     platform:
       name: jvm
     sources: ./generated-and-checked-in
-  testers/duckdb/kotlin:
-    dependencies:
-    - com.fasterxml.jackson.core:jackson-annotations:2.17.2
-    - com.fasterxml.jackson.core:jackson-databind:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    - com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2
-    - com.novocode:junit-interface:0.11
-    - junit:junit:4.13.2
-    - org.duckdb:duckdb_jdbc:1.1.3
-    dependsOn: foundations-jdbc-dsl-kotlin
-    isTestProject: true
-    platform:
-      name: jvm
-    sources:
-    - ./generated-and-checked-in
-    - ./src/kotlin
   testers/duckdb/scala:
     dependencies:
     - com.fasterxml.jackson.core:jackson-annotations:2.17.2
@@ -123,10 +138,8 @@ projects:
     - junit:junit:4.13.2
     - org.duckdb:duckdb_jdbc:1.1.3
     dependsOn: foundations-jdbc-dsl-scala
-    extends: template-scala-3-newest
+    extends: template-scala-3
     isTestProject: true
-    scala:
-      strict: false
     sources:
     - ./generated-and-checked-in
     - ./src/scala
@@ -155,7 +168,7 @@ projects:
     - org.mariadb.jdbc:mariadb-java-client:3.5.1
     - org.scalatest::scalatest:3.2.18
     dependsOn: foundations-jdbc-dsl-scala
-    extends: template-scala-3-newest
+    extends: template-scala-3
     isTestProject: true
     sources: ./generated-and-checked-in
   testers/openapi/java/jaxrs:
@@ -225,66 +238,6 @@ projects:
     platform:
       name: jvm
     sources: ./testapi
-  testers/openapi/kotlin/jaxrs:
-    dependencies:
-    - com.fasterxml.jackson.core:jackson-databind:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    - com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2
-    - com.novocode:junit-interface:0.11
-    - io.swagger.core.v3:swagger-annotations:2.2.25
-    - jakarta.validation:jakarta.validation-api:3.0.2
-    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
-    - junit:junit:4.13.2
-    - org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.1.9
-    - org.glassfish.jersey.inject:jersey-hk2:3.1.9
-    - org.glassfish.jersey.media:jersey-media-json-jackson:3.1.9
-    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
-    dependsOn: foundations-jdbc
-    folder: ./testers/openapi/kotlin/jaxrs
-    isTestProject: true
-    platform:
-      name: jvm
-    sources: ./testapi
-  testers/openapi/kotlin/quarkus:
-    dependencies:
-    - com.fasterxml.jackson.core:jackson-databind:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    - com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2
-    - com.novocode:junit-interface:0.11
-    - io.quarkus:quarkus-rest-jackson:3.17.2
-    - io.smallrye.reactive:mutiny:2.6.2
-    - io.swagger.core.v3:swagger-annotations:2.2.25
-    - jakarta.validation:jakarta.validation-api:3.0.2
-    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
-    - junit:junit:4.13.2
-    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
-    dependsOn: foundations-jdbc
-    folder: ./testers/openapi/kotlin/quarkus
-    isTestProject: true
-    platform:
-      name: jvm
-    sources: ./testapi
-  testers/openapi/kotlin/spring:
-    dependencies:
-    - com.fasterxml.jackson.core:jackson-databind:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    - com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2
-    - com.novocode:junit-interface:0.11
-    - io.swagger.core.v3:swagger-annotations:2.2.25
-    - jakarta.validation:jakarta.validation-api:3.0.2
-    - jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
-    - junit:junit:4.13.2
-    - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
-    - org.springframework.boot:spring-boot-starter-web:3.4.0
-    dependsOn: foundations-jdbc
-    folder: ./testers/openapi/kotlin/spring
-    isTestProject: true
-    platform:
-      name: jvm
-    sources: ./testapi
   testers/openapi/scala/http4s:
     dependencies:
     - io.circe::circe-generic:0.14.10
@@ -294,11 +247,9 @@ projects:
     - org.http4s::http4s-ember-server:0.23.30
     - org.scalatest::scalatest:3.2.18
     - org.typelevel::cats-effect-testing-scalatest:1.6.0
-    extends: template-scala-3-newest
+    extends: template-scala-3
     folder: ./testers/openapi/scala/http4s
     isTestProject: true
-    scala:
-      strict: false
     sources: ./testapi
   testers/openapi/scala/spring:
     dependencies:
@@ -315,11 +266,9 @@ projects:
     - org.glassfish.jersey.media:jersey-media-multipart:3.1.9
     - org.springframework.boot:spring-boot-starter-web:3.4.0
     dependsOn: foundations-jdbc
-    extends: template-scala-3-newest
+    extends: template-scala-3
     folder: ./testers/openapi/scala/spring
     isTestProject: true
-    scala:
-      strict: false
     sources: ./testapi
   testers/oracle/java:
     dependencies:
@@ -337,21 +286,6 @@ projects:
     platform:
       name: jvm
     sources: ./generated-and-checked-in
-  testers/oracle/kotlin:
-    dependencies:
-    - com.fasterxml.jackson.core:jackson-annotations:2.17.2
-    - com.fasterxml.jackson.core:jackson-databind:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    - com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2
-    - com.novocode:junit-interface:0.11
-    - com.oracle.database.jdbc:ojdbc11:23.5.0.24.07
-    - junit:junit:4.13.2
-    dependsOn: foundations-jdbc
-    isTestProject: true
-    platform:
-      name: jvm
-    sources: ./generated-and-checked-in
   testers/oracle/scala:
     dependencies:
     - com.fasterxml.jackson.core:jackson-annotations:2.17.2
@@ -361,7 +295,7 @@ projects:
     - com.oracle.database.jdbc:ojdbc11:23.5.0.24.07
     - org.scalatest::scalatest:3.2.18
     dependsOn: foundations-jdbc-dsl-scala
-    extends: template-scala-3-newest
+    extends: template-scala-3
     isTestProject: true
     sources: ./generated-and-checked-in
   testers/oracle/scala-new:
@@ -370,10 +304,12 @@ projects:
     - com.fasterxml.jackson.core:jackson-databind:2.17.2
     - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
     - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
+    - com.novocode:junit-interface:0.11
     - com.oracle.database.jdbc:ojdbc11:23.5.0.24.07
+    - junit:junit:4.13.2
     - org.scalatest::scalatest:3.2.18
     dependsOn: foundations-jdbc-dsl-scala
-    extends: template-scala-3-newest
+    extends: template-scala-3
     isTestProject: true
     sources: ./generated-and-checked-in
   testers/pg/java:
@@ -403,7 +339,7 @@ projects:
     - org.postgresql:postgresql:42.7.3
     - org.scalatest::scalatest:3.2.18
     dependsOn: typr-dsl-anorm
-    extends: template-cross-scala-3-newest
+    extends: template-cross
     isTestProject: true
   testers/pg/scala/doobie:
     cross:
@@ -416,7 +352,7 @@ projects:
     - org.postgresql:postgresql:42.7.3
     - org.scalatest::scalatest:3.2.18
     dependsOn: typr-dsl-doobie
-    extends: template-cross-scala-3-newest
+    extends: template-cross
     isTestProject: true
     sources: ./generated-and-checked-in
   testers/pg/scala/javatypes:
@@ -430,7 +366,7 @@ projects:
     - org.postgresql:postgresql:42.7.3
     - org.scalatest::scalatest:3.2.18
     dependsOn: foundations-jdbc-dsl
-    extends: template-scala-3-newest
+    extends: template-scala-3
     isTestProject: true
     sources: ./generated-and-checked-in
   testers/pg/scala/scalatypes:
@@ -444,7 +380,7 @@ projects:
     - org.postgresql:postgresql:42.7.3
     - org.scalatest::scalatest:3.2.18
     dependsOn: foundations-jdbc-dsl-scala
-    extends: template-scala-3-newest
+    extends: template-scala-3
     isTestProject: true
     sources: ./generated-and-checked-in
   testers/pg/scala/zio-jdbc:
@@ -458,41 +394,8 @@ projects:
     - org.postgresql:postgresql:42.7.3
     - org.scalatest::scalatest:3.2.18
     dependsOn: typr-dsl-zio-jdbc
-    extends: template-cross-scala-3-newest
+    extends: template-cross
     isTestProject: true
-  testers/db2/java:
-    dependencies:
-    - com.fasterxml.jackson.core:jackson-annotations:2.17.2
-    - com.fasterxml.jackson.core:jackson-databind:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    - com.ibm.db2:jcc:11.5.9.0
-    - com.novocode:junit-interface:0.11
-    - junit:junit:4.13.2
-    dependsOn: foundations-jdbc-dsl
-    isTestProject: true
-    java:
-      options: -proc:none
-    platform:
-      name: jvm
-    sources:
-    - ./generated-and-checked-in
-    - ./src/java
-  testers/db2/scala:
-    dependencies:
-    - com.fasterxml.jackson.core:jackson-annotations:2.17.2
-    - com.fasterxml.jackson.core:jackson-databind:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    - com.ibm.db2:jcc:11.5.9.0
-    - com.novocode:junit-interface:0.11
-    - junit:junit:4.13.2
-    dependsOn: foundations-jdbc-dsl-scala
-    extends: template-scala-3-newest
-    isTestProject: true
-    sources:
-    - ./generated-and-checked-in
-    - ./src/scala
   testers/sqlserver/java:
     dependencies:
     - com.fasterxml.jackson.core:jackson-annotations:2.17.2
@@ -511,23 +414,6 @@ projects:
     sources:
     - ./generated-and-checked-in
     - ./src/java
-  testers/sqlserver/kotlin:
-    dependencies:
-    - com.fasterxml.jackson.core:jackson-annotations:2.17.2
-    - com.fasterxml.jackson.core:jackson-databind:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.17.2
-    - com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2
-    - com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2
-    - com.microsoft.sqlserver:mssql-jdbc:12.8.1.jre11
-    - com.novocode:junit-interface:0.11
-    - junit:junit:4.13.2
-    dependsOn: foundations-jdbc-dsl-kotlin
-    isTestProject: true
-    platform:
-      name: jvm
-    sources:
-    - ./generated-and-checked-in
-    - ./src/kotlin
   testers/sqlserver/scala:
     dependencies:
     - com.fasterxml.jackson.core:jackson-annotations:2.17.2
@@ -538,7 +424,7 @@ projects:
     - com.novocode:junit-interface:0.11
     - junit:junit:4.13.2
     dependsOn: foundations-jdbc-dsl-scala
-    extends: template-scala-3-newest
+    extends: template-scala-3
     isTestProject: true
     sources:
     - ./generated-and-checked-in
@@ -546,15 +432,9 @@ projects:
   tests:
     dependencies: org.scalatest::scalatest:3.2.18
     dependsOn: typr
-    extends: template-scala-3-newest
+    extends: template-scala-3
     isTestProject: true
   typr:
-    cross:
-      jvm212:
-        scala:
-          options: -Xsource:3 -language:higherKinds -language:implicitConversions
-          strict: false
-          version: 2.12.19
     dependencies:
     - com.microsoft.sqlserver:mssql-jdbc:12.8.1.jre11
     - com.oracle.database.jdbc:ojdbc11:23.6.0.24.10
@@ -567,9 +447,9 @@ projects:
     - org.mariadb.jdbc:mariadb-java-client:3.5.1
     - org.playframework.anorm::anorm:2.7.0
     - org.postgresql:postgresql:42.7.3
-    - org.scala-lang.modules::scala-collection-compat:2.12.0
     - org.slf4j:slf4j-nop:2.0.13
-    extends: template-cross
+    dependsOn: foundations-jdbc-dsl-scala
+    extends: template-scala-3
     platform:
       mainClass: com.foo.App
     sources: ./generated-and-checked-in
@@ -602,9 +482,7 @@ projects:
     - build.bleep::bleep-plugin-ci-release:${BLEEP_VERSION}
     - com.ibm.db2:jcc:11.5.9.0
     dependsOn: typr
-    extends: template-scala-3-newest
-    scala:
-      strict: false
+    extends: template-scala-3
   typr-scripts-doc:
     dependencies:
     - build.bleep::bleep-plugin-dynver:${BLEEP_VERSION}
@@ -612,28 +490,30 @@ projects:
     dependsOn:
     - testers/pg/scala/anorm
     - typr
-    extends: template-scala-3-newest
-    scala:
-      strict: false
+    extends: template-scala-3
+  typr-scripts-sourcegen:
+    dependencies: build.bleep::bleep-core:${BLEEP_VERSION}
+    extends: template-scala-3
 scripts:
   compile-benchmarks:
     main: scripts.CompileBenchmark
     project: typr-scripts
-  generate-adventureworks:
-    main: scripts.GeneratedAdventureWorks
+  generate-postgres:
+    main: scripts.GeneratedPostgres
     project: typr-scripts
     sourceGlobs: ../adventureworks_sql
   generate-all:
     main: scripts.GenerateAll
     project: typr-scripts
+  generate-db2:
+    main: scripts.GeneratedDb2
+    project: typr-scripts
+    sourceGlobs: ../db2_sql
   generate-docs:
     main: scripts.GenDocumentation
     project: typr-scripts-doc
   generate-duckdb:
     main: scripts.GeneratedDuckDb
-    project: typr-scripts
-  generate-frontpage:
-    main: scripts.GeneratedFrontpage
     project: typr-scripts
   generate-mariadb:
     main: scripts.GeneratedMariaDb
@@ -646,10 +526,9 @@ scripts:
     main: scripts.GeneratedOracle
     project: typr-scripts
     sourceGlobs: ../oracle_sql
-  generate-db2:
-    main: scripts.GeneratedDb2
+  generate-showcase:
+    main: scripts.GeneratedShowcase
     project: typr-scripts
-    sourceGlobs: ../db2_sql
   generate-sources:
     main: scripts.GeneratedSources
     project: typr-scripts
@@ -670,33 +549,21 @@ templates:
     platform:
       name: jvm
     scala:
-      options: -Xfatal-warnings -encoding utf8 -feature -unchecked
+      options: -encoding utf8 -feature -unchecked
       strict: true
   template-cross:
     cross:
       jvm213:
         extends: template-scala-2
       jvm3:
-        extends: template-scala-3-stable
-    extends: template-common
-  template-cross-scala-3-newest:
-    cross:
-      jvm213:
-        extends: template-scala-2
-      jvm3:
-        extends: template-scala-3-newest
+        extends: template-scala-3
     extends: template-common
   template-scala-2:
     scala:
       options: -Xsource:3 -release:21
-      version: 2.13.12
-  template-scala-3-newest:
+      version: 2.13.16
+  template-scala-3:
     extends: template-common
     scala:
-      options: -release 24 -source 3.7
+      options: -release 24 -source 3.4
       version: 3.7.3
-  template-scala-3-stable:
-    extends: template-common
-    scala:
-      options: -release 21 -source 3.3
-      version: 3.3.6

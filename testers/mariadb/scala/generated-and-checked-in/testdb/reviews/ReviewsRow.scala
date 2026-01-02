@@ -7,6 +7,10 @@ package testdb.reviews
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple18
+import dev.typr.foundations.data.Json
+import dev.typr.foundations.data.Uint1
+import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
@@ -39,7 +43,7 @@ case class ReviewsRow(
    */
   @JsonProperty("order_item_id") orderItemId: Option[OrderItemsId],
   /**  */
-  rating: Short,
+  rating: Uint1,
   /** 
    * Default: NULL
    */
@@ -51,15 +55,15 @@ case class ReviewsRow(
   /** 
    * Default: NULL
    */
-  pros: Option[String],
+  pros: Option[Json],
   /** 
    * Default: NULL
    */
-  cons: Option[String],
+  cons: Option[Json],
   /** Array of image URLs
    * Default: NULL
    */
-  images: Option[String],
+  images: Option[Json],
   /** 
    * Default: 0
    */
@@ -71,11 +75,11 @@ case class ReviewsRow(
   /** 
    * Default: 0
    */
-  @JsonProperty("helpful_votes") helpfulVotes: Long,
+  @JsonProperty("helpful_votes") helpfulVotes: Uint4,
   /** 
    * Default: 0
    */
-  @JsonProperty("unhelpful_votes") unhelpfulVotes: Long,
+  @JsonProperty("unhelpful_votes") unhelpfulVotes: Uint4,
   /** 
    * Default: NULL
    */
@@ -92,20 +96,20 @@ case class ReviewsRow(
    * Default: current_timestamp(6)
    */
   @JsonProperty("updated_at") updatedAt: LocalDateTime
-) {
+) extends Tuple18[ReviewsId, ProductsId, CustomersId, Option[OrderItemsId], Uint1, Option[String], Option[String], Option[Json], Option[Json], Option[Json], Boolean, Boolean, Uint4, Uint4, Option[String], Option[LocalDateTime], LocalDateTime, LocalDateTime] {
   def id: ReviewsId = reviewId
 
   def toUnsavedRow(
     orderItemId: Defaulted[Option[OrderItemsId]] = Defaulted.Provided(this.orderItemId),
     title: Defaulted[Option[String]] = Defaulted.Provided(this.title),
     content: Defaulted[Option[String]] = Defaulted.Provided(this.content),
-    pros: Defaulted[Option[String]] = Defaulted.Provided(this.pros),
-    cons: Defaulted[Option[String]] = Defaulted.Provided(this.cons),
-    images: Defaulted[Option[String]] = Defaulted.Provided(this.images),
+    pros: Defaulted[Option[Json]] = Defaulted.Provided(this.pros),
+    cons: Defaulted[Option[Json]] = Defaulted.Provided(this.cons),
+    images: Defaulted[Option[Json]] = Defaulted.Provided(this.images),
     isVerifiedPurchase: Defaulted[Boolean] = Defaulted.Provided(this.isVerifiedPurchase),
     isApproved: Defaulted[Boolean] = Defaulted.Provided(this.isApproved),
-    helpfulVotes: Defaulted[Long] = Defaulted.Provided(this.helpfulVotes),
-    unhelpfulVotes: Defaulted[Long] = Defaulted.Provided(this.unhelpfulVotes),
+    helpfulVotes: Defaulted[Uint4] = Defaulted.Provided(this.helpfulVotes),
+    unhelpfulVotes: Defaulted[Uint4] = Defaulted.Provided(this.unhelpfulVotes),
     adminResponse: Defaulted[Option[String]] = Defaulted.Provided(this.adminResponse),
     respondedAt: Defaulted[Option[LocalDateTime]] = Defaulted.Provided(this.respondedAt),
     createdAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.createdAt),
@@ -131,8 +135,44 @@ case class ReviewsRow(
       updatedAt
     )
   }
+
+  override def `_1`: ReviewsId = reviewId
+
+  override def `_2`: ProductsId = productId
+
+  override def `_3`: CustomersId = customerId
+
+  override def `_4`: Option[OrderItemsId] = orderItemId
+
+  override def `_5`: Uint1 = rating
+
+  override def `_6`: Option[String] = title
+
+  override def `_7`: Option[String] = content
+
+  override def `_8`: Option[Json] = pros
+
+  override def `_9`: Option[Json] = cons
+
+  override def `_10`: Option[Json] = images
+
+  override def `_11`: Boolean = isVerifiedPurchase
+
+  override def `_12`: Boolean = isApproved
+
+  override def `_13`: Uint4 = helpfulVotes
+
+  override def `_14`: Uint4 = unhelpfulVotes
+
+  override def `_15`: Option[String] = adminResponse
+
+  override def `_16`: Option[LocalDateTime] = respondedAt
+
+  override def `_17`: LocalDateTime = createdAt
+
+  override def `_18`: LocalDateTime = updatedAt
 }
 
 object ReviewsRow {
-  val `_rowParser`: RowParser[ReviewsRow] = RowParsers.of(ReviewsId.pgType, ProductsId.pgType, CustomersId.pgType, OrderItemsId.pgType.nullable, ScalaDbTypes.MariaTypes.tinyintUnsigned, MariaTypes.varchar.nullable, MariaTypes.text.nullable, MariaTypes.longtext.nullable, MariaTypes.longtext.nullable, MariaTypes.longtext.nullable, ScalaDbTypes.MariaTypes.bool, ScalaDbTypes.MariaTypes.bool, ScalaDbTypes.MariaTypes.intUnsigned, ScalaDbTypes.MariaTypes.intUnsigned, MariaTypes.text.nullable, MariaTypes.datetime.nullable, MariaTypes.datetime, MariaTypes.datetime)(ReviewsRow.apply)(row => Array[Any](row.reviewId, row.productId, row.customerId, row.orderItemId, row.rating, row.title, row.content, row.pros, row.cons, row.images, row.isVerifiedPurchase, row.isApproved, row.helpfulVotes, row.unhelpfulVotes, row.adminResponse, row.respondedAt, row.createdAt, row.updatedAt))
+  val `_rowParser`: RowParser[ReviewsRow] = RowParsers.of(ReviewsId.dbType, ProductsId.dbType, CustomersId.dbType, OrderItemsId.dbType.nullable, MariaTypes.tinyintUnsigned, MariaTypes.varchar.nullable, MariaTypes.text.nullable, MariaTypes.json.nullable, MariaTypes.json.nullable, MariaTypes.json.nullable, ScalaDbTypes.MariaTypes.bool, ScalaDbTypes.MariaTypes.bool, MariaTypes.intUnsigned, MariaTypes.intUnsigned, MariaTypes.text.nullable, MariaTypes.datetime.nullable, MariaTypes.datetime, MariaTypes.datetime)(ReviewsRow.apply)(row => Array[Any](row.reviewId, row.productId, row.customerId, row.orderItemId, row.rating, row.title, row.content, row.pros, row.cons, row.images, row.isVerifiedPurchase, row.isApproved, row.helpfulVotes, row.unhelpfulVotes, row.adminResponse, row.respondedAt, row.createdAt, row.updatedAt))
 }

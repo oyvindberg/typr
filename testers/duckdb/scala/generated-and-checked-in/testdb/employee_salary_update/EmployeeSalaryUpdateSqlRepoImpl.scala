@@ -18,7 +18,7 @@ class EmployeeSalaryUpdateSqlRepoImpl extends EmployeeSalaryUpdateSqlRepo {
     newSalary: BigDecimal,
     empNumber: Int,
     empSuffix: String
-  )(using c: Connection): Int = {
+  )(using c: Connection): List[EmployeeSalaryUpdateSqlRow] = {
     sql"""-- Update employee salary using composite primary key
     -- Tests: UPDATE with composite primary key, RETURNING, decimal arithmetic
   
@@ -36,6 +36,6 @@ class EmployeeSalaryUpdateSqlRepoImpl extends EmployeeSalaryUpdateSqlRepo {
         dept_region,
         emp_name,
         salary,
-        hire_date""".update().runUnchecked(c)
+        hire_date""".query(EmployeeSalaryUpdateSqlRow.`_rowParser`.all()).runUnchecked(c)
   }
 }

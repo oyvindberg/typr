@@ -48,7 +48,7 @@ public record SalesterritoryRepoMock(
   @Override
   public DeleteBuilder<SalesterritoryFields, SalesterritoryRow> delete() {
     return new DeleteBuilderMock<>(
-        SalesterritoryFields.structure(),
+        SalesterritoryFields.structure,
         () -> new ArrayList<>(map.values()),
         DeleteParams.empty(),
         row -> row.territoryid(),
@@ -127,9 +127,7 @@ public record SalesterritoryRepoMock(
   @Override
   public SelectBuilder<SalesterritoryFields, SalesterritoryRow> select() {
     return new SelectBuilderMock<>(
-        SalesterritoryFields.structure(),
-        () -> new ArrayList<>(map.values()),
-        SelectParams.empty());
+        SalesterritoryFields.structure, () -> new ArrayList<>(map.values()), SelectParams.empty());
   }
   ;
 
@@ -172,7 +170,7 @@ public record SalesterritoryRepoMock(
   @Override
   public UpdateBuilder<SalesterritoryFields, SalesterritoryRow> update() {
     return new UpdateBuilderMock<>(
-        SalesterritoryFields.structure(),
+        SalesterritoryFields.structure,
         () -> new ArrayList<>(map.values()),
         UpdateParams.empty(),
         row -> row);

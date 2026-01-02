@@ -6,6 +6,7 @@
 package testdb.order_items;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.typr.foundations.data.Uint2;
 import java.math.BigDecimal;
 import java.util.Optional;
 import testdb.customtypes.Defaulted;
@@ -25,7 +26,7 @@ public record OrderItemsRowUnsaved(
     /** */
     @JsonProperty("product_name") String productName,
     /** */
-    Integer quantity,
+    Uint2 quantity,
     /** */
     @JsonProperty("unit_price") BigDecimal unitPrice,
     /** */
@@ -50,7 +51,7 @@ public record OrderItemsRowUnsaved(
       /** */
       @JsonProperty("product_name") String productName,
       /** */
-      Integer quantity,
+      Uint2 quantity,
       /** */
       @JsonProperty("unit_price") BigDecimal unitPrice,
       /** */
@@ -144,7 +145,7 @@ public record OrderItemsRowUnsaved(
   ;
 
   /** */
-  public OrderItemsRowUnsaved withQuantity(Integer quantity) {
+  public OrderItemsRowUnsaved withQuantity(Uint2 quantity) {
     return new OrderItemsRowUnsaved(
         orderId,
         productId,

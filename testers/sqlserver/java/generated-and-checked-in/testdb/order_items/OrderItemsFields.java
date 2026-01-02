@@ -7,13 +7,15 @@ package testdb.order_items;
 
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.SqlServerTypes;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr5;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -24,122 +26,127 @@ import testdb.products.ProductsFields;
 import testdb.products.ProductsId;
 import testdb.products.ProductsRow;
 
-public interface OrderItemsFields extends FieldsExpr<OrderItemsRow> {
-  record Impl(List<Path> _path)
-      implements OrderItemsFields, RelationStructure<OrderItemsFields, OrderItemsRow> {
-    @Override
-    public IdField<OrderItemsId, OrderItemsRow> orderItemId() {
-      return new IdField<OrderItemsId, OrderItemsRow>(
-          _path,
-          "order_item_id",
-          OrderItemsRow::orderItemId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderItemId(value),
-          OrderItemsId.sqlServerType);
-    }
-    ;
+public class OrderItemsFields
+    implements TupleExpr5<OrderItemsId, OrdersId, ProductsId, Integer, BigDecimal>,
+        RelationStructure<OrderItemsFields, OrderItemsRow>,
+        FieldsBase<OrderItemsRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<OrdersId, OrderItemsRow> orderId() {
-      return new Field<OrdersId, OrderItemsRow>(
-          _path,
-          "order_id",
-          OrderItemsRow::orderId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrderId(value),
-          OrdersId.sqlServerType);
-    }
-    ;
-
-    @Override
-    public Field<ProductsId, OrderItemsRow> productId() {
-      return new Field<ProductsId, OrderItemsRow>(
-          _path,
-          "product_id",
-          OrderItemsRow::productId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withProductId(value),
-          ProductsId.sqlServerType);
-    }
-    ;
-
-    @Override
-    public Field<Integer, OrderItemsRow> quantity() {
-      return new Field<Integer, OrderItemsRow>(
-          _path,
-          "quantity",
-          OrderItemsRow::quantity,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withQuantity(value),
-          SqlServerTypes.int_);
-    }
-    ;
-
-    @Override
-    public Field<BigDecimal, OrderItemsRow> price() {
-      return new Field<BigDecimal, OrderItemsRow>(
-          _path,
-          "price",
-          OrderItemsRow::price,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPrice(value),
-          SqlServerTypes.money);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, OrderItemsRow>> columns() {
-      return java.util.List.of(
-          this.orderItemId(), this.orderId(), this.productId(), this.quantity(), this.price());
-    }
-    ;
-
-    @Override
-    public RelationStructure<OrderItemsFields, OrderItemsRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public OrderItemsFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static OrderItemsFields structure =
+      new OrderItemsFields(java.util.Collections.emptyList());
+
+  public IdField<OrderItemsId, OrderItemsRow> orderItemId() {
+    return new IdField<OrderItemsId, OrderItemsRow>(
+        _path,
+        "order_item_id",
+        OrderItemsRow::orderItemId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderItemId(value),
+        OrderItemsId.sqlServerType);
   }
-  ;
 
-  IdField<OrderItemsId, OrderItemsRow> orderItemId();
+  public Field<OrdersId, OrderItemsRow> orderId() {
+    return new Field<OrdersId, OrderItemsRow>(
+        _path,
+        "order_id",
+        OrderItemsRow::orderId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrderId(value),
+        OrdersId.sqlServerType);
+  }
 
-  Field<OrdersId, OrderItemsRow> orderId();
+  public Field<ProductsId, OrderItemsRow> productId() {
+    return new Field<ProductsId, OrderItemsRow>(
+        _path,
+        "product_id",
+        OrderItemsRow::productId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withProductId(value),
+        ProductsId.sqlServerType);
+  }
 
-  Field<ProductsId, OrderItemsRow> productId();
+  public Field<Integer, OrderItemsRow> quantity() {
+    return new Field<Integer, OrderItemsRow>(
+        _path,
+        "quantity",
+        OrderItemsRow::quantity,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withQuantity(value),
+        SqlServerTypes.int_);
+  }
 
-  Field<Integer, OrderItemsRow> quantity();
+  public Field<BigDecimal, OrderItemsRow> price() {
+    return new Field<BigDecimal, OrderItemsRow>(
+        _path,
+        "price",
+        OrderItemsRow::price,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPrice(value),
+        SqlServerTypes.money);
+  }
 
-  Field<BigDecimal, OrderItemsRow> price();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<OrdersFields, OrdersRow> fkOrders() {
+  public ForeignKey<OrdersFields, OrdersRow> fkOrders() {
     return ForeignKey.<OrdersFields, OrdersRow>of("FK__order_ite__order__44FF419A")
         .<OrdersId>withColumnPair(orderId(), OrdersFields::orderId);
   }
-  ;
 
-  default ForeignKey<ProductsFields, ProductsRow> fkProducts() {
+  public ForeignKey<ProductsFields, ProductsRow> fkProducts() {
     return ForeignKey.<ProductsFields, ProductsRow>of("FK__order_ite__produ__45F365D3")
         .<ProductsId>withColumnPair(productId(), ProductsFields::productId);
   }
-  ;
 
   @Override
-  List<FieldLike<?, OrderItemsRow>> columns();
+  public List<FieldLike<?, OrderItemsRow>> columns() {
+    return java.util.List.of(
+        this.orderItemId(), this.orderId(), this.productId(), this.quantity(), this.price());
+  }
 
   @Override
-  default RowParser<OrderItemsRow> rowParser() {
+  public RowParser<OrderItemsRow> rowParser() {
     return OrderItemsRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<OrderItemsFields, OrderItemsRow> withPaths(List<Path> _path) {
+    return new OrderItemsFields(_path);
+  }
+
+  @Override
+  public SqlExpr<OrderItemsId> _1() {
+    return orderItemId();
+  }
+
+  @Override
+  public SqlExpr<OrdersId> _2() {
+    return orderId();
+  }
+
+  @Override
+  public SqlExpr<ProductsId> _3() {
+    return productId();
+  }
+
+  @Override
+  public SqlExpr<Integer> _4() {
+    return quantity();
+  }
+
+  @Override
+  public SqlExpr<BigDecimal> _5() {
+    return price();
+  }
 }

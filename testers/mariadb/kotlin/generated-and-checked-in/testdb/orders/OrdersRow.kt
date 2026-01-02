@@ -7,6 +7,7 @@ package testdb.orders
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
+import dev.typr.foundations.Tuple.Tuple22
 import dev.typr.foundations.data.maria.Inet6
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
@@ -108,7 +109,51 @@ data class OrdersRow(
     * Default: NULL
     */
   @JsonProperty("delivered_at") val deliveredAt: LocalDateTime?
-) {
+) : Tuple22<OrdersId, String, CustomersId, String, String, CustomerAddressesId?, CustomerAddressesId?, BigDecimal, BigDecimal, BigDecimal, BigDecimal, BigDecimal, String, PromotionsId?, String?, String?, Inet6?, String?, LocalDateTime, LocalDateTime?, LocalDateTime?, LocalDateTime?> {
+  override fun _1(): OrdersId = orderId
+
+  override fun _10(): BigDecimal = taxAmount
+
+  override fun _11(): BigDecimal = discountAmount
+
+  override fun _12(): BigDecimal = totalAmount
+
+  override fun _13(): String = currencyCode
+
+  override fun _14(): PromotionsId? = promotionId
+
+  override fun _15(): String? = notes
+
+  override fun _16(): String? = internalNotes
+
+  override fun _17(): Inet6? = ipAddress
+
+  override fun _18(): String? = userAgent
+
+  override fun _19(): LocalDateTime = orderedAt
+
+  override fun _2(): String = orderNumber
+
+  override fun _20(): LocalDateTime? = confirmedAt
+
+  override fun _21(): LocalDateTime? = shippedAt
+
+  override fun _22(): LocalDateTime? = deliveredAt
+
+  override fun _3(): CustomersId = customerId
+
+  override fun _4(): String = orderStatus
+
+  override fun _5(): String = paymentStatus
+
+  override fun _6(): CustomerAddressesId? = shippingAddressId
+
+  override fun _7(): CustomerAddressesId? = billingAddressId
+
+  override fun _8(): BigDecimal = subtotal
+
+  override fun _9(): BigDecimal = shippingCost
+
   fun id(): OrdersId = orderId
 
   fun toUnsavedRow(
@@ -132,6 +177,6 @@ data class OrdersRow(
   ): OrdersRowUnsaved = OrdersRowUnsaved(orderNumber, customerId, subtotal, totalAmount, orderStatus, paymentStatus, shippingAddressId, billingAddressId, shippingCost, taxAmount, discountAmount, currencyCode, promotionId, notes, internalNotes, ipAddress, userAgent, orderedAt, confirmedAt, shippedAt, deliveredAt)
 
   companion object {
-    val _rowParser: RowParser<OrdersRow> = RowParsers.of(OrdersId.pgType, MariaTypes.varchar, CustomersId.pgType, MariaTypes.text, MariaTypes.text, CustomerAddressesId.pgType.nullable(), CustomerAddressesId.pgType.nullable(), KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, MariaTypes.char_, PromotionsId.pgType.nullable(), MariaTypes.text.nullable(), MariaTypes.mediumtext.nullable(), MariaTypes.inet6.nullable(), MariaTypes.varchar.nullable(), MariaTypes.datetime, MariaTypes.datetime.nullable(), MariaTypes.datetime.nullable(), MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21 -> OrdersRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21) }, { row -> arrayOf<Any?>(row.orderId, row.orderNumber, row.customerId, row.orderStatus, row.paymentStatus, row.shippingAddressId, row.billingAddressId, row.subtotal, row.shippingCost, row.taxAmount, row.discountAmount, row.totalAmount, row.currencyCode, row.promotionId, row.notes, row.internalNotes, row.ipAddress, row.userAgent, row.orderedAt, row.confirmedAt, row.shippedAt, row.deliveredAt) })
+    val _rowParser: RowParser<OrdersRow> = RowParsers.of(OrdersId.dbType, MariaTypes.varchar, CustomersId.dbType, MariaTypes.text, MariaTypes.text, CustomerAddressesId.dbType.nullable(), CustomerAddressesId.dbType.nullable(), KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, MariaTypes.char_, PromotionsId.dbType.nullable(), MariaTypes.text.nullable(), MariaTypes.mediumtext.nullable(), MariaTypes.inet6.nullable(), MariaTypes.varchar.nullable(), MariaTypes.datetime, MariaTypes.datetime.nullable(), MariaTypes.datetime.nullable(), MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21 -> OrdersRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21) }, { row -> arrayOf<Any?>(row.orderId, row.orderNumber, row.customerId, row.orderStatus, row.paymentStatus, row.shippingAddressId, row.billingAddressId, row.subtotal, row.shippingCost, row.taxAmount, row.discountAmount, row.totalAmount, row.currencyCode, row.promotionId, row.notes, row.internalNotes, row.ipAddress, row.userAgent, row.orderedAt, row.confirmedAt, row.shippedAt, row.deliveredAt) })
   }
 }

@@ -24,43 +24,39 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
   @Override
   public DeleteBuilder<TitleDomainFields, TitleDomainRow> delete() {
     return DeleteBuilder.of(
-        "\"public\".\"title_domain\"", TitleDomainFields.structure(), Dialect.POSTGRESQL);
+        "\"public\".\"title_domain\"", TitleDomainFields.structure, Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public Boolean deleteById(TitleDomainId code, Connection c) {
     return interpolate(
                 Fragment.lit("delete from \"public\".\"title_domain\" where \"code\" = "),
-                Fragment.encode(TitleDomainId.pgType, code),
+                Fragment.encode(TitleDomainId.dbType, code),
                 Fragment.lit(""))
             .update()
             .runUnchecked(c)
         > 0;
   }
-  ;
 
   @Override
   public Integer deleteByIds(TitleDomainId[] codes, Connection c) {
     return interpolate(
             Fragment.lit("delete\nfrom \"public\".\"title_domain\"\nwhere \"code\" = ANY("),
-            Fragment.encode(TitleDomainId.pgTypeArray, codes),
+            Fragment.encode(TitleDomainId.dbTypeArray, codes),
             Fragment.lit(")"))
         .update()
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public TitleDomainRow insert(TitleDomainRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit("insert into \"public\".\"title_domain\"(\"code\")\nvalues ("),
-            Fragment.encode(TitleDomainId.pgType, unsaved.code()),
+            Fragment.encode(TitleDomainId.dbType, unsaved.code()),
             Fragment.lit("::text)\nRETURNING \"code\"\n"))
         .updateReturning(TitleDomainRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Long insertStreaming(Iterator<TitleDomainRow> unsaved, Integer batchSize, Connection c) {
@@ -71,17 +67,15 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
         c,
         TitleDomainRow.pgText);
   }
-  ;
 
   @Override
   public SelectBuilder<TitleDomainFields, TitleDomainRow> select() {
     return SelectBuilder.of(
         "\"public\".\"title_domain\"",
-        TitleDomainFields.structure(),
+        TitleDomainFields.structure,
         TitleDomainRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public List<TitleDomainRow> selectAll(Connection c) {
@@ -89,30 +83,27 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
         .query(TitleDomainRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Optional<TitleDomainRow> selectById(TitleDomainId code, Connection c) {
     return interpolate(
             Fragment.lit("select \"code\"\nfrom \"public\".\"title_domain\"\nwhere \"code\" = "),
-            Fragment.encode(TitleDomainId.pgType, code),
+            Fragment.encode(TitleDomainId.dbType, code),
             Fragment.lit(""))
         .query(TitleDomainRow._rowParser.first())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<TitleDomainRow> selectByIds(TitleDomainId[] codes, Connection c) {
     return interpolate(
             Fragment.lit(
                 "select \"code\"\nfrom \"public\".\"title_domain\"\nwhere \"code\" = ANY("),
-            Fragment.encode(TitleDomainId.pgTypeArray, codes),
+            Fragment.encode(TitleDomainId.dbTypeArray, codes),
             Fragment.lit(")"))
         .query(TitleDomainRow._rowParser.all())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public Map<TitleDomainId, TitleDomainRow> selectByIdsTracked(
@@ -121,23 +112,21 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
     selectByIds(codes, c).forEach(row -> ret.put(row.code(), row));
     return ret;
   }
-  ;
 
   @Override
   public UpdateBuilder<TitleDomainFields, TitleDomainRow> update() {
     return UpdateBuilder.of(
         "\"public\".\"title_domain\"",
-        TitleDomainFields.structure(),
+        TitleDomainFields.structure,
         TitleDomainRow._rowParser,
         Dialect.POSTGRESQL);
   }
-  ;
 
   @Override
   public TitleDomainRow upsert(TitleDomainRow unsaved, Connection c) {
     return interpolate(
             Fragment.lit("insert into \"public\".\"title_domain\"(\"code\")\nvalues ("),
-            Fragment.encode(TitleDomainId.pgType, unsaved.code()),
+            Fragment.encode(TitleDomainId.dbType, unsaved.code()),
             Fragment.lit(
                 "::text)\n"
                     + "on conflict (\"code\")\n"
@@ -146,7 +135,6 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
         .updateReturning(TitleDomainRow._rowParser.exactlyOne())
         .runUnchecked(c);
   }
-  ;
 
   @Override
   public List<TitleDomainRow> upsertBatch(Iterator<TitleDomainRow> unsaved, Connection c) {
@@ -160,7 +148,6 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
         .updateManyReturning(TitleDomainRow._rowParser, unsaved)
         .runUnchecked(c);
   }
-  ;
 
   /** NOTE: this functionality is not safe if you use auto-commit mode! it runs 3 SQL statements */
   @Override
@@ -189,5 +176,4 @@ public class TitleDomainRepoImpl implements TitleDomainRepo {
         .update()
         .runUnchecked(c);
   }
-  ;
 }

@@ -9,142 +9,152 @@ import adventureworks.public_.Name;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.data.Xml;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr6;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface ProductmodelFields extends FieldsExpr<ProductmodelRow> {
-  record Impl(List<Path> _path)
-      implements ProductmodelFields, RelationStructure<ProductmodelFields, ProductmodelRow> {
-    @Override
-    public IdField<ProductmodelId, ProductmodelRow> productmodelid() {
-      return new IdField<ProductmodelId, ProductmodelRow>(
-          _path,
-          "productmodelid",
-          ProductmodelRow::productmodelid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withProductmodelid(value),
-          ProductmodelId.pgType);
-    }
-    ;
+public class ProductmodelFields
+    implements TupleExpr6<ProductmodelId, Name, Xml, Xml, UUID, LocalDateTime>,
+        RelationStructure<ProductmodelFields, ProductmodelRow>,
+        FieldsBase<ProductmodelRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<Name, ProductmodelRow> name() {
-      return new Field<Name, ProductmodelRow>(
-          _path,
-          "name",
-          ProductmodelRow::name,
-          Optional.empty(),
-          Optional.of("varchar"),
-          (row, value) -> row.withName(value),
-          Name.pgType);
-    }
-    ;
-
-    @Override
-    public OptField<Xml, ProductmodelRow> catalogdescription() {
-      return new OptField<Xml, ProductmodelRow>(
-          _path,
-          "catalogdescription",
-          ProductmodelRow::catalogdescription,
-          Optional.empty(),
-          Optional.of("xml"),
-          (row, value) -> row.withCatalogdescription(value),
-          PgTypes.xml);
-    }
-    ;
-
-    @Override
-    public OptField<Xml, ProductmodelRow> instructions() {
-      return new OptField<Xml, ProductmodelRow>(
-          _path,
-          "instructions",
-          ProductmodelRow::instructions,
-          Optional.empty(),
-          Optional.of("xml"),
-          (row, value) -> row.withInstructions(value),
-          PgTypes.xml);
-    }
-    ;
-
-    @Override
-    public Field<UUID, ProductmodelRow> rowguid() {
-      return new Field<UUID, ProductmodelRow>(
-          _path,
-          "rowguid",
-          ProductmodelRow::rowguid,
-          Optional.empty(),
-          Optional.of("uuid"),
-          (row, value) -> row.withRowguid(value),
-          PgTypes.uuid);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, ProductmodelRow> modifieddate() {
-      return new Field<LocalDateTime, ProductmodelRow>(
-          _path,
-          "modifieddate",
-          ProductmodelRow::modifieddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withModifieddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, ProductmodelRow>> columns() {
-      return java.util.List.of(
-          this.productmodelid(),
-          this.name(),
-          this.catalogdescription(),
-          this.instructions(),
-          this.rowguid(),
-          this.modifieddate());
-    }
-    ;
-
-    @Override
-    public RelationStructure<ProductmodelFields, ProductmodelRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public ProductmodelFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static ProductmodelFields structure =
+      new ProductmodelFields(java.util.Collections.emptyList());
+
+  public IdField<ProductmodelId, ProductmodelRow> productmodelid() {
+    return new IdField<ProductmodelId, ProductmodelRow>(
+        _path,
+        "productmodelid",
+        ProductmodelRow::productmodelid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withProductmodelid(value),
+        ProductmodelId.dbType);
   }
-  ;
 
-  IdField<ProductmodelId, ProductmodelRow> productmodelid();
+  public Field<Name, ProductmodelRow> name() {
+    return new Field<Name, ProductmodelRow>(
+        _path,
+        "name",
+        ProductmodelRow::name,
+        Optional.empty(),
+        Optional.of("varchar"),
+        (row, value) -> row.withName(value),
+        Name.dbType);
+  }
 
-  Field<Name, ProductmodelRow> name();
+  public OptField<Xml, ProductmodelRow> catalogdescription() {
+    return new OptField<Xml, ProductmodelRow>(
+        _path,
+        "catalogdescription",
+        ProductmodelRow::catalogdescription,
+        Optional.empty(),
+        Optional.of("xml"),
+        (row, value) -> row.withCatalogdescription(value),
+        PgTypes.xml);
+  }
 
-  OptField<Xml, ProductmodelRow> catalogdescription();
+  public OptField<Xml, ProductmodelRow> instructions() {
+    return new OptField<Xml, ProductmodelRow>(
+        _path,
+        "instructions",
+        ProductmodelRow::instructions,
+        Optional.empty(),
+        Optional.of("xml"),
+        (row, value) -> row.withInstructions(value),
+        PgTypes.xml);
+  }
 
-  OptField<Xml, ProductmodelRow> instructions();
+  public Field<UUID, ProductmodelRow> rowguid() {
+    return new Field<UUID, ProductmodelRow>(
+        _path,
+        "rowguid",
+        ProductmodelRow::rowguid,
+        Optional.empty(),
+        Optional.of("uuid"),
+        (row, value) -> row.withRowguid(value),
+        PgTypes.uuid);
+  }
 
-  Field<UUID, ProductmodelRow> rowguid();
-
-  Field<LocalDateTime, ProductmodelRow> modifieddate();
+  public Field<LocalDateTime, ProductmodelRow> modifieddate() {
+    return new Field<LocalDateTime, ProductmodelRow>(
+        _path,
+        "modifieddate",
+        ProductmodelRow::modifieddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withModifieddate(value),
+        PgTypes.timestamp);
+  }
 
   @Override
-  List<FieldLike<?, ProductmodelRow>> columns();
+  public List<Path> _path() {
+    return _path;
+  }
 
   @Override
-  default RowParser<ProductmodelRow> rowParser() {
+  public List<FieldLike<?, ProductmodelRow>> columns() {
+    return java.util.List.of(
+        this.productmodelid(),
+        this.name(),
+        this.catalogdescription(),
+        this.instructions(),
+        this.rowguid(),
+        this.modifieddate());
+  }
+
+  @Override
+  public RowParser<ProductmodelRow> rowParser() {
     return ProductmodelRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<ProductmodelFields, ProductmodelRow> withPaths(List<Path> _path) {
+    return new ProductmodelFields(_path);
+  }
+
+  @Override
+  public SqlExpr<ProductmodelId> _1() {
+    return productmodelid();
+  }
+
+  @Override
+  public SqlExpr<Name> _2() {
+    return name();
+  }
+
+  @Override
+  public SqlExpr<Xml> _3() {
+    return catalogdescription();
+  }
+
+  @Override
+  public SqlExpr<Xml> _4() {
+    return instructions();
+  }
+
+  @Override
+  public SqlExpr<UUID> _5() {
+    return rowguid();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _6() {
+    return modifieddate();
+  }
 }

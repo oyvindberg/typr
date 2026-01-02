@@ -9,6 +9,7 @@ import adventureworks.customtypes.Defaulted
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.PgText
 import dev.typr.foundations.PgTypes
+import dev.typr.foundations.Tuple.Tuple7
 import dev.typr.foundations.data.Unknown
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
@@ -27,13 +28,27 @@ data class UsersRow(
   /** Default: now() */
   @JsonProperty("created_at") val createdAt: Instant,
   @JsonProperty("verified_on") val verifiedOn: Instant?
-) {
+) : Tuple7<UsersId, String, String?, Unknown, String, Instant, Instant?> {
+  override fun _1(): UsersId = userId
+
+  override fun _2(): String = name
+
+  override fun _3(): String? = lastName
+
+  override fun _4(): Unknown = email
+
+  override fun _5(): String = password
+
+  override fun _6(): Instant = createdAt
+
+  override fun _7(): Instant? = verifiedOn
+
   fun id(): UsersId = userId
 
   fun toUnsavedRow(createdAt: Defaulted<Instant> = Defaulted.Provided(this.createdAt)): UsersRowUnsaved = UsersRowUnsaved(userId, name, lastName, email, password, verifiedOn, createdAt)
 
   companion object {
-    val _rowParser: RowParser<UsersRow> = RowParsers.of(UsersId.pgType, PgTypes.text, PgTypes.text.nullable(), PgTypes.unknown, PgTypes.text, PgTypes.timestamptz, PgTypes.timestamptz.nullable(), { t0, t1, t2, t3, t4, t5, t6 -> UsersRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.userId, row.name, row.lastName, row.email, row.password, row.createdAt, row.verifiedOn) })
+    val _rowParser: RowParser<UsersRow> = RowParsers.of(UsersId.dbType, PgTypes.text, PgTypes.text.nullable(), PgTypes.unknown, PgTypes.text, PgTypes.timestamptz, PgTypes.timestamptz.nullable(), { t0, t1, t2, t3, t4, t5, t6 -> UsersRow(t0, t1, t2, t3, t4, t5, t6) }, { row -> arrayOf<Any?>(row.userId, row.name, row.lastName, row.email, row.password, row.createdAt, row.verifiedOn) })
 
     val pgText: PgText<UsersRow> =
       PgText.from(_rowParser.underlying)

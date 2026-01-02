@@ -7,69 +7,66 @@ package adventureworks.public.identity_test
 
 import dev.typr.foundations.PgTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.dsl.FieldsExpr0
+import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.RelationStructure
+import dev.typr.foundations.dsl.SqlExpr
 import dev.typr.foundations.dsl.SqlExpr.Field
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
 import dev.typr.foundations.dsl.SqlExpr.IdField
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr3
 import java.util.Optional
 
-trait IdentityTestFields extends FieldsExpr0[IdentityTestRow] {
-  def alwaysGenerated: Field[Integer, IdentityTestRow]
+class IdentityTestFields(val `_path`: java.util.List[Path]) extends TupleExpr3[Integer, Integer, IdentityTestId] with RelationStructure[IdentityTestFields, IdentityTestRow]  with FieldsBase[IdentityTestRow] {
+  def alwaysGenerated: Field[Integer, IdentityTestRow] = {
+    new Field[Integer, IdentityTestRow](
+      _path,
+      "always_generated",
+      _.alwaysGenerated,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(alwaysGenerated = value),
+      PgTypes.int4
+    )
+  }
 
-  def defaultGenerated: Field[Integer, IdentityTestRow]
+  def defaultGenerated: Field[Integer, IdentityTestRow] = {
+    new Field[Integer, IdentityTestRow](
+      _path,
+      "default_generated",
+      _.defaultGenerated,
+      Optional.empty(),
+      Optional.of("int4"),
+      (row, value) => row.copy(defaultGenerated = value),
+      PgTypes.int4
+    )
+  }
 
-  def name: IdField[IdentityTestId, IdentityTestRow]
+  def name: IdField[IdentityTestId, IdentityTestRow] = {
+    new IdField[IdentityTestId, IdentityTestRow](
+      _path,
+      "name",
+      _.name,
+      Optional.empty(),
+      Optional.empty(),
+      (row, value) => row.copy(name = value),
+      IdentityTestId.dbType
+    )
+  }
 
-  override def columns: java.util.List[FieldLike[?, IdentityTestRow]]
+  override def columns: java.util.List[FieldLike[?, IdentityTestRow]] = java.util.List.of(this.alwaysGenerated, this.defaultGenerated, this.name)
 
   override def rowParser: RowParser[IdentityTestRow] = IdentityTestRow._rowParser
+
+  override def withPaths(`_path`: java.util.List[Path]): RelationStructure[IdentityTestFields, IdentityTestRow] = new IdentityTestFields(`_path`)
+
+  override def `_1`: SqlExpr[Integer] = alwaysGenerated
+
+  override def `_2`: SqlExpr[Integer] = defaultGenerated
+
+  override def `_3`: SqlExpr[IdentityTestId] = name
 }
 
 object IdentityTestFields {
-  case class Impl(val `_path`: java.util.List[Path]) extends IdentityTestFields with RelationStructure[IdentityTestFields, IdentityTestRow] {
-
-    override def alwaysGenerated: Field[Integer, IdentityTestRow] = {
-      new Field[Integer, IdentityTestRow](
-        _path,
-        "always_generated",
-        _.alwaysGenerated,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(alwaysGenerated = value),
-        PgTypes.int4
-      )
-    }
-
-    override def defaultGenerated: Field[Integer, IdentityTestRow] = {
-      new Field[Integer, IdentityTestRow](
-        _path,
-        "default_generated",
-        _.defaultGenerated,
-        Optional.empty(),
-        Optional.of("int4"),
-        (row, value) => row.copy(defaultGenerated = value),
-        PgTypes.int4
-      )
-    }
-
-    override def name: IdField[IdentityTestId, IdentityTestRow] = {
-      new IdField[IdentityTestId, IdentityTestRow](
-        _path,
-        "name",
-        _.name,
-        Optional.empty(),
-        Optional.empty(),
-        (row, value) => row.copy(name = value),
-        IdentityTestId.pgType
-      )
-    }
-
-    override def columns: java.util.List[FieldLike[?, IdentityTestRow]] = java.util.List.of(this.alwaysGenerated, this.defaultGenerated, this.name)
-
-    override def withPaths(`_path`: java.util.List[Path]): RelationStructure[IdentityTestFields, IdentityTestRow] = new Impl(`_path`)
-  }
-
-  def structure: Impl = new Impl(java.util.Collections.emptyList())
+  val structure: IdentityTestFields = new IdentityTestFields(java.util.Collections.emptyList())
 }

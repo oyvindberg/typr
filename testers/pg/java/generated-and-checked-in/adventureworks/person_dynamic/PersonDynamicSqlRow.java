@@ -10,6 +10,7 @@ import adventureworks.userdefined.FirstName;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
+import dev.typr.foundations.Tuple.Tuple4;
 import java.util.Optional;
 
 /** SQL file: person_dynamic.sql */
@@ -21,7 +22,9 @@ public record PersonDynamicSqlRow(
     /** Points to {@link adventureworks.person.person.PersonRow#middlename()} */
     Optional<Name> middlename,
     /** Points to {@link adventureworks.person.person.PersonRow#lastname()} */
-    Name lastname) {
+    Name lastname)
+    implements Tuple4<
+        Optional</* max 8 chars */ String>, /* user-picked */ FirstName, Optional<Name>, Name> {
   /** Points to {@link adventureworks.person.person.PersonRow#title()} */
   public PersonDynamicSqlRow withTitle(Optional</* max 8 chars */ String> title) {
     return new PersonDynamicSqlRow(title, firstname, middlename, lastname);
@@ -49,10 +52,34 @@ public record PersonDynamicSqlRow(
   public static RowParser<PersonDynamicSqlRow> _rowParser =
       RowParsers.of(
           PgTypes.text.opt(),
-          FirstName.pgType,
-          Name.pgType.opt(),
-          Name.pgType,
+          FirstName.dbType,
+          Name.dbType.opt(),
+          Name.dbType,
           PersonDynamicSqlRow::new,
           row -> new Object[] {row.title(), row.firstname(), row.middlename(), row.lastname()});
+  ;
+
+  @Override
+  public Optional</* max 8 chars */ String> _1() {
+    return title;
+  }
+  ;
+
+  @Override
+  public /* user-picked */ FirstName _2() {
+    return firstname;
+  }
+  ;
+
+  @Override
+  public Optional<Name> _3() {
+    return middlename;
+  }
+  ;
+
+  @Override
+  public Name _4() {
+    return lastname;
+  }
   ;
 }

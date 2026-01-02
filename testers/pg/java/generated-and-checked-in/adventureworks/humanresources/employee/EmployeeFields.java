@@ -11,295 +11,327 @@ import adventureworks.person.person.PersonRow;
 import adventureworks.public_.Flag;
 import dev.typr.foundations.PgTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr15;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface EmployeeFields extends FieldsExpr<EmployeeRow> {
-  record Impl(List<Path> _path)
-      implements EmployeeFields, RelationStructure<EmployeeFields, EmployeeRow> {
-    @Override
-    public IdField<BusinessentityId, EmployeeRow> businessentityid() {
-      return new IdField<BusinessentityId, EmployeeRow>(
-          _path,
-          "businessentityid",
-          EmployeeRow::businessentityid,
-          Optional.empty(),
-          Optional.of("int4"),
-          (row, value) -> row.withBusinessentityid(value),
-          BusinessentityId.pgType);
-    }
-    ;
+public class EmployeeFields
+    implements TupleExpr15<
+            BusinessentityId,
+            String,
+            String,
+            String,
+            LocalDate,
+            String,
+            String,
+            LocalDate,
+            Flag,
+            Short,
+            Short,
+            Flag,
+            UUID,
+            LocalDateTime,
+            String>,
+        RelationStructure<EmployeeFields, EmployeeRow>,
+        FieldsBase<EmployeeRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, EmployeeRow> nationalidnumber() {
-      return new Field<String, EmployeeRow>(
-          _path,
-          "nationalidnumber",
-          EmployeeRow::nationalidnumber,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withNationalidnumber(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<String, EmployeeRow> loginid() {
-      return new Field<String, EmployeeRow>(
-          _path,
-          "loginid",
-          EmployeeRow::loginid,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withLoginid(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<String, EmployeeRow> jobtitle() {
-      return new Field<String, EmployeeRow>(
-          _path,
-          "jobtitle",
-          EmployeeRow::jobtitle,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withJobtitle(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<LocalDate, EmployeeRow> birthdate() {
-      return new Field<LocalDate, EmployeeRow>(
-          _path,
-          "birthdate",
-          EmployeeRow::birthdate,
-          Optional.empty(),
-          Optional.of("date"),
-          (row, value) -> row.withBirthdate(value),
-          PgTypes.date);
-    }
-    ;
-
-    @Override
-    public Field<String, EmployeeRow> maritalstatus() {
-      return new Field<String, EmployeeRow>(
-          _path,
-          "maritalstatus",
-          EmployeeRow::maritalstatus,
-          Optional.empty(),
-          Optional.of("bpchar"),
-          (row, value) -> row.withMaritalstatus(value),
-          PgTypes.bpchar);
-    }
-    ;
-
-    @Override
-    public Field<String, EmployeeRow> gender() {
-      return new Field<String, EmployeeRow>(
-          _path,
-          "gender",
-          EmployeeRow::gender,
-          Optional.empty(),
-          Optional.of("bpchar"),
-          (row, value) -> row.withGender(value),
-          PgTypes.bpchar);
-    }
-    ;
-
-    @Override
-    public Field<LocalDate, EmployeeRow> hiredate() {
-      return new Field<LocalDate, EmployeeRow>(
-          _path,
-          "hiredate",
-          EmployeeRow::hiredate,
-          Optional.empty(),
-          Optional.of("date"),
-          (row, value) -> row.withHiredate(value),
-          PgTypes.date);
-    }
-    ;
-
-    @Override
-    public Field<Flag, EmployeeRow> salariedflag() {
-      return new Field<Flag, EmployeeRow>(
-          _path,
-          "salariedflag",
-          EmployeeRow::salariedflag,
-          Optional.empty(),
-          Optional.of("bool"),
-          (row, value) -> row.withSalariedflag(value),
-          Flag.pgType);
-    }
-    ;
-
-    @Override
-    public Field<Short, EmployeeRow> vacationhours() {
-      return new Field<Short, EmployeeRow>(
-          _path,
-          "vacationhours",
-          EmployeeRow::vacationhours,
-          Optional.empty(),
-          Optional.of("int2"),
-          (row, value) -> row.withVacationhours(value),
-          PgTypes.int2);
-    }
-    ;
-
-    @Override
-    public Field<Short, EmployeeRow> sickleavehours() {
-      return new Field<Short, EmployeeRow>(
-          _path,
-          "sickleavehours",
-          EmployeeRow::sickleavehours,
-          Optional.empty(),
-          Optional.of("int2"),
-          (row, value) -> row.withSickleavehours(value),
-          PgTypes.int2);
-    }
-    ;
-
-    @Override
-    public Field<Flag, EmployeeRow> currentflag() {
-      return new Field<Flag, EmployeeRow>(
-          _path,
-          "currentflag",
-          EmployeeRow::currentflag,
-          Optional.empty(),
-          Optional.of("bool"),
-          (row, value) -> row.withCurrentflag(value),
-          Flag.pgType);
-    }
-    ;
-
-    @Override
-    public Field<UUID, EmployeeRow> rowguid() {
-      return new Field<UUID, EmployeeRow>(
-          _path,
-          "rowguid",
-          EmployeeRow::rowguid,
-          Optional.empty(),
-          Optional.of("uuid"),
-          (row, value) -> row.withRowguid(value),
-          PgTypes.uuid);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, EmployeeRow> modifieddate() {
-      return new Field<LocalDateTime, EmployeeRow>(
-          _path,
-          "modifieddate",
-          EmployeeRow::modifieddate,
-          Optional.empty(),
-          Optional.of("timestamp"),
-          (row, value) -> row.withModifieddate(value),
-          PgTypes.timestamp);
-    }
-    ;
-
-    @Override
-    public OptField<String, EmployeeRow> organizationnode() {
-      return new OptField<String, EmployeeRow>(
-          _path,
-          "organizationnode",
-          EmployeeRow::organizationnode,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withOrganizationnode(value),
-          PgTypes.text);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, EmployeeRow>> columns() {
-      return java.util.List.of(
-          this.businessentityid(),
-          this.nationalidnumber(),
-          this.loginid(),
-          this.jobtitle(),
-          this.birthdate(),
-          this.maritalstatus(),
-          this.gender(),
-          this.hiredate(),
-          this.salariedflag(),
-          this.vacationhours(),
-          this.sickleavehours(),
-          this.currentflag(),
-          this.rowguid(),
-          this.modifieddate(),
-          this.organizationnode());
-    }
-    ;
-
-    @Override
-    public RelationStructure<EmployeeFields, EmployeeRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public EmployeeFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static EmployeeFields structure = new EmployeeFields(java.util.Collections.emptyList());
+
+  public IdField<BusinessentityId, EmployeeRow> businessentityid() {
+    return new IdField<BusinessentityId, EmployeeRow>(
+        _path,
+        "businessentityid",
+        EmployeeRow::businessentityid,
+        Optional.empty(),
+        Optional.of("int4"),
+        (row, value) -> row.withBusinessentityid(value),
+        BusinessentityId.dbType);
   }
-  ;
 
-  IdField<BusinessentityId, EmployeeRow> businessentityid();
+  public Field<String, EmployeeRow> nationalidnumber() {
+    return new Field<String, EmployeeRow>(
+        _path,
+        "nationalidnumber",
+        EmployeeRow::nationalidnumber,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withNationalidnumber(value),
+        PgTypes.text);
+  }
 
-  Field<String, EmployeeRow> nationalidnumber();
+  public Field<String, EmployeeRow> loginid() {
+    return new Field<String, EmployeeRow>(
+        _path,
+        "loginid",
+        EmployeeRow::loginid,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withLoginid(value),
+        PgTypes.text);
+  }
 
-  Field<String, EmployeeRow> loginid();
+  public Field<String, EmployeeRow> jobtitle() {
+    return new Field<String, EmployeeRow>(
+        _path,
+        "jobtitle",
+        EmployeeRow::jobtitle,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withJobtitle(value),
+        PgTypes.text);
+  }
 
-  Field<String, EmployeeRow> jobtitle();
+  public Field<LocalDate, EmployeeRow> birthdate() {
+    return new Field<LocalDate, EmployeeRow>(
+        _path,
+        "birthdate",
+        EmployeeRow::birthdate,
+        Optional.empty(),
+        Optional.of("date"),
+        (row, value) -> row.withBirthdate(value),
+        PgTypes.date);
+  }
 
-  Field<LocalDate, EmployeeRow> birthdate();
+  public Field<String, EmployeeRow> maritalstatus() {
+    return new Field<String, EmployeeRow>(
+        _path,
+        "maritalstatus",
+        EmployeeRow::maritalstatus,
+        Optional.empty(),
+        Optional.of("bpchar"),
+        (row, value) -> row.withMaritalstatus(value),
+        PgTypes.bpchar);
+  }
 
-  Field<String, EmployeeRow> maritalstatus();
+  public Field<String, EmployeeRow> gender() {
+    return new Field<String, EmployeeRow>(
+        _path,
+        "gender",
+        EmployeeRow::gender,
+        Optional.empty(),
+        Optional.of("bpchar"),
+        (row, value) -> row.withGender(value),
+        PgTypes.bpchar);
+  }
 
-  Field<String, EmployeeRow> gender();
+  public Field<LocalDate, EmployeeRow> hiredate() {
+    return new Field<LocalDate, EmployeeRow>(
+        _path,
+        "hiredate",
+        EmployeeRow::hiredate,
+        Optional.empty(),
+        Optional.of("date"),
+        (row, value) -> row.withHiredate(value),
+        PgTypes.date);
+  }
 
-  Field<LocalDate, EmployeeRow> hiredate();
+  public Field<Flag, EmployeeRow> salariedflag() {
+    return new Field<Flag, EmployeeRow>(
+        _path,
+        "salariedflag",
+        EmployeeRow::salariedflag,
+        Optional.empty(),
+        Optional.of("bool"),
+        (row, value) -> row.withSalariedflag(value),
+        Flag.dbType);
+  }
 
-  Field<Flag, EmployeeRow> salariedflag();
+  public Field<Short, EmployeeRow> vacationhours() {
+    return new Field<Short, EmployeeRow>(
+        _path,
+        "vacationhours",
+        EmployeeRow::vacationhours,
+        Optional.empty(),
+        Optional.of("int2"),
+        (row, value) -> row.withVacationhours(value),
+        PgTypes.int2);
+  }
 
-  Field<Short, EmployeeRow> vacationhours();
+  public Field<Short, EmployeeRow> sickleavehours() {
+    return new Field<Short, EmployeeRow>(
+        _path,
+        "sickleavehours",
+        EmployeeRow::sickleavehours,
+        Optional.empty(),
+        Optional.of("int2"),
+        (row, value) -> row.withSickleavehours(value),
+        PgTypes.int2);
+  }
 
-  Field<Short, EmployeeRow> sickleavehours();
+  public Field<Flag, EmployeeRow> currentflag() {
+    return new Field<Flag, EmployeeRow>(
+        _path,
+        "currentflag",
+        EmployeeRow::currentflag,
+        Optional.empty(),
+        Optional.of("bool"),
+        (row, value) -> row.withCurrentflag(value),
+        Flag.dbType);
+  }
 
-  Field<Flag, EmployeeRow> currentflag();
+  public Field<UUID, EmployeeRow> rowguid() {
+    return new Field<UUID, EmployeeRow>(
+        _path,
+        "rowguid",
+        EmployeeRow::rowguid,
+        Optional.empty(),
+        Optional.of("uuid"),
+        (row, value) -> row.withRowguid(value),
+        PgTypes.uuid);
+  }
 
-  Field<UUID, EmployeeRow> rowguid();
+  public Field<LocalDateTime, EmployeeRow> modifieddate() {
+    return new Field<LocalDateTime, EmployeeRow>(
+        _path,
+        "modifieddate",
+        EmployeeRow::modifieddate,
+        Optional.empty(),
+        Optional.of("timestamp"),
+        (row, value) -> row.withModifieddate(value),
+        PgTypes.timestamp);
+  }
 
-  Field<LocalDateTime, EmployeeRow> modifieddate();
+  public OptField<String, EmployeeRow> organizationnode() {
+    return new OptField<String, EmployeeRow>(
+        _path,
+        "organizationnode",
+        EmployeeRow::organizationnode,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withOrganizationnode(value),
+        PgTypes.text);
+  }
 
-  OptField<String, EmployeeRow> organizationnode();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<PersonFields, PersonRow> fkPersonPerson() {
+  public ForeignKey<PersonFields, PersonRow> fkPersonPerson() {
     return ForeignKey.<PersonFields, PersonRow>of(
             "humanresources.FK_Employee_Person_BusinessEntityID")
         .<BusinessentityId>withColumnPair(businessentityid(), PersonFields::businessentityid);
   }
-  ;
 
   @Override
-  List<FieldLike<?, EmployeeRow>> columns();
+  public List<FieldLike<?, EmployeeRow>> columns() {
+    return java.util.List.of(
+        this.businessentityid(),
+        this.nationalidnumber(),
+        this.loginid(),
+        this.jobtitle(),
+        this.birthdate(),
+        this.maritalstatus(),
+        this.gender(),
+        this.hiredate(),
+        this.salariedflag(),
+        this.vacationhours(),
+        this.sickleavehours(),
+        this.currentflag(),
+        this.rowguid(),
+        this.modifieddate(),
+        this.organizationnode());
+  }
 
   @Override
-  default RowParser<EmployeeRow> rowParser() {
+  public RowParser<EmployeeRow> rowParser() {
     return EmployeeRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<EmployeeFields, EmployeeRow> withPaths(List<Path> _path) {
+    return new EmployeeFields(_path);
+  }
+
+  @Override
+  public SqlExpr<BusinessentityId> _1() {
+    return businessentityid();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return nationalidnumber();
+  }
+
+  @Override
+  public SqlExpr<String> _3() {
+    return loginid();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return jobtitle();
+  }
+
+  @Override
+  public SqlExpr<LocalDate> _5() {
+    return birthdate();
+  }
+
+  @Override
+  public SqlExpr<String> _6() {
+    return maritalstatus();
+  }
+
+  @Override
+  public SqlExpr<String> _7() {
+    return gender();
+  }
+
+  @Override
+  public SqlExpr<LocalDate> _8() {
+    return hiredate();
+  }
+
+  @Override
+  public SqlExpr<Flag> _9() {
+    return salariedflag();
+  }
+
+  @Override
+  public SqlExpr<Short> _10() {
+    return vacationhours();
+  }
+
+  @Override
+  public SqlExpr<Short> _11() {
+    return sickleavehours();
+  }
+
+  @Override
+  public SqlExpr<Flag> _12() {
+    return currentflag();
+  }
+
+  @Override
+  public SqlExpr<UUID> _13() {
+    return rowguid();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _14() {
+    return modifieddate();
+  }
+
+  @Override
+  public SqlExpr<String> _15() {
+    return organizationnode();
+  }
 }

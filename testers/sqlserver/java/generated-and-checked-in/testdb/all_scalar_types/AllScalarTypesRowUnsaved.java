@@ -8,6 +8,10 @@ package testdb.all_scalar_types;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.sqlserver.jdbc.Geography;
 import com.microsoft.sqlserver.jdbc.Geometry;
+import dev.typr.foundations.data.HierarchyId;
+import dev.typr.foundations.data.Json;
+import dev.typr.foundations.data.Uint1;
+import dev.typr.foundations.data.Xml;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,7 +24,7 @@ import testdb.customtypes.Defaulted.UseDefault;
 
 /** This class corresponds to a row in table `all_scalar_types` which has not been persisted yet */
 public record AllScalarTypesRowUnsaved(
-    @JsonProperty("col_tinyint") Optional<Short> colTinyint,
+    @JsonProperty("col_tinyint") Optional<Uint1> colTinyint,
     @JsonProperty("col_smallint") Optional<Short> colSmallint,
     @JsonProperty("col_int") Optional<Integer> colInt,
     @JsonProperty("col_bigint") Optional<Long> colBigint,
@@ -50,9 +54,9 @@ public record AllScalarTypesRowUnsaved(
     @JsonProperty("col_datetime2") Optional<LocalDateTime> colDatetime2,
     @JsonProperty("col_datetimeoffset") Optional<OffsetDateTime> colDatetimeoffset,
     @JsonProperty("col_uniqueidentifier") Optional<UUID> colUniqueidentifier,
-    @JsonProperty("col_xml") Optional</* XML */ String> colXml,
-    @JsonProperty("col_json") Optional<String> colJson,
-    @JsonProperty("col_hierarchyid") Optional</* HIERARCHYID */ String> colHierarchyid,
+    @JsonProperty("col_xml") Optional<Xml> colXml,
+    @JsonProperty("col_json") Optional<Json> colJson,
+    @JsonProperty("col_hierarchyid") Optional<HierarchyId> colHierarchyid,
     @JsonProperty("col_geography") Optional<Geography> colGeography,
     @JsonProperty("col_geometry") Optional<Geometry> colGeometry,
     /** Default: ('default_value') */
@@ -98,7 +102,7 @@ public record AllScalarTypesRowUnsaved(
   }
   ;
 
-  public AllScalarTypesRowUnsaved withColTinyint(Optional<Short> colTinyint) {
+  public AllScalarTypesRowUnsaved withColTinyint(Optional<Uint1> colTinyint) {
     return new AllScalarTypesRowUnsaved(
         colTinyint,
         colSmallint,
@@ -1329,7 +1333,7 @@ public record AllScalarTypesRowUnsaved(
   }
   ;
 
-  public AllScalarTypesRowUnsaved withColXml(Optional</* XML */ String> colXml) {
+  public AllScalarTypesRowUnsaved withColXml(Optional<Xml> colXml) {
     return new AllScalarTypesRowUnsaved(
         colTinyint,
         colSmallint,
@@ -1370,7 +1374,7 @@ public record AllScalarTypesRowUnsaved(
   }
   ;
 
-  public AllScalarTypesRowUnsaved withColJson(Optional<String> colJson) {
+  public AllScalarTypesRowUnsaved withColJson(Optional<Json> colJson) {
     return new AllScalarTypesRowUnsaved(
         colTinyint,
         colSmallint,
@@ -1411,8 +1415,7 @@ public record AllScalarTypesRowUnsaved(
   }
   ;
 
-  public AllScalarTypesRowUnsaved withColHierarchyid(
-      Optional</* HIERARCHYID */ String> colHierarchyid) {
+  public AllScalarTypesRowUnsaved withColHierarchyid(Optional<HierarchyId> colHierarchyid) {
     return new AllScalarTypesRowUnsaved(
         colTinyint,
         colSmallint,

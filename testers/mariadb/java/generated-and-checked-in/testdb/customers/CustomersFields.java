@@ -7,15 +7,18 @@ package testdb.customers;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
+import dev.typr.foundations.data.Json;
 import dev.typr.foundations.data.maria.MariaSet;
-import dev.typr.foundations.dsl.FieldsExpr;
+import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
+import dev.typr.foundations.dsl.SqlExpr;
 import dev.typr.foundations.dsl.SqlExpr.Field;
 import dev.typr.foundations.dsl.SqlExpr.FieldLike;
 import dev.typr.foundations.dsl.SqlExpr.IdField;
 import dev.typr.foundations.dsl.SqlExpr.OptField;
+import dev.typr.foundations.dsl.TupleExpr.TupleExpr14;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -23,264 +26,292 @@ import testdb.customer_status.CustomerStatusFields;
 import testdb.customer_status.CustomerStatusId;
 import testdb.customer_status.CustomerStatusRow;
 
-public interface CustomersFields extends FieldsExpr<CustomersRow> {
-  record Impl(List<Path> _path)
-      implements CustomersFields, RelationStructure<CustomersFields, CustomersRow> {
-    @Override
-    public IdField<CustomersId, CustomersRow> customerId() {
-      return new IdField<CustomersId, CustomersRow>(
-          _path,
-          "customer_id",
-          CustomersRow::customerId,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCustomerId(value),
-          CustomersId.pgType);
-    }
-    ;
+public class CustomersFields
+    implements TupleExpr14<
+            CustomersId,
+            String,
+            byte[],
+            String,
+            String,
+            String,
+            CustomerStatusId,
+            String,
+            Json,
+            MariaSet,
+            String,
+            LocalDateTime,
+            LocalDateTime,
+            LocalDateTime>,
+        RelationStructure<CustomersFields, CustomersRow>,
+        FieldsBase<CustomersRow> {
+  List<Path> _path;
 
-    @Override
-    public Field<String, CustomersRow> email() {
-      return new Field<String, CustomersRow>(
-          _path,
-          "email",
-          CustomersRow::email,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withEmail(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<byte[], CustomersRow> passwordHash() {
-      return new Field<byte[], CustomersRow>(
-          _path,
-          "password_hash",
-          CustomersRow::passwordHash,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPasswordHash(value),
-          MariaTypes.binary);
-    }
-    ;
-
-    @Override
-    public Field<String, CustomersRow> firstName() {
-      return new Field<String, CustomersRow>(
-          _path,
-          "first_name",
-          CustomersRow::firstName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withFirstName(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<String, CustomersRow> lastName() {
-      return new Field<String, CustomersRow>(
-          _path,
-          "last_name",
-          CustomersRow::lastName,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withLastName(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public OptField<String, CustomersRow> phone() {
-      return new OptField<String, CustomersRow>(
-          _path,
-          "phone",
-          CustomersRow::phone,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPhone(value),
-          MariaTypes.varchar);
-    }
-    ;
-
-    @Override
-    public Field<CustomerStatusId, CustomersRow> status() {
-      return new Field<CustomerStatusId, CustomersRow>(
-          _path,
-          "status",
-          CustomersRow::status,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withStatus(value),
-          CustomerStatusId.pgType);
-    }
-    ;
-
-    @Override
-    public Field<String, CustomersRow> tier() {
-      return new Field<String, CustomersRow>(
-          _path,
-          "tier",
-          CustomersRow::tier,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withTier(value),
-          MariaTypes.text);
-    }
-    ;
-
-    @Override
-    public OptField<String, CustomersRow> preferences() {
-      return new OptField<String, CustomersRow>(
-          _path,
-          "preferences",
-          CustomersRow::preferences,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withPreferences(value),
-          MariaTypes.longtext);
-    }
-    ;
-
-    @Override
-    public OptField<MariaSet, CustomersRow> marketingFlags() {
-      return new OptField<MariaSet, CustomersRow>(
-          _path,
-          "marketing_flags",
-          CustomersRow::marketingFlags,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withMarketingFlags(value),
-          MariaTypes.set);
-    }
-    ;
-
-    @Override
-    public OptField<String, CustomersRow> notes() {
-      return new OptField<String, CustomersRow>(
-          _path,
-          "notes",
-          CustomersRow::notes,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withNotes(value),
-          MariaTypes.text);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, CustomersRow> createdAt() {
-      return new Field<LocalDateTime, CustomersRow>(
-          _path,
-          "created_at",
-          CustomersRow::createdAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withCreatedAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public Field<LocalDateTime, CustomersRow> updatedAt() {
-      return new Field<LocalDateTime, CustomersRow>(
-          _path,
-          "updated_at",
-          CustomersRow::updatedAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withUpdatedAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public OptField<LocalDateTime, CustomersRow> lastLoginAt() {
-      return new OptField<LocalDateTime, CustomersRow>(
-          _path,
-          "last_login_at",
-          CustomersRow::lastLoginAt,
-          Optional.empty(),
-          Optional.empty(),
-          (row, value) -> row.withLastLoginAt(value),
-          MariaTypes.datetime);
-    }
-    ;
-
-    @Override
-    public List<FieldLike<?, CustomersRow>> columns() {
-      return java.util.List.of(
-          this.customerId(),
-          this.email(),
-          this.passwordHash(),
-          this.firstName(),
-          this.lastName(),
-          this.phone(),
-          this.status(),
-          this.tier(),
-          this.preferences(),
-          this.marketingFlags(),
-          this.notes(),
-          this.createdAt(),
-          this.updatedAt(),
-          this.lastLoginAt());
-    }
-    ;
-
-    @Override
-    public RelationStructure<CustomersFields, CustomersRow> withPaths(List<Path> _path) {
-      return new Impl(_path);
-    }
-    ;
+  public CustomersFields(List<Path> _path) {
+    this._path = _path;
   }
-  ;
 
-  static Impl structure() {
-    return new Impl(java.util.Collections.emptyList());
+  public static CustomersFields structure = new CustomersFields(java.util.Collections.emptyList());
+
+  public IdField<CustomersId, CustomersRow> customerId() {
+    return new IdField<CustomersId, CustomersRow>(
+        _path,
+        "customer_id",
+        CustomersRow::customerId,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCustomerId(value),
+        CustomersId.dbType);
   }
-  ;
 
-  IdField<CustomersId, CustomersRow> customerId();
+  public Field<String, CustomersRow> email() {
+    return new Field<String, CustomersRow>(
+        _path,
+        "email",
+        CustomersRow::email,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withEmail(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, CustomersRow> email();
+  public Field<byte[], CustomersRow> passwordHash() {
+    return new Field<byte[], CustomersRow>(
+        _path,
+        "password_hash",
+        CustomersRow::passwordHash,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPasswordHash(value),
+        MariaTypes.binary);
+  }
 
-  Field<byte[], CustomersRow> passwordHash();
+  public Field<String, CustomersRow> firstName() {
+    return new Field<String, CustomersRow>(
+        _path,
+        "first_name",
+        CustomersRow::firstName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withFirstName(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, CustomersRow> firstName();
+  public Field<String, CustomersRow> lastName() {
+    return new Field<String, CustomersRow>(
+        _path,
+        "last_name",
+        CustomersRow::lastName,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withLastName(value),
+        MariaTypes.varchar);
+  }
 
-  Field<String, CustomersRow> lastName();
+  public OptField<String, CustomersRow> phone() {
+    return new OptField<String, CustomersRow>(
+        _path,
+        "phone",
+        CustomersRow::phone,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPhone(value),
+        MariaTypes.varchar);
+  }
 
-  OptField<String, CustomersRow> phone();
+  public Field<CustomerStatusId, CustomersRow> status() {
+    return new Field<CustomerStatusId, CustomersRow>(
+        _path,
+        "status",
+        CustomersRow::status,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withStatus(value),
+        CustomerStatusId.dbType);
+  }
 
-  Field<CustomerStatusId, CustomersRow> status();
+  public Field<String, CustomersRow> tier() {
+    return new Field<String, CustomersRow>(
+        _path,
+        "tier",
+        CustomersRow::tier,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withTier(value),
+        MariaTypes.text);
+  }
 
-  Field<String, CustomersRow> tier();
+  public OptField<Json, CustomersRow> preferences() {
+    return new OptField<Json, CustomersRow>(
+        _path,
+        "preferences",
+        CustomersRow::preferences,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withPreferences(value),
+        MariaTypes.json);
+  }
 
-  OptField<String, CustomersRow> preferences();
+  public OptField<MariaSet, CustomersRow> marketingFlags() {
+    return new OptField<MariaSet, CustomersRow>(
+        _path,
+        "marketing_flags",
+        CustomersRow::marketingFlags,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withMarketingFlags(value),
+        MariaTypes.set);
+  }
 
-  OptField<MariaSet, CustomersRow> marketingFlags();
+  public OptField<String, CustomersRow> notes() {
+    return new OptField<String, CustomersRow>(
+        _path,
+        "notes",
+        CustomersRow::notes,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withNotes(value),
+        MariaTypes.text);
+  }
 
-  OptField<String, CustomersRow> notes();
+  public Field<LocalDateTime, CustomersRow> createdAt() {
+    return new Field<LocalDateTime, CustomersRow>(
+        _path,
+        "created_at",
+        CustomersRow::createdAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withCreatedAt(value),
+        MariaTypes.datetime);
+  }
 
-  Field<LocalDateTime, CustomersRow> createdAt();
+  public Field<LocalDateTime, CustomersRow> updatedAt() {
+    return new Field<LocalDateTime, CustomersRow>(
+        _path,
+        "updated_at",
+        CustomersRow::updatedAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withUpdatedAt(value),
+        MariaTypes.datetime);
+  }
 
-  Field<LocalDateTime, CustomersRow> updatedAt();
+  public OptField<LocalDateTime, CustomersRow> lastLoginAt() {
+    return new OptField<LocalDateTime, CustomersRow>(
+        _path,
+        "last_login_at",
+        CustomersRow::lastLoginAt,
+        Optional.empty(),
+        Optional.empty(),
+        (row, value) -> row.withLastLoginAt(value),
+        MariaTypes.datetime);
+  }
 
-  OptField<LocalDateTime, CustomersRow> lastLoginAt();
+  @Override
+  public List<Path> _path() {
+    return _path;
+  }
 
-  default ForeignKey<CustomerStatusFields, CustomerStatusRow> fkCustomerStatus() {
+  public ForeignKey<CustomerStatusFields, CustomerStatusRow> fkCustomerStatus() {
     return ForeignKey.<CustomerStatusFields, CustomerStatusRow>of("fk_customer_status")
         .<CustomerStatusId>withColumnPair(status(), CustomerStatusFields::statusCode);
   }
-  ;
 
   @Override
-  List<FieldLike<?, CustomersRow>> columns();
+  public List<FieldLike<?, CustomersRow>> columns() {
+    return java.util.List.of(
+        this.customerId(),
+        this.email(),
+        this.passwordHash(),
+        this.firstName(),
+        this.lastName(),
+        this.phone(),
+        this.status(),
+        this.tier(),
+        this.preferences(),
+        this.marketingFlags(),
+        this.notes(),
+        this.createdAt(),
+        this.updatedAt(),
+        this.lastLoginAt());
+  }
 
   @Override
-  default RowParser<CustomersRow> rowParser() {
+  public RowParser<CustomersRow> rowParser() {
     return CustomersRow._rowParser;
   }
-  ;
+
+  @Override
+  public RelationStructure<CustomersFields, CustomersRow> withPaths(List<Path> _path) {
+    return new CustomersFields(_path);
+  }
+
+  @Override
+  public SqlExpr<CustomersId> _1() {
+    return customerId();
+  }
+
+  @Override
+  public SqlExpr<String> _2() {
+    return email();
+  }
+
+  @Override
+  public SqlExpr<byte[]> _3() {
+    return passwordHash();
+  }
+
+  @Override
+  public SqlExpr<String> _4() {
+    return firstName();
+  }
+
+  @Override
+  public SqlExpr<String> _5() {
+    return lastName();
+  }
+
+  @Override
+  public SqlExpr<String> _6() {
+    return phone();
+  }
+
+  @Override
+  public SqlExpr<CustomerStatusId> _7() {
+    return status();
+  }
+
+  @Override
+  public SqlExpr<String> _8() {
+    return tier();
+  }
+
+  @Override
+  public SqlExpr<Json> _9() {
+    return preferences();
+  }
+
+  @Override
+  public SqlExpr<MariaSet> _10() {
+    return marketingFlags();
+  }
+
+  @Override
+  public SqlExpr<String> _11() {
+    return notes();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _12() {
+    return createdAt();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _13() {
+    return updatedAt();
+  }
+
+  @Override
+  public SqlExpr<LocalDateTime> _14() {
+    return lastLoginAt();
+  }
 }
