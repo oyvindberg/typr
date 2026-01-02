@@ -86,7 +86,7 @@ services:
       - 50000:50000
     volumes:
       - db2-data:/database
-      - ./sql-init/db2:/docker-entrypoint-initdb.d/
+      - ./sql-init/db2:/var/custom/
     # DB2 requires significant resources and time to start
     deploy:
       resources:
