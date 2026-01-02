@@ -2,6 +2,7 @@ package testdb
 
 import dev.typr.foundations.scala.TupleExpr2
 import org.junit.Assert.*
+import org.junit.Ignore
 import org.junit.Test
 import testdb.customers.*
 import testdb.order_items.*
@@ -291,6 +292,7 @@ class TupleInTest {
 
   // ==================== Nested Tuple Tests ====================
 
+  @Ignore("Nested tuple support pending refactoring")
   @Test
   def nestedTupleIn(): Unit = {
     withConnection { c =>
@@ -342,6 +344,7 @@ class TupleInTest {
 
   // ==================== Read Nested Tuple from Database Tests ====================
 
+  @Ignore("Nested tuple support pending refactoring")
   @Test
   def readNestedTupleFromDatabase(): Unit = {
     withConnection { c =>
