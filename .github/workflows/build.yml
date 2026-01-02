@@ -344,7 +344,11 @@ jobs:
         run: |
           docker compose up -d db2
           echo "Waiting for DB2 to be healthy (this may take several minutes)..."
+          # Stream logs in background while waiting
+          docker compose logs -f db2 &
+          LOGS_PID=$!
           docker compose up -d --wait db2
+          kill $LOGS_PID 2>/dev/null || true
 
       - name: Run DB2 Scala tests
         env:
