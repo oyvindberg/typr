@@ -92,10 +92,8 @@ jobs:
             sleep 2
           done
 
-      - name: Compile all Scala versions
-        run: |
-          bleep compile typr@jvm213
-          bleep compile typr@jvm3
+      - name: Compile typr
+        run: bleep compile typr
 
       - name: Run Scala 2.13 Postgres tests
         env:
