@@ -8,13 +8,21 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 /** Tests for DB2 type codecs. Tests all types defined in Db2Types. */
 public class Db2TypeTest {
+
+  private static final AtomicInteger tableCounter = new AtomicInteger(0);
+
+  private static String uniqueTableName(String prefix) {
+    return "DB2INST1." + prefix + "_" + tableCounter.incrementAndGet();
+  }
 
   record TestPair<A>(A t0, Optional<A> t1) {}
 
@@ -158,99 +166,63 @@ public class Db2TypeTest {
   public void test() {
     System.out.println("Testing DB2 type codecs...\n");
 
-    int totalPassed = 0;
-    int totalFailed = 0;
-    int totalSkipped = 0;
-
-    // Test JSON roundtrip first (no database connection needed)
-    System.out.println("=== JSON Roundtrip Tests ===");
-    for (Db2TypeAndExample<?> t : All) {
-      try {
-        boolean passed = testJsonRoundtrip(t);
-        if (passed) {
-          totalPassed++;
-        } else {
-          totalSkipped++;
-        }
-      } catch (Exception e) {
-        System.out.println("  FAILED " + t.type.typename().sqlType() + ": " + e.getMessage());
-        e.printStackTrace();
-        totalFailed++;
-      }
-    }
+    // Test JSON roundtrip first (no database connection needed) - parallel
+    System.out.println("=== JSON Roundtrip Tests (parallel) ===");
+    All.parallelStream().forEach(Db2TypeTest::testJsonRoundtrip);
     System.out.println();
 
-    final int jsonPassed = totalPassed;
-    final int jsonFailed = totalFailed;
-    final int jsonSkipped = totalSkipped;
+    // Run all DB tests in parallel
+    System.out.println("=== DB Roundtrip Tests (parallel) ===");
+    var failures =
+        All.parallelStream()
+            .flatMap(
+                t -> {
+                  var errors = new ArrayList<String>();
 
-    withConnection(
-        conn -> {
-          int passed = jsonPassed;
-          int failed = jsonFailed;
-          int skipped = jsonSkipped;
+                  // Native type roundtrip test
+                  try {
+                    withConnection(
+                        conn -> {
+                          testCase(conn, t);
+                          return null;
+                        });
+                  } catch (Exception e) {
+                    errors.add(
+                        "Native test FAILED "
+                            + t.type.typename().sqlType()
+                            + ": "
+                            + e.getMessage());
+                  }
 
-          // Test native type roundtrip
-          System.out.println("=== Native Type Roundtrip Tests ===");
-          for (Db2TypeAndExample<?> t : All) {
-            String typeName = t.type.typename().sqlType();
-            try {
-              System.out.println(
-                  "Testing " + typeName + " with example '" + format(t.example) + "'");
-              testCase(conn, t);
-              System.out.println("  PASSED\n");
-              passed++;
-            } catch (Exception e) {
-              System.out.println("  FAILED: " + e.getMessage() + "\n");
-              e.printStackTrace();
-              failed++;
-            }
-          }
+                  // JSON DB roundtrip test
+                  if (t.jsonDbWorks) {
+                    try {
+                      withConnection(
+                          conn -> {
+                            testJsonDbRoundtrip(conn, t);
+                            return null;
+                          });
+                    } catch (Exception e) {
+                      errors.add(
+                          "JSON DB test FAILED "
+                              + t.type.typename().sqlType()
+                              + ": "
+                              + e.getMessage());
+                    }
+                  }
 
-          // Test JSON DB roundtrip
-          System.out.println("\n=== JSON DB Roundtrip Tests ===");
-          for (Db2TypeAndExample<?> t : All) {
-            String typeName = t.type.typename().sqlType();
-            if (!t.jsonDbWorks) {
-              System.out.println("  SKIP JSON DB: " + typeName + " (DB2 JSON limitations)");
-              skipped++;
-              continue;
-            }
-            try {
-              boolean testPassed = testJsonDbRoundtrip(conn, t);
-              if (testPassed) {
-                passed++;
-              } else {
-                // UnsupportedOperationException was caught inside method
-                skipped++;
-              }
-            } catch (Exception e) {
-              System.out.println("  FAILED " + typeName + ": " + e.getMessage() + "\n");
-              e.printStackTrace();
-              failed++;
-            }
-          }
+                  return errors.stream();
+                })
+            .toList();
 
-          System.out.println("\n=====================================");
-          int total = All.size() * 3; // JSON roundtrip + native + JSON DB
-          System.out.println(
-              "Results: "
-                  + passed
-                  + " passed, "
-                  + failed
-                  + " failed, "
-                  + skipped
-                  + " skipped out of "
-                  + total
-                  + " tests");
-          System.out.println("=====================================");
-
-          if (failed > 0) {
-            throw new RuntimeException(failed + " tests failed");
-          }
-
-          return null;
-        });
+    System.out.println("\n=====================================");
+    if (failures.isEmpty()) {
+      System.out.println("All tests passed!");
+    } else {
+      failures.forEach(System.out::println);
+      throw new RuntimeException(failures.size() + " tests failed");
+    }
+    System.out.println("=====================================");
   }
 
   /**
@@ -321,7 +293,7 @@ public class Db2TypeTest {
 
     // Use a regular table instead of GLOBAL TEMPORARY TABLE
     // since GLOBAL TEMPORARY TABLE requires a user temporary tablespace
-    String tableName = "DB2INST1.TYPR_JSON_RT_TEST";
+    String tableName = uniqueTableName("TYPR_JSON_RT");
     try {
       conn.createStatement().execute("DROP TABLE " + tableName);
     } catch (SQLException e) {
@@ -391,7 +363,7 @@ public class Db2TypeTest {
 
     // Use a regular table instead of GLOBAL TEMPORARY TABLE
     // since GLOBAL TEMPORARY TABLE requires a user temporary tablespace
-    String tableName = "DB2INST1.TYPR_TYPE_TEST";
+    String tableName = uniqueTableName("TYPR_TYPE");
     try {
       conn.createStatement().execute("DROP TABLE " + tableName);
     } catch (SQLException e) {

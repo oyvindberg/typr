@@ -17,10 +17,17 @@ import java.time.Year;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 /** Tests for MariaDB type codecs. Tests all types defined in MariaTypes. */
 public class MariaTypeTest {
+
+  private static final AtomicInteger tableCounter = new AtomicInteger(0);
+
+  private static String uniqueTableName(String prefix) {
+    return prefix + "_" + tableCounter.incrementAndGet();
+  }
 
   record TestPair<A>(A t0, Optional<A> t1) {}
 
@@ -312,76 +319,63 @@ public class MariaTypeTest {
   public void test() {
     System.out.println("Testing MariaDB type codecs...\n");
 
-    // Test JSON roundtrip first (no database connection needed)
-    System.out.println("=== JSON Roundtrip Tests ===");
-    for (MariaTypeAndExample<?> t : All) {
-      testJsonRoundtrip(t);
-    }
+    // Test JSON roundtrip first (no database connection needed) - parallel
+    System.out.println("=== JSON Roundtrip Tests (parallel) ===");
+    All.parallelStream().forEach(MariaTypeTest::testJsonRoundtrip);
     System.out.println();
 
-    withConnection(
-        conn -> {
-          int passed = 0;
-          int failed = 0;
+    // Run native type and JSON DB tests in parallel
+    System.out.println("=== Native Type + JSON DB Roundtrip Tests (parallel) ===");
+    var failures =
+        All.parallelStream()
+            .flatMap(
+                t -> {
+                  var errors = new java.util.ArrayList<String>();
 
-          // Test native type roundtrip
-          System.out.println("=== Native Type Roundtrip Tests ===");
-          for (MariaTypeAndExample<?> t : All) {
-            String typeName = t.type.typename().sqlType();
-            try {
-              System.out.println(
-                  "Testing " + typeName + " with example '" + format(t.example) + "'");
-              testCase(conn, t);
-              System.out.println("  PASSED\n");
-              passed++;
-            } catch (Exception e) {
-              System.out.println("  FAILED: " + e.getMessage() + "\n");
-              e.printStackTrace();
-              failed++;
-            }
-          }
+                  // Native type roundtrip test
+                  try {
+                    withConnection(
+                        conn -> {
+                          testCase(conn, t);
+                          return null;
+                        });
+                  } catch (Exception e) {
+                    errors.add(
+                        "Native test FAILED "
+                            + t.type.typename().sqlType()
+                            + ": "
+                            + e.getMessage());
+                  }
 
-          // Test JSON DB roundtrip (simulates MULTISET behavior)
-          System.out.println("\n=== JSON DB Roundtrip Tests (MULTISET simulation) ===");
-          int skipped = 0;
-          for (MariaTypeAndExample<?> t : All) {
-            String typeName = t.type.typename().sqlType();
-            if (!t.jsonRoundtripWorks()) {
-              System.out.println(
-                  "SKIPPING JSON roundtrip " + typeName + " (binary types lossy in JSON)");
-              skipped++;
-              continue;
-            }
-            try {
-              testJsonDbRoundtrip(conn, t);
-              passed++;
-            } catch (Exception e) {
-              System.out.println("  FAILED " + typeName + ": " + e.getMessage() + "\n");
-              e.printStackTrace();
-              failed++;
-            }
-          }
+                  // JSON DB roundtrip test
+                  if (t.jsonRoundtripWorks()) {
+                    try {
+                      withConnection(
+                          conn -> {
+                            testJsonDbRoundtrip(conn, t);
+                            return null;
+                          });
+                    } catch (Exception e) {
+                      errors.add(
+                          "JSON DB test FAILED "
+                              + t.type.typename().sqlType()
+                              + ": "
+                              + e.getMessage());
+                    }
+                  }
 
-          System.out.println("\n=====================================");
-          int total = All.size() * 2 - skipped;
-          System.out.println(
-              "Results: "
-                  + passed
-                  + " passed, "
-                  + failed
-                  + " failed, "
-                  + skipped
-                  + " skipped out of "
-                  + total
-                  + " tests");
-          System.out.println("=====================================");
+                  return errors.stream();
+                })
+            .toList();
 
-          if (failed > 0) {
-            throw new RuntimeException(failed + " tests failed");
-          }
-
-          return null;
-        });
+    System.out.println("\n=====================================");
+    if (failures.isEmpty()) {
+      System.out.println("All tests passed!");
+    } else {
+      failures.forEach(System.out::println);
+      throw new RuntimeException(failures.size() + " tests failed");
+    }
+    System.out.println("=====================================");
   }
 
   static <A> void testJsonRoundtrip(MariaTypeAndExample<A> t) {
@@ -428,19 +422,20 @@ public class MariaTypeTest {
     MariaJson<A> jsonCodec = t.type.mariaJson();
     A original = t.example;
     String sqlType = t.type.typename().sqlType();
+    String tableName = uniqueTableName("test_json_rt");
 
     // Create temp table with the native type column
-    conn.createStatement().execute("CREATE TEMPORARY TABLE test_json_rt (v " + sqlType + ")");
+    conn.createStatement().execute("CREATE TEMPORARY TABLE " + tableName + " (v " + sqlType + ")");
 
     try {
       // Insert value using native type
-      var insert = conn.prepareStatement("INSERT INTO test_json_rt (v) VALUES (?)");
+      var insert = conn.prepareStatement("INSERT INTO " + tableName + " (v) VALUES (?)");
       t.type.write().set(insert, 1, original);
       insert.execute();
       insert.close();
 
       // Select back as JSON using JSON_OBJECT - this is what MULTISET does
-      var select = conn.prepareStatement("SELECT JSON_OBJECT('v', v) FROM test_json_rt");
+      var select = conn.prepareStatement("SELECT JSON_OBJECT('v', v) FROM " + tableName);
       select.execute();
       var rs = select.getResultSet();
 
@@ -457,16 +452,6 @@ public class MariaTypeTest {
       JsonValue fieldValue = ((JsonValue.JObject) parsedFromDb).get("v");
       A decoded = jsonCodec.fromJson(fieldValue);
 
-      System.out.println(
-          "JSON DB roundtrip "
-              + sqlType
-              + ": "
-              + format(original)
-              + " -> DB -> "
-              + jsonFromDb
-              + " -> "
-              + format(decoded));
-
       if (t.hasIdentity && !areEqual(decoded, original)) {
         throw new RuntimeException(
             "JSON DB roundtrip failed for "
@@ -478,19 +463,20 @@ public class MariaTypeTest {
                 + "'");
       }
     } finally {
-      conn.createStatement().execute("DROP TEMPORARY TABLE IF EXISTS test_json_rt");
+      conn.createStatement().execute("DROP TEMPORARY TABLE IF EXISTS " + tableName);
     }
   }
 
   static <A> void testCase(Connection conn, MariaTypeAndExample<A> t) throws SQLException {
     String sqlType = t.type.typename().sqlType();
+    String tableName = uniqueTableName("test_table");
 
     // Create temp table
-    conn.createStatement().execute("CREATE TEMPORARY TABLE test_table (v " + sqlType + ")");
+    conn.createStatement().execute("CREATE TEMPORARY TABLE " + tableName + " (v " + sqlType + ")");
 
     try {
       // Insert using PreparedStatement
-      var insert = conn.prepareStatement("INSERT INTO test_table (v) VALUES (?)");
+      var insert = conn.prepareStatement("INSERT INTO " + tableName + " (v) VALUES (?)");
       A expected = t.example;
       t.type.write().set(insert, 1, expected);
       insert.execute();
@@ -499,10 +485,10 @@ public class MariaTypeTest {
       // Select and verify
       final PreparedStatement select;
       if (t.hasIdentity) {
-        select = conn.prepareStatement("SELECT v, NULL FROM test_table WHERE v = ?");
+        select = conn.prepareStatement("SELECT v, NULL FROM " + tableName + " WHERE v = ?");
         t.type.write().set(select, 1, expected);
       } else {
-        select = conn.prepareStatement("SELECT v, NULL FROM test_table");
+        select = conn.prepareStatement("SELECT v, NULL FROM " + tableName);
       }
 
       select.execute();
@@ -524,7 +510,7 @@ public class MariaTypeTest {
 
     } finally {
       // Drop temp table
-      conn.createStatement().execute("DROP TEMPORARY TABLE IF EXISTS test_table");
+      conn.createStatement().execute("DROP TEMPORARY TABLE IF EXISTS " + tableName);
     }
   }
 
