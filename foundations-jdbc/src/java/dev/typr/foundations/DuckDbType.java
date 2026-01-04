@@ -13,9 +13,10 @@ public record DuckDbType<A>(
     DuckDbWrite<A> write,
     DuckDbStringifier<A> stringifier,
     DuckDbJson<A> duckDbJson,
-    DuckDbText<A> duckDbText)
+    DuckDbText<A> duckDbText,
+    DuckDbMapSupport<A> mapSupport)
     implements DbType<A> {
-  /** Constructor for backwards compatibility - uses stringifier-based text encoding. */
+  /** Constructor for backwards compatibility - uses cast-based map extraction. */
   public DuckDbType(
       DuckDbTypename<A> typename,
       DuckDbRead<A> read,
@@ -28,7 +29,26 @@ public record DuckDbType<A>(
         write,
         stringifier,
         duckDbJson,
-        DuckDbText.instance((a, sb) -> stringifier.unsafeEncode(a, sb, false)));
+        DuckDbText.instance((a, sb) -> stringifier.unsafeEncode(a, sb, false)),
+        DuckDbMapSupport.cast());
+  }
+
+  /** Constructor with custom map extractor. */
+  public DuckDbType(
+      DuckDbTypename<A> typename,
+      DuckDbRead<A> read,
+      DuckDbWrite<A> write,
+      DuckDbStringifier<A> stringifier,
+      DuckDbJson<A> duckDbJson,
+      DuckDbMapSupport<A> mapSupport) {
+    this(
+        typename,
+        read,
+        write,
+        stringifier,
+        duckDbJson,
+        DuckDbText.instance((a, sb) -> stringifier.unsafeEncode(a, sb, false)),
+        mapSupport);
   }
 
   @Override
@@ -148,11 +168,44 @@ public record DuckDbType<A>(
   }
 
   /**
-   * Simple mapTo() method for DSL use - returns this type's info for use in MAP type references.
-   * This is used by generated DSL code for type signatures only (not actual JDBC operations).
+   * Create a MAP type from this key type and a value type. Uses the mapSupport to convert
+   * keys/values when reading from DuckDB JDBC, and SQL literal conversion for writing.
+   *
+   * @param valueType the value type for the map
+   * @param <V> the value type
+   * @return DuckDbType for Map with this type as keys and valueType as values
    */
-  public <V> DuckDbType<A> mapTo(DuckDbType<V> valueType) {
-    return this;
+  public <V> DuckDbType<java.util.Map<A, V>> mapTo(DuckDbType<V> valueType) {
+    DuckDbTypename<java.util.Map<A, V>> mapTypename = typename.mapTo(valueType.typename);
+    String sqlType = mapTypename.sqlType();
+    DuckDbRead<java.util.Map<A, V>> mapRead =
+        DuckDbRead.readMapWithSupport(mapSupport, valueType.mapSupport);
+    DuckDbWrite<java.util.Map<A, V>> mapWrite =
+        DuckDbWrite.writeMapViaSqlLiteral(sqlType, stringifier, valueType.stringifier);
+    DuckDbStringifier<java.util.Map<A, V>> mapStringifier =
+        DuckDbStringifier.instance(
+            (map, sb, quoted) -> {
+              if (map.isEmpty()) {
+                sb.append("{}");
+                return;
+              }
+              sb.append("{");
+              boolean first = true;
+              for (var entry : map.entrySet()) {
+                if (!first) sb.append(", ");
+                first = false;
+                stringifier.unsafeEncode(entry.getKey(), sb, true);
+                sb.append(": ");
+                valueType.stringifier.unsafeEncode(entry.getValue(), sb, true);
+              }
+              sb.append("}");
+            });
+    return new DuckDbType<>(
+        mapTypename,
+        mapRead,
+        mapWrite,
+        mapStringifier,
+        DuckDbTypes.mapJson(duckDbJson, valueType.duckDbJson));
   }
 
   /**
@@ -411,7 +464,16 @@ public record DuckDbType<A>(
         read.map(f),
         write.contramap(g),
         stringifier.contramap(g),
-        duckDbJson.bimap(f, g));
+        duckDbJson.bimap(f, g),
+        mapSupport.bimap(
+            a -> {
+              try {
+                return f.apply(a);
+              } catch (java.sql.SQLException e) {
+                throw new RuntimeException(e);
+              }
+            },
+            g));
   }
 
   @Override
@@ -421,7 +483,8 @@ public record DuckDbType<A>(
         read.map(bijection::underlying),
         write.contramap(bijection::from),
         stringifier.contramap(bijection::from),
-        duckDbJson.bimap(bijection::underlying, bijection::from));
+        duckDbJson.bimap(bijection::underlying, bijection::from),
+        mapSupport.bimap(bijection::underlying, bijection::from));
   }
 
   public static <A> DuckDbType<A> of(

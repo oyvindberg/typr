@@ -535,6 +535,8 @@ object MariaMetaDb {
       }.toMap
 
     // MariaDB doesn't have PostgreSQL-style enums or domains
-    MetaDb(DbType.MariaDB, tables ++ views, enums = Nil, domains = Nil)
+    val allRelations = tables ++ views
+    val mariaSetTypes = MetaDb.extractMariaSetTypes(allRelations)
+    MetaDb(DbType.MariaDB, allRelations, enums = Nil, domains = Nil, mariaSetTypes = mariaSetTypes)
   }
 }

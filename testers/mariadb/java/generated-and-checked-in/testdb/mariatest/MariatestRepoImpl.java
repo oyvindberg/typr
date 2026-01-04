@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import testdb.XYZSet;
 
 public class MariatestRepoImpl implements MariatestRepo {
   @Override
@@ -141,7 +142,7 @@ public class MariatestRepoImpl implements MariatestRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.year, unsaved.yearCol()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.set, unsaved.setCol()),
+            Fragment.encode(XYZSet.dbType, unsaved.setCol()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.json, unsaved.jsonCol()),
             Fragment.lit(", "),
@@ -277,7 +278,7 @@ public class MariatestRepoImpl implements MariatestRepo {
     columns.add(Fragment.lit("`year_col`"));
     values.add(interpolate(Fragment.encode(MariaTypes.year, unsaved.yearCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`set_col`"));
-    values.add(interpolate(Fragment.encode(MariaTypes.set, unsaved.setCol()), Fragment.lit("")));
+    values.add(interpolate(Fragment.encode(XYZSet.dbType, unsaved.setCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`json_col`"));
     values.add(interpolate(Fragment.encode(MariaTypes.json, unsaved.jsonCol()), Fragment.lit("")));
     columns.add(Fragment.lit("`inet4_col`"));
@@ -488,7 +489,7 @@ public class MariatestRepoImpl implements MariatestRepo {
                 Fragment.lit(",\n`year_col` = "),
                 Fragment.encode(MariaTypes.year, row.yearCol()),
                 Fragment.lit(",\n`set_col` = "),
-                Fragment.encode(MariaTypes.set, row.setCol()),
+                Fragment.encode(XYZSet.dbType, row.setCol()),
                 Fragment.lit(",\n`json_col` = "),
                 Fragment.encode(MariaTypes.json, row.jsonCol()),
                 Fragment.lit(",\n`inet4_col` = "),
@@ -591,7 +592,7 @@ public class MariatestRepoImpl implements MariatestRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.year, unsaved.yearCol()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.set, unsaved.setCol()),
+            Fragment.encode(XYZSet.dbType, unsaved.setCol()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.json, unsaved.jsonCol()),
             Fragment.lit(", "),

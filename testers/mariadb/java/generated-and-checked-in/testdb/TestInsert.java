@@ -13,7 +13,6 @@ import dev.typr.foundations.data.Uint4;
 import dev.typr.foundations.data.Uint8;
 import dev.typr.foundations.data.maria.Inet4;
 import dev.typr.foundations.data.maria.Inet6;
-import dev.typr.foundations.data.maria.MariaSet;
 import dev.typr.foundations.internal.RandomHelper;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -21,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Year;
+import java.util.List;
 import java.util.Random;
 import org.mariadb.jdbc.type.Geometry;
 import org.mariadb.jdbc.type.GeometryCollection;
@@ -257,7 +257,6 @@ public record TestInsert(Random random) {
       byte[] mediumblobCol,
       byte[] longblobCol,
       Year yearCol,
-      MariaSet setCol,
       Inet4 inet4Col,
       Inet6 inet6Col) {
     return Inserter.of(
@@ -301,7 +300,7 @@ public record TestInsert(Random random) {
                 LocalDate.ofEpochDay((long) (random.nextInt(30000))),
                 LocalTime.ofSecondOfDay((long) (random.nextInt(24 * 60 * 60)))),
             yearCol,
-            setCol,
+            XYZSet.of(List.of(XYZSetMember.x)),
             new Json("{}"),
             inet4Col,
             inet6Col,

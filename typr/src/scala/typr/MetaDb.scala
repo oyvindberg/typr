@@ -34,7 +34,8 @@ case class MetaDb(
     oracleObjectTypes: Map[String, db.OracleType.ObjectType] = Map.empty,
     oracleCollectionTypes: Map[String, db.OracleType] = Map.empty,
     duckDbStructTypes: List[DuckDbNamedStruct] = Nil,
-    pgCompositeTypes: List[PgCompositeType] = Nil
+    pgCompositeTypes: List[PgCompositeType] = Nil,
+    mariaSetTypes: List[db.MariaType.Set] = Nil
 ) {
   val typeMapperDb: TypeMapperDb = dbType match {
     case DbType.PostgreSQL => PgTypeMapperDb(enums, domains, pgCompositeTypes)
@@ -97,6 +98,38 @@ object MetaDb {
     */
   def buildStructLookup(structs: List[DuckDbNamedStruct]): Map[db.DuckDbType.StructType, String] =
     structs.map(ns => ns.structType -> ns.name).toMap
+
+  /** Extract unique MariaDB SET types from all columns in relations.
+    *
+    * SET types are deduplicated by their sorted values (which determines the generated type name).
+    */
+  def extractMariaSetTypes(relations: Map[db.RelationName, Lazy[db.Relation]]): List[db.MariaType.Set] = {
+    val sets = for {
+      (_, lazyRel) <- relations.toList
+      rel <- lazyRel.get.toList
+      table <- (rel match {
+        case t: db.Table => Some(t)
+        case _           => None
+      }).toList
+      col <- table.cols.toList
+      setType <- extractSetType(col.tpe).toList
+    } yield setType
+    // Deduplicate by sorted values
+    sets.groupBy(s => s.values.sorted).values.flatMap(_.headOption).toList
+  }
+
+  /** Extract SET type from a db.Type */
+  private def extractSetType(tpe: db.Type): Option[db.MariaType.Set] = tpe match {
+    case s: db.MariaType.Set => Some(s)
+    case _                   => None
+  }
+
+  /** Build a lookup map from sorted SET values to the SET type.
+    *
+    * Used during type mapping to resolve SET types to their generated type names.
+    */
+  def buildMariaSetLookup(sets: List[db.MariaType.Set]): Map[List[String], db.MariaType.Set] =
+    sets.map(s => s.values.sorted -> s).toMap
 
   /** Load metadata from database, dispatching to the appropriate implementation based on database type */
   def fromDb(logger: TypoLogger, ds: TypoDataSource, viewSelector: Selector, schemaMode: SchemaMode, externalTools: ExternalTools)(implicit ec: ExecutionContext): Future[MetaDb] =

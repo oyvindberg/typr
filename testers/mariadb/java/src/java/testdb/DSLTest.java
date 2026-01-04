@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import dev.typr.foundations.data.maria.Inet4;
 import dev.typr.foundations.data.maria.Inet6;
-import dev.typr.foundations.data.maria.MariaSet;
 import dev.typr.foundations.dsl.Bijection;
 import java.math.BigDecimal;
 import java.time.Year;
@@ -36,7 +35,6 @@ public class DSLTest {
                       new byte[] {7, 8},
                       new byte[] {9, 10},
                       Year.of(2025),
-                      MariaSet.of("x"),
                       new Inet4("192.168.1.1"),
                       new Inet6("::1"))
                   .with(r -> r.withVarcharCol("test_varchar"))
@@ -293,7 +291,6 @@ public class DSLTest {
                       new byte[] {7, 8},
                       new byte[] {9, 10},
                       Year.of(2025),
-                      MariaSet.of("x", "y"),
                       new Inet4("10.0.0.1"),
                       new Inet6("fe80::1"))
                   .with(

@@ -10,7 +10,6 @@ import dev.typr.foundations.RowParser
 import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.Uint1
 import dev.typr.foundations.data.Uint4
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
@@ -22,8 +21,9 @@ import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
 import dev.typr.foundations.scala.TupleExpr16
 import java.time.LocalDateTime
+import testdb.AllBrandsCategoriesCSet
 
-class PromotionsFields(val `_path`: java.util.List[Path]) extends TupleExpr16[PromotionsId, String, String, String, String, BigDecimal, BigDecimal, Uint4, Uint4, Uint1, MariaSet, Json, LocalDateTime, LocalDateTime, Boolean, LocalDateTime] with RelationStructure[PromotionsFields, PromotionsRow]  with FieldsBase[PromotionsRow] {
+class PromotionsFields(val `_path`: java.util.List[Path]) extends TupleExpr16[PromotionsId, String, String, String, String, BigDecimal, BigDecimal, Uint4, Uint4, Uint1, AllBrandsCategoriesCSet, Json, LocalDateTime, LocalDateTime, Boolean, LocalDateTime] with RelationStructure[PromotionsFields, PromotionsRow]  with FieldsBase[PromotionsRow] {
   def promotionId: IdField[PromotionsId, PromotionsRow] = {
     new IdField[PromotionsId, PromotionsRow](
       _path,
@@ -144,15 +144,15 @@ class PromotionsFields(val `_path`: java.util.List[Path]) extends TupleExpr16[Pr
     )
   }
 
-  def applicableTo: OptField[MariaSet, PromotionsRow] = {
-    new OptField[MariaSet, PromotionsRow](
+  def applicableTo: OptField[AllBrandsCategoriesCSet, PromotionsRow] = {
+    new OptField[AllBrandsCategoriesCSet, PromotionsRow](
       _path,
       "applicable_to",
       _.applicableTo,
       None,
       None,
       (row, value) => row.copy(applicableTo = value),
-      MariaTypes.set
+      AllBrandsCategoriesCSet.dbType
     )
   }
 
@@ -242,7 +242,7 @@ class PromotionsFields(val `_path`: java.util.List[Path]) extends TupleExpr16[Pr
 
   override def `_10`: SqlExpr[Uint1] = maxUsesPerCustomer
 
-  override def `_11`: SqlExpr[MariaSet] = applicableTo
+  override def `_11`: SqlExpr[AllBrandsCategoriesCSet] = applicableTo
 
   override def `_12`: SqlExpr[Json] = rulesJson
 

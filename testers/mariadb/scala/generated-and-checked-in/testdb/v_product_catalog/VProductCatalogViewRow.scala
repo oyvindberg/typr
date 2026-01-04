@@ -8,11 +8,11 @@ package testdb.v_product_catalog
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.Tuple.Tuple11
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
+import testdb.BestsellerClearanceFSet
 import testdb.products.ProductsId
 
 /** View: v_product_catalog
@@ -50,7 +50,7 @@ case class VProductCatalogViewRow(
    * Default: NULL
    * Points to [[testdb.products.ProductsRow.tags]]
    */
-  tags: Option[MariaSet],
+  tags: Option[BestsellerClearanceFSet],
   /** 
    * Points to [[testdb.brands.BrandsRow.name]]
    */
@@ -67,7 +67,7 @@ case class VProductCatalogViewRow(
    * Default: 0
    */
   @JsonProperty("review_count") reviewCount: Long
-) extends Tuple11[ProductsId, String, String, Option[String], BigDecimal, String, Option[MariaSet], Option[String], BigDecimal, BigDecimal, Long] {
+) extends Tuple11[ProductsId, String, String, Option[String], BigDecimal, String, Option[BestsellerClearanceFSet], Option[String], BigDecimal, BigDecimal, Long] {
   override def `_1`: ProductsId = productId
 
   override def `_2`: String = sku
@@ -80,7 +80,7 @@ case class VProductCatalogViewRow(
 
   override def `_6`: String = status
 
-  override def `_7`: Option[MariaSet] = tags
+  override def `_7`: Option[BestsellerClearanceFSet] = tags
 
   override def `_8`: Option[String] = brandName
 
@@ -92,5 +92,5 @@ case class VProductCatalogViewRow(
 }
 
 object VProductCatalogViewRow {
-  val `_rowParser`: RowParser[VProductCatalogViewRow] = RowParsers.of(ProductsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.numeric, MariaTypes.text, MariaTypes.set.nullable, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.bigint)(VProductCatalogViewRow.apply)(row => Array[Any](row.productId, row.sku, row.name, row.shortDescription, row.basePrice, row.status, row.tags, row.brandName, row.availableQuantity, row.avgRating, row.reviewCount))
+  val `_rowParser`: RowParser[VProductCatalogViewRow] = RowParsers.of(ProductsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.numeric, MariaTypes.text, BestsellerClearanceFSet.dbType.nullable, MariaTypes.varchar.nullable, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.bigint)(VProductCatalogViewRow.apply)(row => Array[Any](row.productId, row.sku, row.name, row.shortDescription, row.basePrice, row.status, row.tags, row.brandName, row.availableQuantity, row.avgRating, row.reviewCount))
 }

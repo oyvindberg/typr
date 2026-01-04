@@ -7,8 +7,8 @@ package testdb.customers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.data.Json
-import dev.typr.foundations.data.maria.MariaSet
 import java.time.LocalDateTime
+import testdb.EmailMailPushSmsSet
 import testdb.customer_status.CustomerStatusId
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
@@ -42,7 +42,7 @@ case class CustomersRowUnsaved(
   /** Default: NULL
 
    */
-  @JsonProperty("marketing_flags") marketingFlags: Defaulted[Option[MariaSet]] = new UseDefault(),
+  @JsonProperty("marketing_flags") marketingFlags: Defaulted[Option[EmailMailPushSmsSet]] = new UseDefault(),
   /** Default: NULL
 
    */
@@ -65,7 +65,7 @@ case class CustomersRowUnsaved(
     statusDefault: => CustomerStatusId,
     tierDefault: => String,
     preferencesDefault: => Option[Json],
-    marketingFlagsDefault: => Option[MariaSet],
+    marketingFlagsDefault: => Option[EmailMailPushSmsSet],
     notesDefault: => Option[String],
     createdAtDefault: => LocalDateTime,
     updatedAtDefault: => LocalDateTime,

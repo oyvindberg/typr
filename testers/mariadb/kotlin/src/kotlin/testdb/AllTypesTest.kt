@@ -7,7 +7,6 @@ import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.data.maria.Inet4
 import dev.typr.foundations.data.maria.Inet6
-import dev.typr.foundations.data.maria.MariaSet
 import org.junit.Assert.*
 import org.junit.Test
 import testdb.customtypes.Defaulted
@@ -68,7 +67,7 @@ class AllTypesTest {
             timestampCol = LocalDateTime.now(),
             timestampFspCol = LocalDateTime.now(),
             yearCol = Year.of(2025),
-            setCol = MariaSet.fromString("x,y"),
+            setCol = XYZSet.fromString("x,y"),
             jsonCol = Json("""{"key": "value"}"""),
             inet4Col = Inet4("192.168.1.1"),
             inet6Col = Inet6("::1")
@@ -219,7 +218,7 @@ class AllTypesTest {
                 timestampCol = LocalDateTime.now(),
                 timestampFspCol = LocalDateTime.now(),
                 yearCol = Year.of(2024),
-                setCol = MariaSet.fromString("y,z"),
+                setCol = XYZSet.fromString("y,z"),
                 jsonCol = Json("""{"test": true}"""),
                 inet4Col = Inet4("10.0.0.1"),
                 inet6Col = Inet6("fe80::1")
@@ -297,13 +296,13 @@ class AllTypesTest {
     fun testSetType() {
         MariaDbTestHelper.run { c ->
             // Test various set combinations
-            val row1 = createSampleRow(20).copy(setCol = MariaSet.fromString("x"))
+            val row1 = createSampleRow(20).copy(setCol = XYZSet.fromString("x"))
             val inserted1 = mariatestRepo.insert(row1, c)
-            assertEquals(MariaSet.fromString("x"), inserted1.setCol)
+            assertEquals(XYZSet.fromString("x"), inserted1.setCol)
 
-            val row2 = createSampleRow(21).copy(setCol = MariaSet.fromString("x,y,z"))
+            val row2 = createSampleRow(21).copy(setCol = XYZSet.fromString("x,y,z"))
             val inserted2 = mariatestRepo.insert(row2, c)
-            assertEquals(MariaSet.fromString("x,y,z"), inserted2.setCol)
+            assertEquals(XYZSet.fromString("x,y,z"), inserted2.setCol)
         }
     }
 

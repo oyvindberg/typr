@@ -8,7 +8,6 @@ package testdb.customers
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.data.Json
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
@@ -21,14 +20,15 @@ import dev.typr.foundations.kotlin.SqlExpr.OptField
 import dev.typr.foundations.kotlin.TupleExpr14
 import java.time.LocalDateTime
 import kotlin.collections.List
+import testdb.EmailMailPushSmsSet
 import testdb.customer_status.CustomerStatusFields
 import testdb.customer_status.CustomerStatusId
 import testdb.customer_status.CustomerStatusRow
 
-data class CustomersFields(val _path: List<Path>) : TupleExpr14<CustomersId, String, ByteArray, String, String, String, CustomerStatusId, String, Json, MariaSet, String, LocalDateTime, LocalDateTime, LocalDateTime>, RelationStructure<CustomersFields, CustomersRow>, FieldsBase<CustomersRow> {
+data class CustomersFields(val _path: List<Path>) : TupleExpr14<CustomersId, String, ByteArray, String, String, String, CustomerStatusId, String, Json, EmailMailPushSmsSet, String, LocalDateTime, LocalDateTime, LocalDateTime>, RelationStructure<CustomersFields, CustomersRow>, FieldsBase<CustomersRow> {
   override fun _1(): SqlExpr<CustomersId> = customerId()
 
-  override fun _10(): SqlExpr<MariaSet> = marketingFlags()
+  override fun _10(): SqlExpr<EmailMailPushSmsSet> = marketingFlags()
 
   override fun _11(): SqlExpr<String> = notes()
 
@@ -72,7 +72,7 @@ data class CustomersFields(val _path: List<Path>) : TupleExpr14<CustomersId, Str
 
   fun lastName(): Field<String, CustomersRow> = Field<String, CustomersRow>(_path, "last_name", CustomersRow::lastName, null, null, { row, value -> row.copy(lastName = value) }, MariaTypes.varchar)
 
-  fun marketingFlags(): OptField<MariaSet, CustomersRow> = OptField<MariaSet, CustomersRow>(_path, "marketing_flags", CustomersRow::marketingFlags, null, null, { row, value -> row.copy(marketingFlags = value) }, MariaTypes.set)
+  fun marketingFlags(): OptField<EmailMailPushSmsSet, CustomersRow> = OptField<EmailMailPushSmsSet, CustomersRow>(_path, "marketing_flags", CustomersRow::marketingFlags, null, null, { row, value -> row.copy(marketingFlags = value) }, EmailMailPushSmsSet.dbType)
 
   fun notes(): OptField<String, CustomersRow> = OptField<String, CustomersRow>(_path, "notes", CustomersRow::notes, null, null, { row, value -> row.copy(notes = value) }, MariaTypes.text)
 

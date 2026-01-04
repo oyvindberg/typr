@@ -11,9 +11,9 @@ import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
 import dev.typr.foundations.Tuple.Tuple14;
 import dev.typr.foundations.data.Json;
-import dev.typr.foundations.data.maria.MariaSet;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import testdb.EmailMailPushSmsSet;
 import testdb.customer_status.CustomerStatusId;
 import testdb.customtypes.Defaulted;
 
@@ -40,7 +40,7 @@ public record CustomersRow(
     /** Default: NULL */
     Optional<Json> preferences,
     /** Default: NULL */
-    @JsonProperty("marketing_flags") Optional<MariaSet> marketingFlags,
+    @JsonProperty("marketing_flags") Optional<EmailMailPushSmsSet> marketingFlags,
     /** Default: NULL */
     Optional<String> notes,
     /** Default: current_timestamp(6) */
@@ -59,7 +59,7 @@ public record CustomersRow(
         CustomerStatusId,
         String,
         Optional<Json>,
-        Optional<MariaSet>,
+        Optional<EmailMailPushSmsSet>,
         Optional<String>,
         LocalDateTime,
         LocalDateTime,
@@ -245,7 +245,7 @@ public record CustomersRow(
   ;
 
   /** Default: NULL */
-  public CustomersRow withMarketingFlags(Optional<MariaSet> marketingFlags) {
+  public CustomersRow withMarketingFlags(Optional<EmailMailPushSmsSet> marketingFlags) {
     return new CustomersRow(
         customerId,
         email,
@@ -355,7 +355,7 @@ public record CustomersRow(
           CustomerStatusId.dbType,
           MariaTypes.text,
           MariaTypes.json.opt(),
-          MariaTypes.set.opt(),
+          EmailMailPushSmsSet.dbType.opt(),
           MariaTypes.text.opt(),
           MariaTypes.datetime,
           MariaTypes.datetime,
@@ -387,7 +387,7 @@ public record CustomersRow(
   ;
 
   @Override
-  public Optional<MariaSet> _10() {
+  public Optional<EmailMailPushSmsSet> _10() {
     return marketingFlags;
   }
   ;
@@ -474,7 +474,7 @@ public record CustomersRow(
       Defaulted<CustomerStatusId> status,
       Defaulted<String> tier,
       Defaulted<Optional<Json>> preferences,
-      Defaulted<Optional<MariaSet>> marketingFlags,
+      Defaulted<Optional<EmailMailPushSmsSet>> marketingFlags,
       Defaulted<Optional<String>> notes,
       Defaulted<LocalDateTime> createdAt,
       Defaulted<LocalDateTime> updatedAt,

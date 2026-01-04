@@ -9,7 +9,6 @@ import dev.typr.foundations.data.Uint4;
 import dev.typr.foundations.data.Uint8;
 import dev.typr.foundations.data.maria.Inet4;
 import dev.typr.foundations.data.maria.Inet6;
-import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
@@ -70,7 +69,7 @@ public class AllTypesTest {
         LocalDateTime.now(), // timestamp (default)
         LocalDateTime.now(), // timestamp(6) (default)
         Year.of(2025), // year
-        MariaSet.fromString("x,y"), // set
+        XYZSet.fromString("x,y"), // set
         new Json("{\"key\": \"value\"}"), // json
         new Inet4("192.168.1.1"), // inet4
         new Inet6("::1")); // inet6
@@ -227,7 +226,7 @@ public class AllTypesTest {
                   Optional.of(LocalDateTime.now()),
                   Optional.of(LocalDateTime.now()),
                   Optional.of(Year.of(2024)),
-                  Optional.of(MariaSet.fromString("y,z")),
+                  Optional.of(XYZSet.fromString("y,z")),
                   Optional.of(new Json("{\"test\": true}")),
                   Optional.of(new Inet4("10.0.0.1")),
                   Optional.of(new Inet6("fe80::1")));
@@ -309,13 +308,15 @@ public class AllTypesTest {
     MariaDbTestHelper.run(
         c -> {
           // Test various set combinations
-          var row1 = createSampleRow(20).withSetCol(MariaSet.of("x"));
+          var row1 = createSampleRow(20).withSetCol(XYZSet.of(List.of(XYZSetMember.x)));
           var inserted1 = mariatestRepo.insert(row1, c);
-          assertEquals(MariaSet.of("x"), inserted1.setCol());
+          assertEquals(XYZSet.of(List.of(XYZSetMember.x)), inserted1.setCol());
 
-          var row2 = createSampleRow(21).withSetCol(MariaSet.fromString("x,y,z"));
+          var row2 = createSampleRow(21).withSetCol(XYZSet.fromString("x,y,z"));
           var inserted2 = mariatestRepo.insert(row2, c);
-          assertEquals(MariaSet.of("x", "y", "z"), inserted2.setCol());
+          assertEquals(
+              XYZSet.of(List.of(XYZSetMember.x, XYZSetMember.y, XYZSetMember.z)),
+              inserted2.setCol());
         });
   }
 

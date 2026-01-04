@@ -7,7 +7,6 @@ package testdb.v_product_catalog
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
@@ -19,9 +18,10 @@ import dev.typr.foundations.kotlin.SqlExpr.OptField
 import dev.typr.foundations.kotlin.TupleExpr11
 import java.math.BigDecimal
 import kotlin.collections.List
+import testdb.BestsellerClearanceFSet
 import testdb.products.ProductsId
 
-data class VProductCatalogViewFields(val _path: List<Path>) : TupleExpr11<ProductsId, String, String, String, BigDecimal, String, MariaSet, String, BigDecimal, BigDecimal, Long>, RelationStructure<VProductCatalogViewFields, VProductCatalogViewRow>, FieldsBase<VProductCatalogViewRow> {
+data class VProductCatalogViewFields(val _path: List<Path>) : TupleExpr11<ProductsId, String, String, String, BigDecimal, String, BestsellerClearanceFSet, String, BigDecimal, BigDecimal, Long>, RelationStructure<VProductCatalogViewFields, VProductCatalogViewRow>, FieldsBase<VProductCatalogViewRow> {
   override fun _1(): SqlExpr<ProductsId> = productId()
 
   override fun _10(): SqlExpr<BigDecimal> = avgRating()
@@ -38,7 +38,7 @@ data class VProductCatalogViewFields(val _path: List<Path>) : TupleExpr11<Produc
 
   override fun _6(): SqlExpr<String> = status()
 
-  override fun _7(): SqlExpr<MariaSet> = tags()
+  override fun _7(): SqlExpr<BestsellerClearanceFSet> = tags()
 
   override fun _8(): SqlExpr<String> = brandName()
 
@@ -70,7 +70,7 @@ data class VProductCatalogViewFields(val _path: List<Path>) : TupleExpr11<Produc
 
   fun status(): Field<String, VProductCatalogViewRow> = Field<String, VProductCatalogViewRow>(_path, "status", VProductCatalogViewRow::status, null, null, { row, value -> row.copy(status = value) }, MariaTypes.text)
 
-  fun tags(): OptField<MariaSet, VProductCatalogViewRow> = OptField<MariaSet, VProductCatalogViewRow>(_path, "tags", VProductCatalogViewRow::tags, null, null, { row, value -> row.copy(tags = value) }, MariaTypes.set)
+  fun tags(): OptField<BestsellerClearanceFSet, VProductCatalogViewRow> = OptField<BestsellerClearanceFSet, VProductCatalogViewRow>(_path, "tags", VProductCatalogViewRow::tags, null, null, { row, value -> row.copy(tags = value) }, BestsellerClearanceFSet.dbType)
 
   override fun withPaths(_path: List<Path>): RelationStructure<VProductCatalogViewFields, VProductCatalogViewRow> = VProductCatalogViewFields(_path)
 

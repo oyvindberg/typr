@@ -10,7 +10,6 @@ import dev.typr.foundations.RowParser
 import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.Uint1
 import dev.typr.foundations.data.Uint4
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
@@ -24,13 +23,14 @@ import dev.typr.foundations.kotlin.TupleExpr16
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import kotlin.collections.List
+import testdb.AllBrandsCategoriesCSet
 
-data class PromotionsFields(val _path: List<Path>) : TupleExpr16<PromotionsId, String, String, String, String, BigDecimal, BigDecimal, Uint4, Uint4, Uint1, MariaSet, Json, LocalDateTime, LocalDateTime, Boolean, LocalDateTime>, RelationStructure<PromotionsFields, PromotionsRow>, FieldsBase<PromotionsRow> {
+data class PromotionsFields(val _path: List<Path>) : TupleExpr16<PromotionsId, String, String, String, String, BigDecimal, BigDecimal, Uint4, Uint4, Uint1, AllBrandsCategoriesCSet, Json, LocalDateTime, LocalDateTime, Boolean, LocalDateTime>, RelationStructure<PromotionsFields, PromotionsRow>, FieldsBase<PromotionsRow> {
   override fun _1(): SqlExpr<PromotionsId> = promotionId()
 
   override fun _10(): SqlExpr<Uint1> = maxUsesPerCustomer()
 
-  override fun _11(): SqlExpr<MariaSet> = applicableTo()
+  override fun _11(): SqlExpr<AllBrandsCategoriesCSet> = applicableTo()
 
   override fun _12(): SqlExpr<Json> = rulesJson()
 
@@ -60,7 +60,7 @@ data class PromotionsFields(val _path: List<Path>) : TupleExpr16<PromotionsId, S
 
   override fun _path(): List<Path> = _path
 
-  fun applicableTo(): OptField<MariaSet, PromotionsRow> = OptField<MariaSet, PromotionsRow>(_path, "applicable_to", PromotionsRow::applicableTo, null, null, { row, value -> row.copy(applicableTo = value) }, MariaTypes.set)
+  fun applicableTo(): OptField<AllBrandsCategoriesCSet, PromotionsRow> = OptField<AllBrandsCategoriesCSet, PromotionsRow>(_path, "applicable_to", PromotionsRow::applicableTo, null, null, { row, value -> row.copy(applicableTo = value) }, AllBrandsCategoriesCSet.dbType)
 
   fun code(): Field<String, PromotionsRow> = Field<String, PromotionsRow>(_path, "code", PromotionsRow::code, null, null, { row, value -> row.copy(code = value) }, MariaTypes.varchar)
 

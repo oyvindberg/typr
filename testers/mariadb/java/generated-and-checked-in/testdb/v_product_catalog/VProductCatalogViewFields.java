@@ -7,7 +7,6 @@ package testdb.v_product_catalog;
 
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
-import dev.typr.foundations.data.maria.MariaSet;
 import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
@@ -19,6 +18,7 @@ import dev.typr.foundations.dsl.TupleExpr.TupleExpr11;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import testdb.BestsellerClearanceFSet;
 import testdb.products.ProductsId;
 
 public class VProductCatalogViewFields
@@ -29,7 +29,7 @@ public class VProductCatalogViewFields
         String,
         BigDecimal,
         String,
-        MariaSet,
+        BestsellerClearanceFSet,
         String,
         BigDecimal,
         BigDecimal,
@@ -111,15 +111,15 @@ public class VProductCatalogViewFields
         MariaTypes.text);
   }
 
-  public OptField<MariaSet, VProductCatalogViewRow> tags() {
-    return new OptField<MariaSet, VProductCatalogViewRow>(
+  public OptField<BestsellerClearanceFSet, VProductCatalogViewRow> tags() {
+    return new OptField<BestsellerClearanceFSet, VProductCatalogViewRow>(
         _path,
         "tags",
         VProductCatalogViewRow::tags,
         Optional.empty(),
         Optional.empty(),
         (row, value) -> row.withTags(value),
-        MariaTypes.set);
+        BestsellerClearanceFSet.dbType);
   }
 
   public OptField<String, VProductCatalogViewRow> brandName() {
@@ -229,7 +229,7 @@ public class VProductCatalogViewFields
   }
 
   @Override
-  public SqlExpr<MariaSet> _7() {
+  public SqlExpr<BestsellerClearanceFSet> _7() {
     return tags();
   }
 

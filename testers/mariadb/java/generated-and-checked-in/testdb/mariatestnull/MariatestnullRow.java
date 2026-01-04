@@ -17,13 +17,13 @@ import dev.typr.foundations.data.Uint4;
 import dev.typr.foundations.data.Uint8;
 import dev.typr.foundations.data.maria.Inet4;
 import dev.typr.foundations.data.maria.Inet6;
-import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Year;
 import java.util.Optional;
+import testdb.XYZSet;
 import testdb.customtypes.Defaulted;
 
 /** Table: mariatestnull */
@@ -103,7 +103,7 @@ public record MariatestnullRow(
     /** Default: NULL */
     @JsonProperty("year_col") Optional<Year> yearCol,
     /** Default: NULL */
-    @JsonProperty("set_col") Optional<MariaSet> setCol,
+    @JsonProperty("set_col") Optional<XYZSet> setCol,
     /** Default: NULL */
     @JsonProperty("json_col") Optional<Json> jsonCol,
     /** Default: NULL */
@@ -148,7 +148,7 @@ public record MariatestnullRow(
         Optional<LocalDateTime>,
         Optional<LocalDateTime>,
         Optional<Year>,
-        Optional<MariaSet>,
+        Optional<XYZSet>,
         Optional<Json>,
         Optional<Inet4>,
         Optional<Inet6>> {
@@ -1892,7 +1892,7 @@ public record MariatestnullRow(
   ;
 
   /** Default: NULL */
-  public MariatestnullRow withSetCol(Optional<MariaSet> setCol) {
+  public MariatestnullRow withSetCol(Optional<XYZSet> setCol) {
     return new MariatestnullRow(
         tinyintCol,
         smallintCol,
@@ -2118,7 +2118,7 @@ public record MariatestnullRow(
           MariaTypes.timestamp.opt(),
           MariaTypes.timestamp.opt(),
           MariaTypes.year.opt(),
-          MariaTypes.set.opt(),
+          XYZSet.dbType.opt(),
           MariaTypes.json.opt(),
           MariaTypes.inet4.opt(),
           MariaTypes.inet6.opt(),
@@ -2356,7 +2356,7 @@ public record MariatestnullRow(
   ;
 
   @Override
-  public Optional<MariaSet> _38() {
+  public Optional<XYZSet> _38() {
     return setCol;
   }
   ;
@@ -2453,7 +2453,7 @@ public record MariatestnullRow(
       Defaulted<Optional<LocalDateTime>> timestampCol,
       Defaulted<Optional<LocalDateTime>> timestampFspCol,
       Defaulted<Optional<Year>> yearCol,
-      Defaulted<Optional<MariaSet>> setCol,
+      Defaulted<Optional<XYZSet>> setCol,
       Defaulted<Optional<Json>> jsonCol,
       Defaulted<Optional<Inet4>> inet4Col,
       Defaulted<Optional<Inet6>> inet6Col) {

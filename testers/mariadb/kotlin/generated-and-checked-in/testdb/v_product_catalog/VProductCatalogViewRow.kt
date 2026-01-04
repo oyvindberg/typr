@@ -8,12 +8,12 @@ package testdb.v_product_catalog
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.Tuple.Tuple11
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
 import java.math.BigDecimal
+import testdb.BestsellerClearanceFSet
 import testdb.products.ProductsId
 
 /** View: v_product_catalog
@@ -51,7 +51,7 @@ data class VProductCatalogViewRow(
     * Default: NULL
     * Points to [testdb.products.ProductsRow.tags]
     */
-  val tags: MariaSet?,
+  val tags: BestsellerClearanceFSet?,
   /** 
     * Points to [testdb.brands.BrandsRow.name]
     */
@@ -68,7 +68,7 @@ data class VProductCatalogViewRow(
     * Default: 0
     */
   @JsonProperty("review_count") val reviewCount: Long
-) : Tuple11<ProductsId, String, String, String?, BigDecimal, String, MariaSet?, String?, BigDecimal, BigDecimal, Long> {
+) : Tuple11<ProductsId, String, String, String?, BigDecimal, String, BestsellerClearanceFSet?, String?, BigDecimal, BigDecimal, Long> {
   override fun _1(): ProductsId = productId
 
   override fun _10(): BigDecimal = avgRating
@@ -85,13 +85,13 @@ data class VProductCatalogViewRow(
 
   override fun _6(): String = status
 
-  override fun _7(): MariaSet? = tags
+  override fun _7(): BestsellerClearanceFSet? = tags
 
   override fun _8(): String? = brandName
 
   override fun _9(): BigDecimal = availableQuantity
 
   companion object {
-    val _rowParser: RowParser<VProductCatalogViewRow> = RowParsers.of(ProductsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.numeric, MariaTypes.text, MariaTypes.set.nullable(), MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.bigint, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> VProductCatalogViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.name, row.shortDescription, row.basePrice, row.status, row.tags, row.brandName, row.availableQuantity, row.avgRating, row.reviewCount) })
+    val _rowParser: RowParser<VProductCatalogViewRow> = RowParsers.of(ProductsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.numeric, MariaTypes.text, BestsellerClearanceFSet.dbType.nullable(), MariaTypes.varchar.nullable(), KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.bigint, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 -> VProductCatalogViewRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.name, row.shortDescription, row.basePrice, row.status, row.tags, row.brandName, row.availableQuantity, row.avgRating, row.reviewCount) })
   }
 }

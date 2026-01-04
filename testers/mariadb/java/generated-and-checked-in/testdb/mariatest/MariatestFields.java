@@ -14,7 +14,6 @@ import dev.typr.foundations.data.Uint4;
 import dev.typr.foundations.data.Uint8;
 import dev.typr.foundations.data.maria.Inet4;
 import dev.typr.foundations.data.maria.Inet6;
-import dev.typr.foundations.data.maria.MariaSet;
 import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
@@ -30,6 +29,7 @@ import java.time.LocalTime;
 import java.time.Year;
 import java.util.List;
 import java.util.Optional;
+import testdb.XYZSet;
 
 public class MariatestFields
     extends TupleExpr41<
@@ -70,7 +70,7 @@ public class MariatestFields
         LocalDateTime,
         LocalDateTime,
         Year,
-        MariaSet,
+        XYZSet,
         Json,
         Inet4,
         Inet6>
@@ -490,15 +490,15 @@ public class MariatestFields
         MariaTypes.year);
   }
 
-  public Field<MariaSet, MariatestRow> setCol() {
-    return new Field<MariaSet, MariatestRow>(
+  public Field<XYZSet, MariatestRow> setCol() {
+    return new Field<XYZSet, MariatestRow>(
         _path,
         "set_col",
         MariatestRow::setCol,
         Optional.empty(),
         Optional.empty(),
         (row, value) -> row.withSetCol(value),
-        MariaTypes.set);
+        XYZSet.dbType);
   }
 
   public Field<Json, MariatestRow> jsonCol() {
@@ -781,7 +781,7 @@ public class MariatestFields
   }
 
   @Override
-  public SqlExpr<MariaSet> _38() {
+  public SqlExpr<XYZSet> _38() {
     return setCol();
   }
 

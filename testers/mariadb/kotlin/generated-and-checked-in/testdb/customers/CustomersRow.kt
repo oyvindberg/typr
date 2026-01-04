@@ -9,11 +9,11 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.Tuple.Tuple14
 import dev.typr.foundations.data.Json
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
 import java.time.LocalDateTime
+import testdb.EmailMailPushSmsSet
 import testdb.customer_status.CustomerStatusId
 import testdb.customtypes.Defaulted
 
@@ -53,7 +53,7 @@ data class CustomersRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("marketing_flags") val marketingFlags: MariaSet?,
+  @JsonProperty("marketing_flags") val marketingFlags: EmailMailPushSmsSet?,
   /** 
     * Default: NULL
     */
@@ -70,10 +70,10 @@ data class CustomersRow(
     * Default: NULL
     */
   @JsonProperty("last_login_at") val lastLoginAt: LocalDateTime?
-) : Tuple14<CustomersId, String, ByteArray, String, String, String?, CustomerStatusId, String, Json?, MariaSet?, String?, LocalDateTime, LocalDateTime, LocalDateTime?> {
+) : Tuple14<CustomersId, String, ByteArray, String, String, String?, CustomerStatusId, String, Json?, EmailMailPushSmsSet?, String?, LocalDateTime, LocalDateTime, LocalDateTime?> {
   override fun _1(): CustomersId = customerId
 
-  override fun _10(): MariaSet? = marketingFlags
+  override fun _10(): EmailMailPushSmsSet? = marketingFlags
 
   override fun _11(): String? = notes
 
@@ -106,7 +106,7 @@ data class CustomersRow(
     status: Defaulted<CustomerStatusId> = Defaulted.Provided(this.status),
     tier: Defaulted<String> = Defaulted.Provided(this.tier),
     preferences: Defaulted<Json?> = Defaulted.Provided(this.preferences),
-    marketingFlags: Defaulted<MariaSet?> = Defaulted.Provided(this.marketingFlags),
+    marketingFlags: Defaulted<EmailMailPushSmsSet?> = Defaulted.Provided(this.marketingFlags),
     notes: Defaulted<String?> = Defaulted.Provided(this.notes),
     createdAt: Defaulted<LocalDateTime> = Defaulted.Provided(this.createdAt),
     updatedAt: Defaulted<LocalDateTime> = Defaulted.Provided(this.updatedAt),
@@ -114,6 +114,6 @@ data class CustomersRow(
   ): CustomersRowUnsaved = CustomersRowUnsaved(email, passwordHash, firstName, lastName, phone, status, tier, preferences, marketingFlags, notes, createdAt, updatedAt, lastLoginAt)
 
   companion object {
-    val _rowParser: RowParser<CustomersRow> = RowParsers.of(CustomersId.dbType, MariaTypes.varchar, MariaTypes.binary, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable(), CustomerStatusId.dbType, MariaTypes.text, MariaTypes.json.nullable(), MariaTypes.set.nullable(), MariaTypes.text.nullable(), MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13 -> CustomersRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.passwordHash, row.firstName, row.lastName, row.phone, row.status, row.tier, row.preferences, row.marketingFlags, row.notes, row.createdAt, row.updatedAt, row.lastLoginAt) })
+    val _rowParser: RowParser<CustomersRow> = RowParsers.of(CustomersId.dbType, MariaTypes.varchar, MariaTypes.binary, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable(), CustomerStatusId.dbType, MariaTypes.text, MariaTypes.json.nullable(), EmailMailPushSmsSet.dbType.nullable(), MariaTypes.text.nullable(), MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13 -> CustomersRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) }, { row -> arrayOf<Any?>(row.customerId, row.email, row.passwordHash, row.firstName, row.lastName, row.phone, row.status, row.tier, row.preferences, row.marketingFlags, row.notes, row.createdAt, row.updatedAt, row.lastLoginAt) })
   }
 }

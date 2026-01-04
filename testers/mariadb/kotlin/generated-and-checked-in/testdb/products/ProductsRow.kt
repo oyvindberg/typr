@@ -9,13 +9,13 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.Tuple.Tuple18
 import dev.typr.foundations.data.Json
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import testdb.BestsellerClearanceFSet
 import testdb.brands.BrandsId
 import testdb.customtypes.Defaulted
 
@@ -69,7 +69,7 @@ data class ProductsRow(
   /** 
     * Default: NULL
     */
-  val tags: MariaSet?,
+  val tags: BestsellerClearanceFSet?,
   /** 
     * Default: NULL
     */
@@ -90,7 +90,7 @@ data class ProductsRow(
     * Default: NULL
     */
   @JsonProperty("published_at") val publishedAt: LocalDateTime?
-) : Tuple18<ProductsId, String, BrandsId?, String, String?, String?, BigDecimal, BigDecimal?, BigDecimal?, Json?, String, String, MariaSet?, Json?, Json?, LocalDateTime, LocalDateTime, LocalDateTime?> {
+) : Tuple18<ProductsId, String, BrandsId?, String, String?, String?, BigDecimal, BigDecimal?, BigDecimal?, Json?, String, String, BestsellerClearanceFSet?, Json?, Json?, LocalDateTime, LocalDateTime, LocalDateTime?> {
   override fun _1(): ProductsId = productId
 
   override fun _10(): Json? = dimensionsJson
@@ -99,7 +99,7 @@ data class ProductsRow(
 
   override fun _12(): String = taxClass
 
-  override fun _13(): MariaSet? = tags
+  override fun _13(): BestsellerClearanceFSet? = tags
 
   override fun _14(): Json? = attributes
 
@@ -138,7 +138,7 @@ data class ProductsRow(
     dimensionsJson: Defaulted<Json?> = Defaulted.Provided(this.dimensionsJson),
     status: Defaulted<String> = Defaulted.Provided(this.status),
     taxClass: Defaulted<String> = Defaulted.Provided(this.taxClass),
-    tags: Defaulted<MariaSet?> = Defaulted.Provided(this.tags),
+    tags: Defaulted<BestsellerClearanceFSet?> = Defaulted.Provided(this.tags),
     attributes: Defaulted<Json?> = Defaulted.Provided(this.attributes),
     seoMetadata: Defaulted<Json?> = Defaulted.Provided(this.seoMetadata),
     createdAt: Defaulted<LocalDateTime> = Defaulted.Provided(this.createdAt),
@@ -147,6 +147,6 @@ data class ProductsRow(
   ): ProductsRowUnsaved = ProductsRowUnsaved(sku, name, basePrice, brandId, shortDescription, fullDescription, costPrice, weightKg, dimensionsJson, status, taxClass, tags, attributes, seoMetadata, createdAt, updatedAt, publishedAt)
 
   companion object {
-    val _rowParser: RowParser<ProductsRow> = RowParsers.of(ProductsId.dbType, MariaTypes.varchar, BrandsId.dbType.nullable(), MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.longtext.nullable(), KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), MariaTypes.json.nullable(), MariaTypes.text, MariaTypes.text, MariaTypes.set.nullable(), MariaTypes.json.nullable(), MariaTypes.json.nullable(), MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17 -> ProductsRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.brandId, row.name, row.shortDescription, row.fullDescription, row.basePrice, row.costPrice, row.weightKg, row.dimensionsJson, row.status, row.taxClass, row.tags, row.attributes, row.seoMetadata, row.createdAt, row.updatedAt, row.publishedAt) })
+    val _rowParser: RowParser<ProductsRow> = RowParsers.of(ProductsId.dbType, MariaTypes.varchar, BrandsId.dbType.nullable(), MariaTypes.varchar, MariaTypes.varchar.nullable(), MariaTypes.longtext.nullable(), KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric.nullable(), KotlinDbTypes.MariaTypes.numeric.nullable(), MariaTypes.json.nullable(), MariaTypes.text, MariaTypes.text, BestsellerClearanceFSet.dbType.nullable(), MariaTypes.json.nullable(), MariaTypes.json.nullable(), MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable(), { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17 -> ProductsRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) }, { row -> arrayOf<Any?>(row.productId, row.sku, row.brandId, row.name, row.shortDescription, row.fullDescription, row.basePrice, row.costPrice, row.weightKg, row.dimensionsJson, row.status, row.taxClass, row.tags, row.attributes, row.seoMetadata, row.createdAt, row.updatedAt, row.publishedAt) })
   }
 }

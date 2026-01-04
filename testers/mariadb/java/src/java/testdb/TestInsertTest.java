@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import dev.typr.foundations.data.maria.Inet4;
 import dev.typr.foundations.data.maria.Inet6;
-import dev.typr.foundations.data.maria.MariaSet;
 import java.time.Year;
 import java.util.Random;
 import org.junit.Test;
@@ -58,7 +57,6 @@ public class TestInsertTest {
                   new byte[] {10, 11, 12},
                   new byte[] {13, 14, 15},
                   Year.of(2025),
-                  MariaSet.fromString("x,y"),
                   new Inet4("192.168.1.1"),
                   new Inet6("::1"));
 

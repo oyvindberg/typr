@@ -8,7 +8,6 @@ package testdb.products
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.data.Json
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
@@ -21,11 +20,12 @@ import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
 import dev.typr.foundations.scala.TupleExpr18
 import java.time.LocalDateTime
+import testdb.BestsellerClearanceFSet
 import testdb.brands.BrandsFields
 import testdb.brands.BrandsId
 import testdb.brands.BrandsRow
 
-class ProductsFields(val `_path`: java.util.List[Path]) extends TupleExpr18[ProductsId, String, BrandsId, String, String, String, BigDecimal, BigDecimal, BigDecimal, Json, String, String, MariaSet, Json, Json, LocalDateTime, LocalDateTime, LocalDateTime] with RelationStructure[ProductsFields, ProductsRow]  with FieldsBase[ProductsRow] {
+class ProductsFields(val `_path`: java.util.List[Path]) extends TupleExpr18[ProductsId, String, BrandsId, String, String, String, BigDecimal, BigDecimal, BigDecimal, Json, String, String, BestsellerClearanceFSet, Json, Json, LocalDateTime, LocalDateTime, LocalDateTime] with RelationStructure[ProductsFields, ProductsRow]  with FieldsBase[ProductsRow] {
   def productId: IdField[ProductsId, ProductsRow] = {
     new IdField[ProductsId, ProductsRow](
       _path,
@@ -170,15 +170,15 @@ class ProductsFields(val `_path`: java.util.List[Path]) extends TupleExpr18[Prod
     )
   }
 
-  def tags: OptField[MariaSet, ProductsRow] = {
-    new OptField[MariaSet, ProductsRow](
+  def tags: OptField[BestsellerClearanceFSet, ProductsRow] = {
+    new OptField[BestsellerClearanceFSet, ProductsRow](
       _path,
       "tags",
       _.tags,
       None,
       None,
       (row, value) => row.copy(tags = value),
-      MariaTypes.set
+      BestsellerClearanceFSet.dbType
     )
   }
 
@@ -274,7 +274,7 @@ class ProductsFields(val `_path`: java.util.List[Path]) extends TupleExpr18[Prod
 
   override def `_12`: SqlExpr[String] = taxClass
 
-  override def `_13`: SqlExpr[MariaSet] = tags
+  override def `_13`: SqlExpr[BestsellerClearanceFSet] = tags
 
   override def `_14`: SqlExpr[Json] = attributes
 

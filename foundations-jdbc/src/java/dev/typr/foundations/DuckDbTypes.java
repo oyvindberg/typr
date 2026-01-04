@@ -481,41 +481,6 @@ public interface DuckDbTypes {
   DuckDbType<java.util.List<Duration>> listInterval =
       interval.listViaSqlLiteral(Duration.class, DuckDbStringifier.interval);
 
-  // ==================== Pre-instantiated Map Types ====================
-
-  /** MAP(VARCHAR, INTEGER) - native JDBC support */
-  static DuckDbType<java.util.Map<String, Integer>> mapVarcharInteger() {
-    return varchar.mapToNative(integer, String.class, Integer.class);
-  }
-
-  /** MAP(VARCHAR, VARCHAR) - native JDBC support */
-  static DuckDbType<java.util.Map<String, String>> mapVarcharVarchar() {
-    return varchar.mapToNative(varchar, String.class, String.class);
-  }
-
-  /** MAP(INTEGER, VARCHAR) - native JDBC support */
-  static DuckDbType<java.util.Map<Integer, String>> mapIntegerVarchar() {
-    return integer.mapToNative(varchar, Integer.class, String.class);
-  }
-
-  /** MAP(UUID, VARCHAR) - SQL literal conversion for UUID */
-  static DuckDbType<java.util.Map<UUID, String>> mapUuidVarchar() {
-    return uuid.mapToViaSqlLiteral(
-        varchar, UUID.class, String.class, DuckDbStringifier.uuid, DuckDbStringifier.string);
-  }
-
-  /** MAP(VARCHAR, TIME) - SQL literal conversion for TIME */
-  static DuckDbType<java.util.Map<String, LocalTime>> mapVarcharTime() {
-    return varchar.mapToViaSqlLiteral(
-        time, String.class, LocalTime.class, DuckDbStringifier.string, DuckDbStringifier.time);
-  }
-
-  /** MAP(UUID, TIME) - SQL literal conversion for both */
-  static DuckDbType<java.util.Map<UUID, LocalTime>> mapUuidTime() {
-    return uuid.mapToViaSqlLiteral(
-        time, UUID.class, LocalTime.class, DuckDbStringifier.uuid, DuckDbStringifier.time);
-  }
-
   // ==================== Unknown Type ====================
   // For columns whose type typr doesn't know how to handle - cast to/from string
   DuckDbType<dev.typr.foundations.data.Unknown> unknown =

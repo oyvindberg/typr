@@ -9,9 +9,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.Uint1
 import dev.typr.foundations.data.Uint4
-import dev.typr.foundations.data.maria.MariaSet
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import testdb.AllBrandsCategoriesCSet
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 
@@ -52,7 +52,7 @@ data class PromotionsRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("applicable_to") val applicableTo: Defaulted<MariaSet?> = UseDefault(),
+  @JsonProperty("applicable_to") val applicableTo: Defaulted<AllBrandsCategoriesCSet?> = UseDefault(),
   /** Default: NULL
     * Complex eligibility rules
     */
@@ -72,7 +72,7 @@ data class PromotionsRowUnsaved(
     maxUsesDefault: () -> Uint4?,
     usesCountDefault: () -> Uint4,
     maxUsesPerCustomerDefault: () -> Uint1?,
-    applicableToDefault: () -> MariaSet?,
+    applicableToDefault: () -> AllBrandsCategoriesCSet?,
     rulesJsonDefault: () -> Json?,
     isActiveDefault: () -> Boolean,
     createdAtDefault: () -> LocalDateTime,

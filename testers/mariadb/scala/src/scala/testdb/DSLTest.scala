@@ -1,7 +1,7 @@
 package testdb
 
 import dev.typr.foundations.data.{Json, Uint1, Uint2, Uint4, Uint8}
-import dev.typr.foundations.data.maria.{Inet4, Inet6, MariaSet}
+import dev.typr.foundations.data.maria.{Inet4, Inet6}
 import dev.typr.foundations.dsl.Bijection
 import org.scalatest.funsuite.AnyFunSuite
 import testdb.mariatest.*
@@ -52,7 +52,7 @@ class DSLTest extends AnyFunSuite {
     timestampCol = LocalDateTime.now(),
     timestampFspCol = LocalDateTime.now(),
     yearCol = Year.of(2025),
-    setCol = MariaSet.fromString("x,y"),
+    setCol = XYZSet.fromString("x,y"),
     jsonCol = Json("{\"key\": \"value\"}"),
     inet4Col = new Inet4("192.168.1.1"),
     inet6Col = new Inet6("::1")

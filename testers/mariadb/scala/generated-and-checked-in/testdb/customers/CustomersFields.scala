@@ -8,7 +8,6 @@ package testdb.customers
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.data.Json
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
@@ -20,11 +19,12 @@ import dev.typr.foundations.scala.SqlExpr.IdField
 import dev.typr.foundations.scala.SqlExpr.OptField
 import dev.typr.foundations.scala.TupleExpr14
 import java.time.LocalDateTime
+import testdb.EmailMailPushSmsSet
 import testdb.customer_status.CustomerStatusFields
 import testdb.customer_status.CustomerStatusId
 import testdb.customer_status.CustomerStatusRow
 
-class CustomersFields(val `_path`: java.util.List[Path]) extends TupleExpr14[CustomersId, String, Array[Byte], String, String, String, CustomerStatusId, String, Json, MariaSet, String, LocalDateTime, LocalDateTime, LocalDateTime] with RelationStructure[CustomersFields, CustomersRow]  with FieldsBase[CustomersRow] {
+class CustomersFields(val `_path`: java.util.List[Path]) extends TupleExpr14[CustomersId, String, Array[Byte], String, String, String, CustomerStatusId, String, Json, EmailMailPushSmsSet, String, LocalDateTime, LocalDateTime, LocalDateTime] with RelationStructure[CustomersFields, CustomersRow]  with FieldsBase[CustomersRow] {
   def customerId: IdField[CustomersId, CustomersRow] = {
     new IdField[CustomersId, CustomersRow](
       _path,
@@ -133,15 +133,15 @@ class CustomersFields(val `_path`: java.util.List[Path]) extends TupleExpr14[Cus
     )
   }
 
-  def marketingFlags: OptField[MariaSet, CustomersRow] = {
-    new OptField[MariaSet, CustomersRow](
+  def marketingFlags: OptField[EmailMailPushSmsSet, CustomersRow] = {
+    new OptField[EmailMailPushSmsSet, CustomersRow](
       _path,
       "marketing_flags",
       _.marketingFlags,
       None,
       None,
       (row, value) => row.copy(marketingFlags = value),
-      MariaTypes.set
+      EmailMailPushSmsSet.dbType
     )
   }
 
@@ -219,7 +219,7 @@ class CustomersFields(val `_path`: java.util.List[Path]) extends TupleExpr14[Cus
 
   override def `_9`: SqlExpr[Json] = preferences
 
-  override def `_10`: SqlExpr[MariaSet] = marketingFlags
+  override def `_10`: SqlExpr[EmailMailPushSmsSet] = marketingFlags
 
   override def `_11`: SqlExpr[String] = notes
 

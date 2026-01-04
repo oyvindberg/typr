@@ -14,6 +14,7 @@ import dev.typr.foundations.scala.SelectBuilder
 import dev.typr.foundations.scala.UpdateBuilder
 import java.sql.Connection
 import scala.collection.mutable.ListBuffer
+import testdb.EmailMailPushSmsSet
 import testdb.customer_status.CustomerStatusId
 import dev.typr.foundations.scala.Fragment.sql
 
@@ -30,7 +31,7 @@ class CustomersRepoImpl extends CustomersRepo {
 
   override def insert(unsaved: CustomersRow)(using c: Connection): CustomersRow = {
   sql"""insert into `customers`(`email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`)
-    values (${Fragment.encode(MariaTypes.varchar, unsaved.email)}, ${Fragment.encode(MariaTypes.binary, unsaved.passwordHash)}, ${Fragment.encode(MariaTypes.varchar, unsaved.firstName)}, ${Fragment.encode(MariaTypes.varchar, unsaved.lastName)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.phone)}, ${Fragment.encode(CustomerStatusId.dbType, unsaved.status)}, ${Fragment.encode(MariaTypes.text, unsaved.tier)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.preferences)}, ${Fragment.encode(MariaTypes.set.nullable, unsaved.marketingFlags)}, ${Fragment.encode(MariaTypes.text.nullable, unsaved.notes)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.lastLoginAt)})
+    values (${Fragment.encode(MariaTypes.varchar, unsaved.email)}, ${Fragment.encode(MariaTypes.binary, unsaved.passwordHash)}, ${Fragment.encode(MariaTypes.varchar, unsaved.firstName)}, ${Fragment.encode(MariaTypes.varchar, unsaved.lastName)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.phone)}, ${Fragment.encode(CustomerStatusId.dbType, unsaved.status)}, ${Fragment.encode(MariaTypes.text, unsaved.tier)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.preferences)}, ${Fragment.encode(EmailMailPushSmsSet.dbType.nullable, unsaved.marketingFlags)}, ${Fragment.encode(MariaTypes.text.nullable, unsaved.notes)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.lastLoginAt)})
     RETURNING `customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`
     """
     .updateReturning(CustomersRow.`_rowParser`.exactlyOne()).runUnchecked(c)
@@ -65,7 +66,7 @@ class CustomersRepoImpl extends CustomersRepo {
     );
     unsaved.marketingFlags.visit(
       {  },
-      value => { columns.addOne(Fragment.lit("`marketing_flags`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.set.nullable, value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`marketing_flags`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(EmailMailPushSmsSet.dbType.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.notes.visit(
       {  },
@@ -138,7 +139,7 @@ class CustomersRepoImpl extends CustomersRepo {
     `status` = ${Fragment.encode(CustomerStatusId.dbType, row.status)},
     `tier` = ${Fragment.encode(MariaTypes.text, row.tier)},
     `preferences` = ${Fragment.encode(MariaTypes.json.nullable, row.preferences)},
-    `marketing_flags` = ${Fragment.encode(MariaTypes.set.nullable, row.marketingFlags)},
+    `marketing_flags` = ${Fragment.encode(EmailMailPushSmsSet.dbType.nullable, row.marketingFlags)},
     `notes` = ${Fragment.encode(MariaTypes.text.nullable, row.notes)},
     `created_at` = ${Fragment.encode(MariaTypes.datetime, row.createdAt)},
     `updated_at` = ${Fragment.encode(MariaTypes.datetime, row.updatedAt)},
@@ -148,7 +149,7 @@ class CustomersRepoImpl extends CustomersRepo {
 
   override def upsert(unsaved: CustomersRow)(using c: Connection): CustomersRow = {
   sql"""INSERT INTO `customers`(`customer_id`, `email`, `password_hash`, `first_name`, `last_name`, `phone`, `status`, `tier`, `preferences`, `marketing_flags`, `notes`, `created_at`, `updated_at`, `last_login_at`)
-    VALUES (${Fragment.encode(CustomersId.dbType, unsaved.customerId)}, ${Fragment.encode(MariaTypes.varchar, unsaved.email)}, ${Fragment.encode(MariaTypes.binary, unsaved.passwordHash)}, ${Fragment.encode(MariaTypes.varchar, unsaved.firstName)}, ${Fragment.encode(MariaTypes.varchar, unsaved.lastName)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.phone)}, ${Fragment.encode(CustomerStatusId.dbType, unsaved.status)}, ${Fragment.encode(MariaTypes.text, unsaved.tier)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.preferences)}, ${Fragment.encode(MariaTypes.set.nullable, unsaved.marketingFlags)}, ${Fragment.encode(MariaTypes.text.nullable, unsaved.notes)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.lastLoginAt)})
+    VALUES (${Fragment.encode(CustomersId.dbType, unsaved.customerId)}, ${Fragment.encode(MariaTypes.varchar, unsaved.email)}, ${Fragment.encode(MariaTypes.binary, unsaved.passwordHash)}, ${Fragment.encode(MariaTypes.varchar, unsaved.firstName)}, ${Fragment.encode(MariaTypes.varchar, unsaved.lastName)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.phone)}, ${Fragment.encode(CustomerStatusId.dbType, unsaved.status)}, ${Fragment.encode(MariaTypes.text, unsaved.tier)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.preferences)}, ${Fragment.encode(EmailMailPushSmsSet.dbType.nullable, unsaved.marketingFlags)}, ${Fragment.encode(MariaTypes.text.nullable, unsaved.notes)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.lastLoginAt)})
     ON DUPLICATE KEY UPDATE `email` = VALUES(`email`),
     `password_hash` = VALUES(`password_hash`),
     `first_name` = VALUES(`first_name`),

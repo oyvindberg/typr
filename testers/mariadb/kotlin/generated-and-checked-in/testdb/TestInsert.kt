@@ -12,7 +12,6 @@ import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.data.maria.Inet4
 import dev.typr.foundations.data.maria.Inet6
-import dev.typr.foundations.data.maria.MariaSet
 import java.lang.Math
 import java.math.BigDecimal
 import java.sql.Connection
@@ -200,7 +199,7 @@ data class TestInsert(val random: Random) {
     status: Defaulted<CustomerStatusId> = UseDefault(),
     tier: Defaulted<String> = UseDefault(),
     preferences: Defaulted<Json?> = UseDefault(),
-    marketingFlags: Defaulted<MariaSet?> = UseDefault(),
+    marketingFlags: Defaulted<EmailMailPushSmsSet?> = UseDefault(),
     notes: Defaulted<String?> = UseDefault(),
     createdAt: Defaulted<LocalDateTime> = UseDefault(),
     updatedAt: Defaulted<LocalDateTime> = UseDefault(),
@@ -238,7 +237,6 @@ data class TestInsert(val random: Random) {
     mediumblobCol: ByteArray,
     longblobCol: ByteArray,
     yearCol: Year,
-    setCol: MariaSet,
     inet4Col: Inet4,
     inet6Col: Inet6,
     tinyintCol: Byte = random.nextInt(Byte.MAX_VALUE.toInt()).toByte(),
@@ -261,6 +259,7 @@ data class TestInsert(val random: Random) {
     timeFspCol: LocalTime = LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong()),
     datetimeCol: LocalDateTime = LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
     datetimeFspCol: LocalDateTime = LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong()), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong())),
+    setCol: XYZSet = XYZSet.of(listOf(XYZSetMember.x)),
     jsonCol: Json = Json("{}"),
     timestampCol: Defaulted<LocalDateTime> = UseDefault(),
     timestampFspCol: Defaulted<LocalDateTime> = UseDefault(),
@@ -341,7 +340,7 @@ data class TestInsert(val random: Random) {
     timestampCol: Defaulted<LocalDateTime?> = UseDefault(),
     timestampFspCol: Defaulted<LocalDateTime?> = UseDefault(),
     yearCol: Defaulted<Year?> = UseDefault(),
-    setCol: Defaulted<MariaSet?> = UseDefault(),
+    setCol: Defaulted<XYZSet?> = UseDefault(),
     jsonCol: Defaulted<Json?> = UseDefault(),
     inet4Col: Defaulted<Inet4?> = UseDefault(),
     inet6Col: Defaulted<Inet6?> = UseDefault(),
@@ -474,7 +473,7 @@ data class TestInsert(val random: Random) {
     dimensionsJson: Defaulted<Json?> = UseDefault(),
     status: Defaulted<String> = UseDefault(),
     taxClass: Defaulted<String> = UseDefault(),
-    tags: Defaulted<MariaSet?> = UseDefault(),
+    tags: Defaulted<BestsellerClearanceFSet?> = UseDefault(),
     attributes: Defaulted<Json?> = UseDefault(),
     seoMetadata: Defaulted<Json?> = UseDefault(),
     createdAt: Defaulted<LocalDateTime> = UseDefault(),
@@ -495,7 +494,7 @@ data class TestInsert(val random: Random) {
     maxUses: Defaulted<Uint4?> = UseDefault(),
     usesCount: Defaulted<Uint4> = UseDefault(),
     maxUsesPerCustomer: Defaulted<Uint1?> = UseDefault(),
-    applicableTo: Defaulted<MariaSet?> = UseDefault(),
+    applicableTo: Defaulted<AllBrandsCategoriesCSet?> = UseDefault(),
     rulesJson: Defaulted<Json?> = UseDefault(),
     isActive: Defaulted<Boolean> = UseDefault(),
     createdAt: Defaulted<LocalDateTime> = UseDefault(),

@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import testdb.EmailMailPushSmsSet;
 import testdb.customer_status.CustomerStatusId;
 
 public class CustomersRepoImpl implements CustomersRepo {
@@ -78,7 +79,7 @@ public class CustomersRepoImpl implements CustomersRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.json.opt(), unsaved.preferences()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.set.opt(), unsaved.marketingFlags()),
+            Fragment.encode(EmailMailPushSmsSet.dbType.opt(), unsaved.marketingFlags()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text.opt(), unsaved.notes()),
             Fragment.lit(", "),
@@ -159,7 +160,8 @@ public class CustomersRepoImpl implements CustomersRepo {
             value -> {
               columns.add(Fragment.lit("`marketing_flags`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.set.opt(), value), Fragment.lit("")));
+                  interpolate(
+                      Fragment.encode(EmailMailPushSmsSet.dbType.opt(), value), Fragment.lit("")));
             });
     ;
     unsaved
@@ -320,7 +322,7 @@ public class CustomersRepoImpl implements CustomersRepo {
                 Fragment.lit(",\n`preferences` = "),
                 Fragment.encode(MariaTypes.json.opt(), row.preferences()),
                 Fragment.lit(",\n`marketing_flags` = "),
-                Fragment.encode(MariaTypes.set.opt(), row.marketingFlags()),
+                Fragment.encode(EmailMailPushSmsSet.dbType.opt(), row.marketingFlags()),
                 Fragment.lit(",\n`notes` = "),
                 Fragment.encode(MariaTypes.text.opt(), row.notes()),
                 Fragment.lit(",\n`created_at` = "),
@@ -363,7 +365,7 @@ public class CustomersRepoImpl implements CustomersRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.json.opt(), unsaved.preferences()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.set.opt(), unsaved.marketingFlags()),
+            Fragment.encode(EmailMailPushSmsSet.dbType.opt(), unsaved.marketingFlags()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text.opt(), unsaved.notes()),
             Fragment.lit(", "),

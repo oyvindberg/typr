@@ -7,10 +7,10 @@ package testdb.products;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.data.Json;
-import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import testdb.BestsellerClearanceFSet;
 import testdb.brands.BrandsId;
 import testdb.customtypes.Defaulted;
 import testdb.customtypes.Defaulted.UseDefault;
@@ -40,7 +40,7 @@ public record ProductsRowUnsaved(
     /** Default: 'standard' */
     @JsonProperty("tax_class") Defaulted<String> taxClass,
     /** Default: NULL */
-    Defaulted<Optional<MariaSet>> tags,
+    Defaulted<Optional<BestsellerClearanceFSet>> tags,
     /** Default: NULL */
     Defaulted<Optional<Json>> attributes,
     /** Default: NULL */
@@ -333,7 +333,7 @@ public record ProductsRowUnsaved(
   ;
 
   /** Default: NULL */
-  public ProductsRowUnsaved withTags(Defaulted<Optional<MariaSet>> tags) {
+  public ProductsRowUnsaved withTags(Defaulted<Optional<BestsellerClearanceFSet>> tags) {
     return new ProductsRowUnsaved(
         sku,
         name,
@@ -479,7 +479,7 @@ public record ProductsRowUnsaved(
       java.util.function.Supplier<Optional<Json>> dimensionsJsonDefault,
       java.util.function.Supplier<String> statusDefault,
       java.util.function.Supplier<String> taxClassDefault,
-      java.util.function.Supplier<Optional<MariaSet>> tagsDefault,
+      java.util.function.Supplier<Optional<BestsellerClearanceFSet>> tagsDefault,
       java.util.function.Supplier<Optional<Json>> attributesDefault,
       java.util.function.Supplier<Optional<Json>> seoMetadataDefault,
       java.util.function.Supplier<LocalDateTime> createdAtDefault,

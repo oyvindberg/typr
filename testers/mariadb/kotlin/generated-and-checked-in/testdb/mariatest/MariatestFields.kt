@@ -14,7 +14,6 @@ import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.data.maria.Inet4
 import dev.typr.foundations.data.maria.Inet6
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
@@ -30,8 +29,9 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.Year
 import kotlin.collections.List
+import testdb.XYZSet
 
-data class MariatestFields(val _path: List<Path>) : TupleExpr41<Byte, Short, Int, MariatestId, Long, Uint1, Uint2, Uint4, Uint4, Uint8, BigDecimal, BigDecimal, Float, Double, Boolean, ByteArray, ByteArray, String, String, String, String, String, String, ByteArray, ByteArray, ByteArray, ByteArray, ByteArray, ByteArray, LocalDate, LocalTime, LocalTime, LocalDateTime, LocalDateTime, LocalDateTime, LocalDateTime, Year, MariaSet, Json, Inet4, Inet6>, RelationStructure<MariatestFields, MariatestRow>, FieldsBase<MariatestRow> {
+data class MariatestFields(val _path: List<Path>) : TupleExpr41<Byte, Short, Int, MariatestId, Long, Uint1, Uint2, Uint4, Uint4, Uint8, BigDecimal, BigDecimal, Float, Double, Boolean, ByteArray, ByteArray, String, String, String, String, String, String, ByteArray, ByteArray, ByteArray, ByteArray, ByteArray, ByteArray, LocalDate, LocalTime, LocalTime, LocalDateTime, LocalDateTime, LocalDateTime, LocalDateTime, Year, XYZSet, Json, Inet4, Inet6>, RelationStructure<MariatestFields, MariatestRow>, FieldsBase<MariatestRow> {
   override fun _1(): SqlExpr<Byte> = tinyintCol()
 
   override fun _10(): SqlExpr<Uint8> = bigintUCol()
@@ -94,7 +94,7 @@ data class MariatestFields(val _path: List<Path>) : TupleExpr41<Byte, Short, Int
 
   override fun _37(): SqlExpr<Year> = yearCol()
 
-  override fun _38(): SqlExpr<MariaSet> = setCol()
+  override fun _38(): SqlExpr<XYZSet> = setCol()
 
   override fun _39(): SqlExpr<Json> = jsonCol()
 
@@ -172,7 +172,7 @@ data class MariatestFields(val _path: List<Path>) : TupleExpr41<Byte, Short, Int
 
   override fun rowParser(): RowParser<MariatestRow> = MariatestRow._rowParser.underlying
 
-  fun setCol(): Field<MariaSet, MariatestRow> = Field<MariaSet, MariatestRow>(_path, "set_col", MariatestRow::setCol, null, null, { row, value -> row.copy(setCol = value) }, MariaTypes.set)
+  fun setCol(): Field<XYZSet, MariatestRow> = Field<XYZSet, MariatestRow>(_path, "set_col", MariatestRow::setCol, null, null, { row, value -> row.copy(setCol = value) }, XYZSet.dbType)
 
   fun smallintCol(): Field<Short, MariatestRow> = Field<Short, MariatestRow>(_path, "smallint_col", MariatestRow::smallintCol, null, null, { row, value -> row.copy(smallintCol = value) }, KotlinDbTypes.MariaTypes.smallint)
 

@@ -7,8 +7,8 @@ package testdb.products
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.data.Json
-import dev.typr.foundations.data.maria.MariaSet
 import java.time.LocalDateTime
+import testdb.BestsellerClearanceFSet
 import testdb.brands.BrandsId
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
@@ -56,7 +56,7 @@ case class ProductsRowUnsaved(
   /** Default: NULL
 
    */
-  tags: Defaulted[Option[MariaSet]] = new UseDefault(),
+  tags: Defaulted[Option[BestsellerClearanceFSet]] = new UseDefault(),
   /** Default: NULL
 
    */
@@ -87,7 +87,7 @@ case class ProductsRowUnsaved(
     dimensionsJsonDefault: => Option[Json],
     statusDefault: => String,
     taxClassDefault: => String,
-    tagsDefault: => Option[MariaSet],
+    tagsDefault: => Option[BestsellerClearanceFSet],
     attributesDefault: => Option[Json],
     seoMetadataDefault: => Option[Json],
     createdAtDefault: => LocalDateTime,

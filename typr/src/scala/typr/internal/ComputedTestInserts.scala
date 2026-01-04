@@ -20,12 +20,16 @@ object ComputedTestInserts {
       customTypes: CustomTypes,
       domains: List[ComputedDomain],
       enums: List[ComputedStringEnum],
+      mariaSets: List[ComputedMariaSet],
       allTablesByName: Map[db.RelationName, ComputedTable],
       // project data
       tables: Iterable[ComputedTable]
   ): ComputedTestInserts = {
     val enumsByName: Map[jvm.Type, ComputedStringEnum] =
       enums.iterator.map(x => x.tpe -> x).toMap
+
+    val mariaSetsByType: Map[jvm.Type, ComputedMariaSet] =
+      mariaSets.iterator.map(x => (x.tpe: jvm.Type) -> x).toMap
 
     val openEnumsByType: Map[jvm.Type, OpenEnum] =
       tables.flatMap { table => table.maybeId.collect { case x: IdComputed.UnaryOpenEnum => (x.tpe, x.openEnum) } }.toMap
@@ -279,6 +283,21 @@ object ComputedTestInserts {
               case _: LangKotlin =>
                 // Kotlin: list[idx], list.size
                 Some(code"$all[${lang.Random.nextIntBounded(r, code"$all.size")}]")
+              case other =>
+                sys.error(s"Unexpected language: $other")
+            }
+          case tpe if mariaSetsByType.contains(tpe) =>
+            // Generate SET with first member
+            val mariaSet = mariaSetsByType(tpe)
+            val firstMember = mariaSet.members.head._1
+            val memberEnumType = jvm.Type.Qualified(mariaSet.tpe.value.parentOpt.get / jvm.Ident(mariaSet.tpe.name.value + "Member"))
+            lang match {
+              case _: LangScala =>
+                Some(code"$tpe.of(${TypesScala.List}($memberEnumType.$firstMember))")
+              case LangJava =>
+                Some(code"$tpe.of(${TypesJava.List}.of($memberEnumType.$firstMember))")
+              case _: LangKotlin =>
+                Some(code"$tpe.of(listOf($memberEnumType.$firstMember))")
               case other =>
                 sys.error(s"Unexpected language: $other")
             }

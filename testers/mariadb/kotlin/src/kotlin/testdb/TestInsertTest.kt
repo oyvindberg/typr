@@ -2,7 +2,6 @@ package testdb
 
 import dev.typr.foundations.data.maria.Inet4
 import dev.typr.foundations.data.maria.Inet6
-import dev.typr.foundations.data.maria.MariaSet
 import org.junit.Assert.*
 import org.junit.Test
 import testdb.customer_status.CustomerStatusId
@@ -63,7 +62,7 @@ class TestInsertTest {
                 mediumblobCol = byteArrayOf(10, 11, 12),
                 longblobCol = byteArrayOf(13, 14, 15),
                 yearCol = Year.of(2025),
-                setCol = MariaSet.fromString("x,y"),
+                setCol = XYZSet.fromString("x,y"),
                 inet4Col = Inet4("192.168.1.1"),
                 inet6Col = Inet6("::1"),
                 c = c

@@ -1,6 +1,6 @@
 package testdb
 
-import dev.typr.foundations.data.maria.{Inet4, Inet6, MariaSet}
+import dev.typr.foundations.data.maria.{Inet4, Inet6}
 import org.scalatest.funsuite.AnyFunSuite
 
 import java.time.Year
@@ -47,7 +47,7 @@ class TestInsertTest extends AnyFunSuite {
         mediumblobCol = Array[Byte](10, 11, 12),
         longblobCol = Array[Byte](13, 14, 15),
         yearCol = Year.of(2025),
-        setCol = MariaSet.fromString("x,y"),
+        setCol = XYZSet.fromString("x,y"),
         inet4Col = new Inet4("192.168.1.1"),
         inet6Col = new Inet6("::1")
       )
