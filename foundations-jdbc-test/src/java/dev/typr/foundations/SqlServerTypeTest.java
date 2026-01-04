@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 /**
@@ -11,6 +12,12 @@ import org.junit.Test;
  * every type.
  */
 public class SqlServerTypeTest {
+
+  private static final AtomicInteger tableCounter = new AtomicInteger(0);
+
+  private static String uniqueTableName(String prefix) {
+    return prefix + "_" + tableCounter.incrementAndGet();
+  }
 
   // Test wrapper types for alias and CLR types (like generated domain types)
   record EmailAddress(String value) {}
@@ -240,64 +247,60 @@ public class SqlServerTypeTest {
   public void test() {
     System.out.println("=== SQL Server Type Tester ===\n");
 
-    // Test JSON roundtrip (in-memory)
-    System.out.println("=== JSON Roundtrip Tests ===");
-    int jsonSuccessCountTemp = 0;
-    for (SqlServerTypeAndExample<?> t : All) {
-      try {
-        testJsonRoundtrip(t);
-        jsonSuccessCountTemp++;
-      } catch (Exception e) {
-        System.err.println("FAILED: " + t.type.typename().sqlType() + " - " + e.getMessage());
-      }
+    // Test JSON roundtrip (in-memory) - parallel
+    System.out.println("=== JSON Roundtrip Tests (parallel) ===");
+    All.parallelStream().forEach(SqlServerTypeTest::testJsonRoundtrip);
+    System.out.println();
+
+    // Run all DB tests in parallel
+    System.out.println("=== DB Roundtrip Tests (parallel) ===");
+    var failures =
+        All.parallelStream()
+            .flatMap(
+                t -> {
+                  var errors = new ArrayList<String>();
+
+                  // JDBC roundtrip test
+                  try {
+                    withConnection(
+                        conn -> {
+                          testJdbcRoundtrip(conn, t);
+                          return null;
+                        });
+                  } catch (Exception e) {
+                    errors.add(
+                        "JDBC test FAILED " + t.type.typename().sqlType() + ": " + e.getMessage());
+                  }
+
+                  // JSON DB roundtrip test
+                  if (t.supportsJsonDbRoundtrip) {
+                    try {
+                      withConnection(
+                          conn -> {
+                            testJsonDbRoundtrip(conn, t);
+                            return null;
+                          });
+                    } catch (Exception e) {
+                      errors.add(
+                          "JSON DB test FAILED "
+                              + t.type.typename().sqlType()
+                              + ": "
+                              + e.getMessage());
+                    }
+                  }
+
+                  return errors.stream();
+                })
+            .toList();
+
+    System.out.println("\n=====================================");
+    if (failures.isEmpty()) {
+      System.out.println("All tests passed!");
+    } else {
+      failures.forEach(System.out::println);
+      throw new RuntimeException(failures.size() + " tests failed");
     }
-    final int jsonSuccessCount = jsonSuccessCountTemp;
-    System.out.println("\nJSON Roundtrip: " + jsonSuccessCount + "/" + All.size() + " passed\n");
-
-    withConnection(
-        conn -> {
-          // Test JDBC roundtrip
-          System.out.println("=== JDBC Roundtrip Tests ===");
-          int jdbcSuccessCount = 0;
-          for (SqlServerTypeAndExample<?> t : All) {
-            try {
-              testJdbcRoundtrip(conn, t);
-              jdbcSuccessCount++;
-            } catch (Exception e) {
-              System.err.println("FAILED: " + t.type.typename().sqlType() + " - " + e.getMessage());
-              e.printStackTrace();
-            }
-          }
-          System.out.println(
-              "\nJDBC Roundtrip: " + jdbcSuccessCount + "/" + All.size() + " passed\n");
-
-          // Test JSON DB roundtrip (via FOR JSON)
-          System.out.println("=== JSON DB Roundtrip Tests ===");
-          int jsonDbSuccessCount = 0;
-          for (SqlServerTypeAndExample<?> t : All) {
-            if (!t.supportsJsonDbRoundtrip) {
-              System.out.println("SKIP JSON DB: " + t.type.typename().sqlType());
-              continue;
-            }
-            try {
-              testJsonDbRoundtrip(conn, t);
-              jsonDbSuccessCount++;
-            } catch (Exception e) {
-              System.err.println(
-                  "FAILED JSON DB: " + t.type.typename().sqlType() + " - " + e.getMessage());
-            }
-          }
-          System.out.println(
-              "\nJSON DB Roundtrip: " + jsonDbSuccessCount + "/" + All.size() + " passed\n");
-
-          System.out.println("=== Summary ===");
-          System.out.println("Total types tested: " + All.size());
-          System.out.println("JSON Roundtrip: " + jsonSuccessCount + " passed");
-          System.out.println("JDBC Roundtrip: " + jdbcSuccessCount + " passed");
-          System.out.println("JSON DB Roundtrip: " + jsonDbSuccessCount + " passed");
-
-          return null;
-        });
+    System.out.println("=====================================");
   }
 
   static <A> void testJsonRoundtrip(SqlServerTypeAndExample<A> t) {
@@ -327,7 +330,7 @@ public class SqlServerTypeTest {
   static <A> void testJdbcRoundtrip(Connection conn, SqlServerTypeAndExample<A> t)
       throws SQLException {
     String sqlType = t.type.typename().sqlType();
-    String tableName = "#test_" + System.nanoTime();
+    String tableName = uniqueTableName("#test");
 
     // Create temp table
     String createSql = "CREATE TABLE " + tableName + " (v " + sqlType + ")";
@@ -379,7 +382,7 @@ public class SqlServerTypeTest {
   static <A> void testJsonDbRoundtrip(Connection conn, SqlServerTypeAndExample<A> t)
       throws SQLException {
     String sqlType = t.type.typename().sqlType();
-    String tableName = "#test_json_" + System.nanoTime();
+    String tableName = uniqueTableName("#test_json");
 
     // Create temp table
     conn.createStatement().execute("CREATE TABLE " + tableName + " (v " + sqlType + ")");

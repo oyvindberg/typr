@@ -27,7 +27,7 @@ public class DuckDbTestHelper {
   }
 
   private static Connection createConnection() throws SQLException {
-    Connection conn = CONFIG.connect();
+    Connection conn = java.sql.DriverManager.getConnection(CONFIG.jdbcUrl());
     conn.createStatement().execute(getSchemaSQL());
     return conn;
   }

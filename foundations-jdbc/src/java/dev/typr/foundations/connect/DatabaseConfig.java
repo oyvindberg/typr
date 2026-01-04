@@ -1,20 +1,31 @@
 package dev.typr.foundations.connect;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import dev.typr.foundations.Transactor;
 import java.util.Map;
-import java.util.Properties;
 
 /**
- * Configuration interface for database connections. Implemented by database-specific config classes
- * (PostgresConfig, MariaDbConfig, etc.).
+ * Configuration for connecting to a database. Implemented by database-specific config classes
+ * (PostgresConfig, MariaDbConfig, SqlServerConfig, etc.).
  *
- * <p>Each implementation provides typed builder methods for ALL documented JDBC driver properties,
- * with sensible defaults where the driver defaults aren't optimal.
+ * <p>Each implementation provides typed builder methods for all documented JDBC driver properties.
  *
- * <p>This interface can be used standalone with DriverManager (no pooling) or combined with
- * HikariCP via the foundations-jdbc-hikari module.
+ * <p>Example:
+ *
+ * <pre>{@code
+ * var config = PostgresConfig.builder("localhost", 5432, "mydb", "user", "pass")
+ *     .sslmode(PgSslMode.REQUIRE)
+ *     .build();
+ *
+ * // Quick shortcut for scripts/tests
+ * var tx = config.transactor(Transactor.testStrategy());
+ *
+ * // Or with connection settings
+ * var tx = config.transactor(
+ *     ConnectionSettings.builder()
+ *         .transactionIsolation(TransactionIsolation.READ_UNCOMMITTED)
+ *         .build(),
+ *     Transactor.testStrategy());
+ * }</pre>
  */
 public interface DatabaseConfig {
 
@@ -37,20 +48,50 @@ public interface DatabaseConfig {
   Map<String, String> driverProperties();
 
   /**
-   * Create a new connection using DriverManager. This is a simple non-pooled connection suitable
-   * for scripts, tests, or low-volume use cases.
+   * Create a non-pooled Transactor with the default strategy.
    *
-   * <p>For production use with connection pooling, use HikariDataSourceFactory from the
-   * foundations-jdbc-hikari module.
+   * <p>Shortcut for {@code SimpleDataSource.create(this).transactor()}.
    *
-   * @return a new database connection
-   * @throws SQLException if connection fails
+   * @return a Transactor using non-pooled connections
    */
-  default Connection connect() throws SQLException {
-    Properties props = new Properties();
-    props.setProperty("user", username());
-    props.setProperty("password", password());
-    driverProperties().forEach(props::setProperty);
-    return DriverManager.getConnection(jdbcUrl(), props);
+  default Transactor transactor() {
+    return SimpleDataSource.create(this).transactor();
+  }
+
+  /**
+   * Create a non-pooled Transactor with a custom strategy.
+   *
+   * <p>Shortcut for {@code SimpleDataSource.create(this).transactor(strategy)}.
+   *
+   * @param strategy the transaction strategy
+   * @return a Transactor using non-pooled connections
+   */
+  default Transactor transactor(Transactor.Strategy strategy) {
+    return SimpleDataSource.create(this).transactor(strategy);
+  }
+
+  /**
+   * Create a non-pooled Transactor with connection settings and the default strategy.
+   *
+   * <p>Shortcut for {@code SimpleDataSource.create(this, settings).transactor()}.
+   *
+   * @param settings connection settings
+   * @return a Transactor using non-pooled connections
+   */
+  default Transactor transactor(ConnectionSettings settings) {
+    return SimpleDataSource.create(this, settings).transactor();
+  }
+
+  /**
+   * Create a non-pooled Transactor with connection settings and a custom strategy.
+   *
+   * <p>Shortcut for {@code SimpleDataSource.create(this, settings).transactor(strategy)}.
+   *
+   * @param settings connection settings
+   * @param strategy the transaction strategy
+   * @return a Transactor using non-pooled connections
+   */
+  default Transactor transactor(ConnectionSettings settings, Transactor.Strategy strategy) {
+    return SimpleDataSource.create(this, settings).transactor(strategy);
   }
 }

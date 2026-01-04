@@ -11,7 +11,7 @@ public class Db2TestHelper {
   private static final Db2Config CONFIG =
       Db2Config.builder("localhost", 50000, "typr", "db2inst1", "password").build();
 
-  private static final Transactor TRANSACTOR = new Transactor(CONFIG, Transactor.testStrategy());
+  private static final Transactor TRANSACTOR = CONFIG.transactor(Transactor.testStrategy());
 
   public static <T> T apply(Function<Connection, T> f) {
     try {

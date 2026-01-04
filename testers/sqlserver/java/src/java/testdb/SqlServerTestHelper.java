@@ -1,6 +1,8 @@
 package testdb;
 
 import dev.typr.foundations.Transactor;
+import dev.typr.foundations.connect.ConnectionSettings;
+import dev.typr.foundations.connect.TransactionIsolation;
 import dev.typr.foundations.connect.sqlserver.SqlServerConfig;
 import dev.typr.foundations.connect.sqlserver.SqlServerEncrypt;
 import java.sql.Connection;
@@ -14,7 +16,15 @@ public class SqlServerTestHelper {
           .encrypt(SqlServerEncrypt.FALSE)
           .build();
 
-  private static final Transactor TRANSACTOR = new Transactor(CONFIG, Transactor.testStrategy());
+  // SQL Server uses pessimistic locking by default, which causes deadlocks when
+  // multiple tests run in parallel and access the same tables. READ_UNCOMMITTED
+  // prevents lock contention. Since tests rollback anyway, dirty reads are fine.
+  private static final Transactor TRANSACTOR =
+      CONFIG.transactor(
+          ConnectionSettings.builder()
+              .transactionIsolation(TransactionIsolation.READ_UNCOMMITTED)
+              .build(),
+          Transactor.testStrategy());
 
   public static <T> T apply(Function<Connection, T> f) {
     try {

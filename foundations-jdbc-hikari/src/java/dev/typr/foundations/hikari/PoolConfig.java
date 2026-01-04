@@ -1,12 +1,15 @@
 package dev.typr.foundations.hikari;
 
-import dev.typr.foundations.connect.TransactionIsolation;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * HikariCP connection pool configuration with typed builder methods for all documented properties.
+ * HikariCP connection pool configuration with typed builder methods for pool-specific properties.
+ *
+ * <p>For connection defaults (transaction isolation, auto-commit, read-only, etc.), use {@link
+ * dev.typr.foundations.connect.DatabaseConfig#withDefaults} instead. Those settings apply to both
+ * pooled and non-pooled connections.
  *
  * @see <a href="https://github.com/brettwooldridge/HikariCP#configuration-knobs-baby">HikariCP
  *     Documentation</a>
@@ -25,13 +28,7 @@ public final class PoolConfig {
   private final Duration keepaliveTime;
   private final Duration leakDetectionThreshold;
 
-  // Connection defaults
-  private final TransactionIsolation transactionIsolation;
-  private final Boolean autoCommit;
-  private final Boolean readOnly;
-  private final String catalog;
-  private final String schema;
-  private final String connectionInitSql;
+  // Pool-specific connection settings
   private final String connectionTestQuery;
 
   // Pool naming
@@ -56,12 +53,6 @@ public final class PoolConfig {
     this.keepaliveTime = b.keepaliveTime;
     this.leakDetectionThreshold = b.leakDetectionThreshold;
 
-    this.transactionIsolation = b.transactionIsolation;
-    this.autoCommit = b.autoCommit;
-    this.readOnly = b.readOnly;
-    this.catalog = b.catalog;
-    this.schema = b.schema;
-    this.connectionInitSql = b.connectionInitSql;
     this.connectionTestQuery = b.connectionTestQuery;
 
     this.poolName = b.poolName;
@@ -121,30 +112,6 @@ public final class PoolConfig {
     return leakDetectionThreshold;
   }
 
-  public TransactionIsolation transactionIsolation() {
-    return transactionIsolation;
-  }
-
-  public Boolean autoCommit() {
-    return autoCommit;
-  }
-
-  public Boolean readOnly() {
-    return readOnly;
-  }
-
-  public String catalog() {
-    return catalog;
-  }
-
-  public String schema() {
-    return schema;
-  }
-
-  public String connectionInitSql() {
-    return connectionInitSql;
-  }
-
   public String connectionTestQuery() {
     return connectionTestQuery;
   }
@@ -169,7 +136,7 @@ public final class PoolConfig {
     return extraProperties;
   }
 
-  /** Builder for PoolConfig with typed methods for all HikariCP properties. */
+  /** Builder for PoolConfig with typed methods for pool-specific HikariCP properties. */
   public static final class Builder {
     // Pool sizing - defaults from HikariCP
     private int maximumPoolSize = 10;
@@ -183,13 +150,7 @@ public final class PoolConfig {
     private Duration keepaliveTime = Duration.ZERO;
     private Duration leakDetectionThreshold = Duration.ZERO;
 
-    // Connection defaults
-    private TransactionIsolation transactionIsolation = null;
-    private Boolean autoCommit = null;
-    private Boolean readOnly = null;
-    private String catalog = null;
-    private String schema = null;
-    private String connectionInitSql = null;
+    // Pool-specific connection settings
     private String connectionTestQuery = null;
 
     // Pool naming
@@ -293,74 +254,6 @@ public final class PoolConfig {
      */
     public Builder leakDetectionThreshold(Duration leakDetectionThreshold) {
       this.leakDetectionThreshold = leakDetectionThreshold;
-      return this;
-    }
-
-    // ==================== CONNECTION DEFAULTS ====================
-
-    /**
-     * Default transaction isolation level for connections. Default: null (driver default).
-     *
-     * @param transactionIsolation isolation level
-     * @return this builder
-     */
-    public Builder transactionIsolation(TransactionIsolation transactionIsolation) {
-      this.transactionIsolation = transactionIsolation;
-      return this;
-    }
-
-    /**
-     * Default auto-commit mode for connections. Default: null (driver default, usually true).
-     *
-     * @param autoCommit auto-commit mode
-     * @return this builder
-     */
-    public Builder autoCommit(boolean autoCommit) {
-      this.autoCommit = autoCommit;
-      return this;
-    }
-
-    /**
-     * Default read-only mode for connections. Default: null (driver default, usually false).
-     *
-     * @param readOnly read-only mode
-     * @return this builder
-     */
-    public Builder readOnly(boolean readOnly) {
-      this.readOnly = readOnly;
-      return this;
-    }
-
-    /**
-     * Default catalog for connections. Default: null (driver default).
-     *
-     * @param catalog catalog name
-     * @return this builder
-     */
-    public Builder catalog(String catalog) {
-      this.catalog = catalog;
-      return this;
-    }
-
-    /**
-     * Default schema for connections. Default: null (driver default).
-     *
-     * @param schema schema name
-     * @return this builder
-     */
-    public Builder schema(String schema) {
-      this.schema = schema;
-      return this;
-    }
-
-    /**
-     * SQL to execute when a connection is created. Default: null.
-     *
-     * @param connectionInitSql initialization SQL
-     * @return this builder
-     */
-    public Builder connectionInitSql(String connectionInitSql) {
-      this.connectionInitSql = connectionInitSql;
       return this;
     }
 

@@ -9,7 +9,7 @@ object MariaDbTestHelper {
     private val CONFIG: MariaDbConfig =
         MariaDbConfig.builder("localhost", 3307, "typr", "typr", "password").build()
 
-    private val TRANSACTOR: Transactor = Transactor(CONFIG, Transactor.testStrategy())
+    private val TRANSACTOR: Transactor = CONFIG.transactor(Transactor.testStrategy())
 
     fun <T> apply(f: (Connection) -> T): T {
         return TRANSACTOR.execute(SqlFunction { conn -> f(conn) })

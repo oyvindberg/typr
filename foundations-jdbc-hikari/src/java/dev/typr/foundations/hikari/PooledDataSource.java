@@ -3,32 +3,35 @@ package dev.typr.foundations.hikari;
 import com.zaxxer.hikari.HikariDataSource;
 import dev.typr.foundations.Transactor;
 import dev.typr.foundations.Transactor.Strategy;
+import dev.typr.foundations.connect.ConnectionSource;
 import java.io.Closeable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 
 /**
- * A wrapper around HikariDataSource that provides convenient access to Transactor.
+ * A pooled connection source using HikariCP.
  *
- * <p>This class wraps a HikariDataSource and provides methods for creating Transactors with
- * different strategies. It also implements Closeable for proper resource management.
+ * <p>This class wraps a HikariDataSource and implements {@link ConnectionSource} for unified API
+ * with {@link dev.typr.foundations.connect.SimpleDataSource}.
  *
  * <p>Example usage:
  *
  * <pre>{@code
- * var ds = HikariDataSourceFactory.create(
- *     PostgresConfig.builder("localhost", 5432, "mydb", "user", "pass").build());
+ * var ds = PooledDataSource.create(
+ *     PostgresConfig.builder("localhost", 5432, "mydb", "user", "pass").build(),
+ *     ConnectionSettings.builder()
+ *         .transactionIsolation(TransactionIsolation.READ_UNCOMMITTED)
+ *         .build(),
+ *     PoolConfig.builder()
+ *         .maximumPoolSize(20)
+ *         .build());
  *
- * // Get a transactor with default strategy (manual transactions)
  * var tx = ds.transactor();
  * tx.execute(conn -> repo.selectAll(conn));
- *
- * // Or with a custom strategy
- * var tx = ds.transactor(Transactor.autoCommitStrategy());
  * }</pre>
  */
-public final class PooledDataSource implements Closeable {
+public final class PooledDataSource implements ConnectionSource, Closeable {
 
   private final HikariDataSource dataSource;
 
@@ -54,50 +57,19 @@ public final class PooledDataSource implements Closeable {
     return dataSource;
   }
 
-  /**
-   * Get a connection from the pool.
-   *
-   * @return a pooled connection
-   * @throws SQLException if unable to get a connection
-   */
+  @Override
   public Connection getConnection() throws SQLException {
     return dataSource.getConnection();
   }
 
-  /**
-   * Create a Transactor with the default strategy (manual transactions with commit on success).
-   *
-   * <p>The default strategy:
-   *
-   * <ul>
-   *   <li>before: setAutoCommit(false)
-   *   <li>after: commit()
-   *   <li>oops: no-op (caller handles exceptions)
-   *   <li>always: close()
-   * </ul>
-   *
-   * @return a Transactor configured for manual transaction management
-   */
+  @Override
   public Transactor transactor() {
-    return new Transactor(this::getConnectionOrThrow, Transactor.defaultStrategy());
+    return ConnectionSource.super.transactor();
   }
 
-  /**
-   * Create a Transactor with a custom strategy.
-   *
-   * @param strategy the transaction management strategy
-   * @return a Transactor configured with the provided strategy
-   */
+  @Override
   public Transactor transactor(Strategy strategy) {
-    return new Transactor(this::getConnectionOrThrow, strategy);
-  }
-
-  private Connection getConnectionOrThrow() {
-    try {
-      return dataSource.getConnection();
-    } catch (SQLException e) {
-      throw new RuntimeException("Failed to get connection from pool", e);
-    }
+    return ConnectionSource.super.transactor(strategy);
   }
 
   /**

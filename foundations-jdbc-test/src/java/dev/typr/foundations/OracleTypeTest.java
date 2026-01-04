@@ -11,13 +11,22 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 /** Tests for Oracle type codecs. Tests all types defined in OracleTypes. */
 public class OracleTypeTest {
+
+  private static final AtomicInteger tableCounter = new AtomicInteger(0);
+
+  private static String uniqueTableName(String prefix) {
+    return prefix + "_" + tableCounter.incrementAndGet();
+  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // Test Data Types for Object-Relational Types
@@ -1346,100 +1355,109 @@ public class OracleTypeTest {
   public void test() {
     System.out.println("Testing Oracle type codecs...\n");
 
-    // Test JSON roundtrip first (no database connection needed)
-    System.out.println("=== JSON Roundtrip Tests ===");
-    for (OracleTypeAndExample<?> t : All) {
-      if (t.jsonRoundtripWorks) {
-        testJsonRoundtrip(t);
-      }
-    }
+    // Test JSON roundtrip first (no database connection needed) - parallel
+    System.out.println("=== JSON Roundtrip Tests (parallel) ===");
+    All.parallelStream()
+        .filter(t -> t.jsonRoundtripWorks)
+        .forEach(OracleTypeTest::testJsonRoundtrip);
     System.out.println();
 
+    // Create all user-defined types upfront (must be sequential to avoid conflicts)
     withConnection(
         conn -> {
-          int passed = 0;
-          int failed = 0;
-
-          // Test native type roundtrip
-          System.out.println("=== Native Type Roundtrip Tests ===");
+          System.out.println("=== Creating user-defined types ===");
+          var executedSql = new HashSet<String>();
           for (OracleTypeAndExample<?> t : All) {
-            String typeName = t.type.typename().sqlType();
-            try {
-              System.out.println(
-                  "Testing " + typeName + " with example '" + format(t.example) + "'");
-              testCase(conn, t);
-              System.out.println("  PASSED\n");
-              passed++;
-            } catch (Exception e) {
-              System.out.println("  FAILED: " + e.getMessage() + "\n");
-              e.printStackTrace();
-              failed++;
-            }
-          }
-
-          // Test JSON DB roundtrip (simulates MULTISET behavior)
-          System.out.println("\n=== JSON DB Roundtrip Tests (MULTISET simulation) ===");
-          int skipped = 0;
-          for (OracleTypeAndExample<?> t : All) {
-            String typeName = t.type.typename().sqlType();
-            if (!t.jsonRoundtripWorks()) {
-              System.out.println(
-                  "SKIPPING JSON roundtrip " + typeName + " (marked as not working)");
-              skipped++;
-              continue;
-            }
-            try {
-              testJsonDbRoundtrip(conn, t);
-              passed++;
-            } catch (Exception e) {
-              System.out.println("  FAILED " + typeName + ": " + e.getMessage() + "\n");
-              e.printStackTrace();
-              failed++;
-            }
-          }
-
-          // Test getGeneratedKeys roundtrip (simulates INSERT RETURNING behavior)
-          System.out.println("\n=== getGeneratedKeys Roundtrip Tests ===");
-          int genKeysSkipped = 0;
-          for (OracleTypeAndExample<?> t : All) {
-            String typeName = t.type.typename().sqlType();
-            // Skip types that can't be returned via getGeneratedKeys (STRUCT/ARRAY types cause
-            // ORA-17041)
             if (!t.setupSql.isEmpty()) {
-              System.out.println("SKIPPING getGeneratedKeys " + typeName + " (user-defined type)");
-              genKeysSkipped++;
-              continue;
-            }
-            try {
-              testGeneratedKeysRoundtrip(conn, t);
-              passed++;
-            } catch (Exception e) {
-              System.out.println("  FAILED " + typeName + ": " + e.getMessage() + "\n");
-              e.printStackTrace();
-              failed++;
+              try (var stmt = conn.createStatement()) {
+                for (String sql : t.setupSql) {
+                  if (executedSql.add(sql)) {
+                    try {
+                      stmt.execute(sql);
+                    } catch (SQLException e) {
+                      if (!e.getMessage().contains("ORA-00955")
+                          && !e.getMessage().contains("ORA-02303")) {
+                        throw e;
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
-
-          System.out.println("\n=====================================");
-          int total = All.size() * 3 - skipped - genKeysSkipped;
-          System.out.println(
-              "Results: "
-                  + passed
-                  + " passed, "
-                  + failed
-                  + " failed, "
-                  + (skipped + genKeysSkipped)
-                  + " skipped out of "
-                  + total
-                  + " tests");
-          System.out.println("=====================================");
-
-          if (failed > 0) {
-            throw new RuntimeException(failed + " tests failed");
-          }
-
+          conn.commit();
           return null;
         });
+
+    // Run all DB tests in parallel
+    System.out.println("\n=== DB Roundtrip Tests (parallel) ===");
+    var failures =
+        All.parallelStream()
+            .flatMap(
+                t -> {
+                  var errors = new ArrayList<String>();
+
+                  // Native type roundtrip test
+                  try {
+                    withConnection(
+                        conn -> {
+                          testCase(conn, t);
+                          return null;
+                        });
+                  } catch (Exception e) {
+                    errors.add(
+                        "Native test FAILED "
+                            + t.type.typename().sqlType()
+                            + ": "
+                            + e.getMessage());
+                  }
+
+                  // JSON DB roundtrip test
+                  if (t.jsonRoundtripWorks()) {
+                    try {
+                      withConnection(
+                          conn -> {
+                            testJsonDbRoundtrip(conn, t);
+                            return null;
+                          });
+                    } catch (Exception e) {
+                      errors.add(
+                          "JSON DB test FAILED "
+                              + t.type.typename().sqlType()
+                              + ": "
+                              + e.getMessage());
+                    }
+                  }
+
+                  // getGeneratedKeys roundtrip test (skip user-defined types)
+                  if (t.setupSql.isEmpty()) {
+                    try {
+                      withConnection(
+                          conn -> {
+                            testGeneratedKeysRoundtrip(conn, t);
+                            return null;
+                          });
+                    } catch (Exception e) {
+                      errors.add(
+                          "getGeneratedKeys test FAILED "
+                              + t.type.typename().sqlType()
+                              + ": "
+                              + e.getMessage());
+                    }
+                  }
+
+                  return errors.stream();
+                })
+            .toList();
+
+    System.out.println("\n=====================================");
+    if (failures.isEmpty()) {
+      System.out.println("All tests passed!");
+    } else {
+      failures.forEach(System.out::println);
+      throw new RuntimeException(failures.size() + " tests failed");
+    }
+    System.out.println("=====================================");
   }
 
   /**
@@ -1454,7 +1472,7 @@ public class OracleTypeTest {
     A expected = t.expected(); // May differ from original due to Oracle quirks
 
     // Create table with auto-generated ID + test column
-    String tableName = "TEST_GENKEYS_" + System.currentTimeMillis();
+    String tableName = uniqueTableName("TEST_GENKEYS");
     try (var stmt = conn.createStatement()) {
       stmt.execute(
           "CREATE TABLE "
@@ -1563,7 +1581,7 @@ public class OracleTypeTest {
 
     // Create temp table (Oracle uses Global Temporary Tables differently, using regular table +
     // cleanup)
-    String tableName = "TEST_JSON_RT_" + System.currentTimeMillis();
+    String tableName = uniqueTableName("TEST_JSON_RT");
     try (var stmt = conn.createStatement()) {
       // NESTED TABLE columns require STORE AS clause
       String createTableDDL = "CREATE TABLE " + tableName + " (v " + sqlType + ")";
@@ -1648,7 +1666,7 @@ public class OracleTypeTest {
     }
 
     // Create table (Oracle doesn't have CREATE TEMPORARY TABLE syntax in standard form)
-    String tableName = "TEST_TABLE_" + System.currentTimeMillis();
+    String tableName = uniqueTableName("TEST_TABLE");
     try (var stmt = conn.createStatement()) {
       // NESTED TABLE columns require STORE AS clause
       String createTableDDL = "CREATE TABLE " + tableName + " (v " + sqlType + ")";

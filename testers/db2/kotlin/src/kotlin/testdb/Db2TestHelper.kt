@@ -9,7 +9,7 @@ object Db2TestHelper {
     private val CONFIG: Db2Config =
         Db2Config.builder("localhost", 50000, "typr", "db2inst1", "password").build()
 
-    private val TRANSACTOR: Transactor = Transactor(CONFIG, Transactor.testStrategy())
+    private val TRANSACTOR: Transactor = CONFIG.transactor(Transactor.testStrategy())
 
     fun <T> apply(f: (Connection) -> T): T {
         return TRANSACTOR.execute(SqlFunction { conn -> f(conn) })

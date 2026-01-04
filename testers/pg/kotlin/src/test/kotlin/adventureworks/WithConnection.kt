@@ -9,7 +9,7 @@ object WithConnection {
     private val CONFIG: PostgresConfig =
         PostgresConfig.builder("localhost", 6432, "Adventureworks", "postgres", "password").build()
 
-    private val TRANSACTOR: Transactor = Transactor(CONFIG, Transactor.testStrategy())
+    private val TRANSACTOR: Transactor = CONFIG.transactor(Transactor.testStrategy())
 
     fun <T> apply(f: (Connection) -> T): T {
         return TRANSACTOR.execute(SqlFunction { conn -> f(conn) })

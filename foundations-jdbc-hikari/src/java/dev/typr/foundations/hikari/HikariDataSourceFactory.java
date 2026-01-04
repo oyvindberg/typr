@@ -2,31 +2,27 @@ package dev.typr.foundations.hikari;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import dev.typr.foundations.connect.ConnectionSettings;
 import dev.typr.foundations.connect.DatabaseConfig;
 
 /**
- * Factory for creating PooledDataSource instances from DatabaseConfig and PoolConfig.
+ * Factory for creating PooledDataSource instances.
  *
  * <p>Example usage:
  *
  * <pre>{@code
- * // Minimal - all defaults
+ * // With connection settings
  * var ds = HikariDataSourceFactory.create(
- *     PostgresConfig.builder("localhost", 5432, "mydb", "user", "pass").build());
- *
- * // Use the transactor
- * var tx = ds.transactor();
- * tx.execute(conn -> repo.selectAll(conn));
- *
- * // With pool configuration
- * var ds = HikariDataSourceFactory.create(
- *     PostgresConfig.builder("localhost", 5432, "mydb", "user", "pass")
- *         .sslmode(PgSslMode.REQUIRE)
+ *     PostgresConfig.builder("localhost", 5432, "mydb", "user", "pass").build(),
+ *     ConnectionSettings.builder()
+ *         .transactionIsolation(TransactionIsolation.READ_UNCOMMITTED)
  *         .build(),
  *     PoolConfig.builder()
  *         .maximumPoolSize(20)
- *         .connectionTimeout(Duration.ofSeconds(10))
  *         .build());
+ *
+ * var tx = ds.transactor();
+ * tx.execute(conn -> repo.selectAll(conn));
  * }</pre>
  */
 public final class HikariDataSourceFactory {
@@ -34,23 +30,15 @@ public final class HikariDataSourceFactory {
   private HikariDataSourceFactory() {}
 
   /**
-   * Create a PooledDataSource from DatabaseConfig with default pool settings.
+   * Create a PooledDataSource with connection settings and pool configuration.
    *
-   * @param config database configuration
-   * @return configured PooledDataSource with transactor() method
+   * @param config database configuration (URL, credentials, driver properties)
+   * @param settings connection settings (isolation, autoCommit, readOnly, etc.)
+   * @param pool pool configuration (sizing, timeouts, etc.)
+   * @return configured PooledDataSource
    */
-  public static PooledDataSource create(DatabaseConfig config) {
-    return create(config, PoolConfig.defaults());
-  }
-
-  /**
-   * Create a PooledDataSource from DatabaseConfig and PoolConfig.
-   *
-   * @param config database configuration
-   * @param pool pool configuration
-   * @return configured PooledDataSource with transactor() method
-   */
-  public static PooledDataSource create(DatabaseConfig config, PoolConfig pool) {
+  public static PooledDataSource create(
+      DatabaseConfig config, ConnectionSettings settings, PoolConfig pool) {
     HikariConfig hikari = new HikariConfig();
 
     // Connection settings from DatabaseConfig
@@ -73,25 +61,27 @@ public final class HikariDataSourceFactory {
     hikari.setKeepaliveTime(pool.keepaliveTime().toMillis());
     hikari.setLeakDetectionThreshold(pool.leakDetectionThreshold().toMillis());
 
-    // Connection defaults
-    if (pool.transactionIsolation() != null) {
-      hikari.setTransactionIsolation(pool.transactionIsolation().jdbcName());
+    // Connection settings
+    if (settings.transactionIsolation() != null) {
+      hikari.setTransactionIsolation(settings.transactionIsolation().jdbcName());
     }
-    if (pool.autoCommit() != null) {
-      hikari.setAutoCommit(pool.autoCommit());
+    if (settings.autoCommit() != null) {
+      hikari.setAutoCommit(settings.autoCommit());
     }
-    if (pool.readOnly() != null) {
-      hikari.setReadOnly(pool.readOnly());
+    if (settings.readOnly() != null) {
+      hikari.setReadOnly(settings.readOnly());
     }
-    if (pool.catalog() != null) {
-      hikari.setCatalog(pool.catalog());
+    if (settings.catalog() != null) {
+      hikari.setCatalog(settings.catalog());
     }
-    if (pool.schema() != null) {
-      hikari.setSchema(pool.schema());
+    if (settings.schema() != null) {
+      hikari.setSchema(settings.schema());
     }
-    if (pool.connectionInitSql() != null) {
-      hikari.setConnectionInitSql(pool.connectionInitSql());
+    if (settings.connectionInitSql() != null) {
+      hikari.setConnectionInitSql(settings.connectionInitSql());
     }
+
+    // Pool-specific: connection test query
     if (pool.connectionTestQuery() != null) {
       hikari.setConnectionTestQuery(pool.connectionTestQuery());
     }
@@ -116,5 +106,37 @@ public final class HikariDataSourceFactory {
     pool.extraProperties().forEach(hikari::addDataSourceProperty);
 
     return new PooledDataSource(new HikariDataSource(hikari));
+  }
+
+  /**
+   * Create a PooledDataSource with connection settings and default pool configuration.
+   *
+   * @param config database configuration
+   * @param settings connection settings
+   * @return configured PooledDataSource
+   */
+  public static PooledDataSource create(DatabaseConfig config, ConnectionSettings settings) {
+    return create(config, settings, PoolConfig.defaults());
+  }
+
+  /**
+   * Create a PooledDataSource with default settings.
+   *
+   * @param config database configuration
+   * @return configured PooledDataSource with driver defaults
+   */
+  public static PooledDataSource create(DatabaseConfig config) {
+    return create(config, ConnectionSettings.EMPTY, PoolConfig.defaults());
+  }
+
+  /**
+   * Create a PooledDataSource with pool configuration but default connection settings.
+   *
+   * @param config database configuration
+   * @param pool pool configuration
+   * @return configured PooledDataSource
+   */
+  public static PooledDataSource create(DatabaseConfig config, PoolConfig pool) {
+    return create(config, ConnectionSettings.EMPTY, pool);
   }
 }

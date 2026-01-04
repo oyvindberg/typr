@@ -10,10 +10,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.*;
 import java.time.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 /**
@@ -22,6 +24,12 @@ import org.junit.Test;
  * DuckDB is an embedded database, so tests run in-process using an in-memory database.
  */
 public class DuckDbTypeTest {
+
+  private static final AtomicInteger tableCounter = new AtomicInteger(0);
+
+  private static String uniqueTableName(String prefix) {
+    return prefix + "_" + tableCounter.incrementAndGet();
+  }
 
   // ==================== Wrapper Type Examples for bimap testing ====================
   record UserId(int value) {}
@@ -446,106 +454,99 @@ public class DuckDbTypeTest {
   public void test() {
     System.out.println("Testing DuckDB type codecs...\n");
 
-    // Test JSON roundtrip first (no database connection needed)
-    System.out.println("=== JSON Roundtrip Tests ===");
-    for (DuckDbTypeAndExample<?> t : All) {
-      testJsonRoundtrip(t);
-    }
+    // Test JSON roundtrip first (no database connection needed) - parallel
+    System.out.println("=== JSON Roundtrip Tests (parallel) ===");
+    All.parallelStream().forEach(DuckDbTypeTest::testJsonRoundtrip);
     System.out.println();
 
-    // Test Text encoding (no database connection needed)
-    System.out.println("=== Text Encoding Tests ===");
-    for (DuckDbTypeAndExample<?> t : All) {
-      testTextEncoding(t);
-    }
+    // Test Text encoding (no database connection needed) - parallel
+    System.out.println("=== Text Encoding Tests (parallel) ===");
+    All.parallelStream().forEach(DuckDbTypeTest::testTextEncoding);
     System.out.println();
 
-    withConnection(
-        conn -> {
-          int passed = 0;
-          int failed = 0;
+    // Run all DB tests in parallel - each test gets its own connection
+    System.out.println("=== DB Roundtrip Tests (parallel) ===");
+    var failures =
+        All.parallelStream()
+            .flatMap(
+                t -> {
+                  var errors = new ArrayList<String>();
 
-          // Test native type roundtrip via JDBC
-          System.out.println("=== Native Type Roundtrip Tests (JDBC) ===");
-          for (DuckDbTypeAndExample<?> t : All) {
-            String typeName = t.type.typename().sqlType();
-            try {
-              System.out.println(
-                  "Testing " + typeName + " with example '" + format(t.example) + "'");
-              testCase(conn, t);
-              System.out.println("  PASSED\n");
-              passed++;
-            } catch (Exception e) {
-              System.out.println("  FAILED: " + e.getMessage() + "\n");
-              e.printStackTrace();
-              failed++;
-            }
-          }
+                  // Native type roundtrip test
+                  try {
+                    withConnection(
+                        conn -> {
+                          testCase(conn, t);
+                          return null;
+                        });
+                  } catch (Exception e) {
+                    errors.add(
+                        "Native test FAILED "
+                            + t.type.typename().sqlType()
+                            + ": "
+                            + e.getMessage());
+                  }
 
-          // Test text roundtrip via JSON COPY
-          System.out.println("\n=== Text Roundtrip Tests (JSON COPY) ===");
-          for (DuckDbTypeAndExample<?> t : All) {
-            String typeName = t.type.typename().sqlType();
-            try {
-              testTextRoundtrip(conn, t);
-              System.out.println("  PASSED\n");
-              passed++;
-            } catch (UnsupportedOperationException e) {
-              System.out.println("Text roundtrip " + typeName + ": NOT SUPPORTED\n");
-              // Don't count as failure
-            } catch (Exception e) {
-              System.out.println("  FAILED: " + e.getMessage() + "\n");
-              e.printStackTrace();
-              failed++;
-            }
-          }
+                  // Text roundtrip test
+                  if (t.supportsTextRoundtrip) {
+                    try {
+                      withConnection(
+                          conn -> {
+                            try {
+                              testTextRoundtrip(conn, t);
+                            } catch (Exception e) {
+                              throw new RuntimeException(e);
+                            }
+                            return null;
+                          });
+                    } catch (UnsupportedOperationException e) {
+                      // Don't count as failure
+                    } catch (Exception e) {
+                      errors.add(
+                          "Text roundtrip FAILED "
+                              + t.type.typename().sqlType()
+                              + ": "
+                              + e.getMessage());
+                    }
+                  }
 
-          // ==================== Edge Case Tests ====================
-          System.out.println("\n=== Negative Test: ARRAY Size Validation ===\n");
+                  return errors.stream();
+                })
+            .toList();
 
-          // Test ARRAY size validation - DuckDB should reject wrong-sized arrays
-          // Expected error: "Conversion Error: Cannot cast array of size 4 to array of size 5"
-          System.out.println("ARRAY[5] with 4 values (expected: size mismatch error)");
-          try (Connection negConn = java.sql.DriverManager.getConnection("jdbc:duckdb:");
-              Statement stmt = negConn.createStatement()) {
-            stmt.execute("CREATE TABLE array_size_test (vec INTEGER[5])");
-            stmt.execute(
-                "INSERT INTO array_size_test VALUES (array_value(1, 2, 3, 4)::INTEGER[5])");
-            System.out.println("  FAILED - should have thrown size mismatch error\n");
-            failed++;
-          } catch (SQLException e) {
-            String errMsg = e.getMessage();
-            if (errMsg.contains("Conversion Error") || errMsg.contains("Cannot cast array")) {
-              System.out.println(
-                  "  PASSED - got expected error: "
-                      + errMsg.substring(0, Math.min(100, errMsg.length()))
-                      + "...\n");
-              passed++;
-            } else {
-              System.out.println("  FAILED - got unexpected error: " + errMsg + "\n");
-              failed++;
-            }
-          }
+    // ==================== Edge Case Tests ====================
+    System.out.println("\n=== Negative Test: ARRAY Size Validation ===\n");
 
-          int totalTests =
-              All.size() * 2 + 1; // Each item: JSON + native roundtrip, plus 1 negative test
-          System.out.println("\n=====================================");
-          System.out.println(
-              "Results: "
-                  + passed
-                  + " passed, "
-                  + failed
-                  + " failed out of "
-                  + totalTests
-                  + " tests");
-          System.out.println("=====================================");
+    // Test ARRAY size validation - DuckDB should reject wrong-sized arrays
+    // Expected error: "Conversion Error: Cannot cast array of size 4 to array of size 5"
+    System.out.println("ARRAY[5] with 4 values (expected: size mismatch error)");
+    try (Connection negConn = java.sql.DriverManager.getConnection("jdbc:duckdb:");
+        Statement stmt = negConn.createStatement()) {
+      stmt.execute("CREATE TABLE array_size_test (vec INTEGER[5])");
+      stmt.execute("INSERT INTO array_size_test VALUES (array_value(1, 2, 3, 4)::INTEGER[5])");
+      failures = new ArrayList<>(failures);
+      ((ArrayList<String>) failures).add("ARRAY size validation should have thrown error");
+    } catch (SQLException e) {
+      String errMsg = e.getMessage();
+      if (errMsg.contains("Conversion Error") || errMsg.contains("Cannot cast array")) {
+        System.out.println(
+            "  PASSED - got expected error: "
+                + errMsg.substring(0, Math.min(100, errMsg.length()))
+                + "...\n");
+      } else {
+        failures = new ArrayList<>(failures);
+        ((ArrayList<String>) failures).add("ARRAY size validation: unexpected error: " + errMsg);
+      }
+    }
 
-          if (failed > 0) {
-            throw new RuntimeException(failed + " tests failed");
-          }
-
-          return null;
-        });
+    System.out.println("\n=====================================");
+    if (failures.isEmpty()) {
+      System.out.println("All tests passed!");
+    } else {
+      failures.forEach(System.out::println);
+      throw new RuntimeException(failures.size() + " tests failed");
+    }
+    System.out.println("=====================================");
   }
 
   static <A> void testJsonRoundtrip(DuckDbTypeAndExample<A> t) {
@@ -691,13 +692,14 @@ public class DuckDbTypeTest {
 
   static <A> void testCase(Connection conn, DuckDbTypeAndExample<A> t) throws SQLException {
     String sqlType = t.type.typename().sqlType();
+    String tableName = uniqueTableName("test_table");
 
     // Create temp table
-    conn.createStatement().execute("CREATE TEMPORARY TABLE test_table (v " + sqlType + ")");
+    conn.createStatement().execute("CREATE TEMPORARY TABLE " + tableName + " (v " + sqlType + ")");
 
     try {
       // Insert using PreparedStatement
-      var insert = conn.prepareStatement("INSERT INTO test_table (v) VALUES (?)");
+      var insert = conn.prepareStatement("INSERT INTO " + tableName + " (v) VALUES (?)");
       A expected = t.example;
       t.type.write().set(insert, 1, expected);
       insert.execute();
@@ -706,10 +708,10 @@ public class DuckDbTypeTest {
       // Select and verify
       final PreparedStatement select;
       if (t.hasIdentity) {
-        select = conn.prepareStatement("SELECT v, NULL FROM test_table WHERE v = ?");
+        select = conn.prepareStatement("SELECT v, NULL FROM " + tableName + " WHERE v = ?");
         t.type.write().set(select, 1, expected);
       } else {
-        select = conn.prepareStatement("SELECT v, NULL FROM test_table");
+        select = conn.prepareStatement("SELECT v, NULL FROM " + tableName);
       }
 
       select.execute();
@@ -731,7 +733,7 @@ public class DuckDbTypeTest {
 
     } finally {
       // Drop temp table
-      conn.createStatement().execute("DROP TABLE IF EXISTS test_table");
+      conn.createStatement().execute("DROP TABLE IF EXISTS " + tableName);
     }
   }
 

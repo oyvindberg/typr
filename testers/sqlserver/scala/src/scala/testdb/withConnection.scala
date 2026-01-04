@@ -8,7 +8,7 @@ object withConnection {
     .builder("localhost", 1433, "typr", "sa", "YourStrong@Passw0rd")
     .encrypt(SqlServerEncrypt.FALSE)
     .build()
-  private val transactor = new Transactor(config, Transactor.testStrategy())
+  private val transactor = config.transactor(Transactor.testStrategy())
 
   def apply[T](f: java.sql.Connection => T): T = {
     transactor.execute[T]((conn => f(conn)): SqlFunction[java.sql.Connection, T])
