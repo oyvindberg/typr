@@ -1,6 +1,5 @@
 package dev.typr.foundations;
 
-import dev.typr.foundations.connect.DatabaseConfig;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.function.Consumer;
@@ -11,27 +10,15 @@ import java.util.function.Consumer;
  * <p>Inspired by doobie's Transactor, this class provides a clean way to manage database
  * connections with configurable lifecycle hooks for transaction management.
  *
- * <p>Example usage:
+ * <p>Typically obtained via {@link dev.typr.foundations.connect.ConnectionSource#transactor}:
  *
  * <pre>{@code
- * var transactor = new Transactor(dataSource::getConnection, Transactor.defaultStrategy());
- * String result = transactor.execute(conn -> {
- *     // use connection
- *     return "result";
- * });
+ * var ds = SimpleDataSource.create(config, settings);
+ * var tx = ds.transactor(Transactor.testStrategy());
+ * tx.execute(conn -> repo.selectAll(conn));
  * }</pre>
  */
 public record Transactor(SqlSupplier<Connection> connect, Strategy strategy) {
-
-  /**
-   * Create a transactor from a DatabaseConfig.
-   *
-   * @param config the database configuration
-   * @param strategy the transaction strategy
-   */
-  public Transactor(DatabaseConfig config, Strategy strategy) {
-    this(config::connect, strategy);
-  }
 
   /**
    * Execute an operation with full strategy lifecycle.
