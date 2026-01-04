@@ -1,5 +1,7 @@
 package testdb
 
+import dev.typr.foundations.SqlFunction
+import dev.typr.foundations.Transactor
 import dev.typr.foundations.connect.mariadb.MariaDbConfig
 import java.sql.Connection
 
@@ -7,25 +9,13 @@ object WithConnection {
     private val CONFIG: MariaDbConfig =
         MariaDbConfig.builder("localhost", 3307, "typr", "typr", "password").build()
 
+    private val TRANSACTOR: Transactor = CONFIG.transactor(Transactor.testStrategy())
+
     fun <T> apply(f: (Connection) -> T): T {
-        CONFIG.connect().use { conn ->
-            conn.autoCommit = false
-            try {
-                return f(conn)
-            } finally {
-                conn.rollback()
-            }
-        }
+        return TRANSACTOR.execute(SqlFunction { conn -> f(conn) })
     }
 
     fun run(f: (Connection) -> Unit) {
-        CONFIG.connect().use { conn ->
-            conn.autoCommit = false
-            try {
-                f(conn)
-            } finally {
-                conn.rollback()
-            }
-        }
+        TRANSACTOR.executeVoid { conn -> f(conn) }
     }
 }

@@ -5,6 +5,7 @@ import dev.typr.foundations.connect.duckdb.DuckDbConfig
 import java.nio.file.Files
 import java.nio.file.Path
 import java.sql.Connection
+import java.sql.DriverManager
 
 object DuckDbTestHelper {
     private val CONFIG: DuckDbConfig = DuckDbConfig.inMemory().build()
@@ -13,7 +14,7 @@ object DuckDbTestHelper {
     }
 
     private fun createConnection(): Connection {
-        val conn = CONFIG.connect()
+        val conn = DriverManager.getConnection(CONFIG.jdbcUrl())
         conn.createStatement().execute(schemaSQL)
         return conn
     }
