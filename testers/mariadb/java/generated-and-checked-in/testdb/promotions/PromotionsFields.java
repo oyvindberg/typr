@@ -10,7 +10,6 @@ import dev.typr.foundations.RowParser;
 import dev.typr.foundations.data.Json;
 import dev.typr.foundations.data.Uint1;
 import dev.typr.foundations.data.Uint4;
-import dev.typr.foundations.data.maria.MariaSet;
 import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.Path;
 import dev.typr.foundations.dsl.RelationStructure;
@@ -24,6 +23,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import testdb.AllBrandsCategoriesCSet;
 
 public class PromotionsFields
     extends TupleExpr16<
@@ -37,7 +37,7 @@ public class PromotionsFields
         Uint4,
         Uint4,
         Uint1,
-        MariaSet,
+        AllBrandsCategoriesCSet,
         Json,
         LocalDateTime,
         LocalDateTime,
@@ -163,15 +163,15 @@ public class PromotionsFields
         MariaTypes.tinyintUnsigned);
   }
 
-  public OptField<MariaSet, PromotionsRow> applicableTo() {
-    return new OptField<MariaSet, PromotionsRow>(
+  public OptField<AllBrandsCategoriesCSet, PromotionsRow> applicableTo() {
+    return new OptField<AllBrandsCategoriesCSet, PromotionsRow>(
         _path,
         "applicable_to",
         PromotionsRow::applicableTo,
         Optional.empty(),
         Optional.empty(),
         (row, value) -> row.withApplicableTo(value),
-        MariaTypes.set);
+        AllBrandsCategoriesCSet.dbType);
   }
 
   public OptField<Json, PromotionsRow> rulesJson() {
@@ -316,7 +316,7 @@ public class PromotionsFields
   }
 
   @Override
-  public SqlExpr<MariaSet> _11() {
+  public SqlExpr<AllBrandsCategoriesCSet> _11() {
     return applicableTo();
   }
 

@@ -15,6 +15,7 @@ import dev.typr.foundations.scala.SelectBuilder
 import dev.typr.foundations.scala.UpdateBuilder
 import java.sql.Connection
 import scala.collection.mutable.ListBuffer
+import testdb.BestsellerClearanceFSet
 import testdb.brands.BrandsId
 import dev.typr.foundations.scala.Fragment.sql
 
@@ -31,7 +32,7 @@ class ProductsRepoImpl extends ProductsRepo {
 
   override def insert(unsaved: ProductsRow)(using c: Connection): ProductsRow = {
   sql"""insert into `products`(`sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`)
-    values (${Fragment.encode(MariaTypes.varchar, unsaved.sku)}, ${Fragment.encode(BrandsId.dbType.nullable, unsaved.brandId)}, ${Fragment.encode(MariaTypes.varchar, unsaved.name)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.shortDescription)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.fullDescription)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.basePrice)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, unsaved.costPrice)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, unsaved.weightKg)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.dimensionsJson)}, ${Fragment.encode(MariaTypes.text, unsaved.status)}, ${Fragment.encode(MariaTypes.text, unsaved.taxClass)}, ${Fragment.encode(MariaTypes.set.nullable, unsaved.tags)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.attributes)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.seoMetadata)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.publishedAt)})
+    values (${Fragment.encode(MariaTypes.varchar, unsaved.sku)}, ${Fragment.encode(BrandsId.dbType.nullable, unsaved.brandId)}, ${Fragment.encode(MariaTypes.varchar, unsaved.name)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.shortDescription)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.fullDescription)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.basePrice)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, unsaved.costPrice)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, unsaved.weightKg)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.dimensionsJson)}, ${Fragment.encode(MariaTypes.text, unsaved.status)}, ${Fragment.encode(MariaTypes.text, unsaved.taxClass)}, ${Fragment.encode(BestsellerClearanceFSet.dbType.nullable, unsaved.tags)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.attributes)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.seoMetadata)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.publishedAt)})
     RETURNING `product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`
     """
     .updateReturning(ProductsRow.`_rowParser`.exactlyOne()).runUnchecked(c)
@@ -80,7 +81,7 @@ class ProductsRepoImpl extends ProductsRepo {
     );
     unsaved.tags.visit(
       {  },
-      value => { columns.addOne(Fragment.lit("`tags`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(MariaTypes.set.nullable, value)}"): @scala.annotation.nowarn }
+      value => { columns.addOne(Fragment.lit("`tags`")): @scala.annotation.nowarn; values.addOne(sql"${Fragment.encode(BestsellerClearanceFSet.dbType.nullable, value)}"): @scala.annotation.nowarn }
     );
     unsaved.attributes.visit(
       {  },
@@ -160,7 +161,7 @@ class ProductsRepoImpl extends ProductsRepo {
     `dimensions_json` = ${Fragment.encode(MariaTypes.json.nullable, row.dimensionsJson)},
     `status` = ${Fragment.encode(MariaTypes.text, row.status)},
     `tax_class` = ${Fragment.encode(MariaTypes.text, row.taxClass)},
-    `tags` = ${Fragment.encode(MariaTypes.set.nullable, row.tags)},
+    `tags` = ${Fragment.encode(BestsellerClearanceFSet.dbType.nullable, row.tags)},
     `attributes` = ${Fragment.encode(MariaTypes.json.nullable, row.attributes)},
     `seo_metadata` = ${Fragment.encode(MariaTypes.json.nullable, row.seoMetadata)},
     `created_at` = ${Fragment.encode(MariaTypes.datetime, row.createdAt)},
@@ -171,7 +172,7 @@ class ProductsRepoImpl extends ProductsRepo {
 
   override def upsert(unsaved: ProductsRow)(using c: Connection): ProductsRow = {
   sql"""INSERT INTO `products`(`product_id`, `sku`, `brand_id`, `name`, `short_description`, `full_description`, `base_price`, `cost_price`, `weight_kg`, `dimensions_json`, `status`, `tax_class`, `tags`, `attributes`, `seo_metadata`, `created_at`, `updated_at`, `published_at`)
-    VALUES (${Fragment.encode(ProductsId.dbType, unsaved.productId)}, ${Fragment.encode(MariaTypes.varchar, unsaved.sku)}, ${Fragment.encode(BrandsId.dbType.nullable, unsaved.brandId)}, ${Fragment.encode(MariaTypes.varchar, unsaved.name)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.shortDescription)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.fullDescription)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.basePrice)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, unsaved.costPrice)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, unsaved.weightKg)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.dimensionsJson)}, ${Fragment.encode(MariaTypes.text, unsaved.status)}, ${Fragment.encode(MariaTypes.text, unsaved.taxClass)}, ${Fragment.encode(MariaTypes.set.nullable, unsaved.tags)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.attributes)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.seoMetadata)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.publishedAt)})
+    VALUES (${Fragment.encode(ProductsId.dbType, unsaved.productId)}, ${Fragment.encode(MariaTypes.varchar, unsaved.sku)}, ${Fragment.encode(BrandsId.dbType.nullable, unsaved.brandId)}, ${Fragment.encode(MariaTypes.varchar, unsaved.name)}, ${Fragment.encode(MariaTypes.varchar.nullable, unsaved.shortDescription)}, ${Fragment.encode(MariaTypes.longtext.nullable, unsaved.fullDescription)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric, unsaved.basePrice)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, unsaved.costPrice)}, ${Fragment.encode(ScalaDbTypes.MariaTypes.numeric.nullable, unsaved.weightKg)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.dimensionsJson)}, ${Fragment.encode(MariaTypes.text, unsaved.status)}, ${Fragment.encode(MariaTypes.text, unsaved.taxClass)}, ${Fragment.encode(BestsellerClearanceFSet.dbType.nullable, unsaved.tags)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.attributes)}, ${Fragment.encode(MariaTypes.json.nullable, unsaved.seoMetadata)}, ${Fragment.encode(MariaTypes.datetime, unsaved.createdAt)}, ${Fragment.encode(MariaTypes.datetime, unsaved.updatedAt)}, ${Fragment.encode(MariaTypes.datetime.nullable, unsaved.publishedAt)})
     ON DUPLICATE KEY UPDATE `sku` = VALUES(`sku`),
     `brand_id` = VALUES(`brand_id`),
     `name` = VALUES(`name`),

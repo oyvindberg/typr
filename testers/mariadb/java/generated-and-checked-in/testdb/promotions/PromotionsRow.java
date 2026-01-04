@@ -13,10 +13,10 @@ import dev.typr.foundations.Tuple.Tuple16;
 import dev.typr.foundations.data.Json;
 import dev.typr.foundations.data.Uint1;
 import dev.typr.foundations.data.Uint4;
-import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import testdb.AllBrandsCategoriesCSet;
 import testdb.customtypes.Defaulted;
 
 /** Table: promotions Primary key: promotion_id */
@@ -42,7 +42,7 @@ public record PromotionsRow(
     /** Default: NULL */
     @JsonProperty("max_uses_per_customer") Optional<Uint1> maxUsesPerCustomer,
     /** Default: NULL */
-    @JsonProperty("applicable_to") Optional<MariaSet> applicableTo,
+    @JsonProperty("applicable_to") Optional<AllBrandsCategoriesCSet> applicableTo,
     /** Complex eligibility rules Default: NULL */
     @JsonProperty("rules_json") Optional<Json> rulesJson,
     /** */
@@ -64,7 +64,7 @@ public record PromotionsRow(
         Optional<Uint4>,
         Uint4,
         Optional<Uint1>,
-        Optional<MariaSet>,
+        Optional<AllBrandsCategoriesCSet>,
         Optional<Json>,
         LocalDateTime,
         LocalDateTime,
@@ -291,7 +291,7 @@ public record PromotionsRow(
   ;
 
   /** Default: NULL */
-  public PromotionsRow withApplicableTo(Optional<MariaSet> applicableTo) {
+  public PromotionsRow withApplicableTo(Optional<AllBrandsCategoriesCSet> applicableTo) {
     return new PromotionsRow(
         promotionId,
         code,
@@ -434,7 +434,7 @@ public record PromotionsRow(
           MariaTypes.intUnsigned.opt(),
           MariaTypes.intUnsigned,
           MariaTypes.tinyintUnsigned.opt(),
-          MariaTypes.set.opt(),
+          AllBrandsCategoriesCSet.dbType.opt(),
           MariaTypes.json.opt(),
           MariaTypes.datetime,
           MariaTypes.datetime,
@@ -475,7 +475,7 @@ public record PromotionsRow(
   ;
 
   @Override
-  public Optional<MariaSet> _11() {
+  public Optional<AllBrandsCategoriesCSet> _11() {
     return applicableTo;
   }
   ;
@@ -569,7 +569,7 @@ public record PromotionsRow(
       Defaulted<Optional<Uint4>> maxUses,
       Defaulted<Uint4> usesCount,
       Defaulted<Optional<Uint1>> maxUsesPerCustomer,
-      Defaulted<Optional<MariaSet>> applicableTo,
+      Defaulted<Optional<AllBrandsCategoriesCSet>> applicableTo,
       Defaulted<Optional<Json>> rulesJson,
       Defaulted<Boolean> isActive,
       Defaulted<LocalDateTime> createdAt) {

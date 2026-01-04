@@ -11,10 +11,10 @@ import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
 import dev.typr.foundations.Tuple.Tuple18;
 import dev.typr.foundations.data.Json;
-import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import testdb.BestsellerClearanceFSet;
 import testdb.brands.BrandsId;
 import testdb.customtypes.Defaulted;
 
@@ -45,7 +45,7 @@ public record ProductsRow(
     /** Default: 'standard' */
     @JsonProperty("tax_class") String taxClass,
     /** Default: NULL */
-    Optional<MariaSet> tags,
+    Optional<BestsellerClearanceFSet> tags,
     /** Default: NULL */
     Optional<Json> attributes,
     /** Default: NULL */
@@ -69,7 +69,7 @@ public record ProductsRow(
         Optional<Json>,
         String,
         String,
-        Optional<MariaSet>,
+        Optional<BestsellerClearanceFSet>,
         Optional<Json>,
         Optional<Json>,
         LocalDateTime,
@@ -364,7 +364,7 @@ public record ProductsRow(
   ;
 
   /** Default: NULL */
-  public ProductsRow withTags(Optional<MariaSet> tags) {
+  public ProductsRow withTags(Optional<BestsellerClearanceFSet> tags) {
     return new ProductsRow(
         productId,
         sku,
@@ -521,7 +521,7 @@ public record ProductsRow(
           MariaTypes.json.opt(),
           MariaTypes.text,
           MariaTypes.text,
-          MariaTypes.set.opt(),
+          BestsellerClearanceFSet.dbType.opt(),
           MariaTypes.json.opt(),
           MariaTypes.json.opt(),
           MariaTypes.datetime,
@@ -576,7 +576,7 @@ public record ProductsRow(
   ;
 
   @Override
-  public Optional<MariaSet> _13() {
+  public Optional<BestsellerClearanceFSet> _13() {
     return tags;
   }
   ;
@@ -673,7 +673,7 @@ public record ProductsRow(
       Defaulted<Optional<Json>> dimensionsJson,
       Defaulted<String> status,
       Defaulted<String> taxClass,
-      Defaulted<Optional<MariaSet>> tags,
+      Defaulted<Optional<BestsellerClearanceFSet>> tags,
       Defaulted<Optional<Json>> attributes,
       Defaulted<Optional<Json>> seoMetadata,
       Defaulted<LocalDateTime> createdAt,

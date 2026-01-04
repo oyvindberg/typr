@@ -7,9 +7,9 @@ package testdb.customers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.data.Json;
-import dev.typr.foundations.data.maria.MariaSet;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import testdb.EmailMailPushSmsSet;
 import testdb.customer_status.CustomerStatusId;
 import testdb.customtypes.Defaulted;
 import testdb.customtypes.Defaulted.UseDefault;
@@ -35,7 +35,7 @@ public record CustomersRowUnsaved(
     /** Default: NULL */
     Defaulted<Optional<Json>> preferences,
     /** Default: NULL */
-    @JsonProperty("marketing_flags") Defaulted<Optional<MariaSet>> marketingFlags,
+    @JsonProperty("marketing_flags") Defaulted<Optional<EmailMailPushSmsSet>> marketingFlags,
     /** Default: NULL */
     Defaulted<Optional<String>> notes,
     /** Default: current_timestamp(6) */
@@ -223,7 +223,8 @@ public record CustomersRowUnsaved(
   ;
 
   /** Default: NULL */
-  public CustomersRowUnsaved withMarketingFlags(Defaulted<Optional<MariaSet>> marketingFlags) {
+  public CustomersRowUnsaved withMarketingFlags(
+      Defaulted<Optional<EmailMailPushSmsSet>> marketingFlags) {
     return new CustomersRowUnsaved(
         email,
         passwordHash,
@@ -322,7 +323,7 @@ public record CustomersRowUnsaved(
       java.util.function.Supplier<CustomerStatusId> statusDefault,
       java.util.function.Supplier<String> tierDefault,
       java.util.function.Supplier<Optional<Json>> preferencesDefault,
-      java.util.function.Supplier<Optional<MariaSet>> marketingFlagsDefault,
+      java.util.function.Supplier<Optional<EmailMailPushSmsSet>> marketingFlagsDefault,
       java.util.function.Supplier<Optional<String>> notesDefault,
       java.util.function.Supplier<LocalDateTime> createdAtDefault,
       java.util.function.Supplier<LocalDateTime> updatedAtDefault,

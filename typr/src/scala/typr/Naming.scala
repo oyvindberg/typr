@@ -74,6 +74,14 @@ class Naming(val pkg: jvm.QIdent, lang: Lang) {
   def structTypeName(name: String): jvm.QIdent =
     pkg / jvm.Ident(name)
 
+  /** Name for a MariaDB SET type derived from its sorted values. Example: SET('read', 'write', 'admin') -> sorted: admin, read, write -> AdminReadWriteSet Limits to first 20 characters to avoid
+    * extremely long names.
+    */
+  def setTypeName(values: scala.collection.immutable.SortedSet[String]): jvm.QIdent = {
+    val name = values.toList.map(Naming.titleCase).mkString("").take(20)
+    pkg / jvm.Ident(name + "Set")
+  }
+
   def enumValue(name: String): jvm.Ident = jvm.Ident(name)
 
   // field names

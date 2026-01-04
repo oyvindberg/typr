@@ -17,12 +17,12 @@ import dev.typr.foundations.data.Uint4;
 import dev.typr.foundations.data.Uint8;
 import dev.typr.foundations.data.maria.Inet4;
 import dev.typr.foundations.data.maria.Inet6;
-import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Year;
+import testdb.XYZSet;
 import testdb.customtypes.Defaulted;
 
 /** Table: mariatest Primary key: int_col */
@@ -102,7 +102,7 @@ public record MariatestRow(
     /** */
     @JsonProperty("year_col") Year yearCol,
     /** */
-    @JsonProperty("set_col") MariaSet setCol,
+    @JsonProperty("set_col") XYZSet setCol,
     /** */
     @JsonProperty("json_col") Json jsonCol,
     /** */
@@ -147,7 +147,7 @@ public record MariatestRow(
         LocalDateTime,
         LocalDateTime,
         Year,
-        MariaSet,
+        XYZSet,
         Json,
         Inet4,
         Inet6> {
@@ -1891,7 +1891,7 @@ public record MariatestRow(
   ;
 
   /** */
-  public MariatestRow withSetCol(MariaSet setCol) {
+  public MariatestRow withSetCol(XYZSet setCol) {
     return new MariatestRow(
         tinyintCol,
         smallintCol,
@@ -2117,7 +2117,7 @@ public record MariatestRow(
           MariaTypes.timestamp,
           MariaTypes.timestamp,
           MariaTypes.year,
-          MariaTypes.set,
+          XYZSet.dbType,
           MariaTypes.json,
           MariaTypes.inet4,
           MariaTypes.inet6,
@@ -2355,7 +2355,7 @@ public record MariatestRow(
   ;
 
   @Override
-  public MariaSet _38() {
+  public XYZSet _38() {
     return setCol;
   }
   ;

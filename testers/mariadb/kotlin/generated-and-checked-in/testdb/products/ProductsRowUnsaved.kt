@@ -7,9 +7,9 @@ package testdb.products
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.data.Json
-import dev.typr.foundations.data.maria.MariaSet
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import testdb.BestsellerClearanceFSet
 import testdb.brands.BrandsId
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
@@ -57,7 +57,7 @@ data class ProductsRowUnsaved(
   /** Default: NULL
 
     */
-  val tags: Defaulted<MariaSet?> = UseDefault(),
+  val tags: Defaulted<BestsellerClearanceFSet?> = UseDefault(),
   /** Default: NULL
 
     */
@@ -88,7 +88,7 @@ data class ProductsRowUnsaved(
     dimensionsJsonDefault: () -> Json?,
     statusDefault: () -> String,
     taxClassDefault: () -> String,
-    tagsDefault: () -> MariaSet?,
+    tagsDefault: () -> BestsellerClearanceFSet?,
     attributesDefault: () -> Json?,
     seoMetadataDefault: () -> Json?,
     createdAtDefault: () -> LocalDateTime,

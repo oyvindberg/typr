@@ -9,10 +9,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.typr.foundations.data.Json;
 import dev.typr.foundations.data.Uint1;
 import dev.typr.foundations.data.Uint4;
-import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import testdb.AllBrandsCategoriesCSet;
 import testdb.customtypes.Defaulted;
 import testdb.customtypes.Defaulted.UseDefault;
 
@@ -41,7 +41,7 @@ public record PromotionsRowUnsaved(
     /** Default: NULL */
     @JsonProperty("max_uses_per_customer") Defaulted<Optional<Uint1>> maxUsesPerCustomer,
     /** Default: NULL */
-    @JsonProperty("applicable_to") Defaulted<Optional<MariaSet>> applicableTo,
+    @JsonProperty("applicable_to") Defaulted<Optional<AllBrandsCategoriesCSet>> applicableTo,
     /** Default: NULL Complex eligibility rules */
     @JsonProperty("rules_json") Defaulted<Optional<Json>> rulesJson,
     /** Default: 1 */
@@ -313,7 +313,8 @@ public record PromotionsRowUnsaved(
   ;
 
   /** Default: NULL */
-  public PromotionsRowUnsaved withApplicableTo(Defaulted<Optional<MariaSet>> applicableTo) {
+  public PromotionsRowUnsaved withApplicableTo(
+      Defaulted<Optional<AllBrandsCategoriesCSet>> applicableTo) {
     return new PromotionsRowUnsaved(
         code,
         name,
@@ -402,7 +403,7 @@ public record PromotionsRowUnsaved(
       java.util.function.Supplier<Optional<Uint4>> maxUsesDefault,
       java.util.function.Supplier<Uint4> usesCountDefault,
       java.util.function.Supplier<Optional<Uint1>> maxUsesPerCustomerDefault,
-      java.util.function.Supplier<Optional<MariaSet>> applicableToDefault,
+      java.util.function.Supplier<Optional<AllBrandsCategoriesCSet>> applicableToDefault,
       java.util.function.Supplier<Optional<Json>> rulesJsonDefault,
       java.util.function.Supplier<Boolean> isActiveDefault,
       java.util.function.Supplier<LocalDateTime> createdAtDefault,

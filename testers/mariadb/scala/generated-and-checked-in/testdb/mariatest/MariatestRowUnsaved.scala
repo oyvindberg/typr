@@ -13,11 +13,11 @@ import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.data.maria.Inet4
 import dev.typr.foundations.data.maria.Inet6
-import dev.typr.foundations.data.maria.MariaSet
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.Year
+import testdb.XYZSet
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 
@@ -94,7 +94,7 @@ case class MariatestRowUnsaved(
   /**  */
   @JsonProperty("year_col") yearCol: Year,
   /**  */
-  @JsonProperty("set_col") setCol: MariaSet,
+  @JsonProperty("set_col") setCol: XYZSet,
   /**  */
   @JsonProperty("json_col") jsonCol: Json,
   /**  */

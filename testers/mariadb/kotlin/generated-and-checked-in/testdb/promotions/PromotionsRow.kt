@@ -11,13 +11,13 @@ import dev.typr.foundations.Tuple.Tuple16
 import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.Uint1
 import dev.typr.foundations.data.Uint4
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.kotlin.KotlinDbTypes
 import dev.typr.foundations.kotlin.RowParser
 import dev.typr.foundations.kotlin.RowParsers
 import dev.typr.foundations.kotlin.nullable
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import testdb.AllBrandsCategoriesCSet
 import testdb.customtypes.Defaulted
 
 /** Table: promotions
@@ -59,7 +59,7 @@ data class PromotionsRow(
   /** 
     * Default: NULL
     */
-  @JsonProperty("applicable_to") val applicableTo: MariaSet?,
+  @JsonProperty("applicable_to") val applicableTo: AllBrandsCategoriesCSet?,
   /** Complex eligibility rules
     * Default: NULL
     */
@@ -76,12 +76,12 @@ data class PromotionsRow(
     * Default: current_timestamp()
     */
   @JsonProperty("created_at") val createdAt: LocalDateTime
-) : Tuple16<PromotionsId, String, String, String?, String, BigDecimal, BigDecimal?, Uint4?, Uint4, Uint1?, MariaSet?, Json?, LocalDateTime, LocalDateTime, Boolean, LocalDateTime> {
+) : Tuple16<PromotionsId, String, String, String?, String, BigDecimal, BigDecimal?, Uint4?, Uint4, Uint1?, AllBrandsCategoriesCSet?, Json?, LocalDateTime, LocalDateTime, Boolean, LocalDateTime> {
   override fun _1(): PromotionsId = promotionId
 
   override fun _10(): Uint1? = maxUsesPerCustomer
 
-  override fun _11(): MariaSet? = applicableTo
+  override fun _11(): AllBrandsCategoriesCSet? = applicableTo
 
   override fun _12(): Json? = rulesJson
 
@@ -117,13 +117,13 @@ data class PromotionsRow(
     maxUses: Defaulted<Uint4?> = Defaulted.Provided(this.maxUses),
     usesCount: Defaulted<Uint4> = Defaulted.Provided(this.usesCount),
     maxUsesPerCustomer: Defaulted<Uint1?> = Defaulted.Provided(this.maxUsesPerCustomer),
-    applicableTo: Defaulted<MariaSet?> = Defaulted.Provided(this.applicableTo),
+    applicableTo: Defaulted<AllBrandsCategoriesCSet?> = Defaulted.Provided(this.applicableTo),
     rulesJson: Defaulted<Json?> = Defaulted.Provided(this.rulesJson),
     isActive: Defaulted<Boolean> = Defaulted.Provided(this.isActive),
     createdAt: Defaulted<LocalDateTime> = Defaulted.Provided(this.createdAt)
   ): PromotionsRowUnsaved = PromotionsRowUnsaved(code, name, discountType, discountValue, validFrom, validTo, description, minOrderAmount, maxUses, usesCount, maxUsesPerCustomer, applicableTo, rulesJson, isActive, createdAt)
 
   companion object {
-    val _rowParser: RowParser<PromotionsRow> = RowParsers.of(PromotionsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text.nullable(), MariaTypes.text, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric.nullable(), MariaTypes.intUnsigned.nullable(), MariaTypes.intUnsigned, MariaTypes.tinyintUnsigned.nullable(), MariaTypes.set.nullable(), MariaTypes.json.nullable(), MariaTypes.datetime, MariaTypes.datetime, KotlinDbTypes.MariaTypes.bool, MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15 -> PromotionsRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) }, { row -> arrayOf<Any?>(row.promotionId, row.code, row.name, row.description, row.discountType, row.discountValue, row.minOrderAmount, row.maxUses, row.usesCount, row.maxUsesPerCustomer, row.applicableTo, row.rulesJson, row.validFrom, row.validTo, row.isActive, row.createdAt) })
+    val _rowParser: RowParser<PromotionsRow> = RowParsers.of(PromotionsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text.nullable(), MariaTypes.text, KotlinDbTypes.MariaTypes.numeric, KotlinDbTypes.MariaTypes.numeric.nullable(), MariaTypes.intUnsigned.nullable(), MariaTypes.intUnsigned, MariaTypes.tinyintUnsigned.nullable(), AllBrandsCategoriesCSet.dbType.nullable(), MariaTypes.json.nullable(), MariaTypes.datetime, MariaTypes.datetime, KotlinDbTypes.MariaTypes.bool, MariaTypes.datetime, { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15 -> PromotionsRow(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15) }, { row -> arrayOf<Any?>(row.promotionId, row.code, row.name, row.description, row.discountType, row.discountValue, row.minOrderAmount, row.maxUses, row.usesCount, row.maxUsesPerCustomer, row.applicableTo, row.rulesJson, row.validFrom, row.validTo, row.isActive, row.createdAt) })
   }
 }

@@ -11,12 +11,12 @@ import dev.typr.foundations.Tuple.Tuple16
 import dev.typr.foundations.data.Json
 import dev.typr.foundations.data.Uint1
 import dev.typr.foundations.data.Uint4
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
 import java.time.LocalDateTime
+import testdb.AllBrandsCategoriesCSet
 import testdb.customtypes.Defaulted
 
 /** Table: promotions
@@ -58,7 +58,7 @@ case class PromotionsRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("applicable_to") applicableTo: Option[MariaSet],
+  @JsonProperty("applicable_to") applicableTo: Option[AllBrandsCategoriesCSet],
   /** Complex eligibility rules
    * Default: NULL
    */
@@ -75,7 +75,7 @@ case class PromotionsRow(
    * Default: current_timestamp()
    */
   @JsonProperty("created_at") createdAt: LocalDateTime
-) extends Tuple16[PromotionsId, String, String, Option[String], String, BigDecimal, Option[BigDecimal], Option[Uint4], Uint4, Option[Uint1], Option[MariaSet], Option[Json], LocalDateTime, LocalDateTime, Boolean, LocalDateTime] {
+) extends Tuple16[PromotionsId, String, String, Option[String], String, BigDecimal, Option[BigDecimal], Option[Uint4], Uint4, Option[Uint1], Option[AllBrandsCategoriesCSet], Option[Json], LocalDateTime, LocalDateTime, Boolean, LocalDateTime] {
   def id: PromotionsId = promotionId
 
   def toUnsavedRow(
@@ -84,7 +84,7 @@ case class PromotionsRow(
     maxUses: Defaulted[Option[Uint4]] = Defaulted.Provided(this.maxUses),
     usesCount: Defaulted[Uint4] = Defaulted.Provided(this.usesCount),
     maxUsesPerCustomer: Defaulted[Option[Uint1]] = Defaulted.Provided(this.maxUsesPerCustomer),
-    applicableTo: Defaulted[Option[MariaSet]] = Defaulted.Provided(this.applicableTo),
+    applicableTo: Defaulted[Option[AllBrandsCategoriesCSet]] = Defaulted.Provided(this.applicableTo),
     rulesJson: Defaulted[Option[Json]] = Defaulted.Provided(this.rulesJson),
     isActive: Defaulted[Boolean] = Defaulted.Provided(this.isActive),
     createdAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.createdAt)
@@ -128,7 +128,7 @@ case class PromotionsRow(
 
   override def `_10`: Option[Uint1] = maxUsesPerCustomer
 
-  override def `_11`: Option[MariaSet] = applicableTo
+  override def `_11`: Option[AllBrandsCategoriesCSet] = applicableTo
 
   override def `_12`: Option[Json] = rulesJson
 
@@ -142,5 +142,5 @@ case class PromotionsRow(
 }
 
 object PromotionsRow {
-  val `_rowParser`: RowParser[PromotionsRow] = RowParsers.of(PromotionsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text.nullable, MariaTypes.text, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric.nullable, MariaTypes.intUnsigned.nullable, MariaTypes.intUnsigned, MariaTypes.tinyintUnsigned.nullable, MariaTypes.set.nullable, MariaTypes.json.nullable, MariaTypes.datetime, MariaTypes.datetime, ScalaDbTypes.MariaTypes.bool, MariaTypes.datetime)(PromotionsRow.apply)(row => Array[Any](row.promotionId, row.code, row.name, row.description, row.discountType, row.discountValue, row.minOrderAmount, row.maxUses, row.usesCount, row.maxUsesPerCustomer, row.applicableTo, row.rulesJson, row.validFrom, row.validTo, row.isActive, row.createdAt))
+  val `_rowParser`: RowParser[PromotionsRow] = RowParsers.of(PromotionsId.dbType, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.text.nullable, MariaTypes.text, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric.nullable, MariaTypes.intUnsigned.nullable, MariaTypes.intUnsigned, MariaTypes.tinyintUnsigned.nullable, AllBrandsCategoriesCSet.dbType.nullable, MariaTypes.json.nullable, MariaTypes.datetime, MariaTypes.datetime, ScalaDbTypes.MariaTypes.bool, MariaTypes.datetime)(PromotionsRow.apply)(row => Array[Any](row.promotionId, row.code, row.name, row.description, row.discountType, row.discountValue, row.minOrderAmount, row.maxUses, row.usesCount, row.maxUsesPerCustomer, row.applicableTo, row.rulesJson, row.validFrom, row.validTo, row.isActive, row.createdAt))
 }

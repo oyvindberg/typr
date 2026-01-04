@@ -10,9 +10,9 @@ import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.RowParsers;
 import dev.typr.foundations.Tuple.Tuple11;
-import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
 import java.util.Optional;
+import testdb.BestsellerClearanceFSet;
 import testdb.products.ProductsId;
 
 /** View: v_product_catalog VIEW */
@@ -30,7 +30,7 @@ public record VProductCatalogViewRow(
     /** Default: 'draft' Points to {@link testdb.products.ProductsRow#status()} */
     String status,
     /** Default: NULL Points to {@link testdb.products.ProductsRow#tags()} */
-    Optional<MariaSet> tags,
+    Optional<BestsellerClearanceFSet> tags,
     /** Points to {@link testdb.brands.BrandsRow#name()} */
     @JsonProperty("brand_name") Optional<String> brandName,
     /** Default: 0 */
@@ -46,7 +46,7 @@ public record VProductCatalogViewRow(
         Optional<String>,
         BigDecimal,
         String,
-        Optional<MariaSet>,
+        Optional<BestsellerClearanceFSet>,
         Optional<String>,
         BigDecimal,
         BigDecimal,
@@ -154,7 +154,7 @@ public record VProductCatalogViewRow(
   ;
 
   /** Default: NULL Points to {@link testdb.products.ProductsRow#tags()} */
-  public VProductCatalogViewRow withTags(Optional<MariaSet> tags) {
+  public VProductCatalogViewRow withTags(Optional<BestsellerClearanceFSet> tags) {
     return new VProductCatalogViewRow(
         productId,
         sku,
@@ -246,7 +246,7 @@ public record VProductCatalogViewRow(
           MariaTypes.varchar.opt(),
           MariaTypes.numeric,
           MariaTypes.text,
-          MariaTypes.set.opt(),
+          BestsellerClearanceFSet.dbType.opt(),
           MariaTypes.varchar.opt(),
           MariaTypes.numeric,
           MariaTypes.numeric,
@@ -317,7 +317,7 @@ public record VProductCatalogViewRow(
   ;
 
   @Override
-  public Optional<MariaSet> _7() {
+  public Optional<BestsellerClearanceFSet> _7() {
     return tags;
   }
   ;

@@ -6,7 +6,8 @@ case class TypeMapperJvmNew(
     typeOverride: TypeOverride,
     nullabilityOverride: NullabilityOverride,
     naming: Naming,
-    duckDbStructLookup: Map[db.DuckDbType.StructType, String]
+    duckDbStructLookup: Map[db.DuckDbType.StructType, String],
+    mariaSetLookup: Map[List[String], ComputedMariaSet] = Map.empty
 ) extends TypeMapperJvm(lang, typeOverride, nullabilityOverride) {
 
   override def needsTimestampCasts: Boolean = false
@@ -87,41 +88,45 @@ case class TypeMapperJvmNew(
         }
       case x: db.MariaType =>
         x match {
-          case db.MariaType.TinyInt            => lang.Byte
-          case db.MariaType.SmallInt           => lang.Short
-          case db.MariaType.MediumInt          => lang.Int
-          case db.MariaType.Int                => lang.Int
-          case db.MariaType.BigInt             => lang.Long
-          case db.MariaType.TinyIntUnsigned    => TypesJava.unsigned.Uint1
-          case db.MariaType.SmallIntUnsigned   => TypesJava.unsigned.Uint2
-          case db.MariaType.MediumIntUnsigned  => TypesJava.unsigned.Uint4
-          case db.MariaType.IntUnsigned        => TypesJava.unsigned.Uint4
-          case db.MariaType.BigIntUnsigned     => TypesJava.unsigned.Uint8
-          case db.MariaType.Decimal(_, _)      => lang.BigDecimal
-          case db.MariaType.Float              => lang.Float
-          case db.MariaType.Double             => lang.Double
-          case db.MariaType.Boolean            => lang.Boolean
-          case db.MariaType.Bit(Some(1))       => lang.Boolean
-          case db.MariaType.Bit(_)             => lang.ByteArrayType
-          case db.MariaType.Char(_)            => lang.String
-          case db.MariaType.VarChar(_)         => lang.String
-          case db.MariaType.TinyText           => lang.String
-          case db.MariaType.Text               => lang.String
-          case db.MariaType.MediumText         => lang.String
-          case db.MariaType.LongText           => lang.String
-          case db.MariaType.Binary(_)          => lang.ByteArrayType
-          case db.MariaType.VarBinary(_)       => lang.ByteArrayType
-          case db.MariaType.TinyBlob           => lang.ByteArrayType
-          case db.MariaType.Blob               => lang.ByteArrayType
-          case db.MariaType.MediumBlob         => lang.ByteArrayType
-          case db.MariaType.LongBlob           => lang.ByteArrayType
-          case db.MariaType.Date               => TypesJava.LocalDate
-          case db.MariaType.Time(_)            => TypesJava.LocalTime
-          case db.MariaType.DateTime(_)        => TypesJava.LocalDateTime
-          case db.MariaType.Timestamp(_)       => TypesJava.LocalDateTime
-          case db.MariaType.Year               => TypesJava.Year
-          case db.MariaType.Enum(_)            => lang.String // MariaDB inline ENUMs are stored as strings
-          case db.MariaType.Set(_)             => TypesJava.maria.MariaSet
+          case db.MariaType.TinyInt           => lang.Byte
+          case db.MariaType.SmallInt          => lang.Short
+          case db.MariaType.MediumInt         => lang.Int
+          case db.MariaType.Int               => lang.Int
+          case db.MariaType.BigInt            => lang.Long
+          case db.MariaType.TinyIntUnsigned   => TypesJava.unsigned.Uint1
+          case db.MariaType.SmallIntUnsigned  => TypesJava.unsigned.Uint2
+          case db.MariaType.MediumIntUnsigned => TypesJava.unsigned.Uint4
+          case db.MariaType.IntUnsigned       => TypesJava.unsigned.Uint4
+          case db.MariaType.BigIntUnsigned    => TypesJava.unsigned.Uint8
+          case db.MariaType.Decimal(_, _)     => lang.BigDecimal
+          case db.MariaType.Float             => lang.Float
+          case db.MariaType.Double            => lang.Double
+          case db.MariaType.Boolean           => lang.Boolean
+          case db.MariaType.Bit(Some(1))      => lang.Boolean
+          case db.MariaType.Bit(_)            => lang.ByteArrayType
+          case db.MariaType.Char(_)           => lang.String
+          case db.MariaType.VarChar(_)        => lang.String
+          case db.MariaType.TinyText          => lang.String
+          case db.MariaType.Text              => lang.String
+          case db.MariaType.MediumText        => lang.String
+          case db.MariaType.LongText          => lang.String
+          case db.MariaType.Binary(_)         => lang.ByteArrayType
+          case db.MariaType.VarBinary(_)      => lang.ByteArrayType
+          case db.MariaType.TinyBlob          => lang.ByteArrayType
+          case db.MariaType.Blob              => lang.ByteArrayType
+          case db.MariaType.MediumBlob        => lang.ByteArrayType
+          case db.MariaType.LongBlob          => lang.ByteArrayType
+          case db.MariaType.Date              => TypesJava.LocalDate
+          case db.MariaType.Time(_)           => TypesJava.LocalTime
+          case db.MariaType.DateTime(_)       => TypesJava.LocalDateTime
+          case db.MariaType.Timestamp(_)      => TypesJava.LocalDateTime
+          case db.MariaType.Year              => TypesJava.Year
+          case db.MariaType.Enum(_)           => lang.String // MariaDB inline ENUMs are stored as strings
+          case db.MariaType.Set(values) =>
+            mariaSetLookup.get(values.sorted) match {
+              case Some(setType) => setType.tpe
+              case None          => TypesJava.maria.MariaSet
+            }
           case db.MariaType.Json               => TypesJava.runtime.Json
           case db.MariaType.Inet4              => TypesJava.maria.Inet4
           case db.MariaType.Inet6              => TypesJava.maria.Inet6
@@ -170,7 +175,8 @@ case class TypeMapperJvmNew(
           case db.DuckDbType.Enum(name, _)   => jvm.Type.Qualified(naming.enumName(db.RelationName(None, name)))
           case db.DuckDbType.ListType(_)     => lang.String.withComment("LIST type - mapped to String")
           case db.DuckDbType.ArrayType(_, _) => lang.String.withComment("ARRAY type - mapped to String")
-          case db.DuckDbType.MapType(_, _)   => lang.String.withComment("MAP type - mapped to String")
+          case db.DuckDbType.MapType(keyType, valueType) =>
+            lang.MapOps.tpe.of(baseType(keyType), baseType(valueType))
           case s: db.DuckDbType.StructType =>
             duckDbStructLookup.get(s) match {
               case Some(name) => jvm.Type.Qualified(naming.structTypeName(name))

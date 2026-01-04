@@ -13,13 +13,13 @@ import dev.typr.foundations.data.Uint4;
 import dev.typr.foundations.data.Uint8;
 import dev.typr.foundations.data.maria.Inet4;
 import dev.typr.foundations.data.maria.Inet6;
-import dev.typr.foundations.data.maria.MariaSet;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Year;
 import java.util.Optional;
+import testdb.XYZSet;
 import testdb.customtypes.Defaulted;
 import testdb.customtypes.Defaulted.UseDefault;
 
@@ -100,7 +100,7 @@ public record MariatestnullRowUnsaved(
     /** Default: NULL */
     @JsonProperty("year_col") Defaulted<Optional<Year>> yearCol,
     /** Default: NULL */
-    @JsonProperty("set_col") Defaulted<Optional<MariaSet>> setCol,
+    @JsonProperty("set_col") Defaulted<Optional<XYZSet>> setCol,
     /** Default: NULL */
     @JsonProperty("json_col") Defaulted<Optional<Json>> jsonCol,
     /** Default: NULL */
@@ -1895,7 +1895,7 @@ public record MariatestnullRowUnsaved(
   ;
 
   /** Default: NULL */
-  public MariatestnullRowUnsaved withSetCol(Defaulted<Optional<MariaSet>> setCol) {
+  public MariatestnullRowUnsaved withSetCol(Defaulted<Optional<XYZSet>> setCol) {
     return new MariatestnullRowUnsaved(
         tinyintCol,
         smallintCol,
@@ -2120,7 +2120,7 @@ public record MariatestnullRowUnsaved(
       java.util.function.Supplier<Optional<LocalDateTime>> timestampColDefault,
       java.util.function.Supplier<Optional<LocalDateTime>> timestampFspColDefault,
       java.util.function.Supplier<Optional<Year>> yearColDefault,
-      java.util.function.Supplier<Optional<MariaSet>> setColDefault,
+      java.util.function.Supplier<Optional<XYZSet>> setColDefault,
       java.util.function.Supplier<Optional<Json>> jsonColDefault,
       java.util.function.Supplier<Optional<Inet4>> inet4ColDefault,
       java.util.function.Supplier<Optional<Inet6>> inet6ColDefault) {

@@ -14,7 +14,6 @@ import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.data.maria.Inet4
 import dev.typr.foundations.data.maria.Inet6
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
@@ -27,8 +26,9 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.Year
+import testdb.XYZSet
 
-class MariatestnullFields(val `_path`: java.util.List[Path]) extends TupleExpr41[Byte, Short, Int, Int, Long, Uint1, Uint2, Uint4, Uint4, Uint8, BigDecimal, BigDecimal, Float, Double, Boolean, Array[Byte], Array[Byte], String, String, String, String, String, String, Array[Byte], Array[Byte], Array[Byte], Array[Byte], Array[Byte], Array[Byte], LocalDate, LocalTime, LocalTime, LocalDateTime, LocalDateTime, LocalDateTime, LocalDateTime, Year, MariaSet, Json, Inet4, Inet6] with RelationStructure[MariatestnullFields, MariatestnullRow]  with FieldsBase[MariatestnullRow] {
+class MariatestnullFields(val `_path`: java.util.List[Path]) extends TupleExpr41[Byte, Short, Int, Int, Long, Uint1, Uint2, Uint4, Uint4, Uint8, BigDecimal, BigDecimal, Float, Double, Boolean, Array[Byte], Array[Byte], String, String, String, String, String, String, Array[Byte], Array[Byte], Array[Byte], Array[Byte], Array[Byte], Array[Byte], LocalDate, LocalTime, LocalTime, LocalDateTime, LocalDateTime, LocalDateTime, LocalDateTime, Year, XYZSet, Json, Inet4, Inet6] with RelationStructure[MariatestnullFields, MariatestnullRow]  with FieldsBase[MariatestnullRow] {
   def tinyintCol: OptField[Byte, MariatestnullRow] = {
     new OptField[Byte, MariatestnullRow](
       _path,
@@ -473,15 +473,15 @@ class MariatestnullFields(val `_path`: java.util.List[Path]) extends TupleExpr41
     )
   }
 
-  def setCol: OptField[MariaSet, MariatestnullRow] = {
-    new OptField[MariaSet, MariatestnullRow](
+  def setCol: OptField[XYZSet, MariatestnullRow] = {
+    new OptField[XYZSet, MariatestnullRow](
       _path,
       "set_col",
       _.setCol,
       None,
       None,
       (row, value) => row.copy(setCol = value),
-      MariaTypes.set
+      XYZSet.dbType
     )
   }
 
@@ -601,7 +601,7 @@ class MariatestnullFields(val `_path`: java.util.List[Path]) extends TupleExpr41
 
   override def `_37`: SqlExpr[Year] = yearCol
 
-  override def `_38`: SqlExpr[MariaSet] = setCol
+  override def `_38`: SqlExpr[XYZSet] = setCol
 
   override def `_39`: SqlExpr[Json] = jsonCol
 

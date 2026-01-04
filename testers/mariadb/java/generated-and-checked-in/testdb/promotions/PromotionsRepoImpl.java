@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import testdb.AllBrandsCategoriesCSet;
 
 public class PromotionsRepoImpl implements PromotionsRepo {
   @Override
@@ -80,7 +81,7 @@ public class PromotionsRepoImpl implements PromotionsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.tinyintUnsigned.opt(), unsaved.maxUsesPerCustomer()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.set.opt(), unsaved.applicableTo()),
+            Fragment.encode(AllBrandsCategoriesCSet.dbType.opt(), unsaved.applicableTo()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.json.opt(), unsaved.rulesJson()),
             Fragment.lit(", "),
@@ -183,7 +184,9 @@ public class PromotionsRepoImpl implements PromotionsRepo {
             value -> {
               columns.add(Fragment.lit("`applicable_to`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.set.opt(), value), Fragment.lit("")));
+                  interpolate(
+                      Fragment.encode(AllBrandsCategoriesCSet.dbType.opt(), value),
+                      Fragment.lit("")));
             });
     ;
     unsaved
@@ -340,7 +343,7 @@ public class PromotionsRepoImpl implements PromotionsRepo {
                 Fragment.lit(",\n`max_uses_per_customer` = "),
                 Fragment.encode(MariaTypes.tinyintUnsigned.opt(), row.maxUsesPerCustomer()),
                 Fragment.lit(",\n`applicable_to` = "),
-                Fragment.encode(MariaTypes.set.opt(), row.applicableTo()),
+                Fragment.encode(AllBrandsCategoriesCSet.dbType.opt(), row.applicableTo()),
                 Fragment.lit(",\n`rules_json` = "),
                 Fragment.encode(MariaTypes.json.opt(), row.rulesJson()),
                 Fragment.lit(",\n`valid_from` = "),
@@ -388,7 +391,7 @@ public class PromotionsRepoImpl implements PromotionsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.tinyintUnsigned.opt(), unsaved.maxUsesPerCustomer()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.set.opt(), unsaved.applicableTo()),
+            Fragment.encode(AllBrandsCategoriesCSet.dbType.opt(), unsaved.applicableTo()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.json.opt(), unsaved.rulesJson()),
             Fragment.lit(", "),

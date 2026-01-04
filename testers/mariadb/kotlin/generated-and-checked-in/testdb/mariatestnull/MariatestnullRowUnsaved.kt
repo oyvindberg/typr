@@ -13,12 +13,12 @@ import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.data.maria.Inet4
 import dev.typr.foundations.data.maria.Inet6
-import dev.typr.foundations.data.maria.MariaSet
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.Year
+import testdb.XYZSet
 import testdb.customtypes.Defaulted
 import testdb.customtypes.Defaulted.UseDefault
 
@@ -175,7 +175,7 @@ data class MariatestnullRowUnsaved(
   /** Default: NULL
 
     */
-  @JsonProperty("set_col") val setCol: Defaulted<MariaSet?> = UseDefault(),
+  @JsonProperty("set_col") val setCol: Defaulted<XYZSet?> = UseDefault(),
   /** Default: NULL
 
     */
@@ -227,7 +227,7 @@ data class MariatestnullRowUnsaved(
     timestampColDefault: () -> LocalDateTime?,
     timestampFspColDefault: () -> LocalDateTime?,
     yearColDefault: () -> Year?,
-    setColDefault: () -> MariaSet?,
+    setColDefault: () -> XYZSet?,
     jsonColDefault: () -> Json?,
     inet4ColDefault: () -> Inet4?,
     inet6ColDefault: () -> Inet6?

@@ -12,7 +12,6 @@ import dev.typr.foundations.data.Uint4
 import dev.typr.foundations.data.Uint8
 import dev.typr.foundations.data.maria.Inet4
 import dev.typr.foundations.data.maria.Inet6
-import dev.typr.foundations.data.maria.MariaSet
 import java.lang.Math
 import java.sql.Connection
 import java.time.LocalDate
@@ -242,7 +241,7 @@ case class TestInsert(random: Random) {
     status: Defaulted[CustomerStatusId] = new UseDefault(),
     tier: Defaulted[String] = new UseDefault(),
     preferences: Defaulted[Option[Json]] = new UseDefault(),
-    marketingFlags: Defaulted[Option[MariaSet]] = new UseDefault(),
+    marketingFlags: Defaulted[Option[EmailMailPushSmsSet]] = new UseDefault(),
     notes: Defaulted[Option[String]] = new UseDefault(),
     createdAt: Defaulted[LocalDateTime] = new UseDefault(),
     updatedAt: Defaulted[LocalDateTime] = new UseDefault(),
@@ -301,7 +300,6 @@ case class TestInsert(random: Random) {
     mediumblobCol: Array[Byte],
     longblobCol: Array[Byte],
     yearCol: Year,
-    setCol: MariaSet,
     inet4Col: Inet4,
     inet6Col: Inet6,
     tinyintCol: Byte = random.nextInt(Byte.MaxValue).toByte,
@@ -330,6 +328,7 @@ case class TestInsert(random: Random) {
     timeFspCol: LocalTime = LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong),
     datetimeCol: LocalDateTime = LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)),
     datetimeFspCol: LocalDateTime = LocalDateTime.of(LocalDate.ofEpochDay(random.nextInt(30000).toLong), LocalTime.ofSecondOfDay(random.nextInt(24 * 60 * 60).toLong)),
+    setCol: XYZSet = XYZSet.of(List(XYZSetMember.x)),
     jsonCol: Json = new Json("{}"),
     timestampCol: Defaulted[LocalDateTime] = new UseDefault(),
     timestampFspCol: Defaulted[LocalDateTime] = new UseDefault()
@@ -469,7 +468,7 @@ case class TestInsert(random: Random) {
     timestampCol: Defaulted[Option[LocalDateTime]] = new UseDefault(),
     timestampFspCol: Defaulted[Option[LocalDateTime]] = new UseDefault(),
     yearCol: Defaulted[Option[Year]] = new UseDefault(),
-    setCol: Defaulted[Option[MariaSet]] = new UseDefault(),
+    setCol: Defaulted[Option[XYZSet]] = new UseDefault(),
     jsonCol: Defaulted[Option[Json]] = new UseDefault(),
     inet4Col: Defaulted[Option[Inet4]] = new UseDefault(),
     inet6Col: Defaulted[Option[Inet6]] = new UseDefault()
@@ -741,7 +740,7 @@ case class TestInsert(random: Random) {
     dimensionsJson: Defaulted[Option[Json]] = new UseDefault(),
     status: Defaulted[String] = new UseDefault(),
     taxClass: Defaulted[String] = new UseDefault(),
-    tags: Defaulted[Option[MariaSet]] = new UseDefault(),
+    tags: Defaulted[Option[BestsellerClearanceFSet]] = new UseDefault(),
     attributes: Defaulted[Option[Json]] = new UseDefault(),
     seoMetadata: Defaulted[Option[Json]] = new UseDefault(),
     createdAt: Defaulted[LocalDateTime] = new UseDefault(),
@@ -781,7 +780,7 @@ case class TestInsert(random: Random) {
     maxUses: Defaulted[Option[Uint4]] = new UseDefault(),
     usesCount: Defaulted[Uint4] = new UseDefault(),
     maxUsesPerCustomer: Defaulted[Option[Uint1]] = new UseDefault(),
-    applicableTo: Defaulted[Option[MariaSet]] = new UseDefault(),
+    applicableTo: Defaulted[Option[AllBrandsCategoriesCSet]] = new UseDefault(),
     rulesJson: Defaulted[Option[Json]] = new UseDefault(),
     isActive: Defaulted[Boolean] = new UseDefault(),
     createdAt: Defaulted[LocalDateTime] = new UseDefault()

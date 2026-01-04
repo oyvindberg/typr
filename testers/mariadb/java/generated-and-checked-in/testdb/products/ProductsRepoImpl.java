@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import testdb.BestsellerClearanceFSet;
 import testdb.brands.BrandsId;
 
 public class ProductsRepoImpl implements ProductsRepo {
@@ -85,7 +86,7 @@ public class ProductsRepoImpl implements ProductsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text, unsaved.taxClass()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.set.opt(), unsaved.tags()),
+            Fragment.encode(BestsellerClearanceFSet.dbType.opt(), unsaved.tags()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.json.opt(), unsaved.attributes()),
             Fragment.lit(", "),
@@ -204,7 +205,9 @@ public class ProductsRepoImpl implements ProductsRepo {
             value -> {
               columns.add(Fragment.lit("`tags`"));
               values.add(
-                  interpolate(Fragment.encode(MariaTypes.set.opt(), value), Fragment.lit("")));
+                  interpolate(
+                      Fragment.encode(BestsellerClearanceFSet.dbType.opt(), value),
+                      Fragment.lit("")));
             });
     ;
     unsaved
@@ -385,7 +388,7 @@ public class ProductsRepoImpl implements ProductsRepo {
                 Fragment.lit(",\n`tax_class` = "),
                 Fragment.encode(MariaTypes.text, row.taxClass()),
                 Fragment.lit(",\n`tags` = "),
-                Fragment.encode(MariaTypes.set.opt(), row.tags()),
+                Fragment.encode(BestsellerClearanceFSet.dbType.opt(), row.tags()),
                 Fragment.lit(",\n`attributes` = "),
                 Fragment.encode(MariaTypes.json.opt(), row.attributes()),
                 Fragment.lit(",\n`seo_metadata` = "),
@@ -437,7 +440,7 @@ public class ProductsRepoImpl implements ProductsRepo {
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.text, unsaved.taxClass()),
             Fragment.lit(", "),
-            Fragment.encode(MariaTypes.set.opt(), unsaved.tags()),
+            Fragment.encode(BestsellerClearanceFSet.dbType.opt(), unsaved.tags()),
             Fragment.lit(", "),
             Fragment.encode(MariaTypes.json.opt(), unsaved.attributes()),
             Fragment.lit(", "),

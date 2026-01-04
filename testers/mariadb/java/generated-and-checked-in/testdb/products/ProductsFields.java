@@ -8,7 +8,6 @@ package testdb.products;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.data.Json;
-import dev.typr.foundations.data.maria.MariaSet;
 import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
@@ -23,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import testdb.BestsellerClearanceFSet;
 import testdb.brands.BrandsFields;
 import testdb.brands.BrandsId;
 import testdb.brands.BrandsRow;
@@ -41,7 +41,7 @@ public class ProductsFields
         Json,
         String,
         String,
-        MariaSet,
+        BestsellerClearanceFSet,
         Json,
         Json,
         LocalDateTime,
@@ -188,15 +188,15 @@ public class ProductsFields
         MariaTypes.text);
   }
 
-  public OptField<MariaSet, ProductsRow> tags() {
-    return new OptField<MariaSet, ProductsRow>(
+  public OptField<BestsellerClearanceFSet, ProductsRow> tags() {
+    return new OptField<BestsellerClearanceFSet, ProductsRow>(
         _path,
         "tags",
         ProductsRow::tags,
         Optional.empty(),
         Optional.empty(),
         (row, value) -> row.withTags(value),
-        MariaTypes.set);
+        BestsellerClearanceFSet.dbType);
   }
 
   public OptField<Json, ProductsRow> attributes() {
@@ -358,7 +358,7 @@ public class ProductsFields
   }
 
   @Override
-  public SqlExpr<MariaSet> _13() {
+  public SqlExpr<BestsellerClearanceFSet> _13() {
     return tags();
   }
 

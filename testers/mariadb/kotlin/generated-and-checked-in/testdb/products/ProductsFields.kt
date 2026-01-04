@@ -8,7 +8,6 @@ package testdb.products
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
 import dev.typr.foundations.data.Json
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
@@ -23,11 +22,12 @@ import dev.typr.foundations.kotlin.TupleExpr18
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import kotlin.collections.List
+import testdb.BestsellerClearanceFSet
 import testdb.brands.BrandsFields
 import testdb.brands.BrandsId
 import testdb.brands.BrandsRow
 
-data class ProductsFields(val _path: List<Path>) : TupleExpr18<ProductsId, String, BrandsId, String, String, String, BigDecimal, BigDecimal, BigDecimal, Json, String, String, MariaSet, Json, Json, LocalDateTime, LocalDateTime, LocalDateTime>, RelationStructure<ProductsFields, ProductsRow>, FieldsBase<ProductsRow> {
+data class ProductsFields(val _path: List<Path>) : TupleExpr18<ProductsId, String, BrandsId, String, String, String, BigDecimal, BigDecimal, BigDecimal, Json, String, String, BestsellerClearanceFSet, Json, Json, LocalDateTime, LocalDateTime, LocalDateTime>, RelationStructure<ProductsFields, ProductsRow>, FieldsBase<ProductsRow> {
   override fun _1(): SqlExpr<ProductsId> = productId()
 
   override fun _10(): SqlExpr<Json> = dimensionsJson()
@@ -36,7 +36,7 @@ data class ProductsFields(val _path: List<Path>) : TupleExpr18<ProductsId, Strin
 
   override fun _12(): SqlExpr<String> = taxClass()
 
-  override fun _13(): SqlExpr<MariaSet> = tags()
+  override fun _13(): SqlExpr<BestsellerClearanceFSet> = tags()
 
   override fun _14(): SqlExpr<Json> = attributes()
 
@@ -100,7 +100,7 @@ data class ProductsFields(val _path: List<Path>) : TupleExpr18<ProductsId, Strin
 
   fun status(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "status", ProductsRow::status, null, null, { row, value -> row.copy(status = value) }, MariaTypes.text)
 
-  fun tags(): OptField<MariaSet, ProductsRow> = OptField<MariaSet, ProductsRow>(_path, "tags", ProductsRow::tags, null, null, { row, value -> row.copy(tags = value) }, MariaTypes.set)
+  fun tags(): OptField<BestsellerClearanceFSet, ProductsRow> = OptField<BestsellerClearanceFSet, ProductsRow>(_path, "tags", ProductsRow::tags, null, null, { row, value -> row.copy(tags = value) }, BestsellerClearanceFSet.dbType)
 
   fun taxClass(): Field<String, ProductsRow> = Field<String, ProductsRow>(_path, "tax_class", ProductsRow::taxClass, null, null, { row, value -> row.copy(taxClass = value) }, MariaTypes.text)
 

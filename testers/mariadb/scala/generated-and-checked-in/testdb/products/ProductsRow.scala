@@ -9,12 +9,12 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.Tuple.Tuple18
 import dev.typr.foundations.data.Json
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import dev.typr.foundations.scala.ScalaDbTypes
 import java.time.LocalDateTime
+import testdb.BestsellerClearanceFSet
 import testdb.brands.BrandsId
 import testdb.customtypes.Defaulted
 
@@ -68,7 +68,7 @@ case class ProductsRow(
   /** 
    * Default: NULL
    */
-  tags: Option[MariaSet],
+  tags: Option[BestsellerClearanceFSet],
   /** 
    * Default: NULL
    */
@@ -89,7 +89,7 @@ case class ProductsRow(
    * Default: NULL
    */
   @JsonProperty("published_at") publishedAt: Option[LocalDateTime]
-) extends Tuple18[ProductsId, String, Option[BrandsId], String, Option[String], Option[String], BigDecimal, Option[BigDecimal], Option[BigDecimal], Option[Json], String, String, Option[MariaSet], Option[Json], Option[Json], LocalDateTime, LocalDateTime, Option[LocalDateTime]] {
+) extends Tuple18[ProductsId, String, Option[BrandsId], String, Option[String], Option[String], BigDecimal, Option[BigDecimal], Option[BigDecimal], Option[Json], String, String, Option[BestsellerClearanceFSet], Option[Json], Option[Json], LocalDateTime, LocalDateTime, Option[LocalDateTime]] {
   def id: ProductsId = productId
 
   def toUnsavedRow(
@@ -101,7 +101,7 @@ case class ProductsRow(
     dimensionsJson: Defaulted[Option[Json]] = Defaulted.Provided(this.dimensionsJson),
     status: Defaulted[String] = Defaulted.Provided(this.status),
     taxClass: Defaulted[String] = Defaulted.Provided(this.taxClass),
-    tags: Defaulted[Option[MariaSet]] = Defaulted.Provided(this.tags),
+    tags: Defaulted[Option[BestsellerClearanceFSet]] = Defaulted.Provided(this.tags),
     attributes: Defaulted[Option[Json]] = Defaulted.Provided(this.attributes),
     seoMetadata: Defaulted[Option[Json]] = Defaulted.Provided(this.seoMetadata),
     createdAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.createdAt),
@@ -153,7 +153,7 @@ case class ProductsRow(
 
   override def `_12`: String = taxClass
 
-  override def `_13`: Option[MariaSet] = tags
+  override def `_13`: Option[BestsellerClearanceFSet] = tags
 
   override def `_14`: Option[Json] = attributes
 
@@ -167,5 +167,5 @@ case class ProductsRow(
 }
 
 object ProductsRow {
-  val `_rowParser`: RowParser[ProductsRow] = RowParsers.of(ProductsId.dbType, MariaTypes.varchar, BrandsId.dbType.nullable, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.longtext.nullable, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, MariaTypes.json.nullable, MariaTypes.text, MariaTypes.text, MariaTypes.set.nullable, MariaTypes.json.nullable, MariaTypes.json.nullable, MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable)(ProductsRow.apply)(row => Array[Any](row.productId, row.sku, row.brandId, row.name, row.shortDescription, row.fullDescription, row.basePrice, row.costPrice, row.weightKg, row.dimensionsJson, row.status, row.taxClass, row.tags, row.attributes, row.seoMetadata, row.createdAt, row.updatedAt, row.publishedAt))
+  val `_rowParser`: RowParser[ProductsRow] = RowParsers.of(ProductsId.dbType, MariaTypes.varchar, BrandsId.dbType.nullable, MariaTypes.varchar, MariaTypes.varchar.nullable, MariaTypes.longtext.nullable, ScalaDbTypes.MariaTypes.numeric, ScalaDbTypes.MariaTypes.numeric.nullable, ScalaDbTypes.MariaTypes.numeric.nullable, MariaTypes.json.nullable, MariaTypes.text, MariaTypes.text, BestsellerClearanceFSet.dbType.nullable, MariaTypes.json.nullable, MariaTypes.json.nullable, MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable)(ProductsRow.apply)(row => Array[Any](row.productId, row.sku, row.brandId, row.name, row.shortDescription, row.fullDescription, row.basePrice, row.costPrice, row.weightKg, row.dimensionsJson, row.status, row.taxClass, row.tags, row.attributes, row.seoMetadata, row.createdAt, row.updatedAt, row.publishedAt))
 }

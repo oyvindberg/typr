@@ -1,7 +1,7 @@
 package testdb
 
 import dev.typr.foundations.data.{Json, Uint1, Uint2, Uint4, Uint8}
-import dev.typr.foundations.data.maria.{Inet4, Inet6, MariaSet}
+import dev.typr.foundations.data.maria.{Inet4, Inet6}
 import org.scalatest.funsuite.AnyFunSuite
 import testdb.mariatest.*
 import testdb.mariatestnull.*
@@ -52,7 +52,7 @@ class AllTypesTest extends AnyFunSuite {
     timestampCol = LocalDateTime.now(),
     timestampFspCol = LocalDateTime.now(),
     yearCol = Year.of(2025),
-    setCol = MariaSet.fromString("x,y"),
+    setCol = XYZSet.fromString("x,y"),
     jsonCol = Json("{\"key\": \"value\"}"),
     inet4Col = new Inet4("192.168.1.1"),
     inet6Col = new Inet6("::1")
@@ -187,7 +187,7 @@ class AllTypesTest extends AnyFunSuite {
         timestampCol = Defaulted.Provided(Some(LocalDateTime.now())),
         timestampFspCol = Defaulted.Provided(Some(LocalDateTime.now())),
         yearCol = Defaulted.Provided(Some(Year.of(2024))),
-        setCol = Defaulted.Provided(Some(MariaSet.fromString("y,z"))),
+        setCol = Defaulted.Provided(Some(XYZSet.fromString("y,z"))),
         jsonCol = Defaulted.Provided(Some(Json("{\"test\": true}"))),
         inet4Col = Defaulted.Provided(Some(new Inet4("10.0.0.1"))),
         inet6Col = Defaulted.Provided(Some(new Inet6("fe80::1")))
@@ -263,13 +263,13 @@ class AllTypesTest extends AnyFunSuite {
   test("setType") {
     withConnection { c =>
       given java.sql.Connection = c
-      val row1 = createSampleRow(20).copy(setCol = MariaSet.of("x"))
+      val row1 = createSampleRow(20).copy(setCol = XYZSet.of(List(XYZSetMember.x)))
       val inserted1 = mariatestRepo.insert(row1)
-      val _ = assert(inserted1.setCol == MariaSet.of("x"))
+      val _ = assert(inserted1.setCol == XYZSet.of(List(XYZSetMember.x)))
 
-      val row2 = createSampleRow(21).copy(setCol = MariaSet.fromString("x,y,z"))
+      val row2 = createSampleRow(21).copy(setCol = XYZSet.fromString("x,y,z"))
       val inserted2 = mariatestRepo.insert(row2)
-      assert(inserted2.setCol == MariaSet.of("x", "y", "z"))
+      assert(inserted2.setCol == XYZSet.of(List(XYZSetMember.x, XYZSetMember.y, XYZSetMember.z)))
     }
   }
 

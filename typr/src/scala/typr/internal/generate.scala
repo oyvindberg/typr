@@ -77,8 +77,10 @@ object generate {
     )
     val customTypes = new CustomTypes(customTypesPackage, language)
     val duckDbStructLookup = MetaDb.buildStructLookup(metaDb.duckDbStructTypes)
+    val mariaSetTypes = metaDb.mariaSetTypes.map(ComputedMariaSet(naming))
+    val mariaSetLookup = mariaSetTypes.map(s => s.sortedValues.toList -> s).toMap
     val scalaTypeMapper = publicOptions.dbLib match {
-      case Some(DbLibName.Typo) => TypeMapperJvmNew(language, options.typeOverride, publicOptions.nullabilityOverride, naming, duckDbStructLookup)
+      case Some(DbLibName.Typo) => TypeMapperJvmNew(language, options.typeOverride, publicOptions.nullabilityOverride, naming, duckDbStructLookup, mariaSetLookup)
       case _                    => TypeMapperJvmOld(language, options.typeOverride, publicOptions.nullabilityOverride, naming, customTypes)
     }
     val enums = metaDb.enums.map(ComputedStringEnum(naming))
@@ -144,6 +146,7 @@ object generate {
         val adapter = metaDb.dbType.adapter(needsTimestampCasts = false)
         val duckDbStructTypeFiles = duckDbStructTypes.map(FileDuckDbStruct(_, options, adapter, duckDbStructLookup, naming))
         val pgCompositeTypeFiles = pgCompositeTypes.map(FilePgCompositeType(_, options, adapter, pgCompositeLookup, naming))
+        val mariaSetTypeFiles = mariaSetTypes.flatMap(FileMariaSet(options, _, adapter))
         val defaultFile = FileDefault(default, options.jsonLibs, options.dbLib, language)
         val mostFiles: List[jvm.File] =
           List(
@@ -155,6 +158,7 @@ object generate {
             oracleCollectionTypeFiles,
             duckDbStructTypeFiles,
             pgCompositeTypeFiles,
+            mariaSetTypeFiles,
             customTypes.All.values.map(FileCustomType(options, language)),
             relationFilesByName.map { case (_, f) => f },
             sqlFileFiles
@@ -188,7 +192,7 @@ object generate {
               val keptTables =
                 computedRelations.collect { case x: ComputedTable if options.enableTestInserts.include(x.dbTable.name) && keptTypes(x.names.RepoImplName) => x }
               if (keptTables.nonEmpty) {
-                val computed = ComputedTestInserts(project.name, options, language, customTypes, domains, enums, computedRelationsByName, keptTables)
+                val computed = ComputedTestInserts(project.name, options, language, customTypes, domains, enums, mariaSetTypes, computedRelationsByName, keptTables)
                 FileTestInserts(computed, dbLib, language)
               } else Nil
             case _ => Nil

@@ -9,11 +9,11 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.Tuple.Tuple14
 import dev.typr.foundations.data.Json
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.scala.DbTypeOps
 import dev.typr.foundations.scala.RowParser
 import dev.typr.foundations.scala.RowParsers
 import java.time.LocalDateTime
+import testdb.EmailMailPushSmsSet
 import testdb.customer_status.CustomerStatusId
 import testdb.customtypes.Defaulted
 
@@ -53,7 +53,7 @@ case class CustomersRow(
   /** 
    * Default: NULL
    */
-  @JsonProperty("marketing_flags") marketingFlags: Option[MariaSet],
+  @JsonProperty("marketing_flags") marketingFlags: Option[EmailMailPushSmsSet],
   /** 
    * Default: NULL
    */
@@ -70,7 +70,7 @@ case class CustomersRow(
    * Default: NULL
    */
   @JsonProperty("last_login_at") lastLoginAt: Option[LocalDateTime]
-) extends Tuple14[CustomersId, String, Array[Byte], String, String, Option[String], CustomerStatusId, String, Option[Json], Option[MariaSet], Option[String], LocalDateTime, LocalDateTime, Option[LocalDateTime]] {
+) extends Tuple14[CustomersId, String, Array[Byte], String, String, Option[String], CustomerStatusId, String, Option[Json], Option[EmailMailPushSmsSet], Option[String], LocalDateTime, LocalDateTime, Option[LocalDateTime]] {
   def id: CustomersId = customerId
 
   def toUnsavedRow(
@@ -78,7 +78,7 @@ case class CustomersRow(
     status: Defaulted[CustomerStatusId] = Defaulted.Provided(this.status),
     tier: Defaulted[String] = Defaulted.Provided(this.tier),
     preferences: Defaulted[Option[Json]] = Defaulted.Provided(this.preferences),
-    marketingFlags: Defaulted[Option[MariaSet]] = Defaulted.Provided(this.marketingFlags),
+    marketingFlags: Defaulted[Option[EmailMailPushSmsSet]] = Defaulted.Provided(this.marketingFlags),
     notes: Defaulted[Option[String]] = Defaulted.Provided(this.notes),
     createdAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.createdAt),
     updatedAt: Defaulted[LocalDateTime] = Defaulted.Provided(this.updatedAt),
@@ -119,7 +119,7 @@ case class CustomersRow(
 
   override def `_9`: Option[Json] = preferences
 
-  override def `_10`: Option[MariaSet] = marketingFlags
+  override def `_10`: Option[EmailMailPushSmsSet] = marketingFlags
 
   override def `_11`: Option[String] = notes
 
@@ -131,5 +131,5 @@ case class CustomersRow(
 }
 
 object CustomersRow {
-  val `_rowParser`: RowParser[CustomersRow] = RowParsers.of(CustomersId.dbType, MariaTypes.varchar, MariaTypes.binary, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, CustomerStatusId.dbType, MariaTypes.text, MariaTypes.json.nullable, MariaTypes.set.nullable, MariaTypes.text.nullable, MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable)(CustomersRow.apply)(row => Array[Any](row.customerId, row.email, row.passwordHash, row.firstName, row.lastName, row.phone, row.status, row.tier, row.preferences, row.marketingFlags, row.notes, row.createdAt, row.updatedAt, row.lastLoginAt))
+  val `_rowParser`: RowParser[CustomersRow] = RowParsers.of(CustomersId.dbType, MariaTypes.varchar, MariaTypes.binary, MariaTypes.varchar, MariaTypes.varchar, MariaTypes.varchar.nullable, CustomerStatusId.dbType, MariaTypes.text, MariaTypes.json.nullable, EmailMailPushSmsSet.dbType.nullable, MariaTypes.text.nullable, MariaTypes.datetime, MariaTypes.datetime, MariaTypes.datetime.nullable)(CustomersRow.apply)(row => Array[Any](row.customerId, row.email, row.passwordHash, row.firstName, row.lastName, row.phone, row.status, row.tier, row.preferences, row.marketingFlags, row.notes, row.createdAt, row.updatedAt, row.lastLoginAt))
 }

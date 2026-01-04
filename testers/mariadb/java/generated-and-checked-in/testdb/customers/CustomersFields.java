@@ -8,7 +8,6 @@ package testdb.customers;
 import dev.typr.foundations.MariaTypes;
 import dev.typr.foundations.RowParser;
 import dev.typr.foundations.data.Json;
-import dev.typr.foundations.data.maria.MariaSet;
 import dev.typr.foundations.dsl.FieldsBase;
 import dev.typr.foundations.dsl.ForeignKey;
 import dev.typr.foundations.dsl.Path;
@@ -22,6 +21,7 @@ import dev.typr.foundations.dsl.TupleExpr.TupleExpr14;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import testdb.EmailMailPushSmsSet;
 import testdb.customer_status.CustomerStatusFields;
 import testdb.customer_status.CustomerStatusId;
 import testdb.customer_status.CustomerStatusRow;
@@ -37,7 +37,7 @@ public class CustomersFields
         CustomerStatusId,
         String,
         Json,
-        MariaSet,
+        EmailMailPushSmsSet,
         String,
         LocalDateTime,
         LocalDateTime,
@@ -150,15 +150,15 @@ public class CustomersFields
         MariaTypes.json);
   }
 
-  public OptField<MariaSet, CustomersRow> marketingFlags() {
-    return new OptField<MariaSet, CustomersRow>(
+  public OptField<EmailMailPushSmsSet, CustomersRow> marketingFlags() {
+    return new OptField<EmailMailPushSmsSet, CustomersRow>(
         _path,
         "marketing_flags",
         CustomersRow::marketingFlags,
         Optional.empty(),
         Optional.empty(),
         (row, value) -> row.withMarketingFlags(value),
-        MariaTypes.set);
+        EmailMailPushSmsSet.dbType);
   }
 
   public OptField<String, CustomersRow> notes() {
@@ -290,7 +290,7 @@ public class CustomersFields
   }
 
   @Override
-  public SqlExpr<MariaSet> _10() {
+  public SqlExpr<EmailMailPushSmsSet> _10() {
     return marketingFlags();
   }
 

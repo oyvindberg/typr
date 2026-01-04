@@ -7,7 +7,6 @@ package testdb.v_product_catalog
 
 import dev.typr.foundations.MariaTypes
 import dev.typr.foundations.RowParser
-import dev.typr.foundations.data.maria.MariaSet
 import dev.typr.foundations.dsl.FieldsBase
 import dev.typr.foundations.dsl.Path
 import dev.typr.foundations.dsl.SqlExpr.FieldLike
@@ -17,9 +16,10 @@ import dev.typr.foundations.scala.SqlExpr
 import dev.typr.foundations.scala.SqlExpr.Field
 import dev.typr.foundations.scala.SqlExpr.OptField
 import dev.typr.foundations.scala.TupleExpr11
+import testdb.BestsellerClearanceFSet
 import testdb.products.ProductsId
 
-class VProductCatalogViewFields(val `_path`: java.util.List[Path]) extends TupleExpr11[ProductsId, String, String, String, BigDecimal, String, MariaSet, String, BigDecimal, BigDecimal, Long] with RelationStructure[VProductCatalogViewFields, VProductCatalogViewRow]  with FieldsBase[VProductCatalogViewRow] {
+class VProductCatalogViewFields(val `_path`: java.util.List[Path]) extends TupleExpr11[ProductsId, String, String, String, BigDecimal, String, BestsellerClearanceFSet, String, BigDecimal, BigDecimal, Long] with RelationStructure[VProductCatalogViewFields, VProductCatalogViewRow]  with FieldsBase[VProductCatalogViewRow] {
   def productId: Field[ProductsId, VProductCatalogViewRow] = {
     new Field[ProductsId, VProductCatalogViewRow](
       _path,
@@ -92,15 +92,15 @@ class VProductCatalogViewFields(val `_path`: java.util.List[Path]) extends Tuple
     )
   }
 
-  def tags: OptField[MariaSet, VProductCatalogViewRow] = {
-    new OptField[MariaSet, VProductCatalogViewRow](
+  def tags: OptField[BestsellerClearanceFSet, VProductCatalogViewRow] = {
+    new OptField[BestsellerClearanceFSet, VProductCatalogViewRow](
       _path,
       "tags",
       _.tags,
       None,
       None,
       (row, value) => row.copy(tags = value),
-      MariaTypes.set
+      BestsellerClearanceFSet.dbType
     )
   }
 
@@ -170,7 +170,7 @@ class VProductCatalogViewFields(val `_path`: java.util.List[Path]) extends Tuple
 
   override def `_6`: SqlExpr[String] = status
 
-  override def `_7`: SqlExpr[MariaSet] = tags
+  override def `_7`: SqlExpr[BestsellerClearanceFSet] = tags
 
   override def `_8`: SqlExpr[String] = brandName
 
